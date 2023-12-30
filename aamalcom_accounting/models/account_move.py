@@ -51,8 +51,6 @@ class AccountMove(models.Model):
     #     return super(AccountMove, self).create(vals)
     @api.model
     def create(self, vals):
-        print("---------bbbbbbb",vals.get('move_type'))
-        print("---------kjjjjjjjjjjjjjbbbbbbb",vals.get('state'))
         # if vals.get('move_type') == 'out_invoice':
         draft_invoice_sequence = self.env['ir.sequence'].next_by_code('account.move.draft.invoice')
         vals['draft_invoice_sequence'] = draft_invoice_sequence

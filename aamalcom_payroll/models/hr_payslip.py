@@ -99,7 +99,6 @@ class HrPayslip(models.Model):
         })
         # computation of the salary input
         contracts = self.env['hr.contract'].browse(contract_ids)
-        print("--------ssssssss",self.sal_track_id)
         if not self.sal_track_id:
             worked_days_line_ids = self.get_worked_day_lines(contracts, date_from, date_to)
         else:
