@@ -17,6 +17,7 @@
     	'security/security.xml',
         'security/ir.model.access.csv',
     	'data/sequences.xml',
+        'views/account_account_views.xml',
         'views/draft_account_move_views.xml',
         'views/account_payment_approval_views.xml',
         'views/account_payment_views.xml',
