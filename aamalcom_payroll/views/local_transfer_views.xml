@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="local_transfer_form_inherit" model="ir.ui.view">
+        <field name="name">local.transfer.form</field>
+        <field name="model">local.transfer</field>
+        <field name="inherit_id" ref="visa_process.local_transfer_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='medical_page']" position="after">
+            	<page name="salary" string="Salary Structure">
+                    <field name="client_salary_rule_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree editable="bottom" create="0">
+                            <field name="name"/>
+                            <field name="amount" sum="Total Amount"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+             
+                    
+                    
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="visa_ref_documents_form" model="ir.ui.view">
+        <field name="name">Documents</field>
+        <field name="model">visa.ref.documents</field>
+        <field name="arch" type="xml">
+            <form string="Documents">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Documents" groups="hr.group_hr_user"/>
+                    <group groups="hr.group_hr_user">
+                        <group>
+                           <field name="name"/>
+                           <field name="user_id" invisible="1"/>
+                           <field name="company_id" invisible="1"/>
+                           <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                        	<field name="is_medical_doc"/>
+                        	<field name="medical_doc" attrs="{'invisible': [('is_medical_doc', '=', False)]}" widget="document_preview"/>
+                        </group>
+                        <group>
+                            <field name="is_istiqdam_doc"/>
+                            <field name="istiqdam_doc" attrs="{'invisible': [('is_istiqdam_doc', '=', False)]}" widget="document_preview"/>
+                        </group>
+                    </group>
+                    
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="visa_ref_documents_tree" model="ir.ui.view">
+        <field name="name">Documents</field>
+        <field name="model">visa.ref.documents</field>
+        <field name="arch" type="xml">
+            <tree string="Documents">
+                <field name="name"/>
+                <field name="is_medical_doc"/>
+                <field name="is_istiqdam_doc"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_visa_ref_documents_filter" model="ir.ui.view">
+        <field name="name">visa.ref.documents.tree</field>
+        <field name="model">visa.ref.documents</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Document"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_visa_ref_documents" model="ir.actions.act_window">
+        <field name="name">Reference Documents</field>
+        <field name="res_model">visa.ref.documents</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_visa_ref_documents_filter"/>
+    </record>
+
+    
+</odoo>

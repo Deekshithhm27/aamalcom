@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_employee_overview_kanban" model="ir.ui.view">
+        <field name="name">hr.employee.kanban</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <kanban class="oe_background_grey o_kanban_dashboard o_emphasize_colors o_stock_kanban" create="0">
+                <field name="color"/>
+                <field name="code" readonly="1"/>
+                <field name="count_service_enquiry_done"/>
+                <field name="count_service_enquiry_draft"/>
+                <field name="count_service_enquiry_submitted"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-if="['spoc'].indexOf(record.code.raw_value) > -1" t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''}" name="partner">
+                            <div>
+                                <div t-attf-class="o_kanban_card_header">
+                                    <div class="o_kanban_card_header_title">
+                                        <div class="o_primary" t-if="!selection_mode">
+                                            <a type="object" name="get_action_partner_type">
+                                                <field name="name"/>
+                                            </a>
+                                        </div>
+                                        <div class="o_primary" t-if="selection_mode">
+                                            <field name="name"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_manage_button_section" t-if="!selection_mode">
+                                        <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/></a>
+                                    </div>
+                                </div>
+                                <div class="container o_kanban_card_content" t-if="!selection_mode">
+                                    <div class="row">
+                                        <div class="col-6 o_kanban_primary_left">
+                                            <button class="btn btn-primary" name="get_action_service_enquiry_tree_draft" type="object">
+                                                <span t-if="record.code.raw_value =='spoc'"><field name="count_service_enquiry_draft"/> To Process</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6 o_kanban_primary_right">
+                                            
+                                            <div t-if="record.count_service_enquiry_draft.raw_value > 0" class="row">
+                                                <div class="col-12">
+                                                    <a name="get_action_service_enquiry_tree_draft" type="object">
+                                                        <field name="count_service_enquiry_draft"/>
+                                                        Draft
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div t-if="record.count_service_enquiry_submitted.raw_value > 0" class="row">
+                                                <div class="col-12">
+                                                    <a class="oe_kanban_stock_picking_type_list" name="get_action_service_enquiry_tree_submited" type="object">
+                                                        <field name="count_service_enquiry_submitted"/>
+                                                        Submitted
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div t-if="record.count_service_enquiry_done.raw_value > 0" class="row">
+                                                <div class="col-12">
+                                                    <a class="oe_kanban_stock_picking_type_list" name="get_action_partner_tree_done" type="object">
+                                                        <field name="count_service_enquiry_done"/>
+                                                        Approved
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="container o_kanban_card_manage_pane dropdown-menu" role="menu">
+                                    <div t-if="widget.editable" class="o_kanban_card_manage_settings row">
+                                        <div class="col-8" role="menuitem" aria-haspopup="true">
+                                            <ul class="oe_kanban_colorpicker" data-field="color" role="menu"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="hr_employee_overview_action" model="ir.actions.act_window">
+        <field name="name">Overview</field>
+        <field name="res_model">hr.employee</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="hr_employee_overview_kanban"/>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a contact as Client
+          </p><p>
+            This feature is enabled only when a contact is defined as a Client.
+          </p>
+        </field>
+    </record>
+    <menuitem id="menu_base_overview_dashboard" name="Dashboard" sequence="2">
+    	<menuitem action="hr_employee_overview_action"
+            id="hr_employee_overview_menu" sequence="1" name="Approvals Overview"/>
+    </menuitem>
+    
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="aamaolcom_hr_contract_form_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.form</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='allowances']" position="after">
+            	<group string="Deductions" name="deductions" invisible="1">
+            		<field name="other_deductions"/>
+            	</group>
+            </xpath>           
+            <xpath expr="//group[@name='allowances']" position="inside">
+            	<field name="arrears" invisible="1"/>
+            	<field name="advances" invisible="1"/>
+            	<field name="overtime" invisible="1"/>
+            	<field name="additions" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

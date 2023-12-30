@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_client" invisible="1"/>
+                <field name="client_id" attrs="{'invisible':[('user_ids','=',False)]}" groups="visa_process.group_service_request_operations_manager"/>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="groups">visa_process.group_service_request_manager</attribute>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" />
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        
+
+            <!-- <div name="button_box" position="inside">
+                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.hr_employee_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('total_employees','=',0)]}" groups="visa_process.group_hr_client,hr.group_hr_manager">
+                    <field name="total_employees" widget="statinfo"/>
+                </button>
+                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.employment_visa_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('employment_visa_count','=',0)]}">
+                    <field name="employment_visa_count" widget="statinfo"/>
+                </button>
+            </div> -->
+            
+        </field>
+    </record>
+
+    
+    <record id="action_employee_contacts" model="ir.actions.act_window">
+        <field name="name">Employees Address</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <field name="domain">[('client_id', '=', uid)]</field>
+        <field name="context">{'default_is_company': True}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a Contact in your address book
+          </p><p>
+            Odoo helps you track all activities related to your contacts.
+          </p>
+        </field>
+    </record>
+    <record id="action_self_contact" model="ir.actions.act_window">
+        <field name="name">My Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <field name="domain">[('user_ids', 'in', [uid])]</field>
+        <field name="context">{'default_is_company': True}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a Contact in your address book
+          </p><p>
+            Odoo helps you track all activities related to your contacts.
+          </p>
+        </field>
+    </record>
+</odoo>

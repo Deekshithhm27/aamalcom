@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="0">
+        <record id="gosi_charges" model="gosi.charges">
+            <field name="name">2</field>
+        </record>
+
+    	<record id="om_hr_payroll.hr_rule_travel" model="hr.salary.rule">
+            <field name="name">Transportation Allowance</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">Travel</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.travel_allowance</field>
+        </record>
+        <record id="hr_rule_other_deductions" model="hr.salary.rule">
+            <field name="name">Other Deductions</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">OD</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.other_deductions</field>
+        </record>
+        <record id="hr_rule_overtime" model="hr.salary.rule">
+            <field name="name">Overtime</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">OT</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.overtime</field>
+        </record>
+        <record id="hr_rule_additions" model="hr.salary.rule">
+            <field name="name">Additions</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">ADD</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.additions</field>
+        </record>
+
+  
+
+        <record id="hr_rule_other_allowance" model="hr.salary.rule">
+            <field name="name">Other Allowance</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">Others</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.other_allowance</field>
+        </record>
+        <record id="hr_rule_arrears" model="hr.salary.rule">
+            <field name="name">Arrears</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">Arrears</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.arrears</field>
+        </record>
+        <record id="hr_rule_advances" model="hr.salary.rule">
+            <field name="name">Advances</field>
+            <field name="sequence" eval="7"/>
+            <field name="code">Advances</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.advances</field>
+        </record>
+
+
+        <!-- Salary Structure -->
+
+        <record id="om_hr_payroll.structure_base" model="hr.payroll.structure">
+            <field name="code">BASE</field>
+            <field name="name">Base for new structures</field>
+            <field eval="[(6, 0, [ref('om_hr_payroll.hr_rule_basic'),ref('om_hr_payroll.hr_rule_hra'), ref('om_hr_payroll.hr_rule_travel'), ref('hr_rule_other_allowance'), ref('om_hr_payroll.hr_rule_taxable'),ref('om_hr_payroll.hr_rule_net')])]" name="rule_ids"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+
+        <record id="client_structure_base" model="hr.payroll.structure">
+            <field name="code">CLIENT BASE</field>
+            <field name="payroll_type">external</field>
+            <field name="name">Base for new structures - Client</field>
+            <field eval="[(6, 0, [ref('om_hr_payroll.hr_rule_basic'),ref('om_hr_payroll.hr_rule_hra'), ref('om_hr_payroll.hr_rule_travel'), ref('hr_rule_other_allowance'), ref('om_hr_payroll.hr_rule_taxable'),ref('om_hr_payroll.hr_rule_net'),ref('hr_rule_other_deductions'),ref('hr_rule_arrears'),ref('hr_rule_advances')])]" name="rule_ids"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <!-- Decimal Precision -->
+
+
+    </data>
+</odoo>

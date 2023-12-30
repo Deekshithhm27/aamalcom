@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_client_employee" model="ir.sequence">
+            <field name="name">Client Employee</field>
+            <field name="code">hr.employee</field>
+            <field name="prefix">C-EMP/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_aamalcom_employee" model="ir.sequence">
+            <field name="name">Aamalcom Employee</field>
+            <field name="code">hr.employee</field>
+            <field name="prefix">A-EMP/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_local_transfer" model="ir.sequence">
+            <field name="name">Local Transfer</field>
+            <field name="code">local.transfer</field>
+            <field name="prefix">LT</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_employment_visa" model="ir.sequence">
+            <field name="name">Employment Visa</field>
+            <field name="code">employment.visa</field>
+            <field name="prefix">EV/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_service_enquiry" model="ir.sequence">
+            <field name="name">Service enquiry</field>
+            <field name="code">service.enquiry</field>
+            <field name="prefix">EQ/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_treasury" model="ir.sequence">
+            <field name="name">Service Request Details</field>
+            <field name="code">service.request.treasury</field>
+            <field name="prefix">SRT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

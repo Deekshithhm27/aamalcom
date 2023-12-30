@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_enquiry_form_inherit" model="ir.ui.view">
+        <field name="name">service.enquiry.form</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='medical_page']" position="after">
+            	<page name="salary" string="Salary Structure">
+                    <field name="client_salary_rule_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree editable="bottom">
+                            <field name="name"/>
+                            <field name="amount" sum="Total Amount"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+             
+                    
+                    
+        </field>
+    </record>
+</odoo>

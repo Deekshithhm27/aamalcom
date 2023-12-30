@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="base_menu_employees" name="My Profile" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager" sequence="1">
+        <menuitem id="menu_hr_employee_self" name="Profile" action="action_self_employee" sequence="1"/>
+    </menuitem>
+
+    <menuitem id="base_menu_client_contact" name="My Details" groups="visa_process.group_service_request_client_spoc" sequence="1">
+        <menuitem id="menu_menu_client_contact" name="Details" action="action_self_contact" sequence="2"/>
+    </menuitem>
+    <menuitem id="calendar.mail_menu_calendar" name="Calendar" sequence="3" action="calendar.action_calendar_event" web_icon="calendar,static/description/icon.png" groups="base.group_user"/>
+
+    <!-- Enable this if need to display only team members 
+    <menuitem name="Employees" id="menu_visa_employees" sequence="3" groups="hr.group_hr_user">
+        <menuitem id="menu_hr_employee_self_team_employees" name="Team Employees" action="action_team_employees" sequence="1"/>
+    </menuitem> -->
+
+
+    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator">
+        <!-- This menu is visible for clients only -->
+        
+
+        <menuitem name="Employee Data" id="menu_my_employees" sequence="1">
+            <menuitem id="hr_employee_self_menu_employees" name="Employees" action="action_client_team_employees" groups="visa_process.group_hr_client" sequence="1"/>
+            <menuitem id="hr_employee_client_menu_employees" name="Client Employees" action="action_client_employees" groups="visa_process.group_service_request_manager" sequence="2"/>
+            <menuitem name="Contact" id="base_menu_visa_contact" sequence="3">
+                <menuitem name="Employees Address" id="menu_employee_contacts" sequence="1" groups="visa_process.group_service_request_client_spoc" action="action_employee_contacts"/>
+            </menuitem>
+            
+        </menuitem>
+        
+
+        <!-- below menu is only for emplolyees and officer also for admin -->
+        <menuitem id="menu_base_service_enquiry" name="Tickets" sequence="3">
+            <menuitem id="menu_my_service_enquiry_client" name="Service Tickets" sequence="1" action="action_client_service_enquiry" groups="visa_process.group_service_request_client_spoc"/>
+            <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator"/>
+            <menuitem id="menu_service_enquiry_gm" name="Tickets for Approval" sequence="3" action="action_service_enquiry_gm_approval" groups="visa_process.group_service_request_general_manager"/>
+            <menuitem id="menu_service_enquiry_employee" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_employee"/>
+            <menuitem id="menu_service_enquiry_op" name="Tickets for Approval" sequence="5" action="action_service_enquiry_op_approval" groups="visa_process.group_service_request_operations_manager"/>
+            <menuitem id="menu_service_enquiry_fin" name="Tickets for Approval" sequence="6" action="action_service_enquiry_finance_approval" groups="visa_process.group_service_request_finance_manager"/>
+        </menuitem>
+        <menuitem id="menu_base_services" name="Services" sequence="4" groups="visa_process.group_service_request_client_spoc">
+            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer"/>
+            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa" />
+        </menuitem>
+        <menuitem id="menu_base_services_for_approval" name="Services" sequence="5" groups="visa_process.group_service_request_manager">
+            <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager"/>
+            <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager"/>
+        </menuitem>
+        <menuitem id="menu_base_treasury" name="Treasury" sequence="9" groups="visa_process.group_service_request_finance_manager">
+                <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>
+            </menuitem>
+        <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
+            <menuitem id="menu_hr_employee_company" name="Company" sequence="1" action="action_hr_employee_company"/>
+            <menuitem id="menu_base_visa_service_request_config" name="Service Request" sequence="2">
+                <menuitem id="menu_visa_service_request_config" name="Service Request" sequence="1" action="action_service_request_config"/>
+            </menuitem>
+            <menuitem id="menu_base_pricing" name="Pricing" sequence="3" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
+                <menuitem id="menu_base_service_pricing" name="Service Pricing" action="action_service_pricing" sequence="1" groups="visa_process.group_service_request_manager"/>
+            </menuitem>
+			<menuitem id="menu_visa_ref_documents" name="Documents" sequence="4" action="action_visa_ref_documents"/>
+            <menuitem id="menu_employment_duration" name="Employment Duration" sequence="5" action="action_employment_duration"/>
+            <menuitem id="menu_print_types" name="Letter Print Types" sequence="6" action="action_print_types"/>
+
+            
+            
+
+
+    	</menuitem>
+
+    </menuitem>
+    <menuitem id="menu_partner_phonecode_base" parent="contacts.res_partner_menu_config" name="Phone Codes" sequence="10">
+        <menuitem id="menu_partner_phonecode" name="Codes" sequence="1" action="action_partner_phonecodes"/>
+    </menuitem>
+
+   
+
+    
+
+   <!--  <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+     -->
+
+     <!-- Remove existing groups from the Employee standard menu and making it visible no one -->
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('hr.group_hr_manager')),(3, ref('hr.group_hr_user')),(3, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_payroll_manager'))]"/>
+    </record>
+
+    <!-- Modifying sequence of calendar menu -->
+
+    
+
+    <!-- Remove existing groups from the Discuss standard menu and making it visible only for no one -->
+    <record id="mail.menu_root_discuss" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="mail.menu_root_discuss" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
+    </record>
+
+    <!-- Remove existing groups from the Contact standard menu and making it visible for no one -->
+    <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('base.group_user')),(3, ref('base.group_partner_manager'))]"/>
+    </record>
+
+    <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <field name="groups_id" eval="[
+            (4, ref('visa_process.group_service_request_administrator')),
+            (4, ref('visa_process.group_service_request_manager')),
+            (4, ref('visa_process.group_service_request_operations_manager')),
+            (4, ref('visa_process.group_service_request_general_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_govt_manager')),
+            (4, ref('visa_process.group_service_request_hr_manager')),
+            (4, ref('visa_process.group_service_request_payroll_manager'))]"/>
+    </record>
+
+
+   
+
+</odoo>

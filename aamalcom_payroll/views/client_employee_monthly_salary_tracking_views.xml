@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="client_employee_monthly_salary_tracking_form" model="ir.ui.view">
+        <field name="name">Client Employee Monthly Salary Tracking</field>
+        <field name="model">client.emp.salary.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Client Employee Monthly Salary Tracking">
+            	<header>
+            		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+            	</header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Client Employee Monthly Salary Trackings" groups="hr.group_hr_user"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group groups="hr.group_hr_user">
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="client_emp_sequence"/>
+                            <label for="date_start" string="Period"/>
+                            <div>
+                                <field name="date_start" class="oe_inline"/>
+                                -
+                                <field name="date_end" class="oe_inline"/>
+                            </div>
+                            <field name="user_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="is_invoiced" invisible="1"/>
+                            <field name="invoice_id" invisible="1"/>
+                            <field name="custom_employee_type" invisible="1"/>
+                        </group>
+                        <group string="Work days">
+                            <field name="worked_days"/>
+
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Salary Details">
+                            <field name="wage"/>
+                            <field name="hra"/>
+                            <field name="travel_allowance"/>
+                            <field name="other_allowance"/>
+                        </group>
+                        <group string="Allowances">
+                            <field name="arrears"/>
+                            <field name="advances"/>
+                            <field name="overtime"/>
+                            <field name="additions"/>
+                            <field name="contract_id" invisible="1"/>
+                            <field name="struct_id" invisible="1"/>
+                            <field name="client_parent_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        
+                        <group string="Deductions">
+                            <field name="other_deductions"/>
+                        </group>
+                        <group string="">
+                            <field name="gross_salary"/>
+                            <field name="net_salary" invisible="1"/>
+                        </group>
+                        <group string="Charges">
+                            <field name="gosi_charges"/>
+                        </group>
+
+                    </group>
+                    
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="client_employee_monthly_salary_tracking_tree" model="ir.ui.view">
+        <field name="name">Client Employee Monthly Salary Tracking</field>
+        <field name="model">client.emp.salary.tracking</field>
+        <field name="arch" type="xml">
+            <tree string="Client Employee Monthly Salary Tracking">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="client_emp_sequence"/>
+                <field name="gross_salary"/>
+                <field name="gosi_charges"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_client_employee_monthly_salary_tracking_filter" model="ir.ui.view">
+        <field name="name">client.emp.salary.tracking.tree</field>
+        <field name="model">client.emp.salary.tracking</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Duration"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_client_employee_monthly_salary_tracking" model="ir.actions.act_window">
+        <field name="name">Client Employee Monthly Salary Tracking</field>
+        <field name="res_model">client.emp.salary.tracking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_client_employee_monthly_salary_tracking_filter"/>
+    </record>
+
+    
+</odoo>

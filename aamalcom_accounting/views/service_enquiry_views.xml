@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_enquiry_form_inherit" model="ir.ui.view">
+        <field name="name">service.enquiry.form</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='billable_to_client']" position="after">
+                <field name="create_payment_request" invisible="1"/>
+            </xpath>
+            <!-- <xpath expr="//button[@name='action_require_payment_confirmation']" position="replace">
+            	<button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['&amp;',('create_payment_request','=',True),'|',('payments_count','=',0),'|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa'))]}" groups="visa_process.group_service_request_manager"/>
+            </xpath> -->
+            <!-- <xpath expr="//button[@name='action_new_ev_process_complete']" position="after">
+	            <button name="action_create_payment_req" string="Create Payment Request" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted'),'|',('create_payment_request','=',False),('payments_count','>',0)]}" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator"/>
+	        </xpath> -->
+	        <!-- <div name="service_enquiry" position="before">
+	        	<div class="oe_button_box" name="button_box">
+			        <button type="action" class="oe_inline oe_stat_button" name="%(aamalcom_accounting.payment_approval_form_action_view)d" icon="fa-bars" attrs="{'invisible':[('payments_count','=',0)]}" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
+		                    <field name="payments_count" widget="statinfo"/>
+		                </button>
+		           </div>
+            </div> -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button type="action" class="oe_inline oe_stat_button" name="%(aamalcom_accounting.draft_account_move_form_action_view)d" icon="fa-file-text-o" attrs="{'invisible':[('draft_invoices_count','=',0)]}" groups="visa_process.group_service_request_finance_manager,visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_finance_manager">
+                    <field name="draft_invoices_count" widget="statinfo"/>
+                </button>
+            </xpath>
+                    
+                    
+        </field>
+    </record>
+</odoo>

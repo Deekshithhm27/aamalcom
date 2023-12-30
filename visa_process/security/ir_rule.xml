@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <record id="ir_rule_visa_candidate" model="ir.rule">
+        <field name="name">Candidate view by respective Client</field>
+        <field name="model_id" ref="model_visa_candidate"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record> -->
+    <!-- Employment Visa Rules -->
+    <record id="ir_rule_employment_visa" model="ir.rule">
+        <field name="name">Employment Visa Service Request - Client</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_employment_visa_spoc_approval" model="ir.rule">
+        <field name="name">Employment Visa Service Request Amalcom Spoc</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+    </record>
+
+    <!-- Local Transfer Rules -->
+    <record id="ir_rule_local_transfer" model="ir.rule">
+        <field name="name">Local Transfer Service Request - Client</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_local_transfer_spoc_approval" model="ir.rule">
+        <field name="name">Local Transfer Service Request Amalcom Spoc</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+    </record>
+    <!-- rule for service enquiry -->
+    <record id="ir_rule_service_enquiry" model="ir.rule">
+        <field name="name">Service enquiry - Client</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_spoc_approval" model="ir.rule">
+        <field name="name">Service enquiry - Amalcom Spoc</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_client_spoc'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_op_approval" model="ir.rule">
+        <field name="name">Service enquiry - Operation Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_operations_manager'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_gm_approval" model="ir.rule">
+        <field name="name">Service enquiry - General Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','waiting_op_approval','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_general_manager'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+    </record>
+    <record id="ir_rule_service_enquiry_fin_approval" model="ir.rule">
+        <field name="name">Service enquiry - Finance Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','waiting_op_approval','waiting_gm_approval','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_finance_manager'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+    </record>
+    <record id="ir_rule_service_enquiry_govt_employee" model="ir.rule">
+        <field name="name">Service enquiry - Government Employee</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'))]"/>
+    </record>
+
+    <record id="ir_rule_service_enquiry_admin_view" model="ir.rule">
+        <field name="name">Service enquiry - Administrator</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
+    </record>
+
+  
+
+  </odoo>

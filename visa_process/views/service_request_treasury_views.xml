@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_request_treasury_form" model="ir.ui.view">
+        <field name="name">Service Request Details</field>
+        <field name="model">service.request.treasury</field>
+        <field name="arch" type="xml">
+            <form string="Service Request Details">
+            	<header>
+            		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"done":"blue","draft":"grey"}'/>
+            		<button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_finance_manager"/>
+
+            		<button name="action_upload_confirmation" string="Upload Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted'),('confirmation_doc','=',False)]}" groups="visa_process.group_service_request_finance_manager"/>
+
+            		<button name="%(visa_process.action_treasury_report)d" string="Print Treasury Report" type="action" groups="visa_process.group_service_request_finance_manager"/>
+            	</header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Service Request Details" groups="hr.group_hr_user"/>
+                    <div class="oe_title mb24" name="service_enquiry">
+                        <h1>
+                           <field name="name" readonly="1"/>
+                            
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                           <field name="user_id" invisible="1"/>
+                           <field name="company_id" invisible="1"/>
+                           <field name="active" invisible="1"/>
+                           <field name="service_request_id" readonly="1"/>
+                           <field name="employee_id" readonly="1"/>
+                           <field name="client_parent_id" readonly="1"/>
+                           <field name="client_id" readonly="1"/>
+                           <field name="employment_duration" readonly="1"/>
+                           <field name="total_amount" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook attrs="{'invisible':[('state','=','draft')]}">
+                    	<page string="Documents">
+                    		<group>
+                    			<group>
+                    				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                    			</group>
+                    		</group>
+                    	</page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="service_request_treasury_tree" model="ir.ui.view">
+        <field name="name">Service Request Details</field>
+        <field name="model">service.request.treasury</field>
+        <field name="arch" type="xml">
+            <tree string="Service Request Details">
+                <field name="name"/>
+                <field name="service_request_id"/>
+                <field name="client_parent_id"/>
+                <field name="total_amount"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_service_request_treasury_filter" model="ir.ui.view">
+        <field name="name">service.request.treasury.tree</field>
+        <field name="model">service.request.treasury</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Service Request Details"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_service_request_treasury" model="ir.actions.act_window">
+        <field name="name">Service Request Details</field>
+        <field name="res_model">service.request.treasury</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_service_request_treasury_filter"/>
+    </record>
+
+    
+</odoo>

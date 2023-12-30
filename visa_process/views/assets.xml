@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+    	<templates>
+		    <t t-name="FieldBinaryPreview">
+		        <div class="o_field_binary_preview">
+		            <a t-attf-href="/web/content/{{widget.res_id}}/{{widget.name}}"
+		               t-attf-download="{{widget.filename}}"
+		               target="_blank"
+		               class="btn btn-sm btn-secondary">
+		                <span class="fa fa-eye"> Preview</span>
+		            </a>
+		        </div>
+		    </t>
+		</templates>
+
+        <template id="assets_backend" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/visa_process/static/src/js/document_preview.js"></script>
+                <script type="text/javascript" src="/visa_process/static/src/js/bool_partner_name.js"></script>
+                <template>
+                    <asset name="web.assets_qweb" inherit_id="web.assets_qweb" mode="extension"/>
+                    <asset name="my_module_assets" type="xml">
+                        <templates>
+                            <include name="field_binary_preview"/>
+                        </templates>
+                    </asset>
+                </template>
+            </xpath>
+        </template>
+    </data>
+</odoo>

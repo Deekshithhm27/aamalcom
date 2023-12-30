@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<record id="account.product_product_menu_sellable" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.product_product_menu_purchasable" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_followup.menu_finance_followup" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_management_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_recurring_payments.menu_recurring_payments" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_recurring_payments.menu_recurring_payment" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_acquirer_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_icon_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_token_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_transaction_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_followup.om_account_followup_main_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_budget.menu_budget_post_form" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.menu_product_product_categories" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+</odoo>

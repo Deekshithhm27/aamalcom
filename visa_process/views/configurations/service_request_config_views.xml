@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_request_config_form" model="ir.ui.view">
+        <field name="name">Service Request</field>
+        <field name="model">service.request.config</field>
+        <field name="arch" type="xml">
+            <form string="Service Request">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title mb24">
+                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="user_id" invisible="1"/>
+                        <h1>
+                           <field name="name" readonly="1"/>
+                            
+                        </h1>
+                        <div class="o_row">
+                            <group>
+                                <field name="service_request" widget="selection"/>
+                                <field name="process_type" widget="selection"/>
+                            </group>
+                            <group>
+                            	<field name="sequence"/>
+                            </group>
+                        </div>
+                    </div>
+                    <notebook>
+                		<page string="Departments">
+                			<field name="service_department_lines">
+                				<form>
+                					<group>
+                						<group>
+                							<field name="company_id" invisible="1"/>
+                							<field name="user_id" invisible="1"/>
+                							<field name="name"/>
+		                					<field name="department_id"/>
+		                					<field name="sequence"/>
+                						</group>
+                					</group>
+                				</form>
+                				<tree editable="bottom">
+                					<field name="company_id" invisible="1"/>
+        							<field name="user_id" invisible="1"/>
+                					<field name="sequence" widget="handle"/>
+                					<field name="name" invisible="1"/>
+                					<field name="department_id"/>
+                					
+                				</tree>
+                				
+                			</field>
+                			
+                		</page>
+                		
+                		
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="service_request_config_tree" model="ir.ui.view">
+        <field name="name">Service Request</field>
+        <field name="model">service.request.config</field>
+        <field name="arch" type="xml">
+            <tree string="Service Request">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="service_request_type"/>
+            </tree>
+        </field>
+    </record>
+    <record id="service_request_config_filter" model="ir.ui.view">
+        <field name="name">service.request.config.tree</field>
+        <field name="model">service.request.config</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Name"/>
+                <field name="service_request" string="Request Type"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_service_request" string="Request Type" context="{'group_by':'service_request_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_service_request_config" model="ir.actions.act_window">
+        <field name="name">Service Request</field>
+        <field name="res_model">service.request.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="service_request_config_filter"/>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="action_treasury_report" model="ir.actions.report">
+	    <field name="name">Treasury Report</field>
+	    <field name="report_name">visa_process.report_treasury</field>
+	    <field name="model">service.request.treasury</field>
+	    <field name="report_type">qweb-pdf</field>
+	    <field name="binding_model_id" ref="model_service_request_treasury"/>
+	    <field name="binding_type">report</field>
+	</record>
+</odoo>

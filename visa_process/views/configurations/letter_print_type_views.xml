@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="print_types_form" model="ir.ui.view">
+        <field name="name">Letter Print Types</field>
+        <field name="model">letter.print.type</field>
+        <field name="arch" type="xml">
+            <form string="Letter Print Types">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Letter Types" groups="hr.group_hr_user"/>
+                    <group groups="hr.group_hr_user">
+                        <group>
+                           <field name="name"/>
+                           <field name="user_id" invisible="1"/>
+                           <field name="company_id" invisible="1"/>
+                           <field name="active" invisible="1"/>
+                           <field name="currency_id" invisible="1"/>
+                           <field name="cost"/>
+                        </group>
+                    </group>
+                    
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="print_types_tree" model="ir.ui.view">
+        <field name="name">Letter Print Types</field>
+        <field name="model">letter.print.type</field>
+        <field name="arch" type="xml">
+            <tree string="Letter Print Types">
+                <field name="name"/>
+                <field name="cost"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_print_types_filter" model="ir.ui.view">
+        <field name="name">letter.print.type.tree</field>
+        <field name="model">letter.print.type</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Letter Type"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_print_types" model="ir.actions.act_window">
+        <field name="name">Letter Print Types</field>
+        <field name="res_model">letter.print.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_print_types_filter"/>
+    </record>
+
+    
+</odoo>

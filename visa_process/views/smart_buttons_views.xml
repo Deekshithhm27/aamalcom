@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- below record is used to fetch total employees count in contact screen -->
+    <record  model="ir.actions.act_window" id="hr_employee_form_action_view_active_by_client">
+        <field name="name">Employees</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_employee_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.view_employee_form_inherit')})]"/>
+        <field name="domain">[('client_id', '=', active_id)]</field>
+    </record>
+
+     <!-- below record is used to fetch total service request count in contact  screen -->
+    <record  model="ir.actions.act_window" id="employment_visa_form_action_view_active_by_client">
+        <field name="name">Employment Visa</field>
+        <field name="res_model">employment.visa</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.employment_visa_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.employment_visa_form')})]"/>
+        <field name="domain">[('client_id', '=', active_id)]</field>
+    </record>
+
+    <record id="action_service_request_treasury_active" model="ir.actions.act_window">
+        <field name="name">Service Request Details</field>
+        <field name="res_model">service.request.treasury</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.service_request_treasury_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.service_request_treasury_form')})]"/>
+        <field name="domain">[('service_request_id', '=', active_id)]</field>
+    </record>
+
+</odoo>

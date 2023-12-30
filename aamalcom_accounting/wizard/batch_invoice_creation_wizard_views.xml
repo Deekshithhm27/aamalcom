@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_batch_invoice_creation_wizard_form" model="ir.ui.view">
+        <field name="name">batch.invoice.creation.wizard.form</field>
+        <field name="model">batch.invoice.creation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Draft Invoices">
+                <group>
+                    <field name="client_parent_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="create_account_move" string="Create Batch Invoices" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_open_batch_invoice_creation_wizard" model="ir.actions.act_window">
+	    <field name="name">Create Draft Invoices</field>
+	    <field name="res_model">batch.invoice.creation.wizard</field>
+	    <field name="view_mode">form</field>
+	    <field name="target">new</field>
+	</record>
+
+	
+
+
+</odoo>

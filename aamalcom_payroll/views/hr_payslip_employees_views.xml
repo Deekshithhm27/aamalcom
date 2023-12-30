@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_payslip_by_employees_form_inherit" model="ir.ui.view">
+        <field name="name">hr_payroll_payslip_employees</field>
+        <field name="model">hr.payslip.employees</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_by_employees"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//group[2]" position="replace">
+        		<group colspan="4" attrs="{'invisible': ['|',('custom_employee_type', '=', 'internal'),('custom_employee_type', '=', False)]}" >
+	        		<separator string="Employees" colspan="4"/>
+	                <newline/>
+	        		<field name="external_employee_ids" nolabel="1"/>
+	        	</group>
+	        	<group colspan="4" attrs="{'invisible': ['|',('custom_employee_type', '=', 'external'),('custom_employee_type', '=', False)]}">
+	        		<separator string="Employees-" colspan="4"/>
+	                <newline/>
+	        		<field name="employee_ids" nolabel="1"/>
+	        	</group>
+        		
+        	</xpath>
+
+        	
+        		
+        	<xpath expr="//group[1]" position="after">
+        		<group>
+        			<group>
+        				<field name="custom_employee_type"/>
+        				<field name="client_parent_id" attrs="{'invisible': ['|',('custom_employee_type', '=', 'internal'),('custom_employee_type','=',False)]}"/>
+        			</group>
+        		</group>
+        	</xpath>
+        	
+        	
+             
+                    
+                    
+        </field>
+    </record>
+</odoo>

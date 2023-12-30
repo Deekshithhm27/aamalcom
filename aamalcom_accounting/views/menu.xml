@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- If payment required need to enable below menus -->
+	<!-- <menuitem id="menu_base_payment_approval" name="Payments" parent="visa_process.menu_base_visa_process" sequence="4" groups="aamalcom_accounting.group_payment_approval_manager,aamalcom_accounting.group_payment_approval_administrator">
+    	<menuitem id="menu_payment_approval" name="Payments for Approval" action="action_payment_account_approval" sequence="1" groups="aamalcom_accounting.group_payment_approval_manager,aamalcom_accounting.group_payment_approval_administrator"/>
+    </menuitem> -->
+
+    <menuitem id="menu_base_draft_invoice" name="Invoices" parent="visa_process.menu_base_visa_process" sequence="5" groups="visa_process.group_service_request_manager">
+    	<menuitem id="menu_open_batch_invoice_creation_wizard" name="Create Invoice in Batch"
+          action="aamalcom_accounting.action_open_batch_invoice_creation_wizard" sequence="1" groups="visa_process.group_service_request_manager"/>
+      <menuitem id="menu_draft_invoice" name="Service Request Invoices" action="action_draft_account_move" sequence="2"/>
+    </menuitem>
+
+<!-- Removing access of accounting menu for other departments -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('account.group_account_invoice'))]"/>
+    </record>
+
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_finance_manager')),(4, ref('visa_process.group_service_request_operations_manager')),(4, ref('visa_process.group_service_request_general_manager'))]"/>
+    </record>
+</odoo>

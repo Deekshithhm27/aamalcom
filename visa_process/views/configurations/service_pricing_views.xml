@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_pricing_form" model="ir.ui.view">
+        <field name="name">Service Pricing</field>
+        <field name="model">service.pricing</field>
+        <field name="arch" type="xml">
+            <form string="Service Pricing">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title mb24">
+                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="user_id" invisible="1"/>
+                        <h1>
+                           <field name="name" readonly="1"/>
+                            
+                        </h1>
+                        <div class="o_row">
+                            <group>
+                                <field name="service_request_config_id" options="{'no_create': True}"/>
+                                <field name="service_request" invisible="1"/>
+                            </group>
+                        </div>
+                    </div>
+                    <notebook>
+                		<page string="Pricing Lines">
+                			<field name="pricing_line_ids">
+                				<form>
+                					<group>
+                						<group>
+                							<field name="company_id" invisible="1"/>
+                							<field name="currency_id" invisible="1"/>
+                							<field name="pricing_id" invisible="1"/>
+                                            <field name="service_request_config_id" invisible="1"/>
+                                            <field name="service_request_type" invisible="1"/>
+		                					<field name="duration_id" options="{'no_create': True}"/>
+		                					<field name="amount"/>
+		                					<field name="remarks"/>
+                						</group>
+                					</group>
+                				</form>
+                				<tree editable="bottom">
+                					<field name="company_id" invisible="1"/>
+                					<field name="currency_id" invisible="1"/>
+                					<field name="pricing_id" invisible="1"/>
+                                    <field name="service_request_config_id" invisible="1"/>
+                                    <field name="service_request_type" invisible="1"/>
+                					<field name="duration_id" options="{'no_create': True}"/>
+                					<field name="amount"/>
+                					<field name="remarks"/>
+                				</tree>
+                				
+                			</field>
+                			
+                		</page>
+                		
+                		
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="service_pricing_tree" model="ir.ui.view">
+        <field name="name">Service Pricing</field>
+        <field name="model">service.pricing</field>
+        <field name="arch" type="xml">
+            <tree string="Service Pricing">
+                <field name="service_request_type"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="service_pricing_filter" model="ir.ui.view">
+        <field name="name">service.pricing.tree</field>
+        <field name="model">service.pricing</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Name"/>
+                <field name="service_request_type" string="Request Type"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_service_request" string="Request Type" context="{'group_by':'service_request_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_service_pricing" model="ir.actions.act_window">
+        <field name="name">Service Pricing</field>
+        <field name="res_model">service.pricing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="service_pricing_filter"/>
+    </record>
+</odoo>

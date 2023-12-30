@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/group[1]/field[@name='partner_id']" position="after">
+                <field name="user_type"/>
+                <field name="partner_company_id" attrs="{'invisible': ['|',('user_type', '=', False),('user_type','=','internal')],'required':[('user_type','=','external')]}" options="{'no_create': True}"/>
+                <field name="internal_company_id" attrs="{'invisible': ['|',('user_type', '=', False),('user_type','=','external')],'required':[('user_type','=','internal')]}" options="{'no_create': True}"/>
+                <field name="company_spoc_id" attrs="{'invisible': ['|',('user_type', '=', 'internal'),('user_type','=',False)],'required':[('user_type','=','external')]}" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_users_simple_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_simple_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='mobile']" position="after">
+                <field name="user_type"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="res_users_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="hr.res_users_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_employee']" position="replace">
+                <button string="Create employee"
+                            type="object" name="action_create_employee"
+                            attrs="{'invisible': ['|','|', '|','|', ('id', '=', False), ('share', '=', True), ('employee_id', '!=', False),('user_type','=',False),('user_type','=','external')]}"/>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>
