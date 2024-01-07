@@ -48,7 +48,9 @@ class LocalTransfer(models.Model):
 
     # Employment details
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
-    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    # employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
+        ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment *",tracking=True)
     working_days = fields.Char(string="Working Days *")
     working_hours = fields.Char(string="Working Hours *")
     annual_vacation = fields.Char(string="Annual Vacation *")
@@ -103,7 +105,7 @@ class LocalTransfer(models.Model):
         for line in self:
             if line.employee_id:
                 line.country_id = line.employee_id.country_id
-                line.private_email = line.employee_id.private_email
+                line.private_email = line.employee_id.work_email
                 line.marital = line.employee_id.marital
                 line.employment_duration = line.employee_id.employment_duration
                 line.doj = line.employee_id.doj

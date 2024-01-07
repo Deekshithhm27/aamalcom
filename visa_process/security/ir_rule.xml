@@ -33,6 +33,15 @@
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
     </record>
+    <!-- rule for client employee visibilit for aamalcom spoc -->
+    <!-- <record id="ir_rule_hr_employee_project_manager" model="ir.rule">
+        <field name="name">Client Employees - Project Manager</field>
+        <field name="model_id" ref="model_hr_employee"/>
+        <field name="domain_force">[('client_id.company_spoc_id', '=', user.employee_id.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+    </record> -->
+    <!-- rule for client employee visibilit for admin -->
+    
     <!-- rule for service enquiry -->
     <record id="ir_rule_service_enquiry" model="ir.rule">
         <field name="name">Service enquiry - Client</field>
