@@ -84,7 +84,7 @@ class ServiceEnquiry(models.Model):
             if line.employee_id:
                 line.service_request_type = line.employee_id.service_request_type
     
-    emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True)
+    emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True,domain="[('employee_id','=',employee_id)]")
 
 
 
@@ -224,7 +224,7 @@ class ServiceEnquiry(models.Model):
     document_upload = fields.Binary(string="Document Upload")
     logical_reason = fields.Text(string="Logical Reason to be stated")
     border_id_doc = fields.Binary(string="Upload Iqama /Passport with border ID")
-    cost_to_be_borne_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client')],string="Cost To be borne by")
+    # cost_to_be_borne_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client')],string="Cost To be borne by")
     iqama_upload = fields.Binary(string="Iqama Upload")
     profession_change = fields.Char(string="Profession change to")
     soa_date = fields.Date(string="Duration")
@@ -341,10 +341,10 @@ class ServiceEnquiry(models.Model):
         for record in self:
             record.is_service_request_client_spoc = spoc_group in record.env.user.groups_id
 
-    @api.onchange('emp_visa_id')
-    def update_employee_id(self):
-        for line in self:
-            line.employee_id = line.emp_visa_id.employee_id
+    # @api.onchange('emp_visa_id')
+    # def update_employee_id(self):
+    #     for line in self:
+    #         line.employee_id = line.emp_visa_id.employee_id
 
     @api.depends('agency_allocation')
     def update_coc_for_ewakala(self):
@@ -648,6 +648,16 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.employee_id:
                 line.employee_pay_string = f"{line.employee_id.name}"
+
+    @api.onchange('emp_visa_id')
+    def fetch_data_from_transfers(self):
+        for line in self:
+            line.visa_country_id = line.emp_visa_id.visa_country_id
+            line.visa_state_id = line.emp_visa_id.visa_stamping_city_id
+            line.profession = line.emp_visa_id.visa_profession
+            line.visa_religion = line.emp_visa_id.visa_religion
+            line.no_of_visa = line.emp_visa_id.no_of_visa
+
 
     def action_confirm(self):
         for line in self:

@@ -21,6 +21,7 @@ class EmploymentVisa(models.Model):
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    company_partner_id = fields.Many2one('res.partner', string='Company Partner', required=True, default=lambda self: self.env.user.company_id.partner_id)
     currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
 
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
@@ -46,7 +47,10 @@ class EmploymentVisa(models.Model):
     # Employment details
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
-    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    # make it selection up to 24 months with 3 months interval
+    # employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
+        ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment *",tracking=True)
     probation_term = fields.Char(string="Probation Term",tracking=True)
     notice_period = fields.Char(string="Notice Period",tracking=True)
     working_days = fields.Char(string="Working Days *")
@@ -60,10 +64,10 @@ class EmploymentVisa(models.Model):
     # # Documents
     signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
     passport_copy = fields.Binary(string="Passport copy *")
-    border_copy = fields.Binary(string="Border Id *")
+    border_copy = fields.Binary(string="Border Id")
     attested_degree = fields.Binary(string="Attested Degree copy *")
     attested_visa_page = fields.Binary(string="Attested visa page *")
-    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter")
     certificate_1 = fields.Binary(string="Certificates *")
     certificate_2 = fields.Binary(string="Certificates")
     other_doc_1 = fields.Binary(string="Others")
@@ -79,11 +83,13 @@ class EmploymentVisa(models.Model):
     visa_profession = fields.Char(string="Visa Profession *")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion *")
     visa_country_id = fields.Many2one('res.country',string="Visa Nationality *")
-    visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
+    visa_stamping_city_id = fields.Many2one('res.country.state',string="Visa Stamping City *",domain="[('country_id', '=', visa_country_id)]")
     visa_enjaz = fields.Char(string="Visa Enjaz Details *")
     border_no = fields.Char(string="Border No.")
     no_of_visa = fields.Integer(string="No of Visa *")
-    visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
+    # change this to the respective client parent and current company in drop down
+    # visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
+    visa_fees_borne_by = fields.Many2one('res.partner',string='Visa Fees',domain="[('id','in',(company_partner_id,client_id))]")
     visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender *")
     qualification = fields.Char(string="Education Qualification *")
 
@@ -114,7 +120,7 @@ class EmploymentVisa(models.Model):
         for line in self:
             if line.employee_id:
                 line.country_id = line.employee_id.country_id
-                line.private_email = line.employee_id.private_email
+                line.private_email = line.employee_id.work_email
                 line.marital = line.employee_id.marital
                 line.employment_duration = line.employee_id.employment_duration
                 line.probation_term = line.employee_id.probation_term
@@ -213,14 +219,10 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please attach Signed Offer letter"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
-        if not self.border_copy:
-            raise UserError(_("Please attach Border Id"))
         if not self.attested_degree:
             raise UserError(_("Please attach Attested Degree Copy"))
         if not self.attested_visa_page:
             raise UserError(_("Please attach Attested Visa page"))
-        if not self.bank_iban_letter:
-            raise UserError(_("Please attach Bank Iban Letter"))
         if not self.certificate_1:
             raise UserError(_("Please attach Certificate"))
 

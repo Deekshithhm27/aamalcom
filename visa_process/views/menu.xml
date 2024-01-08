@@ -50,7 +50,7 @@
         <menuitem id="menu_base_treasury" name="Treasury" sequence="9" groups="visa_process.group_service_request_finance_manager">
                 <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>
             </menuitem>
-        <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
+        <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_administrator">
             <menuitem id="menu_hr_employee_company" name="Company" sequence="1" action="action_hr_employee_company"/>
             <menuitem id="menu_base_visa_service_request_config" name="Service Request" sequence="2">
                 <menuitem id="menu_visa_service_request_config" name="Service Request" sequence="1" action="action_service_request_config"/>

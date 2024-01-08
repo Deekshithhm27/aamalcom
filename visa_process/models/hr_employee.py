@@ -34,6 +34,8 @@ class HrEmployee(models.Model):
 
     client_id = fields.Many2one('res.users',string="Client Spoc")
     client_parent_id = fields.Many2one('res.partner',string="Client",related="client_id.partner_id.parent_id",store=True)
+    company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_project_manager",store=True)
+
 
     iqama_certificate = fields.Binary(string="Iqama")
     degree_certificate = fields.Binary(string="Degree")
@@ -42,7 +44,9 @@ class HrEmployee(models.Model):
     
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
 
-    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment",tracking=True)
+    # employment_duration = fields.Many2one('employment.duration',string="Duration of Employment",tracking=True)
+    employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
+        ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment",tracking=True)
     probation_term = fields.Char(string="Probation Term")
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")
@@ -80,6 +84,11 @@ class HrEmployee(models.Model):
 
         employee = super(HrEmployee, self).create(vals)
         return employee
+
+    @api.depends('client_id')
+    def update_project_manager(self):
+        for line in self:
+            line.company_spoc_id = line.client_id.company_spoc_id
 
 
 
