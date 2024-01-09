@@ -21,11 +21,10 @@
         <record id="sequence_draft_invoice" model="ir.sequence">
             <field name="name">Draft Invoice Sequence</field>
             <field name="code">account.move.draft.invoice</field>
-            <field name="prefix">DRAFT/INV/</field> <!-- Customize the prefix as needed -->
-            <field name="padding">5</field> <!-- Customize the padding as needed -->
+            <field name="prefix">DRAFT/INV/</field>
+            <field name="padding">5</field>
             <field name="company_id" eval="False"/>
-            <field name="number_next">1</field>
-            <field name="number_increment">1</field>
         </record>
+        
     </data>
 </odoo>
