@@ -10,4 +10,30 @@
         	</xpath>
         </field>
     </record>
+    <record id="init_accounts_community_tree" model="ir.ui.view">
+            <field name="name">account.setup.opening.move.line.tree</field>
+            <field name="model">account.account</field>
+            <field name="arch" type="xml">
+                <tree editable="top" create="1" delete="1" decoration-muted="opening_debit == 0 and opening_credit == 0">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="user_type_id" widget="account_hierarchy_selection"/>
+                    <field name="reconcile" widget="boolean_toggle"/>
+                    <field name="opening_debit"/>
+                    <field name="opening_credit"/>
+                    <field name="opening_balance" optional="hide"/>
+                    <field name="tax_ids" optional="hide" widget="many2many_tags"/>
+                    <field name="tag_ids" optional="hide" widget="many2many_tags"/>
+                    <field name="allowed_journal_ids" optional="hide" widget="many2many_tags"/>
+                    <button name="action_read_account" type="object" string="Setup" class="float-right btn-secondary"/>
+                </tree>
+            </field>
+        </record>
+    <record id="action_account_chart_template_op_tree" model="ir.actions.act_window">
+        <field name="name">Opening Balance</field>
+        <field name="res_model">account.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="aamalcom_accounting.init_accounts_community_tree"/>
+    </record>
 </odoo>

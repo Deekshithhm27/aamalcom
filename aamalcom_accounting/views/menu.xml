@@ -19,4 +19,9 @@
     <record id="account.menu_finance" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_finance_manager')),(4, ref('visa_process.group_service_request_operations_manager')),(4, ref('visa_process.group_service_request_general_manager'))]"/>
     </record>
+
+    <menuitem id="menu_update_opening_balance" name="Opening Balance" parent="account.menu_finance_configuration" sequence="7" groups="visa_process.group_service_request_finance_manager">
+        <menuitem id="menu_opening_balance" name="Opening Balance" action="aamalcom_accounting.action_account_chart_template_op_tree" sequence="1"/>
+
+    </menuitem>
 </odoo>
