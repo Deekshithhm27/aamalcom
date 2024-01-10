@@ -69,5 +69,7 @@ access_resource_resource_client,access_resource_resource_client,resource.model_r
 access_hr_employee_employee,access_hr_employee_employee,model_hr_employee,visa_process.group_hr_employee,1,0,0,0
 access_res_partner_manager,access_res_partner_manager,base.model_res_partner,visa_process.group_service_request_employee,1,1,0,0
 
+access_res_company_finance_manager,access_res_company_finance_manager,base.model_res_company,visa_process.group_service_request_finance_manager,1,1,1,0
+
 
 access_hr_employee_hr,access_hr_employee_hr,hr.model_hr_employee,visa_process.group_service_request_hr_manager,1,1,1,0
