@@ -43,14 +43,14 @@
 
 	            <xpath expr="//button[@name='action_post'][2]" position="replace">
 	            	<!-- Incase of invoice created by operations flow -->
-	                <button name="action_post" string="Confirms" class="oe_highlight"
+	                <button name="action_post" string="Confirm" class="oe_highlight"
                     type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
                     attrs="{'invisible': ['|', '|', '|', '|',('state', '!=', 'approved'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True),('invoice_type','=','direct')]}"/>
 	            </xpath>
 	           
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">
 	            	<!-- This action is used in Journal entry creation -->
-	            	<button name="action_post" string="Confirm-1" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True), ('move_type', '!=', 'entry')]}"/>
+	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True), ('move_type', '!=', 'entry')]}"/>
                 </xpath>
 
 	                    
