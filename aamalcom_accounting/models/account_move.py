@@ -39,7 +39,7 @@ class AccountMove(models.Model):
             ('posted', 'Posted'),
             ('cancel', 'Cancelled')], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
-    invoice_type = fields.Selection([('direct','Direct Invoice'),('operation','Operations')],string="Invoice Type",default='direct')
+    invoice_type = fields.Selection([('direct','Direct Invoice'),('operation','Operations')],string="Invoice Type",default='direct',copy=False)
 
     invoice_initiated_by = fields.Many2one('res.users',string="Invoice initiated by")
     first_approver_id = fields.Many2one('res.users',string="First Approver")
@@ -67,6 +67,9 @@ class AccountMove(models.Model):
         for line in self:
             line.state = 'manager_approval'
             line.first_approver_id = self.env.user.id
+
+    def action_direct_post(self):
+        self.action_post()
 
     
 

@@ -27,8 +27,13 @@
 	        	</xpath>
 	        	
 	            <xpath expr="//button[@name='action_post']" position="before">
+	            	<!-- Incase of invoice created by operations flow -->
 	            	<button name="action_submit_for_approval" class="oe_highlight"
                         string="Submit" type="object" attrs="{'invisible': ['|',('state', '!=','draft'),('invoice_type','=','direct')]}"/>
+                    <!-- Confirm Button Incase of invoice created directly -->
+                    <button name="action_direct_post" string="Confirm" class="oe_highlight"
+                    type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
+                    attrs="{'invisible': ['|','|',('state','!=','draft'),('move_type', '=', 'entry'), ('invoice_type','!=','direct')]}"/>
 	            	<button name="action_first_approval" class="oe_highlight"
                         string="Approve" type="object" groups="aamalcom_accounting.group_first_approver" attrs="{'invisible': [('state', '!=','approval_needed')]}"/>
                     <button name="action_manager_approval" class="oe_highlight"
@@ -38,13 +43,14 @@
 
 	            <xpath expr="//button[@name='action_post'][2]" position="replace">
 	            	<!-- Incase of invoice created by operations flow -->
-	                <button name="action_post" string="Confirm" class="oe_highlight"
+	                <button name="action_post" string="Confirms" class="oe_highlight"
                     type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
-                    attrs="{'invisible': ['|', '|', '|', ('state', '!=', 'approved'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True)]}"/>
+                    attrs="{'invisible': ['|', '|', '|', '|',('state', '!=', 'approved'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True),('invoice_type','=','direct')]}"/>
 	            </xpath>
+	           
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">
-	            	<!-- Incase of direct invoice -->
-	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True),('invoice_type','!=','direct'), ('move_type', '!=', 'entry')]}"/>
+	            	<!-- This action is used in Journal entry creation -->
+	            	<button name="action_post" string="Confirm-1" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True), ('move_type', '!=', 'entry')]}"/>
                 </xpath>
 
 	                    
