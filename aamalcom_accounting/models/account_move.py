@@ -29,7 +29,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
  
     
-    draft_invoice_sequence = fields.Char('Draft Invoice Number', copy=False, index=True)
+    draft_invoice_sequence = fields.Char('Draft Invoice Number', index=True, copy=False, default='New')
 
 
     state = fields.Selection(selection=[('draft', 'Draft'),
@@ -39,30 +39,17 @@ class AccountMove(models.Model):
             ('posted', 'Posted'),
             ('cancel', 'Cancelled')], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
+    invoice_type = fields.Selection([('direct','Direct Invoice'),('operation','Operations')],string="Invoice Type",default='direct',copy=False)
 
-    # @api.model
-    # def create(self, vals):
-    #     if vals.get('state') == 'draft':
-    #         sequence_id = self.env['draft.invoice.sequence'].search([], limit=1)
-    #         if sequence_id:
-    #             vals['draft_invoice_sequence_id'] = sequence_id.id
-    #             vals['name'] = 'DI/' + sequence_id.sequence.zfill(5)
-    #             sequence_id.sequence = str(int(sequence_id.sequence) + 1).zfill(5)
-    #     return super(AccountMove, self).create(vals)
+    invoice_initiated_by = fields.Many2one('res.users',string="Invoice initiated by")
+    first_approver_id = fields.Many2one('res.users',string="First Approver")
+    final_approver_id = fields.Many2one('res.users',string="Final Approver")
+
     @api.model
     def create(self, vals):
-        # if vals.get('move_type') == 'out_invoice':
-        draft_invoice_sequence = self.env['ir.sequence'].next_by_code('account.move.draft.invoice')
-        vals['draft_invoice_sequence'] = draft_invoice_sequence
+        if vals.get('draft_invoice_sequence', 'New') == 'New':
+            vals['draft_invoice_sequence'] = self.env['ir.sequence'].next_by_code('account.move.draft.invoice') or '/'
         return super(AccountMove, self).create(vals)
-
-
-
-    # def unlink(self):
-    #     for invoice in self:
-    #         if invoice.state == 'draft' and invoice.draft_invoice_sequence_id:
-    #             invoice.draft_invoice_sequence_id.sequence = str(int(invoice.draft_invoice_sequence_id.sequence) - 1).zfill(5)
-    #     return super(AccountMove, self).unlink()
 
     def action_submit_for_approval(self):
         for line in self:
@@ -73,11 +60,16 @@ class AccountMove(models.Model):
     def action_manager_approval(self):
         for line in self:
             line.state = 'approved'
+            line.final_approver_id = self.env.user.id
 
     
     def action_first_approval(self):
         for line in self:
             line.state = 'manager_approval'
+            line.first_approver_id = self.env.user.id
+
+    def action_direct_post(self):
+        self.action_post()
 
     
 

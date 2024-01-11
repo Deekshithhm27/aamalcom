@@ -36,7 +36,8 @@ class CreateAccountMoveWizard(models.TransientModel):
             new_account_move = self.env['account.move'].create({
                 'partner_id': self.client_parent_id.id,
                 'date': fields.Date.today(),
-                'move_type': 'out_invoice',  # Set the appropriate move type
+                'move_type': 'out_invoice',
+                'invoice_type':'operation',
                 'invoice_line_ids': consolidated_lines,
                 'state':'draft'
             })
