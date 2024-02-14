@@ -27,10 +27,10 @@ class EmploymentVisa(models.Model):
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
-    current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
     private_email = fields.Char(string="Email Id *",tracking=True)
     country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
-    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    current_contact = fields.Char(string="Current Contact # (if Outside the country)",tracking=True)
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
     marital = fields.Selection([
@@ -62,7 +62,7 @@ class EmploymentVisa(models.Model):
     client_company_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
 
     # # Documents
-    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
+    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached")
     passport_copy = fields.Binary(string="Passport copy *")
     border_copy = fields.Binary(string="Border Id")
     attested_degree = fields.Binary(string="Attested Degree copy")
@@ -131,7 +131,7 @@ class EmploymentVisa(models.Model):
                 line.work_location_id = line.employee_id.work_location_id
                 line.birthday = line.employee_id.birthday
                 line.contact_no = line.employee_id.contact_no
-                line.current_contact = line.employee_id.current_contact
+                line.phone_code_id = line.employee_id.phone_code_id
 
 
 
@@ -207,8 +207,8 @@ class EmploymentVisa(models.Model):
             raise UserError(_('Please add Education Qualification!'))
         if not self.private_email:
             raise UserError(_("Please add Email Id"))
-        if not self.current_contact:
-            raise UserError(_("Please add Current Contact # (if Outside the country)"))
+        # if not self.current_contact:
+        #     raise UserError(_("Please add Current Contact # (if Outside the country)"))
         if not self.working_days:
             raise UserError(_("Please add Working Days"))
         if not self.working_hours:
@@ -217,11 +217,11 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please add Annual Vacation"))
         if not self.insurance_class:
             raise UserError(_("Please select medical Insurance class"))
-        if not self.signed_offer_letter:
-            raise UserError(_("Please attach Signed Offer letter"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
         # removed - considering the points by Hospitality sector
+        # if not self.signed_offer_letter:
+        #     raise UserError(_("Please attach Signed Offer letter"))
         # if not self.attested_degree:
         #     raise UserError(_("Please attach Attested Degree Copy"))
         # if not self.attested_visa_page:

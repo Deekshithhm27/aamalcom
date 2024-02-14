@@ -29,10 +29,10 @@ class LocalTransfer(models.Model):
 
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth *",tracking=True)
-    contact_no = fields.Char(string="Cell No. (Absher) *")
     private_email = fields.Char(string="Email Id *",tracking=True)
     country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    contact_no = fields.Char(string="Cell No. (Absher) *")
 
     marital = fields.Selection([
         ('single', 'Single'),
@@ -62,10 +62,10 @@ class LocalTransfer(models.Model):
     passport_size_photo = fields.Binary(string="Passport Size Photo")
     passport_copy = fields.Binary(string="Passport Copy *")
     dependents_if_any = fields.Binary(string="Dependents if any")
-    signed_offer_letter = fields.Binary(string="Signed Offer Letter *")
-    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
-    self_iqama = fields.Binary(string="Iqama *")
-    certificate_1 = fields.Binary(string="Certificates *")
+    signed_offer_letter = fields.Binary(string="Signed Offer Letter")
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter")
+    self_iqama = fields.Binary(string="Iqama")
+    certificate_1 = fields.Binary(string="Certificates")
     certificate_2 = fields.Binary(string="Certificates")
     other_doc_1 = fields.Binary(string="Others")
     other_doc_2 = fields.Binary(string="Others")
@@ -91,7 +91,7 @@ class LocalTransfer(models.Model):
 
     # Medical Insurance
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family'),('both','Both')],string="Medical Insurance For?")
-    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
     dependent_document_ids = fields.One2many('dependent.documents','lt_dependent_document_id',string="Dependent Documents")
 
     # Bank details
@@ -114,6 +114,8 @@ class LocalTransfer(models.Model):
                 line.profession_en = line.employee_id.iqama
                 line.iqama = line.employee_id.iqama
                 line.working_days = line.employee_id.working_days
+                line.contact_no = line.employee_id.contact_no
+                line.phone_code_id = line.employee_id.phone_code_id
 
 
     def unlink(self):
@@ -175,8 +177,6 @@ class LocalTransfer(models.Model):
             raise UserError(_('Please add Education Qualification!'))
         if not self.private_email:
             raise UserError(_("Please add Email Id"))
-        if not self.signed_offer_letter:
-            raise UserError(_("Please attach signed offer letter"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
         if not self.birthday:
@@ -191,10 +191,12 @@ class LocalTransfer(models.Model):
             raise UserError(_("Please add Bank"))
         if not self.bic:
             raise UserError(_("Please add IBAN"))
-        if not self.bank_iban_letter:
-            raise UserError(_("Please attach Bank Iban Letter"))
-        if not self.certificate_1:
-            raise UserError(_("Please attach Certificate"))
+        # if not self.signed_offer_letter:
+        #     raise UserError(_("Please attach signed offer letter"))
+        # if not self.bank_iban_letter:
+        #     raise UserError(_("Please attach Bank Iban Letter"))
+        # if not self.certificate_1:
+        #     raise UserError(_("Please attach Certificate"))
         if not self.insurance_class:
             raise UserError(_("Please select medical Insurance class"))
         if not self.contact_no:
