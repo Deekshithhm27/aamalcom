@@ -31,13 +31,13 @@
                         	<field name="private_email"/>
                             <label for="contact_no"/>
                         	<div>
-                                <field name="phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
+                                <field name="phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}" attrs="{'required': [('contact_no', '!=',False)]}"/>
                                 <field name="contact_no" style="width: 150px"/>
                             </div>
 
                             <label for="current_contact"/>
                             <div>
-                                <field name="current_phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
+                                <field name="current_phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}" attrs="{'required': [('current_contact', '!=',False)]}"/>
 
                             	<field name="current_contact" style="width: 150px"/>
                             </div>
