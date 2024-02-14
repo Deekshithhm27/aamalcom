@@ -84,6 +84,7 @@ class LocalTransfer(models.Model):
     expiry_date = fields.Date(string="Expiry Date")
     
     work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
+    work_location = fields.Char(string="Work Location")
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")

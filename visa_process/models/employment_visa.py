@@ -97,6 +97,7 @@ class EmploymentVisa(models.Model):
     attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural")
     
     work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
+    work_location = fields.Char(string="Work Location")
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")

@@ -62,7 +62,8 @@
                                 <group>
                                     <field name="employment_duration"/>
                                     <field name="doj"/>
-                                    <field name="work_location_id"/>
+                                    <field name="work_location_id" invisible="1"/>
+                                    <field name="work_location"/>
                                 </group>
                                 <group string="Iqama Details">
                                     <field name="iqama"/>

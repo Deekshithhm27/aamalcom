@@ -58,7 +58,8 @@
                                 	<field name="qualification"/>
                                 	<field name="designation"/>
                                     <field name="employment_duration"/>
-                                    <field name="work_location_id"/>
+                                    <field name="work_location_id" invisible="1"/>
+                                    <field name="work_location"/>
                                     <field name="attested_from_saudi_cultural"/>
                                 </group>
                                 <group>
