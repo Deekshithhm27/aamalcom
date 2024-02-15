@@ -27,10 +27,10 @@ class EmploymentVisa(models.Model):
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
-    current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
     private_email = fields.Char(string="Email Id *",tracking=True)
     country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
-    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    current_contact = fields.Char(string="Current Contact # (if Outside the country)",tracking=True)
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
     marital = fields.Selection([
@@ -62,13 +62,13 @@ class EmploymentVisa(models.Model):
     client_company_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
 
     # # Documents
-    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
+    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached")
     passport_copy = fields.Binary(string="Passport copy *")
     border_copy = fields.Binary(string="Border Id")
-    attested_degree = fields.Binary(string="Attested Degree copy *")
-    attested_visa_page = fields.Binary(string="Attested visa page *")
+    attested_degree = fields.Binary(string="Attested Degree copy")
+    attested_visa_page = fields.Binary(string="Attested visa page")
     bank_iban_letter = fields.Binary(string="Bank Iban Letter")
-    certificate_1 = fields.Binary(string="Certificates *")
+    certificate_1 = fields.Binary(string="Certificates")
     certificate_2 = fields.Binary(string="Certificates")
     other_doc_1 = fields.Binary(string="Others")
     other_doc_2 = fields.Binary(string="Others")
@@ -83,7 +83,7 @@ class EmploymentVisa(models.Model):
     visa_profession = fields.Char(string="Visa Profession *")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion *")
     visa_country_id = fields.Many2one('res.country',string="Visa Nationality *")
-    visa_stamping_city_id = fields.Many2one('res.country.state',string="Visa Stamping City *",domain="[('country_id', '=', visa_country_id)]")
+    visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
     visa_enjaz = fields.Char(string="Visa Enjaz Details *")
     border_no = fields.Char(string="Border No.")
     no_of_visa = fields.Integer(string="No of Visa *")
@@ -97,6 +97,7 @@ class EmploymentVisa(models.Model):
     attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural")
     
     work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
+    work_location = fields.Char(string="Work Location")
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
@@ -104,7 +105,7 @@ class EmploymentVisa(models.Model):
 
     # Medical Insurance
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family'),('both','Both')],string="Medical Insurance For?")
-    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
     dependent_document_ids = fields.One2many('dependent.documents','ev_dependent_document_id',string="Dependent Documents")
     medical_doc = fields.Binary(string="Medical Doc")
 
@@ -125,12 +126,14 @@ class EmploymentVisa(models.Model):
                 line.employment_duration = line.employee_id.employment_duration
                 line.probation_term = line.employee_id.probation_term
                 line.notice_period = line.employee_id.notice_period
+                line.working_days = line.employee_id.working_days
                 line.weekly_off_days = line.employee_id.weekly_off_days
                 line.doj = line.employee_id.doj
                 line.work_location_id = line.employee_id.work_location_id
                 line.birthday = line.employee_id.birthday
                 line.contact_no = line.employee_id.contact_no
-                line.current_contact = line.employee_id.current_contact
+                line.phone_code_id = line.employee_id.phone_code_id
+
 
 
     def unlink(self):
@@ -205,8 +208,8 @@ class EmploymentVisa(models.Model):
             raise UserError(_('Please add Education Qualification!'))
         if not self.private_email:
             raise UserError(_("Please add Email Id"))
-        if not self.current_contact:
-            raise UserError(_("Please add Current Contact # (if Outside the country)"))
+        # if not self.current_contact:
+        #     raise UserError(_("Please add Current Contact # (if Outside the country)"))
         if not self.working_days:
             raise UserError(_("Please add Working Days"))
         if not self.working_hours:
@@ -215,16 +218,17 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please add Annual Vacation"))
         if not self.insurance_class:
             raise UserError(_("Please select medical Insurance class"))
-        if not self.signed_offer_letter:
-            raise UserError(_("Please attach Signed Offer letter"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
-        if not self.attested_degree:
-            raise UserError(_("Please attach Attested Degree Copy"))
-        if not self.attested_visa_page:
-            raise UserError(_("Please attach Attested Visa page"))
-        if not self.certificate_1:
-            raise UserError(_("Please attach Certificate"))
+        # removed - considering the points by Hospitality sector
+        # if not self.signed_offer_letter:
+        #     raise UserError(_("Please attach Signed Offer letter"))
+        # if not self.attested_degree:
+        #     raise UserError(_("Please attach Attested Degree Copy"))
+        # if not self.attested_visa_page:
+        #     raise UserError(_("Please attach Attested Visa page"))
+        # if not self.certificate_1:
+        #     raise UserError(_("Please attach Certificate"))
 
         self._add_followers()
         self.approver_id = self.client_id.company_spoc_id.id 
