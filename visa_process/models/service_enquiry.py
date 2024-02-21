@@ -27,8 +27,8 @@ class ServiceEnquiry(models.Model):
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
 
     # below values are updated on change of service request
-    approver_id = fields.Many2one('hr.employee',string="Approver")
-    approver_user_id = fields.Many2one('res.users',string="Approver User Id")
+    approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
+    approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -40,9 +40,9 @@ class ServiceEnquiry(models.Model):
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
-    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]")
-    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True,copy=False)
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
+    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
 
 
     @api.onchange('service_request_config_id')
@@ -69,7 +69,7 @@ class ServiceEnquiry(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True)
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
 
@@ -170,7 +170,7 @@ class ServiceEnquiry(models.Model):
     # EV Fields
 
     visa_country_id = fields.Many2one('res.country',string="Visa issuing country")
-    visa_state_id = fields.Many2one('res.country.state',string="Visa issuing city",domain="[('country_id', '=', visa_country_id)]")
+    visa_state_id = fields.Char(string="Visa issuing city")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion")
     no_of_visa = fields.Integer(string="No of Visa")
     profession = fields.Char(string="Profession")
@@ -251,26 +251,26 @@ class ServiceEnquiry(models.Model):
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
     
-    probation_term = fields.Char(string="Probation Term",tracking=True)
-    notice_period = fields.Char(string="Notice Period",tracking=True)
-    working_days = fields.Char(string="Working Days *")
-    working_hours = fields.Char(string="Working Hours *")
-    annual_vacation = fields.Char(string="Annual Vacation *")
-    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
+    probation_term = fields.Char(string="Probation Term",tracking=True,copy=False)
+    notice_period = fields.Char(string="Notice Period",tracking=True,copy=False)
+    working_days = fields.Char(string="Working Days *",copy=False)
+    working_hours = fields.Char(string="Working Hours *",copy=False)
+    annual_vacation = fields.Char(string="Annual Vacation *",copy=False)
+    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True,copy=False)
 
     # # Documents
-    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
-    passport_copy = fields.Binary(string="Passport copy *")
-    border_copy = fields.Binary(string="Border Id *")
-    attested_degree = fields.Binary(string="Attested Degree copy *")
-    attested_visa_page = fields.Binary(string="Attested visa page *")
-    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
-    certificate_1 = fields.Binary(string="Certificates *")
-    certificate_2 = fields.Binary(string="Certificates")
-    other_doc_1 = fields.Binary(string="Others")
-    other_doc_2 = fields.Binary(string="Others")
-    other_doc_3 = fields.Binary(string="Others")
-    other_doc_4 = fields.Binary(string="Others")
+    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *",copy=False)
+    passport_copy = fields.Binary(string="Passport copy *",copy=False)
+    border_copy = fields.Binary(string="Border Id *",copy=False)
+    attested_degree = fields.Binary(string="Attested Degree copy *",copy=False)
+    attested_visa_page = fields.Binary(string="Attested visa page *",copy=False)
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter *",copy=False)
+    certificate_1 = fields.Binary(string="Certificates *",copy=False)
+    certificate_2 = fields.Binary(string="Certificates",copy=False)
+    other_doc_1 = fields.Binary(string="Others",copy=False)
+    other_doc_2 = fields.Binary(string="Others",copy=False)
+    other_doc_3 = fields.Binary(string="Others",copy=False)
+    other_doc_4 = fields.Binary(string="Others",copy=False)
     
     
     
@@ -285,48 +285,48 @@ class ServiceEnquiry(models.Model):
     no_of_visa = fields.Integer(string="No of Visa *")
     visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
     visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender *")
-    qualification = fields.Char(string="Education Qualification *")
+    qualification = fields.Char(string="Education Qualification *",copy=False)
 
-    iqama_designation = fields.Char(string="Designation on Iqama (exact)")
-    attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural")
+    iqama_designation = fields.Char(string="Designation on Iqama (exact)",copy=False)
+    attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural",copy=False)
     
-    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
+    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True,copy=False)
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
-    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
+    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?",copy=False)
     
     dependent_document_ids = fields.One2many('dependent.documents','ev_enq_dependent_document_id',string="Dependent Documents")
 
-    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id')
+    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
 
     total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
 
     
-    assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee")
-    assigned_govt_emp_one = fields.Boolean(string="Assigned First Govt Employee")
-    assign_govt_emp_two = fields.Boolean(string="Assign Second Govt Employee")
-    assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee")
-    first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True)
-    second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True)
+    assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee",copy=False)
+    assigned_govt_emp_one = fields.Boolean(string="Assigned First Govt Employee",copy=False)
+    assign_govt_emp_two = fields.Boolean(string="Assign Second Govt Employee",copy=False)
+    assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee",copy=False)
+    first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True,copy=False)
+    second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True,copy=False)
 
     current_department_ids = fields.Many2many('hr.department','service_enquiry_dept_ids',string="Department",compute="update_departments")
 
-    req_completion_date = fields.Datetime(string="Request Completion Date")
+    req_completion_date = fields.Datetime(string="Request Completion Date",copy=False)
 
     # below fields are to track the approvers
 
-    op_approver_id = fields.Many2one('hr.employee',string="Approved Operation Manager")
-    gm_approver_id = fields.Many2one('hr.employee',string="Approved General Manager")
-    fin_approver_id = fields.Many2one('hr.employee',string="Approved Finance Manager")
+    op_approver_id = fields.Many2one('hr.employee',string="Approved Operation Manager",copy=False)
+    gm_approver_id = fields.Many2one('hr.employee',string="Approved General Manager",copy=False)
+    fin_approver_id = fields.Many2one('hr.employee',string="Approved Finance Manager",copy=False)
 
-    request_note = fields.Text(string="Request Query")  
+    request_note = fields.Text(string="Request Query",copy=False)  
 
-    doc_uploaded = fields.Boolean(string="Document uploaded",default=False)
-    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
+    doc_uploaded = fields.Boolean(string="Document uploaded",default=False,copy=False)
+    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False,copy=False)
     total_treasury_requests = fields.Integer(string="Request Details",compute="_compute_total_treasury_requests")
 
     is_service_request_client_spoc = fields.Boolean(
@@ -657,6 +657,7 @@ class ServiceEnquiry(models.Model):
             line.profession = line.emp_visa_id.visa_profession
             line.visa_religion = line.emp_visa_id.visa_religion
             line.no_of_visa = line.emp_visa_id.no_of_visa
+            line.agency_allocation = line.emp_visa_id.visa_enjaz
 
 
     def action_confirm(self):
