@@ -133,6 +133,9 @@ class EmploymentVisa(models.Model):
                 line.birthday = line.employee_id.birthday
                 line.contact_no = line.employee_id.contact_no
                 line.phone_code_id = line.employee_id.phone_code_id
+                line.current_contact = line.employee_id.current_contact
+                line.current_phone_code_id = line.employee_id.current_phone_code_id
+                line.visa_religion = line.employee_id.religion
 
 
 
