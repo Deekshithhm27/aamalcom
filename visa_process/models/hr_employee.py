@@ -52,7 +52,7 @@ class HrEmployee(models.Model):
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
 
-    
+    work_location = fields.Char(string="Work Location")
     
 
     iqama = fields.Char(string="Designation on Iqama")

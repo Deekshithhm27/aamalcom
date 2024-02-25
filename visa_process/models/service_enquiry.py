@@ -69,12 +69,15 @@ class ServiceEnquiry(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True,copy=False)
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True,copy=False)
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
     transfer_amount = fields.Float(string="Amount")
+
+    is_penalty_applicable = fields.Boolean(string="Is Penalty Applicable?",copy=False)
+    penalty_cost = fields.Float(string="Penalty Cost",copy=False)
     
 
 
@@ -173,7 +176,7 @@ class ServiceEnquiry(models.Model):
     visa_state_id = fields.Char(string="Visa issuing city")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion")
     no_of_visa = fields.Integer(string="No of Visa")
-    profession = fields.Char(string="Profession")
+    profession = fields.Char(string="Profession",tracking=True)
     agency_allocation = fields.Text(string="Allocation of Agency (E wakala)")
     coc_for_ewakala = fields.Boolean(string="COC for Ewakala",compute="update_coc_for_ewakala",store=True)
 
@@ -290,7 +293,6 @@ class ServiceEnquiry(models.Model):
     iqama_designation = fields.Char(string="Designation on Iqama (exact)",copy=False)
     attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural",copy=False)
     
-    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True,copy=False)
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
@@ -367,6 +369,10 @@ class ServiceEnquiry(models.Model):
             if line.aamalcom_pay == True:
                 line.self_pay = False
                 line.employee_pay = False
+            else:
+                line.billable_to_client = False
+                line.billable_to_aamalcom = False
+
     @api.onchange('employee_pay')
     def update_fees_paid_by_employee(self):
         for line in self:
@@ -490,6 +496,7 @@ class ServiceEnquiry(models.Model):
             record.service_enquiry_pricing_ids = False
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
+            print("----priceing",pricing_id)
             if record.aamalcom_pay and record.service_request != 'transfer_req':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
@@ -527,6 +534,12 @@ class ServiceEnquiry(models.Model):
                 record.service_enquiry_pricing_ids.create({
                     'name':record.service_request_config_id.name,
                     'amount':record.transfer_amount,
+                    'service_enquiry_id':record.id,
+                    })
+            if record.is_penalty_applicable == True:
+                record.service_enquiry_pricing_ids.create({
+                    'name':'Penalty Charges',
+                    'amount':record.penalty_cost,
                     'service_enquiry_id':record.id,
                     })
            
@@ -653,7 +666,7 @@ class ServiceEnquiry(models.Model):
     def fetch_data_from_transfers(self):
         for line in self:
             line.visa_country_id = line.emp_visa_id.visa_country_id
-            line.visa_state_id = line.emp_visa_id.visa_stamping_city_id
+            line.visa_stamping_city_id = line.emp_visa_id.visa_stamping_city_id
             line.profession = line.emp_visa_id.visa_profession
             line.visa_religion = line.emp_visa_id.visa_religion
             line.no_of_visa = line.emp_visa_id.no_of_visa

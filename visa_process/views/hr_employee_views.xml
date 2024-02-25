@@ -28,6 +28,7 @@
             <xpath expr="//field[@name='coach_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+
             <xpath expr="//field[@name='name']" position="replace">
                 <field name="name" placeholder="Name as per Passport" required="True"/>
             </xpath>
@@ -36,6 +37,12 @@
                 <h2 class="d-flex">
                     <field name="sequence"/>
                 </h2>
+            </xpath>
+            <xpath expr="//field[@name='work_location_id']" position="after">
+                <field name="work_location"/>
+            </xpath>
+            <xpath expr="//field[@name='work_location_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="surname"/>
@@ -94,6 +101,13 @@
                         <field name="weekly_off_days"/>
                     </group>
                 </group>
+            </xpath>
+            <!-- removing create option for standard field -->
+            <xpath expr="//field[@name='address_id']" position="replace">
+                <field name="address_id" context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
+            </xpath>
+            <xpath expr="//field[@name='address_home_id']" position="replace">
+                <field name="address_home_id" context="{'show_address': 1,'default_type': 'private','form_view_ref': 'base.res_partner_view_form_private'}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
             </xpath>
         </field>
     </record>

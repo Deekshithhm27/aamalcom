@@ -33,6 +33,7 @@ class EmploymentVisa(models.Model):
     current_contact = fields.Char(string="Current Contact # (if Outside the country)",tracking=True)
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
+
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Married'),
@@ -40,9 +41,14 @@ class EmploymentVisa(models.Model):
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
     ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
+    iqama_no = fields.Char(string="Iqama No *",copy=False)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
+
+    # Bank details
+    bank_id = fields.Many2one('res.bank', string="Bank *",tracking=True)
+    bic = fields.Char(string="IBAN *",tracking=True)
 
     # Employment details
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
@@ -223,6 +229,10 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please select medical Insurance class"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
+        if not self.bank_id:
+            raise UserError(_("Please add Bank"))
+        if not self.bic:
+            raise UserError(_("Please add IBAN"))
         # removed - considering the points by Hospitality sector
         # if not self.signed_offer_letter:
         #     raise UserError(_("Please attach Signed Offer letter"))
