@@ -21,9 +21,14 @@
         
 
         <menuitem name="Employee Data" id="menu_my_employees" sequence="1">
+            <!-- Client -->
             <menuitem id="hr_employee_self_menu_employees" name="Employees" action="action_client_team_employees" groups="visa_process.group_hr_client" sequence="1"/>
+            <!-- Project Manager -->
             <menuitem id="hr_employee_client_menu_employees" name="Client Employees" action="action_client_employees" groups="visa_process.group_service_request_manager" sequence="2"/>
-            <menuitem name="Contact" id="base_menu_visa_contact" sequence="3">
+            <menuitem id="hr_employee_client_menu_employees_pm" name="Client Employees" action="action_client_employees_pm" groups="visa_process.group_service_request_operations_manager" sequence="3"/>
+            <!-- Government Employee -->
+            <menuitem id="hr_employee_client_menu_all" name="Client Employees" action="action_all_client_employees" groups="visa_process.group_service_request_govt_manager,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager" sequence="4"/>
+            <menuitem name="Contact" id="base_menu_visa_contact" sequence="5">
                 <menuitem name="Employees Address" id="menu_employee_contacts" sequence="1" groups="visa_process.group_service_request_client_spoc" action="action_employee_contacts"/>
             </menuitem>
             
@@ -32,7 +37,9 @@
 
         <!-- below menu is only for emplolyees and officer also for admin -->
         <menuitem id="menu_base_service_enquiry" name="Tickets" sequence="3">
+            <!-- Client Spoc -->
             <menuitem id="menu_my_service_enquiry_client" name="Service Tickets" sequence="1" action="action_client_service_enquiry" groups="visa_process.group_service_request_client_spoc"/>
+            <!-- Project manager and Administrator -->
             <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator"/>
             <menuitem id="menu_service_enquiry_gm" name="Tickets for Approval" sequence="3" action="action_service_enquiry_gm_approval" groups="visa_process.group_service_request_general_manager"/>
             <menuitem id="menu_service_enquiry_employee" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_employee"/>
@@ -88,7 +95,7 @@
     </record>
 
     <record id="hr.menu_hr_root" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_payroll_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_payroll_manager')),(4, ref('visa_process.group_service_request_administrator'))]"/>
     </record>
 
     <!-- Modifying sequence of calendar menu -->
