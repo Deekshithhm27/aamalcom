@@ -110,7 +110,7 @@ class LocalTransfer(models.Model):
                 line.marital = line.employee_id.marital
                 line.employment_duration = line.employee_id.employment_duration
                 line.doj = line.employee_id.doj
-                line.work_location_id = line.employee_id.work_location_id
+                line.work_location = line.employee_id.work_location
                 line.birthday = line.employee_id.birthday
                 line.profession_en = line.employee_id.iqama
                 line.iqama = line.employee_id.iqama

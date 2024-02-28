@@ -601,7 +601,7 @@ class ServiceEnquiry(models.Model):
             line.doc_uploaded = False
             if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
                 line.assign_govt_emp_two = True
-            if line.service_request == 'prof_change_qiwa':
+            if line.service_request == 'prof_change_qiwa' or line.service_request == 'new_ev':
                 line.doc_uploaded = True
 
     

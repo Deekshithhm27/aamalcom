@@ -41,14 +41,14 @@ class EmploymentVisa(models.Model):
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
     ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
-    iqama_no = fields.Char(string="Iqama No *",copy=False)
+    iqama_no = fields.Char(string="Iqama No",copy=False)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
 
     # Bank details
-    bank_id = fields.Many2one('res.bank', string="Bank *",tracking=True)
-    bic = fields.Char(string="IBAN *",tracking=True)
+    bank_id = fields.Many2one('res.bank', string="Bank",tracking=True)
+    bic = fields.Char(string="IBAN",tracking=True)
 
     # Employment details
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
@@ -135,7 +135,7 @@ class EmploymentVisa(models.Model):
                 line.working_days = line.employee_id.working_days
                 line.weekly_off_days = line.employee_id.weekly_off_days
                 line.doj = line.employee_id.doj
-                line.work_location_id = line.employee_id.work_location_id
+                line.work_location_id = line.employee_id.work_location
                 line.birthday = line.employee_id.birthday
                 line.contact_no = line.employee_id.contact_no
                 line.phone_code_id = line.employee_id.phone_code_id
@@ -229,10 +229,10 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please select medical Insurance class"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
-        if not self.bank_id:
-            raise UserError(_("Please add Bank"))
-        if not self.bic:
-            raise UserError(_("Please add IBAN"))
+        # if not self.bank_id:
+        #     raise UserError(_("Please add Bank"))
+        # if not self.bic:
+        #     raise UserError(_("Please add IBAN"))
         # removed - considering the points by Hospitality sector
         # if not self.signed_offer_letter:
         #     raise UserError(_("Please attach Signed Offer letter"))
