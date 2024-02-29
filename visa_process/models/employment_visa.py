@@ -135,7 +135,7 @@ class EmploymentVisa(models.Model):
                 line.working_days = line.employee_id.working_days
                 line.weekly_off_days = line.employee_id.weekly_off_days
                 line.doj = line.employee_id.doj
-                line.work_location_id = line.employee_id.work_location
+                line.work_location = line.employee_id.work_location
                 line.birthday = line.employee_id.birthday
                 line.contact_no = line.employee_id.contact_no
                 line.phone_code_id = line.employee_id.phone_code_id
