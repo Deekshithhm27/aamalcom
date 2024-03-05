@@ -49,21 +49,40 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.billable_to_client == True: 
 
+                
+                invoice_line_ids = []
+                for line in record.service_enquiry_pricing_ids:
+                    invoice_line_ids.append((0, 0, {
+                    # 'name':f"{record.employee_id.sequence} - {record.service_request_config_id.name}",
+                    'name':line.name,
+                    'employee_id': record.employee_id.id,
+                    'price_unit': line.amount,
+                    'quantity':1,
+                    'service_enquiry_id':record.id
+                        
+                        # Add other fields as needed
+                    }))
+
                 # Create draft.account.move record
                 account_move = self.env['draft.account.move'].create({
-                    'client_id': self.client_id.id,
-                    'client_parent_id':self.client_id.parent_id.id,
-                    'service_enquiry_id': self.id,
+                    'client_id': record.client_id.id,
+                    'client_parent_id':record.client_id.parent_id.id,
+                    'service_enquiry_id': record.id,
+                    'employee_id':record.employee_id.id,
                     'move_type':'service_ticket',
+                    'invoice_line_ids': invoice_line_ids,
                 })
+                    
 
-                account_move_line = self.env['draft.account.move.line'].create({
-                    'move_id': account_move.id,
-                    'employee_id': record.employee_id.id,
-                    'price_unit': record.total_amount,
-                    'quantity':1,
-                    'name':f"{record.employee_id.sequence} - {record.service_request_config_id.name}"
-                })
+
+                # account_move_line = self.env['draft.account.move.line'].create({
+                #     'move_id': account_move.id,
+                #     'name':self.service_request,
+                #     'employee_id': record.employee_id.id,
+                #     'price_unit': record.total_amount,
+                #     'quantity':1,
+                #     'name':f"{record.employee_id.sequence} - {record.service_request_config_id.name}"
+                # })
 
         return super(ServiceEnquiry, self).action_process_complete()
 

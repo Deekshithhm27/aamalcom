@@ -305,7 +305,7 @@ class ServiceEnquiry(models.Model):
 
     service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
 
-    total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
+    
 
     
     assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee",copy=False)
@@ -467,14 +467,6 @@ class ServiceEnquiry(models.Model):
             }
 
 
-    @api.depends('service_enquiry_pricing_ids.amount')
-    def _compute_amount(self):
-        total_amount = 0.0
-        for line in self:
-            for lines in line.service_enquiry_pricing_ids:
-                total_amount += lines.amount
-
-            line.total_amount = total_amount  
 
     @api.onchange('billable_to_client')
     def update_billable_to_aamalcom(self):
@@ -591,7 +583,7 @@ class ServiceEnquiry(models.Model):
             if service_request_treasury_id:
                 line.state = 'approved'
                 line.fin_approver_id = current_employee
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req' or line.service_request == 'new_ev':
                     line.assign_govt_emp_two = True
 
 

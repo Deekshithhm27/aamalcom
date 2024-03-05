@@ -36,6 +36,7 @@
         'views/hr_employee_views.xml',
         'views/res_bank_views.xml',
         'views/res_users_views.xml',
+        'views/res_company_views.xml',
         
         'views/employment_visa_views.xml',
         'views/local_transfer_views.xml',

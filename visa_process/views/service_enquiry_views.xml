@@ -120,8 +120,8 @@
                     </div>
                     <group attrs="{'invisible': [('service_request', 'not in', ('iqama_renewal','hr_card'))],'readonly': [('state', '!=','draft')]}">
                         <group name="penalty_cost" string="Penalty Details">
-                            <field name="is_penalty_applicable"/>
-                            <field name="penalty_cost" attrs="{'invisible':[('is_penalty_applicable','=',False)]}"/>
+                            <field name="is_penalty_applicable" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="penalty_cost" attrs="{'invisible':[('is_penalty_applicable','=',False)],'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
 
@@ -828,7 +828,6 @@
                                     <field name="remarks"/>
                                 </tree>
                             </field>
-                            <field name="total_amount" invisible="1"/>
                             
                         </page>
 

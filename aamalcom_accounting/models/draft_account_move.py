@@ -18,7 +18,7 @@ class DraftAccountMove(models.Model):
 
 
 
-    name = fields.Char(string="Draft Invoice Number")
+    name = fields.Char(string="Draft Invoice Number",index=True, copy=False, default='New')
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one(comodel_name='res.company', string='Company',
@@ -32,12 +32,13 @@ class DraftAccountMove(models.Model):
             ('draft', 'Draft'),
             ('posted', 'Posted'),
             ('cancel', 'Cancelled'),
-        ], string='Status', required=True, readonly=True, copy=False, tracking=True,
+        ], string='Status', required=True, readonly=False, copy=False, tracking=True,
         default='draft')
 
     client_id = fields.Many2one('res.partner',string="Client Spoc")
     client_parent_id = fields.Many2one('res.partner',string="Client")
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Ticket Ref")
+    employee_id = fields.Many2one('hr.employee',string="Employee")
 
 
     date = fields.Date(
@@ -65,20 +66,42 @@ class DraftAccountMove(models.Model):
         ], string='Type', required=True, store=True, index=True, readonly=True, tracking=True,
         default="service_ticket", change_default=True)
 
+    total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
+
+    @api.depends('invoice_line_ids.price_total')
+    def _compute_amount(self):
+        total_amount = 0.0
+        for line in self:
+            for lines in line.invoice_line_ids:
+                total_amount += lines.price_total
+            line.total_amount = total_amount  
+
     invoice_line_ids = fields.One2many('draft.account.move.line', 'move_id', string='Invoice lines',
         copy=False, readonly=True,
         states={'draft': [('readonly', False)]})
 
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('draft.account.move')
-        res = super(DraftAccountMove,self).create(vals_list)
-        return res
+    # @api.model_create_multi
+    # def create(self,vals_list):
+    #     for vals in vals_list:
+    #         vals['name'] = self.env['ir.sequence'].next_by_code('draft.account.move')
+    #     res = super(DraftAccountMove,self).create(vals_list)
+    #     return res
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'New') == 'New':
+            vals['name'] = self.env['ir.sequence'].next_by_code('draft.account.move') or '/'
+        return super(DraftAccountMove, self).create(vals)
 
     untaxed_amount = fields.Monetary(string='Untaxed Amount', compute='_compute_totals', store=True)
     taxed_amount = fields.Monetary(string='Taxed Amount', compute='_compute_totals', store=True)
     total_amount = fields.Monetary(string='Total Amount', compute='_compute_totals', store=True)
+    tax_ids = fields.Many2many(
+        comodel_name='account.tax',
+        string="Taxes",
+        context={'active_test': False},
+        check_company=True,
+        help="Taxes that apply on the base amount")
 
 
     @api.depends('invoice_line_ids.price_subtotal', 'invoice_line_ids.price_total', 'invoice_line_ids.tax_ids')
@@ -114,6 +137,7 @@ class DraftAccountMoveLine(models.Model):
     company_id = fields.Many2one(related='move_id.company_id', store=True, readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
+    service_enquiry_id = fields.Many2one('service.enquiry',string="Service Ticket Ref")
 
     quantity = fields.Float(string='Quantity',
         default="1.0", digits='Product Unit of Measure',
@@ -125,7 +149,7 @@ class DraftAccountMoveLine(models.Model):
         string="Taxes",
         context={'active_test': False},
         check_company=True,
-        help="Taxes that apply on the base amount")
+        help="Taxes that apply on the base amount",related="move_id.tax_ids")
 
     price_subtotal = fields.Monetary(string='Subtotal', store=True, readonly=True,
         currency_field='currency_id',compute="_compute_subtotal")

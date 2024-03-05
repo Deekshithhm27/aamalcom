@@ -18,18 +18,26 @@ class CreateAccountMoveWizard(models.TransientModel):
         if not draft_account_moves:
             raise UserError(_('No records found.'))
 
+        # Grouping of multiple lines inside an invoice
         consolidated_lines = []
+        particulars = []
+        particulars_lines = []
+        employee_ids_added = set()
         for draft_move in draft_account_moves:
+            consolidated_lines.append((0, 0, {
+                'name':draft_move.service_enquiry_id.service_request_config_id.name,
+                'employee_id': draft_move.employee_id.id,
+                'service_enquiry_id':draft_move.service_enquiry_id.id,
+                'quantity': 1,
+                'price_unit': draft_move.untaxed_amount,
+                'tax_ids': [(6, 0, draft_move.tax_ids.ids)],
+            }))
             for line in draft_move.invoice_line_ids:
-                consolidated_lines.append((0, 0, {
-                    'employee_id': line.employee_id.id,
-                    'quantity': line.quantity,
-                    'price_unit': line.price_unit,
-                    'tax_ids': [(6, 0, line.tax_ids.ids)],  # Copy the tax_ids from draft.account.move.line
-
-                    # Add other fields as needed
-                }))
-            # Update the invoice_date in the draft account move
+                if line.employee_id.id not in employee_ids_added:
+                    particulars.append((0, 0, {
+                        'employee_id': line.employee_id.id,
+                    }))
+                    employee_ids_added.add(line.employee_id.id)
             
 
         if consolidated_lines:
@@ -39,16 +47,35 @@ class CreateAccountMoveWizard(models.TransientModel):
                 'move_type': 'out_invoice',
                 'invoice_type':'operation',
                 'invoice_line_ids': consolidated_lines,
+                'move_particulars_ids':particulars,
                 'state':'draft'
             })
+
+        for particular in new_account_move.move_particulars_ids:
+            employee_id = particular.employee_id.id
+            employee_lines = []
             for draft_move in draft_account_moves:
-                draft_move.write({
-                'invoiced_date': fields.Date.today(),
-                'invoice_id': new_account_move.id,
-                'state':'posted'
-            })
+                for line in draft_move.invoice_line_ids:
+                    if line.employee_id.id == employee_id:
+                        employee_lines.append((0, 0, {
+                            'name': line.name,
+                            'amount':line.price_subtotal,
+                            # Add other fields as needed
+                        }))
+            particular.write({'particulars_line_ids': employee_lines})
+
+
+            # for draft_move in draft_account_moves:
+            #     draft_move.write({
+            #     'invoiced_date': fields.Date.today(),
+            #     'invoice_id': new_account_move.id,
+            #     'state':'posted'
+            # })
 
 
 
         return {'type': 'ir.actions.act_window_close'}
 
+
+
+# Track invoice againt service request or payroll or direct----------

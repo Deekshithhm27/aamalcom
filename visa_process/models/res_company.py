@@ -12,3 +12,11 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     vat = fields.Char(related='partner_id.vat', string="VAT ID", readonly=False)
+
+    arabic_name = fields.Char('Arabic Name')
+    arabic_street = fields.Char('Arabic Street')
+    arabic_street2 = fields.Char('Arabic Street2')
+    arabic_city = fields.Char('Arabic City')
+    arabic_state = fields.Char('Arabic State')
+    arabic_country = fields.Char('Arabic Country')
+    arabic_zip = fields.Char('Arabic Zip')

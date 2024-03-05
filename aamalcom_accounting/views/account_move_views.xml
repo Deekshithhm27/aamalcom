@@ -21,9 +21,11 @@
 	        	</xpath>
 	        	<xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="after">
 	        		<field name="employee_id"/>
+	        		<field name="service_enquiry_id" readonly="1"/>
 	        	</xpath>
 	        	<xpath expr="//field[@name='invoice_line_ids']/form/sheet/group[1]/field[@name='product_id']" position="after">
 	        		<field name="employee_id"/>
+	        		<field name="service_enquiry_id" readonly="1"/>
 	        	</xpath>
 	        	
 	            <xpath expr="//button[@name='action_post']" position="before">
@@ -51,6 +53,40 @@
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">
 	            	<!-- This action is used in Journal entry creation -->
 	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True), ('move_type', '!=', 'entry')]}"/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page[1]" position="after">
+                	<page name="invoice_particulars" string="Particulars">
+                    <field name="move_particulars_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="invoice_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="employee_id"/>
+                                </group>
+                            </group>
+                            <notebook>
+                            	<page name="particulars" string="Particulars">
+                            		<field name="particulars_line_ids">
+                            			<tree editable="bottom">
+                            				<field name="name"/>
+                            				<field name="particulars_id" invisible="1"/>
+                            				<field name="company_id" invisible="1"/>
+                            				<field name="currency_id" invisible="1"/>
+                            				<field name="amount"/>
+
+                            			</tree>
+                            		</field>
+                            	</page>
+                            </notebook>
+                        </form>
+                        <tree>
+                            <field name="invoice_id" invisible="1"/>
+                            <field name="employee_id"/>
+                        </tree>
+                    </field>
+                </page>
                 </xpath>
 
 	                    
