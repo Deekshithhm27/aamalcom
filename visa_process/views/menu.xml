@@ -40,11 +40,14 @@
             <!-- Client Spoc -->
             <menuitem id="menu_my_service_enquiry_client" name="Service Tickets" sequence="1" action="action_client_service_enquiry" groups="visa_process.group_service_request_client_spoc"/>
             <!-- Project manager and Administrator -->
-            <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator"/>
+            <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry_manager" groups="visa_process.group_service_request_manager"/>
             <menuitem id="menu_service_enquiry_gm" name="Tickets for Approval" sequence="3" action="action_service_enquiry_gm_approval" groups="visa_process.group_service_request_general_manager"/>
             <menuitem id="menu_service_enquiry_employee" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_employee"/>
+            <menuitem id="menu_service_enquiry_hr" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_hr_manager"/>
             <menuitem id="menu_service_enquiry_op" name="Tickets for Approval" sequence="5" action="action_service_enquiry_op_approval" groups="visa_process.group_service_request_operations_manager"/>
             <menuitem id="menu_service_enquiry_fin" name="Tickets for Approval" sequence="6" action="action_service_enquiry_finance_approval" groups="visa_process.group_service_request_finance_manager"/>
+            <menuitem id="menu_service_enquiry_admin" name="Service Tickets" sequence="7" action="action_service_enquiry_administrator" groups="visa_process.group_service_request_administrator"/>
+            
         </menuitem>
         <menuitem id="menu_base_services" name="Services" sequence="4" groups="visa_process.group_service_request_client_spoc">
             <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer"/>
