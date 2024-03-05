@@ -49,13 +49,15 @@
             <menuitem id="menu_service_enquiry_admin" name="Service Tickets" sequence="7" action="action_service_enquiry_administrator" groups="visa_process.group_service_request_administrator"/>
             
         </menuitem>
-        <menuitem id="menu_base_services" name="Services" sequence="4" groups="visa_process.group_service_request_client_spoc">
-            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer"/>
-            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa" />
-        </menuitem>
-        <menuitem id="menu_base_services_for_approval" name="Services" sequence="5" groups="visa_process.group_service_request_manager">
-            <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager"/>
-            <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager"/>
+        <menuitem id="menu_base_services" name="Services" sequence="4">
+            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer" groups="visa_process.group_service_request_client_spoc"/>
+            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa" groups="visa_process.group_service_request_client_spoc"/>
+            <!-- Manager -->
+            <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager" groups="visa_process.group_service_request_manager"/>
+            <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager" groups="visa_process.group_service_request_manager"/>
+            <!-- Admin -->
+            <menuitem id="menu_local_transfer_admin" name="Local Transfer" sequence="1" action="action_local_transfer_admin" groups="visa_process.group_service_request_administrator"/>
+            <menuitem id="menu_employment_visa_admin" name="Employment Visa" sequence="2" action="action_employment_visa_admin" groups="visa_process.group_service_request_administrator"/>
         </menuitem>
         <menuitem id="menu_base_treasury" name="Treasury" sequence="9" groups="visa_process.group_service_request_finance_manager">
                 <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>

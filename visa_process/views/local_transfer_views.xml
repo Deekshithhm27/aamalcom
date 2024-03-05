@@ -202,4 +202,19 @@
               </p>
         </field>
     </record>
+
+    <record id="action_local_transfer_admin" model="ir.actions.act_window">
+        <field name="name">Local Transfer</field>
+        <field name="res_model">local.transfer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="local_transfer_filter"/>
+         <field name="context">{'group_by': 'state'}</field>
+        <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No requests found
+              </p><p>
+                Try creating new one!!
+              </p>
+        </field>
+    </record>
 </odoo>

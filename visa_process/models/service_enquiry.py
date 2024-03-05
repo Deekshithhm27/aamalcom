@@ -305,7 +305,7 @@ class ServiceEnquiry(models.Model):
 
     service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
 
-    total_amount = fields.Monetary(string="Total Amount" , readonly=True, tracking=True,compute="_compute_amount")
+    total_amount = fields.Monetary(string="Total Amount" , readonly=True, compute="_compute_amount")
 
     
     assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee",copy=False)
