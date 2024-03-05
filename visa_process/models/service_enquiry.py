@@ -305,7 +305,7 @@ class ServiceEnquiry(models.Model):
 
     service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
 
-    
+    total_amount = fields.Monetary(string="Total Amount" , readonly=True, tracking=True,compute="_compute_amount")
 
     
     assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee",copy=False)
@@ -467,6 +467,14 @@ class ServiceEnquiry(models.Model):
             }
 
 
+    @api.depends('service_enquiry_pricing_ids.amount')
+    def _compute_amount(self):
+        total_amount = 0.0
+        for line in self:
+            for lines in line.service_enquiry_pricing_ids:
+                total_amount += lines.amount
+
+            line.total_amount = total_amount  
 
     @api.onchange('billable_to_client')
     def update_billable_to_aamalcom(self):
