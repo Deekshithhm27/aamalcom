@@ -16,22 +16,22 @@
                     <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
 
-                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','new_ev','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','new_ev','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
                     <!-- approval actions for hr_card, iqama_renewal and Profession change qiwa -->
 
-                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <button name="action_op_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_op_approval')]}" groups="visa_process.group_service_request_operations_manager"/>
                     <button name="action_gm_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_gm_approval')]}" groups="visa_process.group_service_request_general_manager"/>
                     <button name="action_finance_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_fin_approval')]}" groups="visa_process.group_service_request_finance_manager"/>
 
                     <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','new_ev','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('final_doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('final_doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- below button is for Issuance of new EV -->
                     <!-- <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved')),('service_request', 'not in', ('new_ev'))]}" groups="visa_process.group_service_request_manager"/> -->
                     <!--  -->
                     <!-- Profession change in Qiwa merged with EV Request-->
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('new_ev','prof_change_qiwa'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('new_ev','prof_change_qiwa'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Issuance of HR card Actions end -->
 
                     <!-- LT Medical Health Insurance Upload start-->
@@ -41,7 +41,7 @@
 
 
 
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
                    
@@ -53,7 +53,7 @@
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="action_iqama_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('doc_uploaded','=',False),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_iqama_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('doc_uploaded','=',False),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
 

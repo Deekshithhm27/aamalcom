@@ -75,6 +75,12 @@
         <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'))]"/>
     </record>
+    <record id="ir_rule_service_enquiry_hr_manager" model="ir.rule">
+        <field name="name">Service enquiry - HR Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
 
     <record id="ir_rule_service_enquiry_admin_view" model="ir.rule">
         <field name="name">Service enquiry - Administrator</field>
