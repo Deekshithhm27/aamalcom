@@ -203,7 +203,7 @@
         </field>
     </record>
 
-    <record id="action_local_transfer_admin" model="ir.actions.act_window">
+    <record id="action_local_transfer_all" model="ir.actions.act_window">
         <field name="name">Local Transfer</field>
         <field name="res_model">local.transfer</field>
         <field name="view_mode">tree,form</field>
@@ -217,4 +217,5 @@
               </p>
         </field>
     </record>
+
 </odoo>

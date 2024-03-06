@@ -24,7 +24,8 @@ class ServiceEnquiry(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
     
-    client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
+    client_id = fields.Many2one('res.partner',string="Client Spoc",default=lambda self: self.env.user.partner_id)
+    client_parent_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
 
     # below values are updated on change of service request
     approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)

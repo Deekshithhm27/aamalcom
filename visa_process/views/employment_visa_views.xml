@@ -244,7 +244,7 @@
               </p>
         </field>
     </record>
-    <record id="action_employment_visa_admin" model="ir.actions.act_window">
+    <record id="action_employment_visa_all" model="ir.actions.act_window">
         <field name="name">Employment Visa</field>
         <field name="res_model">employment.visa</field>
         <field name="view_mode">tree,form</field>

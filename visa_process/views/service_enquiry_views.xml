@@ -85,6 +85,7 @@
                         <field name="currency_id" invisible="1"/>
                         <field name="active" invisible="1"/>
                         <field name="client_id" invisible="1"/>
+                        <field name="client_parent_id" invisible="1"/>
                         <field name="user_id" invisible="1"/>
                         <field name="approver_id" invisible="1"/>
                         <field name="approver_user_id" invisible="1"/>
@@ -878,6 +879,7 @@
                 <field name="name" string="Enquiry No."/>
                 <field name="employee_id" string="Employee"/>
                 <field name="approver_id" string="Approver"/>
+                <field name="client_parent_id" string="Client"/>
                 <field name="service_request_config_id" string="Service Request"/>
                 <filter string="Draft Requests" name="draft_requests" domain="[('state', '=','draft')]"/>
                 <filter string="Submitted Requests" name="submitted_requests" domain="[('state', '=','submitted')]"/>
@@ -894,6 +896,7 @@
                     <filter string="Service Request" name="service_request" domain="[]" context="{'group_by': 'service_request'}"/>
                     <filter string="Request Type" name="request_type" domain="[]" context="{'group_by': 'service_request_type'}"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Client" name="client_parent_id" domain="[]" context="{'group_by': 'client_parent_id'}"/>
                     
                 </group>
             </search>
@@ -933,6 +936,7 @@
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
+        <field name="context">{'group_by': 'state'}</field>
         <field name="domain">[('approver_user_id', '=', uid)]</field>
 
     </record> 
@@ -941,7 +945,7 @@
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
-        <field name="context">{'search_default_submitted_requests': 1,'search_default_approved_requests':1,'search_default_payment_done':1}</field>
+        <field name="context">{'group_by': 'state'}</field>
         <field name="domain">['|',('first_govt_employee_id.user_id','=',uid),('second_govt_employee_id.user_id','=',uid)]</field>
         <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">

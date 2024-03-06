@@ -4,7 +4,7 @@
         <field name="name">Service Request Details</field>
         <field name="model">service.request.treasury</field>
         <field name="arch" type="xml">
-            <form string="Service Request Details">
+            <form string="Service Request Details" create="0">
             	<header>
             		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"done":"blue","draft":"grey"}'/>
             		<button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_finance_manager"/>
@@ -56,7 +56,7 @@
         <field name="name">Service Request Details</field>
         <field name="model">service.request.treasury</field>
         <field name="arch" type="xml">
-            <tree string="Service Request Details">
+            <tree string="Service Request Details" create="0">
                 <field name="name"/>
                 <field name="service_request_id"/>
                 <field name="client_parent_id"/>

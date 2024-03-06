@@ -22,7 +22,7 @@
 		           </div>
             </div> -->
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button type="action" class="oe_inline oe_stat_button" name="%(aamalcom_accounting.draft_account_move_form_action_view)d" icon="fa-file-text-o" attrs="{'invisible':[('draft_invoices_count','=',0)]}" groups="visa_process.group_service_request_finance_manager,visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_finance_manager">
+                <button type="action" class="oe_inline oe_stat_button" name="%(aamalcom_accounting.draft_account_move_form_action_view)d" icon="fa-file-text-o" attrs="{'invisible':[('draft_invoices_count','=',0)]}" groups="visa_process.group_service_request_finance_manager,visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                     <field name="draft_invoices_count" widget="statinfo"/>
                 </button>
             </xpath>

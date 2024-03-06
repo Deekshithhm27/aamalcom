@@ -5,7 +5,7 @@ class CreateAccountMoveWizard(models.TransientModel):
     _name = 'batch.invoice.creation.wizard'
     _description = 'Create Account Move Wizard'
 
-    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True)]")
+    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
     date_from = fields.Date(string='Date From')
     date_to = fields.Date(string='Date To')
 
@@ -65,17 +65,33 @@ class CreateAccountMoveWizard(models.TransientModel):
             particular.write({'particulars_line_ids': employee_lines})
 
 
-            # for draft_move in draft_account_moves:
-            #     draft_move.write({
-            #     'invoiced_date': fields.Date.today(),
-            #     'invoice_id': new_account_move.id,
-            #     'state':'posted'
-            # })
+            for draft_move in draft_account_moves:
+                draft_move.write({
+                'invoiced_date': fields.Date.today(),
+                'invoice_id': new_account_move.id,
+                'state':'posted'
+            })
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Success'),
+                'res_model': 'invoice.created.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_message': _('Invoice is created successfully.')}
+            }
 
 
 
         return {'type': 'ir.actions.act_window_close'}
 
 
+class InvoiceCreatedWizard(models.TransientModel):
+    _name = 'invoice.created.wizard'
+    _description = 'Invoice Created Wizard'
+
+    message = fields.Text(string='Message', readonly=True)
+
+    def close_wizard(self):
+        return {'type': 'ir.actions.act_window_close'}
 
 # Track invoice againt service request or payroll or direct----------
