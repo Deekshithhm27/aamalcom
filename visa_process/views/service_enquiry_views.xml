@@ -826,6 +826,7 @@
                             <field name="no_of_visa" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> -->
                             <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="hr_agency" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="coc_for_ewakala"/>
                         </group>
                         <group name="new_ev" attrs="{'invisible': [('service_request', '!=', 'new_ev')]}">

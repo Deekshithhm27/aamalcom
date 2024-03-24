@@ -65,6 +65,8 @@ class HrEmployee(models.Model):
     first_contract_date = fields.Date(compute='_compute_first_contract_date', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", store=True)
     contract_warning = fields.Boolean(string='Contract Warning', store=True, compute='_compute_contract_warning', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client")
 
+    hr_agency_id = fields.Many2one('hr.agency',string="Agency")
+
 
     @api.model
     def create(self, vals):

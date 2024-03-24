@@ -331,6 +331,7 @@ class ServiceEnquiry(models.Model):
 
     # Profession Details
     visa_profession = fields.Char(string="Visa Profession *")
+    hr_agency = fields.Char(string="Agency")
     
     visa_nationality_id = fields.Many2one('res.country',string="Visa Nationality *")
     visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
@@ -727,6 +728,7 @@ class ServiceEnquiry(models.Model):
             line.visa_religion = line.emp_visa_id.visa_religion
             line.no_of_visa = line.emp_visa_id.no_of_visa
             line.agency_allocation = line.emp_visa_id.visa_enjaz
+            line.hr_agency = line.emp_visa_id.hr_agency
 
 
     def action_confirm(self):

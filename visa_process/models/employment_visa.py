@@ -115,6 +115,8 @@ class EmploymentVisa(models.Model):
     dependent_document_ids = fields.One2many('dependent.documents','ev_dependent_document_id',string="Dependent Documents")
     medical_doc = fields.Binary(string="Medical Doc")
 
+    hr_agency = fields.Char(string="Agency")
+
     @api.onchange('medical_insurance_for')
     def fetch_medical_doc(self):
         doc_ids = self.env['visa.ref.documents'].search([('is_medical_doc','=',True)])
@@ -142,6 +144,7 @@ class EmploymentVisa(models.Model):
                 line.current_contact = line.employee_id.current_contact
                 line.current_phone_code_id = line.employee_id.current_phone_code_id
                 line.visa_religion = line.employee_id.religion
+                line.hr_agency = line.employee_id.hr_agency_id.name
 
 
 

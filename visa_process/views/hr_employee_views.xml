@@ -33,7 +33,7 @@
                 <field name="name" placeholder="Name as per Passport" required="True"/>
             </xpath>
             <xpath expr="//sheet/div[2]/h1" position="before">
-                <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'invisible': [('user_id', '!=', False)]}"/>
+                <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'invisible': [('custom_employee_type', '!=', 'external')]}"/>
                 <h2 class="d-flex">
                     <field name="sequence"/>
                 </h2>
@@ -99,6 +99,11 @@
                         <field name="notice_period"/>
                         <field name="working_days"/>
                         <field name="weekly_off_days"/>
+                    </group>
+                </group>
+                <group string="Agency Allocation" name="agency_allocation">
+                    <group>
+                        <field name="hr_agency_id"/>
                     </group>
                 </group>
             </xpath>

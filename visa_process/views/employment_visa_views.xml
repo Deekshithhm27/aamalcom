@@ -90,6 +90,11 @@
                             		<field name="working_hours"/>
                             	</group>
                             </group>
+                            <group string="Agency">
+                                <group>
+                                    <field name="hr_agency"/>
+                                </group>
+                            </group>
                 		</page>
                 		<page string="Visa Details">
                 			<group string="Visa Information">
