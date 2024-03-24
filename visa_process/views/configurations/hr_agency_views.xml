@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_agency_form" model="ir.ui.view">
+        <field name="name">Agency</field>
+        <field name="model">hr.agency</field>
+        <field name="arch" type="xml">
+            <form string="Agency">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Agency" groups="hr.group_hr_user"/>
+                    <group groups="hr.group_hr_user">
+                        <group>
+                           <field name="name"/>
+                           <field name="user_id" invisible="1"/>
+                           <field name="company_id" invisible="1"/>
+                           <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="hr_agency_tree" model="ir.ui.view">
+        <field name="name">Agency</field>
+        <field name="model">hr.agency</field>
+        <field name="arch" type="xml">
+            <tree string="Agency">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_hr_agency_filter" model="ir.ui.view">
+        <field name="name">hr.agency.tree</field>
+        <field name="model">hr.agency</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Agency"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_agency" model="ir.actions.act_window">
+        <field name="name">Agency</field>
+        <field name="res_model">hr.agency</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_hr_agency_filter"/>
+    </record>
+
+    
+</odoo>
