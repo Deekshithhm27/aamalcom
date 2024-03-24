@@ -547,7 +547,8 @@ class ServiceEnquiry(models.Model):
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
             print("----priceing",pricing_id)
-            if record.aamalcom_pay and record.service_request != 'transfer_req':
+            # iqama_card_req - payment will be collected offline
+            if record.aamalcom_pay and record.service_request != 'transfer_req' or record.service_request != 'iqama_card_req':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -599,6 +600,8 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
+            if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
             line.state = 'submitted'
             line.doc_uploaded = False
             if line.service_request:
@@ -678,6 +681,9 @@ class ServiceEnquiry(models.Model):
                     for srt in treasury_id:
                         if srt.state != 'done':
                             raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
+                        else:
+                            line.state = 'done'
+                            line.req_completion_date = fields.Datetime.now()
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
