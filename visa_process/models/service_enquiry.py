@@ -127,7 +127,7 @@ class ServiceEnquiry(models.Model):
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
     jawazat_doc_ref = fields.Char(string="Ref No.")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
-    payment_doc_ref = fields.Binary(string="Ref No.")
+    payment_doc_ref = fields.Char(string="Ref No.")
     residance_doc = fields.Binary(string="Residance Permit Document")
     residance_doc_ref = fields.Char(string="Ref No.")
     transfer_confirmation_doc = fields.Binary(string="Confirmation of Transfer")
@@ -231,6 +231,8 @@ class ServiceEnquiry(models.Model):
     issuance_doc_ref = fields.Char(string="Ref No.")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
     enjaz_doc_ref = fields.Char(string="Ref No.")
+    e_wakala_doc = fields.Binary(string="E Wakala Document")
+    e_wakala_doc_ref = fields.Char(string="Ref No.")
     upload_sec_doc = fields.Binary(string="SEC Letter")
     sec_doc_ref = fields.Char(string="Ref No.")
 
@@ -496,6 +498,21 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
             department_ids = [(6, 0, self.current_department_ids.ids)]
+            if line.service_request == 'new_ev':
+                if line.state == 'submitted':
+                    level = 'level1'
+                if line.state == 'payment_done':
+                    level = 'level2'
+                if line.state == 'approved' and line.assign_govt_emp_two == False:
+                    level = 'level1'
+                if line.state == 'approved' and line.assign_govt_emp_two != False:
+                    level = 'level2'
+
+            else:
+                if line.state == 'submitted':
+                    level = 'level1'
+                else:
+                    level = 'level2'
 
             return {
                 'name': 'Select Employee',
@@ -503,7 +520,7 @@ class ServiceEnquiry(models.Model):
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids},
+                'context': {'default_department_ids': department_ids,'default_assign_type':'assign','default_levels':level},
             }
 
     def open_reassign_employee_wizard(self):
@@ -514,7 +531,7 @@ class ServiceEnquiry(models.Model):
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids},
+                'context': {'default_department_ids': department_ids,'default_assign_type':'reassign','default_levels':'level2'},
             }
 
 
@@ -577,10 +594,11 @@ class ServiceEnquiry(models.Model):
                 else:
                     raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
             if record.letter_print_type_id:
-                record.service_enquiry_pricing_ids.create({
-                    'name':"Letter Cost",
-                    'amount':record.letter_cost,
-                    'service_enquiry_id':record.id,
+                for print_type in record.letter_print_type_id:
+                    record.service_enquiry_pricing_ids.create({
+                        'name': print_type.name,  # Assuming this is the name you want to set
+                        'amount': print_type.cost,  # Assuming letter_cost is a field in the current record
+                        'service_enquiry_id': record.id,
                     })
             if record.service_request == 'transfer_req':
                 record.service_enquiry_pricing_ids.create({
@@ -601,6 +619,9 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
+            if line.service_request == 'new_ev':
+                if not line.aamalcom_pay and not line.self_pay:
+                    raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
                 raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
             line.state = 'submitted'
@@ -614,6 +635,17 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_initiation'
             line.doc_uploaded = False
+
+    def action_new_ev_require_payment_confirmation(self):
+        for line in self:
+            line.state = 'payment_initiation'
+            line.doc_uploaded = False
+
+
+    def action_new_ev_submit_for_approval(self):
+        for line in self:
+            line.state = 'waiting_op_approval'
+
     def action_submit_for_approval(self):
         for line in self:
             line.state = 'waiting_op_approval'
@@ -645,17 +677,25 @@ class ServiceEnquiry(models.Model):
             if service_request_treasury_id:
                 line.state = 'approved'
                 line.fin_approver_id = current_employee
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req' or line.service_request == 'new_ev':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req':
                     line.assign_govt_emp_two = True
+                if line.service_request == 'new_ev':
+                    line.assign_govt_emp_one = True
+
+    def action_new_ev_docs_uploaded(self):
+        for line in self:
+            line.assign_govt_emp_two = True
+
+
 
 
     def action_submit_payment_confirmation(self):
         for line in self:
             line.state = 'payment_done'
             line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev':
                 line.assign_govt_emp_two = True
-            if line.service_request == 'prof_change_qiwa' or line.service_request == 'new_ev':
+            if line.service_request == 'prof_change_qiwa':
                 line.doc_uploaded = True
 
     
@@ -760,18 +800,6 @@ class ServiceEnquiry(models.Model):
 
     # New Physical Iqama Card Request(cost 1,000sar) end
 
- 
-    # Issuance of New EV start
-    def action_submit_new_ev(self):
-        for line in self:
-            line.state = 'submitted'
-
-    def action_new_ev_process_complete(self):
-        for line in self:
-            line.state='done'
-
-    # Issuance of New EV end
-
 
 
     @api.model_create_multi
@@ -800,7 +828,7 @@ class ServiceEnquiry(models.Model):
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc')
+        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
@@ -811,16 +839,18 @@ class ServiceEnquiry(models.Model):
             line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc or line.upload_bank_loan_doc or line.upload_rental_agreement_doc or \
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc:
+            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
                 line.doc_uploaded = True
-            elif line.upload_enjaz_doc and line.upload_issuance_doc:
+            elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
                 
             if (line.residance_doc or line.transfer_confirmation_doc) and line.muqeem_print_doc:
+                line.final_doc_uploaded = True
+            elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False
