@@ -33,7 +33,7 @@ class EmployeeSelectionWizard(models.TransientModel):
                     if active_enquiry.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval'):
                         active_enquiry.first_govt_employee_id = self.employee_id.id
                         active_enquiry.assigned_govt_emp_one = True
-                    if active_enquiry.state in ('payment_done','approved'):
+                    if active_enquiry.state in ('payment_done','approved','client_approved'):
                         if active_enquiry.service_request == 'iqama_card_req' and active_enquiry.state == 'payment_done':
                             active_enquiry.first_govt_employee_id = self.employee_id.id
                             active_enquiry.assigned_govt_emp_one = True

@@ -27,7 +27,15 @@
 
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('assigned_govt_emp_two','!=',True),'|',('state','not in',('approved','payment_done')),'|',('final_doc_uploaded', '=',False),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
-                    <!-- EV buttons -->
+                    <!-- EV buttons end-->
+                    <!-- transfer request Initiation start -->
+                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_client_spoc_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_client_approval'),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_request_fin_payment_confirmation" string="Request Payment Confirmation" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),('second_level_doc_uploaded','!=',True)]}" groups="visa_process.group_service_request_employee"/>
+                    
+
+                    <!-- Transfer request initiation end -->
 
                     <!-- approval actions for hr_card, iqama_renewal and Profession change qiwa -->
 
@@ -104,6 +112,7 @@
                         <field name="approver_id" invisible="1"/>
                         <field name="approver_user_id" invisible="1"/>
                         <field name="doc_uploaded" invisible="1"/>
+                        <field name="second_level_doc_uploaded" invisible="1"/>
                         <field name="final_doc_uploaded" invisible="1"/>
                         <field name="is_service_request_client_spoc" invisible="1"/>
                         <!-- <separator string="Transfer Type" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/> -->
@@ -187,10 +196,17 @@
                                     <field name="upload_hr_card" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                     <field name="hr_card_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
-                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
-                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
-                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    
                                 </group>
+                                <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    
+                                </group>
+
                                 <group string="Profession Change Document" attrs="{'invisible':[('service_request', '!=','prof_change_qiwa')]}">
                                     <field name="profession_change_doc" attrs="{'readonly': [('state', '!=', 'submitted')]}"/>
                                     <field name="profession_change_doc_ref" attrs="{'readonly': [('state', '!=', 'submitted')]}"/>
@@ -202,10 +218,10 @@
                                     <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                                 </group>
                             </group>
-                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req')),('second_govt_employee_id','=',False)]}">
-                                <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
-                                    <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
-                                    <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa')),('second_govt_employee_id','=',False)]}">
+                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group string="Residance Permit" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
                                     <field name="residance_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
@@ -216,8 +232,28 @@
                                     <field name="prof_change_final_ref" attrs="{'readonly': [('state', '!=', 'payment_done')]}"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
-                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                </group>
+                            </group>
+                            <!-- below group is especially for Transfer request initiation -->
+                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted')),'|',('service_request', 'not in', ('transfer_req')),('second_govt_employee_id','=',False)]}">
+                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                
+                                <group string="Confirmation of Sponsorship" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_sponsorship_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="sponsorship_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                <group string="Muqeem Print">
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                </group>
+                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
+                                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
                                 </group>
                             </group>
 

@@ -41,6 +41,8 @@ class ServiceEnquiry(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
+        ('waiting_client_approval', 'Waiting Client Spoc Approval'),
+        ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
@@ -126,12 +128,14 @@ class ServiceEnquiry(models.Model):
     hr_card_ref = fields.Char(string="Ref No.")
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
     jawazat_doc_ref = fields.Char(string="Ref No.")
+    upload_sponsorship_doc = fields.Binary(string="Confirmation of Sponsorship")
+    sponsorship_doc_ref = fields.Char(string="Ref No.")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
     payment_doc_ref = fields.Char(string="Ref No.")
     residance_doc = fields.Binary(string="Residance Permit Document")
     residance_doc_ref = fields.Char(string="Ref No.")
     transfer_confirmation_doc = fields.Binary(string="Confirmation of Transfer")
-    transfer_confirmation_ref = fields.Binary(string="Ref No.")
+    transfer_confirmation_ref = fields.Char(string="Ref No.")
     muqeem_print_doc = fields.Binary(string="Muqeem Print Document")
     muqeem_print_doc_ref = fields.Char(string="Ref No.")
 
@@ -381,6 +385,7 @@ class ServiceEnquiry(models.Model):
     request_note = fields.Text(string="Request Query",copy=False)  
 
     doc_uploaded = fields.Boolean(string="Document uploaded",default=False,copy=False)
+    second_level_doc_uploaded = fields.Boolean(string="Second Leve Document uploaded",default=False,copy=False)
     final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False,copy=False)
     total_treasury_requests = fields.Integer(string="Request Details",compute="_compute_total_treasury_requests")
 
@@ -459,7 +464,7 @@ class ServiceEnquiry(models.Model):
                 if not line.service_request_config_id.service_request == 'iqama_card_req':
                     line.current_department_ids = False
                     for lines in line.service_request_config_id.service_department_lines:
-                        if line.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval'):
+                        if line.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval','waiting_client_approval'):
                             if lines.sequence == 1:
                                 # line.current_department_id = lines.department_id.id
                                 department_ids.append((4,lines.department_id.id))
@@ -467,7 +472,7 @@ class ServiceEnquiry(models.Model):
                                 break
                             else:
                                 line.current_department_ids = False
-                        elif line.state in ('payment_done','approved'):
+                        elif line.state in ('payment_done','approved','client_approved'):
                             if lines.sequence == 2:
                                 # line.current_department_id = lines.department_id.id
                                 department_ids.append((4,lines.department_id.id))
@@ -648,7 +653,16 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_for_approval(self):
         for line in self:
-            line.state = 'waiting_op_approval'
+            if line.service_request == 'transfer_req' and line.aamalcom_pay == True and line.billable_to_client == True:
+                line.state = 'waiting_client_approval'
+            else:
+                line.state = 'waiting_op_approval'
+
+    def action_client_spoc_approve(self):
+        for line in self:
+            line.state = 'client_approved'
+            line.assign_govt_emp_two = True
+
     def action_op_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
 
@@ -660,6 +674,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'waiting_fin_approval'
             line.gm_approver_id = current_employee
+
+    def action_request_fin_payment_confirmation(self):
+        for line in self:
+            line.state = 'waiting_fin_approval'
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
@@ -677,8 +695,10 @@ class ServiceEnquiry(models.Model):
             if service_request_treasury_id:
                 line.state = 'approved'
                 line.fin_approver_id = current_employee
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
                     line.assign_govt_emp_two = True
+                if line.service_request == 'transfer_req':
+                    line.state = 'payment_done'
                 if line.service_request == 'new_ev':
                     line.assign_govt_emp_one = True
 
@@ -821,7 +841,7 @@ class ServiceEnquiry(models.Model):
 
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
-        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
+        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
@@ -832,7 +852,7 @@ class ServiceEnquiry(models.Model):
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
-            line.upload_gosi_doc or line.upload_hr_card or line.upload_jawazat_doc or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
             line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
@@ -845,10 +865,14 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.doc_uploaded = True
+            elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
+                line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
+            if line.jawazat_doc_ref:
+                line.second_level_doc_uploaded = True
                 
-            if (line.residance_doc or line.transfer_confirmation_doc) and line.muqeem_print_doc:
+            if line.upload_sponsorship_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.final_doc_uploaded = True

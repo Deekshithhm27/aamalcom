@@ -46,6 +46,6 @@ class ServiceRequestTreasury(models.Model):
 
     def action_upload_confirmation(self):
         for line in self:
-            if line.service_request_id.service_request == 'new_ev':
+            if line.service_request_id.service_request == 'new_ev' or line.service_request_id.service_request == 'transfer_req':
                 line.service_request_id.write({'upload_payment_doc':line.confirmation_doc})
             line.state = 'done'
