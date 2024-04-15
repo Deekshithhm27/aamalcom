@@ -869,7 +869,7 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
-            if line.jawazat_doc_ref:
+            if line.upload_jawazat_doc:
                 line.second_level_doc_uploaded = True
                 
             if line.upload_sponsorship_doc and line.muqeem_print_doc:
