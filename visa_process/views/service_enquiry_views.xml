@@ -252,8 +252,8 @@
                                     <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
                                 </group>
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
-                                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
+                                    <field name="upload_payment_doc" readonly="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
 

@@ -397,9 +397,16 @@ class ServiceEnquiry(models.Model):
     @api.depends('user_id.groups_id')
     def _compute_is_service_request_client_spoc(self):
         """Compute function to check if the user belongs to group_service_request_client_spoc"""
-        spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
+        client_spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
+        aamalcom_spoc_group = self.env.ref('visa_process.group_service_request_manager')
+        fin_group = self.env.ref('visa_process.group_service_request_finance_manager')
         for record in self:
-            record.is_service_request_client_spoc = spoc_group in record.env.user.groups_id
+            if client_spoc_group:
+                record.is_service_request_client_spoc = client_spoc_group in record.env.user.groups_id
+            if aamalcom_spoc_group:
+                record.is_service_request_client_spoc = aamalcom_spoc_group in record.env.user.groups_id
+            if fin_group:
+                record.is_service_request_client_spoc = fin_group in record.env.user.groups_id
 
     # @api.onchange('emp_visa_id')
     # def update_employee_id(self):
@@ -677,7 +684,7 @@ class ServiceEnquiry(models.Model):
 
     def action_request_fin_payment_confirmation(self):
         for line in self:
-            line.state = 'waiting_fin_approval'
+            line.state = 'waiting_op_approval'
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
