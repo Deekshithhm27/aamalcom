@@ -24,6 +24,7 @@
         'reports/service_request_treasury_report.xml',
         'reports/action.xml',
 
+        'views/configurations/hr_agency_views.xml',
         'views/configurations/hr_employee_company_views.xml',
         'views/configurations/employment_duration_views.xml',
         'views/configurations/letter_print_type_views.xml',
@@ -36,6 +37,7 @@
         'views/hr_employee_views.xml',
         'views/res_bank_views.xml',
         'views/res_users_views.xml',
+        'views/res_company_views.xml',
         
         'views/employment_visa_views.xml',
         'views/local_transfer_views.xml',

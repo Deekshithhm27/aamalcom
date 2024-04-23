@@ -28,11 +28,11 @@ class LocalTransfer(models.Model):
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
-    birthday = fields.Date(string="Date of Birth *",tracking=True)
-    private_email = fields.Char(string="Email Id *",tracking=True)
-    country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
-    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
-    contact_no = fields.Char(string="Cell No. (Absher) *")
+    birthday = fields.Date(string="Date of Birth *",tracking=True,copy=False)
+    private_email = fields.Char(string="Email Id *",tracking=True,copy=False)
+    country_id = fields.Many2one('res.country',string="Nationality",tracking=True,copy=False)
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code",copy=False)
+    contact_no = fields.Char(string="Cell No. (Absher) *",copy=False)
 
     marital = fields.Selection([
         ('single', 'Single'),
@@ -40,37 +40,37 @@ class LocalTransfer(models.Model):
         ('cohabitant', 'Legal Cohabitant'),
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
-    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
-    iqama_no = fields.Char(string="Iqama No *")
+    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True,copy=False)
+    iqama_no = fields.Char(string="Iqama No *",copy=False)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
 
     # Employment details
-    doj = fields.Date(string="Projected Date of Joining",tracking=True)
+    doj = fields.Date(string="Projected Date of Joining",tracking=True,copy=False)
     # employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
     employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
-        ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment *",tracking=True)
-    working_days = fields.Char(string="Working Days *")
-    working_hours = fields.Char(string="Working Hours *")
-    annual_vacation = fields.Char(string="Annual Vacation *")
+        ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment *",tracking=True,copy=False)
+    working_days = fields.Char(string="Working Days *",copy=False)
+    working_hours = fields.Char(string="Working Hours *",copy=False)
+    annual_vacation = fields.Char(string="Annual Vacation *",copy=False)
 
     
     
 
     # # Documents
-    passport_size_photo = fields.Binary(string="Passport Size Photo")
-    passport_copy = fields.Binary(string="Passport Copy *")
-    dependents_if_any = fields.Binary(string="Dependents if any")
-    signed_offer_letter = fields.Binary(string="Signed Offer Letter")
-    bank_iban_letter = fields.Binary(string="Bank Iban Letter")
-    self_iqama = fields.Binary(string="Iqama")
-    certificate_1 = fields.Binary(string="Certificates")
-    certificate_2 = fields.Binary(string="Certificates")
-    other_doc_1 = fields.Binary(string="Others")
-    other_doc_2 = fields.Binary(string="Others")
-    other_doc_3 = fields.Binary(string="Others")
-    other_doc_4 = fields.Binary(string="Others")
+    passport_size_photo = fields.Binary(string="Passport Size Photo",copy=False)
+    passport_copy = fields.Binary(string="Passport Copy *",copy=False)
+    dependents_if_any = fields.Binary(string="Dependents if any",copy=False)
+    signed_offer_letter = fields.Binary(string="Signed Offer Letter",copy=False)
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter",copy=False)
+    self_iqama = fields.Binary(string="Iqama",copy=False)
+    certificate_1 = fields.Binary(string="Certificates",copy=False)
+    certificate_2 = fields.Binary(string="Certificates",copy=False)
+    other_doc_1 = fields.Binary(string="Others",copy=False)
+    other_doc_2 = fields.Binary(string="Others",copy=False)
+    other_doc_3 = fields.Binary(string="Others",copy=False)
+    other_doc_4 = fields.Binary(string="Others",copy=False)
     
 
     
@@ -110,7 +110,7 @@ class LocalTransfer(models.Model):
                 line.marital = line.employee_id.marital
                 line.employment_duration = line.employee_id.employment_duration
                 line.doj = line.employee_id.doj
-                line.work_location_id = line.employee_id.work_location_id
+                line.work_location = line.employee_id.work_location
                 line.birthday = line.employee_id.birthday
                 line.profession_en = line.employee_id.iqama
                 line.iqama = line.employee_id.iqama

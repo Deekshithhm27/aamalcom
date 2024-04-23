@@ -7,7 +7,9 @@
 	        <form>
 	            <group>
 	                <field name="employee_id"/>
-	                <field name="department_ids" widget="many2many_tags"/>
+	                <field name="department_ids" widget="many2many_tags" readonly="1"/>
+	                <field name="assign_type" readonly="1" invisible="1"/>
+	                <field name="levels" readonly="1" invisible="1"/>
 	            </group>
 	            <footer>
 	                <button string="Apply" class="btn-primary" name="apply_selected_employee" type="object"/>

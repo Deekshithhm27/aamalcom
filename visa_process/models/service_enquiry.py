@@ -24,15 +24,25 @@ class ServiceEnquiry(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
     
-    client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
+    client_id = fields.Many2one('res.partner',string="Client Spoc",default=lambda self: self.env.user.partner_id)
+    client_parent_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
+    # priority = fields.Selection([
+    #     ('clear','Clear'),
+    #     ('urgent', 'Urgent'),
+    #     ('normal', 'Normal'),
+    #     ('lowand', 'Lowand'),
+    #     ('high','High')],
+    #     copy=False, default='normal', required=True)
 
     # below values are updated on change of service request
-    approver_id = fields.Many2one('hr.employee',string="Approver")
-    approver_user_id = fields.Many2one('res.users',string="Approver User Id")
+    approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
+    approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
+        ('waiting_client_approval', 'Waiting Client Spoc Approval'),
+        ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
@@ -40,9 +50,9 @@ class ServiceEnquiry(models.Model):
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
-    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]")
-    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True,copy=False)
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
+    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
 
 
     @api.onchange('service_request_config_id')
@@ -69,12 +79,15 @@ class ServiceEnquiry(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True)
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True,copy=False)
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
     transfer_amount = fields.Float(string="Amount")
+
+    is_penalty_applicable = fields.Boolean(string="Is Penalty Applicable?",copy=False)
+    penalty_cost = fields.Float(string="Penalty Cost",copy=False)
     
 
 
@@ -112,51 +125,92 @@ class ServiceEnquiry(models.Model):
     medical_doc = fields.Binary(string="Medical Doc")
 
     upload_hr_card = fields.Binary(string="HR Card Document")
+    hr_card_ref = fields.Char(string="Ref No.")
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
+    jawazat_doc_ref = fields.Char(string="Ref No.")
+    upload_sponsorship_doc = fields.Binary(string="Confirmation of Sponsorship")
+    sponsorship_doc_ref = fields.Char(string="Ref No.")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
+    payment_doc_ref = fields.Char(string="Ref No.")
     residance_doc = fields.Binary(string="Residance Permit Document")
+    residance_doc_ref = fields.Char(string="Ref No.")
     transfer_confirmation_doc = fields.Binary(string="Confirmation of Transfer")
+    transfer_confirmation_ref = fields.Char(string="Ref No.")
     muqeem_print_doc = fields.Binary(string="Muqeem Print Document")
+    muqeem_print_doc_ref = fields.Char(string="Ref No.")
 
     upload_upgrade_insurance_doc = fields.Binary(string="Confirmation of Insurance upgarde Document")
+    upgarde_ins_doc_ref = fields.Char(string="Ref No.")
+
     request_date = fields.Datetime(string="Request Date",default=fields.Datetime.now)
 
-    upload_iqama_card = fields.Binary(string="Upload Iqama Card")
     upload_iqama_card_doc = fields.Binary(string="Upload Iqama Card")
+    iqama_card_ref = fields.Char(string="Ref No.")
     upload_iqama_card_no_doc = fields.Binary(string="Upload Iqama Card")
+    iqama_card_no_ref = fields.Char(string="Ref No.")
     upload_qiwa_doc = fields.Binary(string="Upload Qiwa Contract")
+    qiwa_doc_ref = fields.Char(string="Ref No.")
     upload_gosi_doc = fields.Binary(string="Upload GOSI Update")
+    gosi_doc_ref = fields.Char(string="Ref No.")
     profession_change_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_doc_ref = fields.Char(string="Ref No.")
     profession_change_final_doc = fields.Binary(string="Profession Change Req. Doc")
+    prof_change_final_ref = fields.Char(string="Ref No.")
     upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
+    salary_certificate_ref = fields.Char(string="Ref No.")
     upload_bank_letter_doc = fields.Binary(string="Bank Letter")
+    bank_letter_ref = fields.Char(string="Ref No.")
     upload_vehicle_lease_doc = fields.Binary(string="Letter for Vehicle lease")
+    vehicle_lease_ref = fields.Char(string="Ref No.")
     upload_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
+    apartment_lease_ref = fields.Char(string="Ref No.")
     upload_family_visa_letter_doc = fields.Binary(string="Family Visa Letter")
+    family_visa_letter_doc_ref = fields.Char(string="Ref No.")
     upload_visit_visa_app_doc = fields.Binary(string="Upload Visit Visa application")
+    visit_visa_app_doc_ref = fields.Char(string="Ref No.")
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
+    family_visit_visa_doc_ref = fields.Char(string="Ref No.")
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
+    employment_contract_doc_ref = fields.Char(string="Ref No.")
     upload_cultural_letter_doc = fields.Binary(string="Cultural Letter")
+    cultural_letter_doc_ref = fields.Char(string="Ref No.")
     draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
     updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
     upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
+    istiqdam_form_doc_ref = fields.Char(string="Ref No.")
     upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
+    confirmation_of_exit_reentry_ref = fields.Char(string="Ref No.")
     upload_exit_reentry_visa = fields.Binary(string="Exit Re-entry Visa")
+    exit_reentry_visa_ref = fields.Char(string="Ref No.")
     upload_final_exit_issuance_doc = fields.Binary(string="Final Exit issuance doc")
+    final_exit_issuance_doc_ref = fields.Char(string="Ref No.")
     upload_soa_doc = fields.Binary(string="SOA Doc")
+    soa_doc_ref = fields.Char(string="Ref No.")
     upload_emp_secondment_or_cub_contra_ltr_doc = fields.Binary(string="Employee secondment / Subcontract Document")
+    emp_secondment_ltr_doc_ref = fields.Char(string="Ref No.")
     upload_car_loan_doc = fields.Binary(string="Car Loan Document")
+    car_loan_doc_ref = fields.Char(string="Ref No.")
     upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
+    bank_loan_doc_ref = fields.Char(string="Ref No.")
     upload_rental_agreement_doc = fields.Binary(string="Rental Agreement Document")
+    rental_agreement_doc_ref = fields.Char(string="Ref No.")
     upload_exception_letter_doc = fields.Binary(string="Exception Document")
+    exception_letter_doc_ref = fields.Char(string="Ref No.")
     upload_attestation_waiver_letter_doc = fields.Binary(string="Attestation Waiver Document")
+    attestation_waiver_letter_doc_ref = fields.Char(string="Ref No.")
     upload_embassy_letter_doc = fields.Binary(string="Embassy Letter")
+    embassy_letter_doc_ref = fields.Char(string="Ref No.")
     upload_istiqdam_letter_doc = fields.Binary(string="Istiqdam Letter")
+    istiqdam_letter_doc_ref = fields.Char(string="Ref No.")
     # upload_sce_letter_doc = fields.Binary(string="SCE Letter")
     upload_bilingual_salary_certificate_doc = fields.Binary(string="Bilingual Salary Certificate")
+    bilingual_salary_certificate_doc_ref = fields.Char(string="Ref No.")
     upload_contract_letter_doc = fields.Binary(string="Contract Letter")
+    contract_letter_doc_ref = fields.Char(string="Ref No.")
     upload_bank_account_opening_letter_doc = fields.Binary(string="Bank account Opening Letter")
+    bank_account_opening_letter_doc_ref = fields.Char(string="Ref No.")
     upload_bank_limit_upgrading_letter_doc = fields.Binary(string="Bank Limit upgrading Letter")
+    bank_limit_upgrading_letter_doc_ref = fields.Char(string="Ref No.")
 
     
     reason_for_loss_of_iqama = fields.Text(string="Reason for loss of Iqama")
@@ -170,16 +224,21 @@ class ServiceEnquiry(models.Model):
     # EV Fields
 
     visa_country_id = fields.Many2one('res.country',string="Visa issuing country")
-    visa_state_id = fields.Many2one('res.country.state',string="Visa issuing city",domain="[('country_id', '=', visa_country_id)]")
+    visa_state_id = fields.Char(string="Visa issuing city")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion")
     no_of_visa = fields.Integer(string="No of Visa")
-    profession = fields.Char(string="Profession")
+    profession = fields.Char(string="Profession",tracking=True)
     agency_allocation = fields.Text(string="Allocation of Agency (E wakala)")
     coc_for_ewakala = fields.Boolean(string="COC for Ewakala",compute="update_coc_for_ewakala",store=True)
 
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
+    issuance_doc_ref = fields.Char(string="Ref No.")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
+    enjaz_doc_ref = fields.Char(string="Ref No.")
+    e_wakala_doc = fields.Binary(string="E Wakala Document")
+    e_wakala_doc_ref = fields.Char(string="Ref No.")
     upload_sec_doc = fields.Binary(string="SEC Letter")
+    sec_doc_ref = fields.Char(string="Ref No.")
 
     visa_document = fields.Binary(string="Visa Document")
     chamber = fields.Selection([('yes','Yes'),('no','No')],string="Chamber")
@@ -251,26 +310,26 @@ class ServiceEnquiry(models.Model):
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
     
-    probation_term = fields.Char(string="Probation Term",tracking=True)
-    notice_period = fields.Char(string="Notice Period",tracking=True)
-    working_days = fields.Char(string="Working Days *")
-    working_hours = fields.Char(string="Working Hours *")
-    annual_vacation = fields.Char(string="Annual Vacation *")
-    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
+    probation_term = fields.Char(string="Probation Term",tracking=True,copy=False)
+    notice_period = fields.Char(string="Notice Period",tracking=True,copy=False)
+    working_days = fields.Char(string="Working Days *",copy=False)
+    working_hours = fields.Char(string="Working Hours *",copy=False)
+    annual_vacation = fields.Char(string="Annual Vacation *",copy=False)
+    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True,copy=False)
 
     # # Documents
-    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
-    passport_copy = fields.Binary(string="Passport copy *")
-    border_copy = fields.Binary(string="Border Id *")
-    attested_degree = fields.Binary(string="Attested Degree copy *")
-    attested_visa_page = fields.Binary(string="Attested visa page *")
-    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
-    certificate_1 = fields.Binary(string="Certificates *")
-    certificate_2 = fields.Binary(string="Certificates")
-    other_doc_1 = fields.Binary(string="Others")
-    other_doc_2 = fields.Binary(string="Others")
-    other_doc_3 = fields.Binary(string="Others")
-    other_doc_4 = fields.Binary(string="Others")
+    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *",copy=False)
+    passport_copy = fields.Binary(string="Passport copy *",copy=False)
+    border_copy = fields.Binary(string="Border Id *",copy=False)
+    attested_degree = fields.Binary(string="Attested Degree copy *",copy=False)
+    attested_visa_page = fields.Binary(string="Attested visa page *",copy=False)
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter *",copy=False)
+    certificate_1 = fields.Binary(string="Certificates *",copy=False)
+    certificate_2 = fields.Binary(string="Certificates",copy=False)
+    other_doc_1 = fields.Binary(string="Others",copy=False)
+    other_doc_2 = fields.Binary(string="Others",copy=False)
+    other_doc_3 = fields.Binary(string="Others",copy=False)
+    other_doc_4 = fields.Binary(string="Others",copy=False)
     
     
     
@@ -278,6 +337,7 @@ class ServiceEnquiry(models.Model):
 
     # Profession Details
     visa_profession = fields.Char(string="Visa Profession *")
+    hr_agency = fields.Char(string="Agency")
     
     visa_nationality_id = fields.Many2one('res.country',string="Visa Nationality *")
     visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
@@ -285,48 +345,48 @@ class ServiceEnquiry(models.Model):
     no_of_visa = fields.Integer(string="No of Visa *")
     visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
     visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender *")
-    qualification = fields.Char(string="Education Qualification *")
+    qualification = fields.Char(string="Education Qualification *",copy=False)
 
-    iqama_designation = fields.Char(string="Designation on Iqama (exact)")
-    attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural")
+    iqama_designation = fields.Char(string="Designation on Iqama (exact)",copy=False)
+    attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural",copy=False)
     
-    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
-    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
+    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?",copy=False)
     
     dependent_document_ids = fields.One2many('dependent.documents','ev_enq_dependent_document_id',string="Dependent Documents")
 
-    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id')
+    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
 
-    total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
+    total_amount = fields.Monetary(string="Total Amount" , readonly=True, compute="_compute_amount")
 
     
-    assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee")
-    assigned_govt_emp_one = fields.Boolean(string="Assigned First Govt Employee")
-    assign_govt_emp_two = fields.Boolean(string="Assign Second Govt Employee")
-    assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee")
-    first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True)
-    second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True)
+    assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee",copy=False)
+    assigned_govt_emp_one = fields.Boolean(string="Assigned First Govt Employee",copy=False)
+    assign_govt_emp_two = fields.Boolean(string="Assign Second Govt Employee",copy=False)
+    assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee",copy=False)
+    first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True,copy=False)
+    second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True,copy=False)
 
     current_department_ids = fields.Many2many('hr.department','service_enquiry_dept_ids',string="Department",compute="update_departments")
 
-    req_completion_date = fields.Datetime(string="Request Completion Date")
+    req_completion_date = fields.Datetime(string="Request Completion Date",copy=False)
 
     # below fields are to track the approvers
 
-    op_approver_id = fields.Many2one('hr.employee',string="Approved Operation Manager")
-    gm_approver_id = fields.Many2one('hr.employee',string="Approved General Manager")
-    fin_approver_id = fields.Many2one('hr.employee',string="Approved Finance Manager")
+    op_approver_id = fields.Many2one('hr.employee',string="Approved Operation Manager",copy=False)
+    gm_approver_id = fields.Many2one('hr.employee',string="Approved General Manager",copy=False)
+    fin_approver_id = fields.Many2one('hr.employee',string="Approved Finance Manager",copy=False)
 
-    request_note = fields.Text(string="Request Query")  
+    request_note = fields.Text(string="Request Query",copy=False)  
 
-    doc_uploaded = fields.Boolean(string="Document uploaded",default=False)
-    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
+    doc_uploaded = fields.Boolean(string="Document uploaded",default=False,copy=False)
+    second_level_doc_uploaded = fields.Boolean(string="Second Leve Document uploaded",default=False,copy=False)
+    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False,copy=False)
     total_treasury_requests = fields.Integer(string="Request Details",compute="_compute_total_treasury_requests")
 
     is_service_request_client_spoc = fields.Boolean(
@@ -337,9 +397,16 @@ class ServiceEnquiry(models.Model):
     @api.depends('user_id.groups_id')
     def _compute_is_service_request_client_spoc(self):
         """Compute function to check if the user belongs to group_service_request_client_spoc"""
-        spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
+        client_spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
+        aamalcom_spoc_group = self.env.ref('visa_process.group_service_request_manager')
+        fin_group = self.env.ref('visa_process.group_service_request_finance_manager')
         for record in self:
-            record.is_service_request_client_spoc = spoc_group in record.env.user.groups_id
+            if client_spoc_group:
+                record.is_service_request_client_spoc = client_spoc_group in record.env.user.groups_id
+            if aamalcom_spoc_group:
+                record.is_service_request_client_spoc = aamalcom_spoc_group in record.env.user.groups_id
+            if fin_group:
+                record.is_service_request_client_spoc = fin_group in record.env.user.groups_id
 
     # @api.onchange('emp_visa_id')
     # def update_employee_id(self):
@@ -367,6 +434,10 @@ class ServiceEnquiry(models.Model):
             if line.aamalcom_pay == True:
                 line.self_pay = False
                 line.employee_pay = False
+            else:
+                line.billable_to_client = False
+                line.billable_to_aamalcom = False
+
     @api.onchange('employee_pay')
     def update_fees_paid_by_employee(self):
         for line in self:
@@ -400,7 +471,7 @@ class ServiceEnquiry(models.Model):
                 if not line.service_request_config_id.service_request == 'iqama_card_req':
                     line.current_department_ids = False
                     for lines in line.service_request_config_id.service_department_lines:
-                        if line.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval'):
+                        if line.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval','waiting_client_approval'):
                             if lines.sequence == 1:
                                 # line.current_department_id = lines.department_id.id
                                 department_ids.append((4,lines.department_id.id))
@@ -408,7 +479,7 @@ class ServiceEnquiry(models.Model):
                                 break
                             else:
                                 line.current_department_ids = False
-                        elif line.state in ('payment_done','approved'):
+                        elif line.state in ('payment_done','approved','client_approved'):
                             if lines.sequence == 2:
                                 # line.current_department_id = lines.department_id.id
                                 department_ids.append((4,lines.department_id.id))
@@ -439,6 +510,21 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
             department_ids = [(6, 0, self.current_department_ids.ids)]
+            if line.service_request == 'new_ev':
+                if line.state == 'submitted':
+                    level = 'level1'
+                if line.state == 'payment_done':
+                    level = 'level2'
+                if line.state == 'approved' and line.assign_govt_emp_two == False:
+                    level = 'level1'
+                if line.state == 'approved' and line.assign_govt_emp_two != False:
+                    level = 'level2'
+
+            else:
+                if line.state == 'submitted':
+                    level = 'level1'
+                else:
+                    level = 'level2'
 
             return {
                 'name': 'Select Employee',
@@ -446,7 +532,7 @@ class ServiceEnquiry(models.Model):
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids},
+                'context': {'default_department_ids': department_ids,'default_assign_type':'assign','default_levels':level},
             }
 
     def open_reassign_employee_wizard(self):
@@ -457,7 +543,7 @@ class ServiceEnquiry(models.Model):
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids},
+                'context': {'default_department_ids': department_ids,'default_assign_type':'reassign','default_levels':'level2'},
             }
 
 
@@ -490,7 +576,9 @@ class ServiceEnquiry(models.Model):
             record.service_enquiry_pricing_ids = False
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
-            if record.aamalcom_pay and record.service_request != 'transfer_req':
+            print("----priceing",pricing_id)
+            # iqama_card_req - payment will be collected offline
+            if record.aamalcom_pay and record.service_request != 'transfer_req' or record.service_request != 'iqama_card_req':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -518,15 +606,22 @@ class ServiceEnquiry(models.Model):
                 else:
                     raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
             if record.letter_print_type_id:
-                record.service_enquiry_pricing_ids.create({
-                    'name':"Letter Cost",
-                    'amount':record.letter_cost,
-                    'service_enquiry_id':record.id,
+                for print_type in record.letter_print_type_id:
+                    record.service_enquiry_pricing_ids.create({
+                        'name': print_type.name,  # Assuming this is the name you want to set
+                        'amount': print_type.cost,  # Assuming letter_cost is a field in the current record
+                        'service_enquiry_id': record.id,
                     })
             if record.service_request == 'transfer_req':
                 record.service_enquiry_pricing_ids.create({
                     'name':record.service_request_config_id.name,
                     'amount':record.transfer_amount,
+                    'service_enquiry_id':record.id,
+                    })
+            if record.is_penalty_applicable == True:
+                record.service_enquiry_pricing_ids.create({
+                    'name':'Penalty Charges',
+                    'amount':record.penalty_cost,
                     'service_enquiry_id':record.id,
                     })
            
@@ -536,6 +631,11 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
+            if line.service_request == 'new_ev':
+                if not line.aamalcom_pay and not line.self_pay:
+                    raise ValidationError('Please select who needs to pay fees.')
+            if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
             line.state = 'submitted'
             line.doc_uploaded = False
             if line.service_request:
@@ -547,9 +647,29 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_initiation'
             line.doc_uploaded = False
-    def action_submit_for_approval(self):
+
+    def action_new_ev_require_payment_confirmation(self):
+        for line in self:
+            line.state = 'payment_initiation'
+            line.doc_uploaded = False
+
+
+    def action_new_ev_submit_for_approval(self):
         for line in self:
             line.state = 'waiting_op_approval'
+
+    def action_submit_for_approval(self):
+        for line in self:
+            if line.service_request == 'transfer_req' and line.aamalcom_pay == True and line.billable_to_client == True:
+                line.state = 'waiting_client_approval'
+            else:
+                line.state = 'waiting_op_approval'
+
+    def action_client_spoc_approve(self):
+        for line in self:
+            line.state = 'client_approved'
+            line.assign_govt_emp_two = True
+
     def action_op_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
 
@@ -561,6 +681,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'waiting_fin_approval'
             line.gm_approver_id = current_employee
+
+    def action_request_fin_payment_confirmation(self):
+        for line in self:
+            line.state = 'waiting_op_approval'
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
@@ -578,15 +702,25 @@ class ServiceEnquiry(models.Model):
             if service_request_treasury_id:
                 line.state = 'approved'
                 line.fin_approver_id = current_employee
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
                     line.assign_govt_emp_two = True
+                if line.service_request == 'transfer_req':
+                    line.state = 'payment_done'
+                if line.service_request == 'new_ev':
+                    line.assign_govt_emp_one = True
+
+    def action_new_ev_docs_uploaded(self):
+        for line in self:
+            line.assign_govt_emp_two = True
+
+
 
 
     def action_submit_payment_confirmation(self):
         for line in self:
             line.state = 'payment_done'
             line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev':
                 line.assign_govt_emp_two = True
             if line.service_request == 'prof_change_qiwa':
                 line.doc_uploaded = True
@@ -615,6 +749,9 @@ class ServiceEnquiry(models.Model):
                     for srt in treasury_id:
                         if srt.state != 'done':
                             raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
+                        else:
+                            line.state = 'done'
+                            line.req_completion_date = fields.Datetime.now()
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
@@ -653,10 +790,12 @@ class ServiceEnquiry(models.Model):
     def fetch_data_from_transfers(self):
         for line in self:
             line.visa_country_id = line.emp_visa_id.visa_country_id
-            line.visa_state_id = line.emp_visa_id.visa_stamping_city_id
+            line.visa_stamping_city_id = line.emp_visa_id.visa_stamping_city_id
             line.profession = line.emp_visa_id.visa_profession
             line.visa_religion = line.emp_visa_id.visa_religion
             line.no_of_visa = line.emp_visa_id.no_of_visa
+            line.agency_allocation = line.emp_visa_id.visa_enjaz
+            line.hr_agency = line.emp_visa_id.hr_agency
 
 
     def action_confirm(self):
@@ -688,18 +827,6 @@ class ServiceEnquiry(models.Model):
 
     # New Physical Iqama Card Request(cost 1,000sar) end
 
- 
-    # Issuance of New EV start
-    def action_submit_new_ev(self):
-        for line in self:
-            line.state = 'submitted'
-
-    def action_new_ev_process_complete(self):
-        for line in self:
-            line.state='done'
-
-    # Issuance of New EV end
-
 
 
     @api.model_create_multi
@@ -721,34 +848,40 @@ class ServiceEnquiry(models.Model):
 
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
-        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
+        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc')
+        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
-            line.upload_gosi_doc or line.upload_hr_card or line.upload_jawazat_doc or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
             line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
             line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc or line.upload_bank_loan_doc or line.upload_rental_agreement_doc or \
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc:
+            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
                 line.doc_uploaded = True
-            elif line.upload_enjaz_doc and line.upload_issuance_doc:
+            elif line.upload_enjaz_doc and line.e_wakala_doc:
+                line.doc_uploaded = True
+            elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
+            if line.upload_jawazat_doc:
+                line.second_level_doc_uploaded = True
                 
-            if (line.residance_doc or line.transfer_confirmation_doc) and line.muqeem_print_doc:
+            if line.upload_sponsorship_doc and line.muqeem_print_doc:
+                line.final_doc_uploaded = True
+            elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False

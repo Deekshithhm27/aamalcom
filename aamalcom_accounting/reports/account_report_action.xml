@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_tax_invoice" model="ir.actions.report">
+        <field name="name">Saudi VAT Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aamalcom_accounting.report_tax_invoice</field>
+        <field name="report_file">aamalcom_accounting.report_tax_invoice</field>
+        <field name="print_report_name">'VAT Invoice -%s' %(object.partner_id.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="paperformat_action_report_tax_invoice" model="report.paperformat">
+        <field name="name">Saudi VAT Invoice</field>
+        <field name="default" eval="True" />
+        <field name="format">custom</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">50</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+        <field name="report_ids" eval="[(6,0,[ref('aamalcom_accounting.action_report_tax_invoice')])]"/>
+    </record>
+    <record model="ir.actions.server" id="action_account_move_report_tax">
+            <field name="name">Saudi VAT Invoice</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="groups_id" eval="[(4, ref('account.group_account_invoice'))]"/>
+            <field name="binding_model_id" ref="account.model_account_move" />
+            <field name="state">code</field>
+            <field name="binding_view_types">form</field>
+            <field name="code">
+    if record:
+        action = record.action_invoice_tax_report('tax_invoice')
+            </field>
+    </record>
+
+</odoo>

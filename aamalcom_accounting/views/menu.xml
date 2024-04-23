@@ -5,7 +5,7 @@
     	<menuitem id="menu_payment_approval" name="Payments for Approval" action="action_payment_account_approval" sequence="1" groups="aamalcom_accounting.group_payment_approval_manager,aamalcom_accounting.group_payment_approval_administrator"/>
     </menuitem> -->
 
-    <menuitem id="menu_base_draft_invoice" name="Invoices" parent="visa_process.menu_base_visa_process" sequence="5" groups="visa_process.group_service_request_manager">
+    <menuitem id="menu_base_draft_invoice" name="Invoices" parent="visa_process.menu_base_visa_process" sequence="5" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
     	<menuitem id="menu_open_batch_invoice_creation_wizard" name="Create Invoice in Batch"
           action="aamalcom_accounting.action_open_batch_invoice_creation_wizard" sequence="1" groups="visa_process.group_service_request_manager"/>
       <menuitem id="menu_draft_invoice" name="Service Request Invoices" action="action_draft_account_move" sequence="2"/>

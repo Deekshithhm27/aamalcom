@@ -19,6 +19,18 @@
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
     </record>
+    <record id="ir_rule_employment_visa_ge" model="ir.rule">
+        <field name="name">Employment Visa Service Request GE</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'),ref('visa_process.group_service_request_govt_manager'),ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+    <record id="ir_rule_employment_visa_admin" model="ir.rule">
+        <field name="name">Employment Visa Service Request Admin</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
+    </record>
 
     <!-- Local Transfer Rules -->
     <record id="ir_rule_local_transfer" model="ir.rule">
@@ -32,6 +44,18 @@
         <field name="model_id" ref="model_local_transfer"/>
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+    </record>
+    <record id="ir_rule_local_transfer_ge" model="ir.rule">
+        <field name="name">Local Transfer Service Request GE</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'),ref('visa_process.group_service_request_govt_manager'),ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+    <record id="ir_rule_local_transfer_admin" model="ir.rule">
+        <field name="name">Local Transfer Service Request Admin</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
     </record>
     
     <!-- rule for service enquiry -->
@@ -74,6 +98,12 @@
         <field name="model_id" ref="model_service_enquiry"/>
         <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_hr_manager" model="ir.rule">
+        <field name="name">Service enquiry - HR Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_manager'))]"/>
     </record>
 
     <record id="ir_rule_service_enquiry_admin_view" model="ir.rule">

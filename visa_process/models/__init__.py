@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Configurations
+from . import hr_agency
 from . import dependent_documents
 from . import employment_duration
 from . import letter_print_type

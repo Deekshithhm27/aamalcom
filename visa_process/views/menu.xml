@@ -21,9 +21,14 @@
         
 
         <menuitem name="Employee Data" id="menu_my_employees" sequence="1">
+            <!-- Client -->
             <menuitem id="hr_employee_self_menu_employees" name="Employees" action="action_client_team_employees" groups="visa_process.group_hr_client" sequence="1"/>
+            <!-- Project Manager -->
             <menuitem id="hr_employee_client_menu_employees" name="Client Employees" action="action_client_employees" groups="visa_process.group_service_request_manager" sequence="2"/>
-            <menuitem name="Contact" id="base_menu_visa_contact" sequence="3">
+            <menuitem id="hr_employee_client_menu_employees_pm" name="Client Employees" action="action_client_employees_pm" groups="visa_process.group_service_request_operations_manager" sequence="3"/>
+            <!-- Government Employee -->
+            <menuitem id="hr_employee_client_menu_all" name="Client Employees" action="action_all_client_employees" groups="visa_process.group_service_request_govt_manager,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_administrator" sequence="4"/>
+            <menuitem name="Contact" id="base_menu_visa_contact" sequence="5">
                 <menuitem name="Employees Address" id="menu_employee_contacts" sequence="1" groups="visa_process.group_service_request_client_spoc" action="action_employee_contacts"/>
             </menuitem>
             
@@ -32,40 +37,48 @@
 
         <!-- below menu is only for emplolyees and officer also for admin -->
         <menuitem id="menu_base_service_enquiry" name="Tickets" sequence="3">
+            <!-- Client Spoc -->
             <menuitem id="menu_my_service_enquiry_client" name="Service Tickets" sequence="1" action="action_client_service_enquiry" groups="visa_process.group_service_request_client_spoc"/>
-            <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator"/>
+            <!-- Project manager and Administrator -->
+            <menuitem id="menu_service_enquiry_manager" name="Service Tickets" sequence="2" action="action_service_enquiry_manager" groups="visa_process.group_service_request_manager"/>
             <menuitem id="menu_service_enquiry_gm" name="Tickets for Approval" sequence="3" action="action_service_enquiry_gm_approval" groups="visa_process.group_service_request_general_manager"/>
             <menuitem id="menu_service_enquiry_employee" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_employee"/>
+            <menuitem id="menu_service_enquiry_hr" name="Service Tickets" sequence="4" action="action_service_enquiry_docs" groups="visa_process.group_service_request_hr_manager"/>
             <menuitem id="menu_service_enquiry_op" name="Tickets for Approval" sequence="5" action="action_service_enquiry_op_approval" groups="visa_process.group_service_request_operations_manager"/>
             <menuitem id="menu_service_enquiry_fin" name="Tickets for Approval" sequence="6" action="action_service_enquiry_finance_approval" groups="visa_process.group_service_request_finance_manager"/>
+            <menuitem id="menu_service_enquiry_admin" name="Service Tickets" sequence="7" action="action_service_enquiry_administrator" groups="visa_process.group_service_request_administrator"/>
+            
         </menuitem>
-        <menuitem id="menu_base_services" name="Services" sequence="4" groups="visa_process.group_service_request_client_spoc">
-            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer"/>
-            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa" />
-        </menuitem>
-        <menuitem id="menu_base_services_for_approval" name="Services" sequence="5" groups="visa_process.group_service_request_manager">
-            <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager"/>
-            <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager"/>
+        <menuitem id="menu_base_services" name="Services" sequence="4">
+            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer" groups="visa_process.group_service_request_client_spoc"/>
+            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa" groups="visa_process.group_service_request_client_spoc"/>
+            <!-- Manager -->
+            <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager" groups="visa_process.group_service_request_manager"/>
+            <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager" groups="visa_process.group_service_request_manager"/>
+            
+            <!-- Admin,GE,GE Manager -->
+            <menuitem id="menu_local_transfer_all" name="Local Transfer" sequence="1" action="action_local_transfer_all" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager"/>
+            <menuitem id="menu_employment_visa_all" name="Employment Visa" sequence="2" action="action_employment_visa_all" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager"/>
         </menuitem>
         <menuitem id="menu_base_treasury" name="Treasury" sequence="9" groups="visa_process.group_service_request_finance_manager">
                 <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>
             </menuitem>
+
+        <!-- configuration is available for only Administrator -->
         <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_administrator">
-            <menuitem id="menu_hr_employee_company" name="Company" sequence="1" action="action_hr_employee_company"/>
-            <menuitem id="menu_base_visa_service_request_config" name="Service Request" sequence="2">
+            <menuitem id="menu_base_agency" name="Agencies" sequence="1">
+                <menuitem id="menu_base_hr_agency" name="Agencies" action="action_hr_agency" sequence="1"/>
+            </menuitem>
+            <menuitem id="menu_hr_employee_company" name="Company" sequence="2" action="action_hr_employee_company"/>
+            <menuitem id="menu_base_visa_service_request_config" name="Service Request" sequence="3">
                 <menuitem id="menu_visa_service_request_config" name="Service Request" sequence="1" action="action_service_request_config"/>
             </menuitem>
-            <menuitem id="menu_base_pricing" name="Pricing" sequence="3" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
-                <menuitem id="menu_base_service_pricing" name="Service Pricing" action="action_service_pricing" sequence="1" groups="visa_process.group_service_request_manager"/>
+            <menuitem id="menu_base_pricing" name="Pricing" sequence="4">
+                <menuitem id="menu_base_service_pricing" name="Service Pricing" action="action_service_pricing" sequence="1"/>
             </menuitem>
-			<menuitem id="menu_visa_ref_documents" name="Documents" sequence="4" action="action_visa_ref_documents"/>
-            <menuitem id="menu_employment_duration" name="Employment Duration" sequence="5" action="action_employment_duration"/>
-            <menuitem id="menu_print_types" name="Letter Print Types" sequence="6" action="action_print_types"/>
-
-            
-            
-
-
+			<menuitem id="menu_visa_ref_documents" name="Documents" sequence="5" action="action_visa_ref_documents"/>
+            <menuitem id="menu_employment_duration" name="Employment Duration" sequence="6" action="action_employment_duration"/>
+            <menuitem id="menu_print_types" name="Letter Print Types" sequence="7" action="action_print_types"/>
     	</menuitem>
 
     </menuitem>
@@ -88,7 +101,7 @@
     </record>
 
     <record id="hr.menu_hr_root" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_payroll_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_payroll_manager')),(4, ref('visa_process.group_service_request_administrator'))]"/>
     </record>
 
     <!-- Modifying sequence of calendar menu -->

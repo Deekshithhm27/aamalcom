@@ -6,32 +6,51 @@
         <field name="arch" type="xml">
             <form string="Service Enquiry">
             	<header>
-            		<field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey","cancel":"red"}' statusbar_visible="draft,submitted,payment_initiation,payment_done,approved,refuse,cancel,done"/>
+            		<field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey","cancel":"red"}' statusbar_visible="draft,submitted,refuse,cancel,done"/>
                     <!-- LT Issuance of HR card Actions start -->
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','iqama_card_req','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                    
 
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
 
-                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req','new_ev'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <!-- Ev buttons -->
+                    <button name="open_assign_employee_wizard" string="Assign Employee-" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+
+                    <button name="action_new_ev_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('self_pay','=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_new_ev_docs_uploaded" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|',('assign_govt_emp_two','=',True),'|',('state','!=','approved'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_new_ev_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','approved'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('assigned_govt_emp_two','!=',True),'|',('state','not in',('approved','payment_done')),'|',('final_doc_uploaded', '=',False),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+
+                    <!-- EV buttons end-->
+                    <!-- transfer request Initiation start -->
+                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_client_spoc_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_client_approval'),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_request_fin_payment_confirmation" string="Request Payment Confirmation" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),('second_level_doc_uploaded','!=',True)]}" groups="visa_process.group_service_request_employee"/>
+                    
+
+                    <!-- Transfer request initiation end -->
 
                     <!-- approval actions for hr_card, iqama_renewal and Profession change qiwa -->
 
-                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_manager"/>
                     <button name="action_op_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_op_approval')]}" groups="visa_process.group_service_request_operations_manager"/>
                     <button name="action_gm_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_gm_approval')]}" groups="visa_process.group_service_request_general_manager"/>
                     <button name="action_finance_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_fin_approval')]}" groups="visa_process.group_service_request_finance_manager"/>
 
-                    <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('final_doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','new_ev','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('final_doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- below button is for Issuance of new EV -->
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved')),('service_request', 'not in', ('new_ev'))]}" groups="visa_process.group_service_request_manager"/>
+                    <!-- <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved')),('service_request', 'not in', ('new_ev'))]}" groups="visa_process.group_service_request_manager"/> -->
                     <!--  -->
-                    <!-- Profession change in Qiwa -->
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('prof_change_qiwa'))]}" groups="visa_process.group_service_request_employee"/>
+                    <!-- Profession change in Qiwa merged with EV Request-->
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),('service_request', '!=', 'prof_change_qiwa')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Issuance of HR card Actions end -->
 
                     <!-- LT Medical Health Insurance Upload start-->
@@ -41,7 +60,7 @@
 
 
 
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
                    
@@ -49,11 +68,12 @@
                     <!-- <button name="action_iqama_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_client_spoc"/> -->
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),('service_request','not in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
+
                     <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="action_iqama_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('doc_uploaded','=',False),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_iqama_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('doc_uploaded','=',False),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
 
@@ -65,12 +85,14 @@
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
-                        <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.action_service_request_treasury_active)d" icon="fa-bars" attrs="{'invisible':[('total_treasury_requests','=',0)]}" groups="visa_process.group_service_request_finance_manager">
+                        <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.action_service_request_treasury_active)d" icon="fa-bars" attrs="{'invisible':[('total_treasury_requests','=',0)]}" groups="visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                             <field name="total_treasury_requests" widget="statinfo"/>
                         </button>
                     </div>
                     <widget name="web_ribbon" title="Assign Employee"
-                                attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','=','iqama_card_req')]}" groups="visa_process.group_service_request_manager"/>
+                                attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
+                    <widget name="web_ribbon" title="Assign Employee"
+                                attrs="{'invisible': ['|',('state','!=','approved'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
                     <widget name="web_ribbon" title="Assign Employee"
                                 attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),'|',('assigned_govt_emp_two','=',True),('service_request','=','iqama_card_req')]}" groups="visa_process.group_service_request_manager"/>
                     <!-- new iqama card request -->
@@ -78,16 +100,19 @@
                                 attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','!=','iqama_card_req')]}" groups="visa_process.group_service_request_manager"/>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title mb24" name="service_enquiry">
-                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                        <field name="service_request_type" widget="selection" nolabel="1" options="{'horizontal': true}" readonly="1"/>
+                        <field name="service_request_type" invisible="1"/> <!-- Field is added just to store the values, coz when field set for readonly, values not saving. -->
                         <field name="process_type" widget="radio" nolabel="1" options="{'horizontal': true}" invisible="1"/>
                         <field name="company_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="active" invisible="1"/>
                         <field name="client_id" invisible="1"/>
+                        <field name="client_parent_id" invisible="1"/>
                         <field name="user_id" invisible="1"/>
                         <field name="approver_id" invisible="1"/>
                         <field name="approver_user_id" invisible="1"/>
                         <field name="doc_uploaded" invisible="1"/>
+                        <field name="second_level_doc_uploaded" invisible="1"/>
                         <field name="final_doc_uploaded" invisible="1"/>
                         <field name="is_service_request_client_spoc" invisible="1"/>
                         <!-- <separator string="Transfer Type" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/> -->
@@ -113,15 +138,22 @@
                                 <field name="req_completion_date" invisible="1"/>
                             
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                                <!-- <field name="priority" widget="priority"/> -->
                                 
                             </group>
                         </div>
                     </div>
+                    <group attrs="{'invisible': [('service_request', 'not in', ('iqama_renewal','hr_card'))],'readonly': [('state', '!=','draft')]}">
+                        <group name="penalty_cost" string="Penalty Details">
+                            <field name="is_penalty_applicable" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="penalty_cost" attrs="{'invisible':[('is_penalty_applicable','=',False)],'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                    </group>
 
                     <!-- LT fields -->
                     <!-- ############################################ -->
                     <!-- LT Issuance of HR Card and Iqama Renewal and Profession Change req in Qiwa start-->
-                    <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal','transfer_req'))]}">
+                    <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal','transfer_req','prof_change_qiwa'))]}">
 
                         <group>
                             <field name="profession_change" attrs="{'readonly': [('state', '!=','draft')],'invisible': [('service_request', '!=','prof_change_qiwa')]}"/>
@@ -158,35 +190,70 @@
                     </group>
 
                     <notebook attrs="{'invisible':[('service_request','not in',('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}">
-                        <page string="Documents1" attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
+                        <page string="Documents" attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
                             <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
                                 <group string="Hr Card Document" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
                                     <field name="upload_hr_card" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="hr_card_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
-                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
-                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    
                                 </group>
+                                <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    
+                                </group>
+
                                 <group string="Profession Change Document" attrs="{'invisible':[('service_request', '!=','prof_change_qiwa')]}">
                                     <field name="profession_change_doc" attrs="{'readonly': [('state', '!=', 'submitted')]}"/>
+                                    <field name="profession_change_doc_ref" attrs="{'readonly': [('state', '!=', 'submitted')]}"/>
                                 </group>
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False)]}">
                                 <group>
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                                 </group>
                             </group>
-                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req')),('second_govt_employee_id','=',False)]}">
-                                <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
-                                    <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa')),('second_govt_employee_id','=',False)]}">
+                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group string="Residance Permit" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
                                     <field name="residance_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="residance_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group string="Profession Change Req. Doc" attrs="{'invisible':[('service_request', '!=','prof_change_qiwa')]}">
                                     <field name="profession_change_final_doc" attrs="{'readonly': [('state', '!=', 'payment_done')]}"/>
+                                    <field name="prof_change_final_ref" attrs="{'readonly': [('state', '!=', 'payment_done')]}"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                </group>
+                            </group>
+                            <!-- below group is especially for Transfer request initiation -->
+                            <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted')),'|',('service_request', 'not in', ('transfer_req')),('second_govt_employee_id','=',False)]}">
+                                <group string="Jawazat Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                
+                                <group string="Confirmation of Sponsorship" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                    <field name="upload_sponsorship_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="sponsorship_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                <group string="Muqeem Print">
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                </group>
+                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
+                                    <field name="upload_payment_doc" readonly="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
 
@@ -219,11 +286,15 @@
                         
                     </group>
                     <notebook attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'exit_reentry_issuance')]}">
-                        <page string="Documents2">
+                        <page string="Documents">
                             <group>
                                 <group>
                                     <field name="upload_confirmation_of_exit_reentry" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="confirmation_of_exit_reentry_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                                <group>
                                     <field name="upload_exit_reentry_visa" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="exit_reentry_visa_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                         </page>
@@ -272,13 +343,6 @@
                             <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
                            
                         </group>
-                        
-                        <group>
-                            <field name="reason_for_loss_of_iqama" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="letter_from_police_station" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> 
-                            Remove this-->
-                        </group>
                         <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
                             <field name="billable_to_client_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
@@ -287,28 +351,27 @@
                             <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             
                         </group>
-
+                    </group>
+                    <group attrs="{'invisible': [('service_request', '!=', 'iqama_card_req')]}">
+                        <group>
+                            <field name="reason_for_loss_of_iqama" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="letter_from_police_station" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> 
+                            Remove this-->
+                        </group>
                     </group>
                     <notebook attrs="{'invisible': ['|',('state', 'in',('draft','submitted')),'|',('first_govt_employee_id','=',False),('service_request', '!=', 'iqama_card_req')]}">
-                        <page string="Documents3">
+                        <page string="Documents">
                             <group>
                                 <group>
                                     <field name="upload_iqama_card_doc" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
+                                    <field name="iqama_card_ref" attrs="{'readonly': [('state', '!=','payment_done')]}"/>
                                 </group>
                             </group>
                         </page>
                     </notebook>
                     
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
-                    <!-- #################################################### -->
-                    <!-- Qiwa Contract start-->
-                    
-             
-                    <!-- Qiwa Contract Stop-->
-                    <!-- #################################################### -->
-                    <!-- Gosi Update start-->
-                
-                    <!-- Gosi Update Stop-->
                     <!-- #################################################### -->
                     <!-- Salary Certificate start-->
                     <group name="lt_salary_certificate" attrs="{'invisible': [('service_request', '!=', 'salary_certificate')]}">
@@ -323,6 +386,7 @@
                     </group>
                     
                     <!-- Salary Certificate Stop-->
+                    <!-- #################################################### -->
                     <!-- Bank Letter start-->
                     <group name="lt_bank_letter" attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}">
                         <group>
@@ -416,6 +480,7 @@
                     <group name="lt_family_visit_visa" attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}">
                         <group>
                             <field name="upload_visit_visa_app_doc" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="visit_visa_app_doc_ref" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                     
@@ -584,120 +649,142 @@
 
 
                     <!-- Updated -->
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req'))]}">
+                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev'))]}">
                         
-                        <page string="Documents4">
+                        <page string="Documents">
                             <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">
                                 <group>
                                     <field name="upload_sec_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="sec_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'ins_class_upgrade')]}" string="Medical Health insurance class upgrade">
                                 <group>
                                     <field name="upload_upgrade_insurance_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="upgarde_ins_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'iqama_no_generation')]}" string="Iqama No generation">
                                 <group>
                                     <field name="upload_iqama_card_no_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="iqama_card_no_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'qiwa')]}" string="Qiwa Contract">
                                 <group>
                                     <field name="upload_qiwa_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="qiwa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <!-- no header for gosi -->
                             <group attrs="{'invisible': [('service_request', '!=', 'gosi')]}" string="GOSI Update">
                                 <group>
                                     <field name="upload_gosi_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="gosi_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'salary_certificate')]}" string="Salary Certificate">
                                 <group>
                                     <field name="upload_salary_certificate_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="salary_certificate_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}" string="Bank Letter">
                                 <group>
                                     <field name="upload_bank_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bank_letter_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'vehicle_lease')]}" string="Vehicle Lease">
                                 <group>
                                     <field name="upload_vehicle_lease_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="vehicle_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'apartment_lease')]}" string="Apartment Lease">
                                 <group>
                                     <field name="upload_apartment_lease_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="apartment_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam form (family visa letter)">
                                 <group>
                                     <field name="upload_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="istiqdam_form_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}" string="Family Visa Letter">
                                 <group>
                                     <field name="upload_family_visa_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="family_visa_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}" string="Employment Contract">
                                 <group>
                                     <field name="upload_employment_contract_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="employment_contract_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'cultural_letter')]}" string="Cultural letter/Bonofide letter">
                                 <group>
                                     <field name="upload_cultural_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="cultural_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                              <group attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}" string="Family visit visa">
                                 <group>
                                     <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee secondment / Subcontract Document">
                                 <group>
                                     <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="emp_secondment_ltr_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'car_loan')]}" string="Car Loan">
                                 <group>
                                     <field name="upload_car_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="car_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}" string="Bank Loan">
                                 <group>
                                     <field name="upload_bank_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bank_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                              <group attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}" string="Rental Agreement">
                                 <group>
                                     <field name="upload_rental_agreement_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="rental_agreement_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'exception_letter')]}" string="Exception Letter">
                                 <group>
                                     <field name="upload_exception_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="exception_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': ['|',('service_request', '!=', 'attestation_waiver_letter'),('first_govt_employee_id','=',False)]}" string="Attestation Waiver Document">
                                 <group>
                                     <field name="upload_attestation_waiver_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="attestation_waiver_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'embassy_letter')]}" string="Embassy Letter">
                                 <group>
                                     <field name="upload_embassy_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="embassy_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
                                 <group>
                                     <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
 
@@ -709,28 +796,33 @@
                             <group attrs="{'invisible': [('service_request', '!=', 'bilingual_salary_certificate')]}" string="Bilingual Document">
                                 <group>
                                     <field name="upload_bilingual_salary_certificate_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bilingual_salary_certificate_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'contract_letter')]}" string="Contract Letter">
                                 <group>
                                     <field name="upload_contract_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="contract_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_account_opening_letter')]}" string="Bank Acc Opening Letter">
                                 <group>
                                     <field name="upload_bank_account_opening_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bank_account_opening_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_limit_upgrading_letter')]}" string="Bank Limit Upgrading Letter">
                                 <group>
                                     <field name="upload_bank_limit_upgrading_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bank_limit_upgrading_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'final_exit_issuance')]}" string="Final Exit Issuance">
                                 <group>
                                     <field name="upload_final_exit_issuance_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="final_exit_issuance_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                         </page>
@@ -759,10 +851,11 @@
                     <notebook>
                         
                         <!-- SOA start-->
-                        <page string="Documents5" attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'soa')]}">
+                        <page string="Documents" attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'soa')]}">
                             <group>
                                 <group>
                                     <field name="upload_soa_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="soa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                         </page>
@@ -774,7 +867,7 @@
                     <group name="ev_new_ev" attrs="{'invisible': [('service_request', '!=', 'new_ev')]}">
                         <group>
                             <field name="visa_country_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
-                            <field name="visa_state_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="visa_stamping_city_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="profession" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="visa_religion" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
@@ -783,6 +876,7 @@
                             <field name="no_of_visa" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> -->
                             <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="hr_agency" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="coc_for_ewakala"/>
                         </group>
                         <group name="new_ev" attrs="{'invisible': [('service_request', '!=', 'new_ev')]}">
@@ -791,21 +885,39 @@
                         </group>
                     </group>
                     <notebook attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'new_ev')]}">
-                        <page string="Documents6">
+                        <page string="Documents" attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
                             <group>
-                                <group>
-                                    <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
-                                    <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
-                                   
+                                <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
+                                    <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="issuance_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('new_ev')),('second_govt_employee_id','=',False)]}">
+                                    <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+
+                                    <field name="e_wakala_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="e_wakala_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                </group>
+                                
+                            </group>
+                            <group string="Payment Confirmation Documents" attrs="{'invisible': [('state', 'in', ( 'draft','submitted'))]}">
+                                <group attrs="{'invisible': [('self_pay', '!=',True)]}">
+                                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                </group>
+                                <group attrs="{'invisible': [('self_pay', '=',True)]}">
+                                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','approved')]}"/>
                                 </group>
                             </group>
                         </page>
                     </notebook>
                     
-                    <notebook groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator" attrs="{'invisible':[('self_pay','=',True)]}">
+                    <notebook groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
+                        <!-- should not be visible for final_exit_issuance -->
                         <page string="Service Pricing">
                             <field name="service_enquiry_pricing_ids">
-                                <tree editable="bottom">
+                                <tree editable="bottom" create="0">
                                     <field name="service_enquiry_id" invisible="1"/>
                                     <field name="name"/>
                                     <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]" invisible="1"/>
@@ -815,7 +927,6 @@
                                     <field name="remarks"/>
                                 </tree>
                             </field>
-                            <field name="total_amount" invisible="1"/>
                             
                         </page>
 
@@ -833,6 +944,8 @@
                         <field name="letter_cost" attrs="{'invisible':[('letter_print_type_id','!=',True)]}"/>
                     </group>
                 </sheet>
+                <!-- additional fields -->
+                <field name="total_amount" invisible="1"/>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
@@ -846,7 +959,9 @@
         <field name="arch" type="xml">
             <tree string="Service Enquiry">
                 <field name="name"/>
+                <field name="employee_id"/>
 				<field name="service_request"/>
+                <field name="service_request_type"/>
                 <field name="approver_id"/>
                 <field name="approver_user_id" invisible="1"/>
                 <field name="state"/>
@@ -859,6 +974,11 @@
         <field name="model">service.enquiry</field>
         <field name="arch" type="xml">
             <search string="Filter">
+                <field name="name" string="Enquiry No."/>
+                <field name="employee_id" string="Employee"/>
+                <field name="approver_id" string="Approver"/>
+                <field name="client_parent_id" string="Client"/>
+                <field name="service_request_config_id" string="Service Request"/>
                 <filter string="Draft Requests" name="draft_requests" domain="[('state', '=','draft')]"/>
                 <filter string="Submitted Requests" name="submitted_requests" domain="[('state', '=','submitted')]"/>
                 <filter string="Operations Manager Approval" name="op_requests" domain="[('state', '=','waiting_op_approval')]"/>
@@ -870,8 +990,12 @@
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="State" name="state" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="employee" string="Employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Service Request" name="service_request" domain="[]" context="{'group_by': 'service_request'}"/>
+                    <filter string="Request Type" name="request_type" domain="[]" context="{'group_by': 'service_request_type'}"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Client" name="client_parent_id" domain="[]" context="{'group_by': 'client_parent_id'}"/>
+                    
                 </group>
             </search>
         </field>
@@ -892,12 +1016,25 @@
               </p>
         </field>
     </record> 
-    <record id="action_service_enquiry" model="ir.actions.act_window">
+    <record id="action_service_enquiry_administrator" model="ir.actions.act_window">
+        <field name="name">Service Tickets</field>
+        <field name="res_model">service.enquiry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="visa_enquiry_search_filter"/>
+        <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No requests found
+              </p><p>
+                Try creating new one!!
+              </p>
+        </field>
+    </record> 
+    <record id="action_service_enquiry_manager" model="ir.actions.act_window">
         <field name="name">Service Enquiry</field>
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
-        <field name="context">{'search_default_draft_requests': 1}</field>
+        <field name="context">{'group_by': 'state'}</field>
         <field name="domain">[('approver_user_id', '=', uid)]</field>
 
     </record> 
@@ -906,7 +1043,7 @@
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
-        <field name="context">{'search_default_submitted_requests': 1,'search_default_approved_requests':1,'search_default_payment_done':1}</field>
+        <field name="context">{'group_by': 'state'}</field>
         <field name="domain">['|',('first_govt_employee_id.user_id','=',uid),('second_govt_employee_id.user_id','=',uid)]</field>
         <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">

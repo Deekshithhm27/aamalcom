@@ -16,6 +16,7 @@ class HrEmployee(models.Model):
     client_emp_sequence = fields.Char(string="Employee Id",help="Employee Id as per client database")
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
     hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
+    identification_id = fields.Char(string='Border No.', groups="hr.group_hr_user", tracking=True)
     
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -52,7 +53,7 @@ class HrEmployee(models.Model):
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
 
-    
+    work_location = fields.Char(string="Work Location")
     
 
     iqama = fields.Char(string="Designation on Iqama")
@@ -63,6 +64,8 @@ class HrEmployee(models.Model):
     barcode = fields.Char(string="Badge ID", help="ID used for employee identification.", groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", copy=False)
     first_contract_date = fields.Date(compute='_compute_first_contract_date', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", store=True)
     contract_warning = fields.Boolean(string='Contract Warning', store=True, compute='_compute_contract_warning', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client")
+
+    hr_agency_id = fields.Many2one('hr.agency',string="Agency")
 
 
     @api.model
