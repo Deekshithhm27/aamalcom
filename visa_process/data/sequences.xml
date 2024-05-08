@@ -4,7 +4,7 @@
 
         <record id="seq_client_employee" model="ir.sequence">
             <field name="name">Client Employee</field>
-            <field name="code">hr.employee</field>
+            <field name="code">hr.employee.external</field>
             <field name="prefix">C-EMP/</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
@@ -12,7 +12,7 @@
 
         <record id="seq_aamalcom_employee" model="ir.sequence">
             <field name="name">Aamalcom Employee</field>
-            <field name="code">hr.employee</field>
+            <field name="code">hr.employee.internal</field>
             <field name="prefix">A-EMP/</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>

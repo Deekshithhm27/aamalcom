@@ -49,7 +49,7 @@ class ServiceEnquiry(models.Model):
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
-        ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
+        ('done', 'Completed'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True,copy=False)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
@@ -568,6 +568,12 @@ class ServiceEnquiry(models.Model):
             if line.billable_to_aamalcom:
                 line.billable_to_client = False
 
+    @api.onchange("service_request_config_id")
+    def update_billing_booleans(self):
+        for line in self:
+            line.aamalcom_pay = False
+            line.self_pay = False
+
 
 
 
@@ -576,9 +582,9 @@ class ServiceEnquiry(models.Model):
             record.service_enquiry_pricing_ids = False
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
-            print("----priceing",pricing_id)
             # iqama_card_req - payment will be collected offline
-            if record.aamalcom_pay and record.service_request != 'transfer_req' or record.service_request != 'iqama_card_req':
+            # if record.aamalcom_pay and record.service_request == 'transfer_req' or record.service_request != 'iqama_card_req':
+            if record.aamalcom_pay and record.service_request == 'new_ev' or record.service_request == 'hr_card' or record.service_request == 'iqama_renewal' or record.service_request == 'exit_reentry_issuance' or record.service_request == 'prof_change_qiwa':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
