@@ -69,14 +69,39 @@ class HrEmployee(models.Model):
     country_of_birth = fields.Many2one('res.country', string="Issuance of Passport", groups="hr.group_hr_user", tracking=True)
 
 
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('client_id'):
+    #         sequence_code = 'seq_client_employee'
+    #     else:
+    #         sequence_code = 'seq_aamalcom_employee'
+
+    #     vals['sequence'] = self.env['ir.sequence'].next_by_code('hr.employee')
+    #     if vals.get('user_id'):
+    #         user = self.env['res.users'].browse(vals['user_id'])
+    #         vals['custom_employee_type'] = user.user_type
+
+    #     user = self.env.user
+    #     if user.partner_id.is_client:
+    #         vals['client_id'] = user.id
+
+
+    #     employee = super(HrEmployee, self).create(vals)
+    #     return employee
+
     @api.model
     def create(self, vals):
-        if vals.get('client_id'):
-            sequence_code = 'seq_client_employee'
+        if vals.get('custom_employee_type') == 'external':
+            sequence_value = self.env['ir.sequence'].next_by_code('hr.employee.external')
         else:
-            sequence_code = 'seq_aamalcom_employee'
+            sequence_value = self.env['ir.sequence'].next_by_code('hr.employee.internal')
 
-        vals['sequence'] = self.env['ir.sequence'].next_by_code('hr.employee')
+
+        if not sequence_value:
+            raise ValueError("Sequence value could not be generated")
+
+        vals['sequence'] = sequence_value
+
         if vals.get('user_id'):
             user = self.env['res.users'].browse(vals['user_id'])
             vals['custom_employee_type'] = user.user_type
@@ -85,9 +110,11 @@ class HrEmployee(models.Model):
         if user.partner_id.is_client:
             vals['client_id'] = user.id
 
-
         employee = super(HrEmployee, self).create(vals)
+
         return employee
+
+
 
     @api.depends('client_id')
     def update_project_manager(self):
