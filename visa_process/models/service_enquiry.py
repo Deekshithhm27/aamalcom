@@ -82,6 +82,8 @@ class ServiceEnquiry(models.Model):
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True,copy=False)
+    iqama_no = fields.Char(string="Iqama No")
+    identification_id = fields.Char(string='Border No.')
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
     transfer_amount = fields.Float(string="Amount")
@@ -96,6 +98,8 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.employee_id:
                 line.service_request_type = line.employee_id.service_request_type
+                line.iqama_no = line.employee_id.iqama_no
+                line.identification_id = line.employee_id.identification_id
     
     emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True,domain="[('employee_id','=',employee_id)]")
 
@@ -663,6 +667,7 @@ class ServiceEnquiry(models.Model):
     def action_new_ev_submit_for_approval(self):
         for line in self:
             line.state = 'waiting_op_approval'
+            self.send_email_to_op()
 
     def action_submit_for_approval(self):
         for line in self:
@@ -670,11 +675,61 @@ class ServiceEnquiry(models.Model):
                 line.state = 'waiting_client_approval'
             else:
                 line.state = 'waiting_op_approval'
+                self.send_email_to_op()
 
     def action_client_spoc_approve(self):
         for line in self:
             line.state = 'client_approved'
             line.assign_govt_emp_two = True
+
+    @api.model
+    def send_email_to_gm(self):
+        group = self.env.ref('visa_process.group_service_request_general_manager')
+        users = group.mapped('users')
+
+        # Create the custom email body with the button link
+        body_html = """
+            <p>Hi,</p>
+            <p>You have a new Service Request to approve.</p>
+            <p><a href="%s">View Service Request</a></p>
+        """ % self._get_record_url()  # Call a method to get the record URL
+
+        # Send email to each user in the group
+        for user in users:
+            # Create a new email with the custom body
+            mail_values = {
+                'subject': 'New Service Request',
+                'email_to': user.email,
+                'body_html': body_html,
+            }
+            self.env['mail.mail'].sudo().create(mail_values).send()
+
+    @api.model
+    def send_email_to_op(self):
+        group = self.env.ref('visa_process.group_service_request_manager')
+        users = group.mapped('users')
+
+        # Create the custom email body with the button link
+        body_html = """
+            <p>Hi,</p>
+            <p>You have a new Service Request to approve.</p>
+            <p><a href="%s">View Service Request</a></p>
+        """ % self._get_record_url()  # Call a method to get the record URL
+
+        # Send email to each user in the group
+        for user in users:
+            # Create a new email with the custom body
+            mail_values = {
+                'subject': 'New Service Request',
+                'email_to': user.email,
+                'body_html': body_html,
+            }
+            self.env['mail.mail'].sudo().create(mail_values).send()
+
+    def _get_record_url(self):
+        """Helper method to get the URL of the current record."""
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
 
     def action_op_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
@@ -682,6 +737,8 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'waiting_gm_approval'
             line.op_approver_id = current_employee
+            self.send_email_to_gm()
+
     def action_gm_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for line in self:
@@ -691,6 +748,7 @@ class ServiceEnquiry(models.Model):
     def action_request_fin_payment_confirmation(self):
         for line in self:
             line.state = 'waiting_op_approval'
+            self.send_email_to_op()
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]

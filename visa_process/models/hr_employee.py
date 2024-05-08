@@ -57,6 +57,7 @@ class HrEmployee(models.Model):
     
 
     iqama = fields.Char(string="Designation on Iqama")
+    iqama_no = fields.Char(string="Iqama No",copy=False)
 
     # This field is to differentiate between internal and external (client) employees
     custom_employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access",default=lambda self: self.env.user.user_type)
@@ -67,6 +68,28 @@ class HrEmployee(models.Model):
 
     hr_agency_id = fields.Many2one('hr.agency',string="Agency")
     country_of_birth = fields.Many2one('res.country', string="Issuance of Passport", groups="hr.group_hr_user", tracking=True)
+
+
+    @api.model
+    def update_iqama_number(self):
+        # Retrieve all employees
+        employees = self.env['hr.employee'].search([])
+
+        # Loop through each employee
+        for employee in employees:
+            print("-----employee_id")
+            # Check if the employee has an employment visa
+            visa = self.env['employment.visa'].search([('employee_id', '=', employee.id)], limit=1)
+
+            # Check if the employee has a local transfer record
+            local_transfer = self.env['local.transfer'].search([('employee_id', '=', employee.id)], limit=1)
+
+            # Update iqama number based on the existence of employment visa or local transfer record
+            if visa:
+                employee.write({'iqama_no': visa.iqama_no})
+            elif local_transfer:
+                employee.write({'iqama_no': local_transfer.iqama_no})
+
 
 
     # @api.model
