@@ -126,6 +126,8 @@
                             <group>
                                 <field name="employee_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                                 <field name="service_request_config_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="iqama_no" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="identification_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="service_request" invisible="1"/>
                                 <field name="assign_govt_emp_one" invisible="1"/>
                                 <field name="assigned_govt_emp_one" invisible="1"/>

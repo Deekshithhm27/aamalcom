@@ -19,6 +19,7 @@
         'security/ir.model.access.csv',
         'security/standard_security/update_access.xml',
         'data/sequences.xml',
+        'data/ir_cron.xml',
         'security/ir_rule.xml',
 
         'reports/service_request_treasury_report.xml',

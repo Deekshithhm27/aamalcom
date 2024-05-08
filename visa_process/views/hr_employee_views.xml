@@ -49,7 +49,7 @@
                 <field name="given_name"/>
                 <field name="client_emp_sequence" attrs="{'invisible':[('service_request_type','=',False)]}"/>
                 <field name="hr_employee_company_id" groups="visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator" attrs="{'invisible':[('service_request_type','!=',False)]}"/>
-                <field name="custom_employee_type" invisible="1"/>
+                <field name="custom_employee_type" invisible="0"/>
                 <field name="client_parent_id" invisible="1"/>
                 <field name="client_id" invisible="1"/>
                 <field name="company_spoc_id" invisible="1"/>
@@ -91,6 +91,7 @@
                 <group name="employment_details" string="Employment Details">
                     <group>
                         <field name="iqama"/>
+                        <field name="iqama_no"/>
                         <field name="doj"/>
                         <field name="employment_duration"/>
                         <field name="probation_term"/>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Scheduled Action to Update Iqama Numbers -->
+        <record id="ir_cron_update_iqama_numbers" model="ir.cron">
+            <field name="name">Update Iqama Numbers</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="state">code</field>
+            <field name="code">model.update_iqama_number()</field>
+            <!-- Set the interval for the scheduled action (e.g., execute every day) -->
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <!-- Set the next execution date and time -->
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')"/>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>
