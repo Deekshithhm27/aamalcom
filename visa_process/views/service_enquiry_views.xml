@@ -39,7 +39,7 @@
 
                     <!-- approval actions for hr_card, iqama_renewal and Profession change qiwa -->
 
-                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee"/>
                     <button name="action_op_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_op_approval')]}" groups="visa_process.group_service_request_operations_manager"/>
                     <button name="action_gm_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_gm_approval')]}" groups="visa_process.group_service_request_general_manager"/>
                     <button name="action_finance_approved" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_fin_approval')]}" groups="visa_process.group_service_request_finance_manager"/>

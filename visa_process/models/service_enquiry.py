@@ -947,6 +947,8 @@ class ServiceEnquiry(models.Model):
                 line.final_doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.final_doc_uploaded = True
+            elif line.residance_doc and line.muqeem_print_doc:
+                line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False
 
