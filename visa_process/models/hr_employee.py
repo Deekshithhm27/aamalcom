@@ -77,7 +77,6 @@ class HrEmployee(models.Model):
 
         # Loop through each employee
         for employee in employees:
-            print("-----employee_id")
             # Check if the employee has an employment visa
             visa = self.env['employment.visa'].search([('employee_id', '=', employee.id)], limit=1)
 

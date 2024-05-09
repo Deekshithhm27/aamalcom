@@ -19,7 +19,7 @@
                         <div class="o_row">
                             <group>
                                 <field name="service_request" widget="selection"/>
-                                <field name="process_type" widget="selection"/>
+                                <field name="process_type" widget="selection" invisible="1"/>
                             </group>
                             <group>
                             	<field name="sequence"/>
