@@ -484,13 +484,25 @@ class ServiceEnquiry(models.Model):
                             else:
                                 line.current_department_ids = False
                         elif line.state in ('payment_done','approved','client_approved'):
-                            if lines.sequence == 2:
-                                # line.current_department_id = lines.department_id.id
-                                department_ids.append((4,lines.department_id.id))
-                                line.current_department_ids = department_ids
-                                break
-                            else:
-                                line.current_department_ids = False
+                            if line.service_request == 'new_ev' and line.state == 'approved' and line.assign_govt_emp_two==False:
+                                if lines.sequence == 1:
+                                    # line.current_department_id = lines.department_id.id
+                                    department_ids.append((4,lines.department_id.id))
+                                    line.current_department_ids = department_ids
+                            if line.service_request == 'new_ev' and line.state == 'approved' and line.assign_govt_emp_two==True:
+                                if lines.sequence == 2:
+                                    # line.current_department_id = lines.department_id.id
+                                    department_ids.append((4,lines.department_id.id))
+                                    line.current_department_ids = department_ids
+
+                            if not line.service_request == 'new_ev':
+                                if lines.sequence == 2:
+                                    # line.current_department_id = lines.department_id.id
+                                    department_ids.append((4,lines.department_id.id))
+                                    line.current_department_ids = department_ids
+                                    break
+                                else:
+                                    line.current_department_ids = False
                         else:
                             line.current_department_ids = False
                 else:
