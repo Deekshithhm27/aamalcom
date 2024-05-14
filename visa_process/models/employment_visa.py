@@ -145,6 +145,7 @@ class EmploymentVisa(models.Model):
                 line.current_phone_code_id = line.employee_id.current_phone_code_id
                 line.visa_religion = line.employee_id.religion
                 line.hr_agency = line.employee_id.hr_agency_id.name
+                line.iqama_no = line.employee_id.iqama_no
 
 
 
