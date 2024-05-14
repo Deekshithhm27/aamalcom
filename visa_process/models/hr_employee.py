@@ -67,7 +67,8 @@ class HrEmployee(models.Model):
     contract_warning = fields.Boolean(string='Contract Warning', store=True, compute='_compute_contract_warning', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client")
 
     hr_agency_id = fields.Many2one('hr.agency',string="Agency")
-    country_of_birth = fields.Many2one('res.country', string="Issuance of Passport", groups="hr.group_hr_user", tracking=True)
+    country_of_birth = fields.Many2one('res.country', string="Issuance of Passport - Country", groups="hr.group_hr_user", tracking=True)
+    passport_issuance_city = fields.Char(string="Issuance of Passport - City")
 
 
     @api.model
