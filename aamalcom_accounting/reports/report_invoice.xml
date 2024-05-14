@@ -210,7 +210,7 @@
                             </tr>
                         </thead>
                     </table>
-                    <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
+                    <!-- <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
 
                     
                     <div class="col-9" style="color:black; margin-top:20pt;">
@@ -230,7 +230,7 @@
                             <div class="col-9" style=" font-weight:bold;">Stamp:</div>
                             <div class="col-9" style="font-weight:bold;">Stamp:</div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Invoice for Governmantal Charges -->
                     <t t-if="o.move_particulars_ids">
                         <p style="page-break-before:always;"/>
