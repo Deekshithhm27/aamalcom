@@ -27,6 +27,12 @@
 	        		<field name="employee_id"/>
 	        		<field name="service_enquiry_id" readonly="1"/>
 	        	</xpath>
+
+	        	<xpath expr="//field[@name='line_ids']//field[@name='name']" position="after">
+	        		<field name="employee_id" invisible="1"/>
+	        		<field name="service_enquiry_id" invisible="1"/>
+	        	</xpath>
+
 	        	
 	            <xpath expr="//button[@name='action_post']" position="before">
 	            	<!-- Incase of invoice created by operations flow -->

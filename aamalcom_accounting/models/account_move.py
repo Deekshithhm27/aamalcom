@@ -132,6 +132,6 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
 
-    employee_id = fields.Many2one('hr.employee',string="Employee")
+    employee_id = fields.Many2one('hr.employee',string="Employee",store=True)
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Enquiry Id")
 
