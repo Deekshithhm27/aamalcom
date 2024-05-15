@@ -245,7 +245,7 @@
                                     <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Customer No. </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Date : <t t-field="o.invoice_date"/></td>
+                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Date : <span t-field="o.invoice_date"/></td>
                                 </tr>
                                 <tr width="100%">
                                     <td width="10%" style="font-weight: bold;background-color:#DCDCDC;">Sr No.</td>
