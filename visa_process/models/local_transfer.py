@@ -117,6 +117,7 @@ class LocalTransfer(models.Model):
                 line.working_days = line.employee_id.working_days
                 line.contact_no = line.employee_id.contact_no
                 line.phone_code_id = line.employee_id.phone_code_id
+                line.iqama_no = line.employee_id.iqama_no
 
 
     def unlink(self):

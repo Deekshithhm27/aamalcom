@@ -137,7 +137,7 @@
                                 <t t-set="discount_total" t-value="discount_total + ((l.price_unit * l.quantity) - l.price_subtotal)"/>
                                 <td style="border-right:1pt solid grey;padding:3pt">
                                     <t t-if="l.employee_id">
-                                        <span t-field="l.employee_id.name"/>
+                                        <span t-field="l.employee_id.name"/> - <span t-esc="l.name"/>
                                     </t>
                                     <t t-else="">
                                         <span t-esc="l.name"/>
@@ -210,7 +210,7 @@
                             </tr>
                         </thead>
                     </table>
-                    <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
+                    <!-- <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
 
                     
                     <div class="col-9" style="color:black; margin-top:20pt;">
@@ -230,7 +230,7 @@
                             <div class="col-9" style=" font-weight:bold;">Stamp:</div>
                             <div class="col-9" style="font-weight:bold;">Stamp:</div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Invoice for Governmantal Charges -->
                     <t t-if="o.move_particulars_ids">
                         <p style="page-break-before:always;"/>
@@ -245,7 +245,7 @@
                                     <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Customer No. </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Date : ---</td>
+                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Date : <span t-field="o.invoice_date"/></td>
                                 </tr>
                                 <tr width="100%">
                                     <td width="10%" style="font-weight: bold;background-color:#DCDCDC;">Sr No.</td>
