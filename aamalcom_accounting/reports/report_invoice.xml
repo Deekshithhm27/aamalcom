@@ -137,7 +137,7 @@
                                 <t t-set="discount_total" t-value="discount_total + ((l.price_unit * l.quantity) - l.price_subtotal)"/>
                                 <td style="border-right:1pt solid grey;padding:3pt">
                                     <t t-if="l.employee_id">
-                                        <span t-field="l.employee_id.name"/>
+                                        <span t-field="l.employee_id.name"/> - <span t-esc="l.name"/>
                                     </t>
                                     <t t-else="">
                                         <span t-esc="l.name"/>
