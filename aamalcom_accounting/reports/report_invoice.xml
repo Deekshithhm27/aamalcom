@@ -27,7 +27,7 @@
                         </t>
                     </td>
                     
-                    <td  colspan="3" width="30%" class="text-center"><img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="height: 100px;width: 100px; " alt="Logo"/></td>
+                    <td  colspan="3" width="30%" class="text-center"><img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="height: 150px;width: 150px; " alt="Logo"/></td>
 
                     <td colspan="2" width="35%" class="text-right">
                         <strong>
@@ -99,7 +99,8 @@
                         <div name="invoice_address" class="col-6">
                             <address t-field="o.partner_id"
                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
-                            <div t-if="o.partner_id.vat" class="mt16"><t t-esc="o.company_id.country_id.vat_label or 'TIN'"/>: <span t-field="o.partner_id.vat"/></div>
+                            <div t-if="o.partner_id.vat">VAT No.: <span t-field="o.partner_id.vat"/></div>
+                            <div t-if="o.partner_id.cr_no">CR No.: <span t-field="o.partner_id.cr_no"/></div>
                         </div>
                         <div class="col-4">
                             <p>
