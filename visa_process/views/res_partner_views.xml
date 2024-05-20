@@ -16,7 +16,10 @@
                 <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" />
             </xpath>
             <xpath expr="//field[@name='vat']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                    <attribute name="attrs">{'invisible': [('company_type', '!=', 'company')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="cr_no" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
             </xpath>
         
 
