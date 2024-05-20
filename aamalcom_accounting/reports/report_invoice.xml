@@ -342,7 +342,7 @@
                                             <t t-esc="sl_no"/>
                                         </td>
                                         <td class="text-left"> <t t-esc="particulars.employee_id.name"/></td>
-                                        <td class="text-right" />
+                                        <td class="text-right"><t t-esc="particulars.employee_id.name"/></td>
                                         <td class="text-left">
                                             <t t-foreach="particulars.particulars_line_ids" t-as="p_lines">
                                             

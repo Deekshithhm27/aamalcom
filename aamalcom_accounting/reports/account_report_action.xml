@@ -23,7 +23,7 @@
         <field name="margin_left">10</field>
         <field name="margin_right">10</field>
         <field name="header_line" eval="False" />
-        <field name="header_spacing">50</field>
+        <field name="header_spacing">55</field>
         <field name="dpi">90</field>
         <field name="report_ids" eval="[(6,0,[ref('aamalcom_accounting.action_report_tax_invoice')])]"/>
     </record>
