@@ -49,6 +49,7 @@ class AccountMove(models.Model):
     final_approver_id = fields.Many2one('res.users',string="Final Approver")
 
     move_particulars_ids = fields.One2many('account.move.particulars','invoice_id',string="Particulars")
+    amount_total_in_words = fields.Char(string="Total Amount In Words", compute="_compute_amount_total_in_words")
 
     @api.model
     def create(self, vals):
@@ -112,19 +113,17 @@ class AccountMove(models.Model):
             'target': 'new',
             'context': ctx,
         }
-    def amount_word(self, amount):
-        language = self.partner_id.lang or 'en'
-        language_id = self.env['res.lang'].search([('code', '=', 'ar_AA')])
-        if language_id:
-            language = language_id.iso_code
-        amount_str = str('{:2f}'.format(amount))
-        amount_str_splt = amount_str.split('.')
-        before_point_value = amount_str_splt[0]
-        after_point_value = amount_str_splt[1][:2]
-        before_amount_words = num2words(int(before_point_value), lang=language)
-        after_amount_words = num2words(int(after_point_value), lang=language)
-        amount = before_amount_words + ' ' + after_amount_words
-        return amount
+
+
+    @api.depends('amount_total', 'currency_id', 'partner_id.lang')
+    def _compute_amount_total_in_words(self):
+        for order in self:
+            language = order.partner_id.lang or 'en'
+            if order.currency_id:
+                amount_in_words = num2words(order.amount_total, lang=language).title()
+                order.amount_total_in_words = amount_in_words
+            else:
+                order.amount_total_in_words = "Currency not defined"
 
     
 
