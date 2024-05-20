@@ -20,6 +20,14 @@ class ResPartner(models.Model):
 
     # Overrided fields
     vat = fields.Char(string='VAT', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
+    cr_no = fields.Char(string="CR No.")
+
+    arabic_street = fields.Char('Arabic Street')
+    arabic_street2 = fields.Char('Arabic Street2')
+    arabic_city = fields.Char('Arabic City')
+    arabic_state = fields.Char('Arabic State')
+    arabic_country = fields.Char('Arabic Country')
+    arabic_zip = fields.Char('Arabic Zip')
 
     client_id = fields.Many2one('res.users',string="Client",compute="get_external_emp_client_id",store=True)
 

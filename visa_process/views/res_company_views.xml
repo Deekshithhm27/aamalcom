@@ -19,6 +19,9 @@
                         <field name="arabic_country" placeholder="Arabic Country" class="o_address_country" options="{&quot;no_open&quot;: True}"/>
                     </div>
                 </group>
+                <group>
+                    <field name="seal" widget="image"/>
+                </group>
             </xpath>
         </field>
     </record>

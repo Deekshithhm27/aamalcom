@@ -16,7 +16,23 @@
                 <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" />
             </xpath>
             <xpath expr="//field[@name='vat']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                    <attribute name="attrs">{'invisible': [('company_type', '!=', 'company')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="cr_no" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
+            </xpath>
+            <xpath expr="//group[1]" position="inside">
+                <group>
+                    <label for="arabic_street" string="Arabic Address"/>
+                    <div class="o_address_format">
+                        <field name="arabic_street" placeholder="Arabic Street..." class="o_address_street"/>
+                        <field name="arabic_street2" placeholder="Arabic Street 2..." class="o_address_street"/>
+                        <field name="arabic_city" placeholder="Arabic City" class="o_address_city"/>
+                        <field name="arabic_state" class="o_address_state" placeholder="Arabic State" options="{&quot;no_open&quot;: True}"/>
+                        <field name="arabic_zip" placeholder="Arabic ZIP" class="o_address_zip"/>
+                        <field name="arabic_country" placeholder="Arabic Country" class="o_address_country" options="{&quot;no_open&quot;: True}"/>
+                    </div>
+                </group>
             </xpath>
         
 
