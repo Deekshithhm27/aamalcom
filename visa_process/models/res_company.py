@@ -12,6 +12,7 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     vat = fields.Char(related='partner_id.vat', string="VAT ID", readonly=False)
+    seal = fields.Binary('Seal', help="Company Seal.")
 
     arabic_name = fields.Char('Arabic Name')
     arabic_street = fields.Char('Arabic Street')
