@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Service Request Details" create="0">
             	<header>
-            		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"done":"blue","draft":"grey"}'/>
+            		<field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey"}'/>
             		<button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_finance_manager"/>
 
             		<button name="action_upload_confirmation" string="Upload Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted'),('confirmation_doc','=',False)]}" groups="visa_process.group_service_request_finance_manager"/>
@@ -38,9 +38,15 @@
                     <notebook attrs="{'invisible':[('state','=','draft')]}">
                     	<page string="Documents">
                     		<group>
-                    			<group>
+                    			<group string="Confirmation Document">
                     				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
                     			</group>
+                                <group string="Bank Receipts">
+                                    <field name="bank_receipt_one" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="bank_receipt_two" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="bank_receipt_three" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="other_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                                </group>
                     		</group>
                     	</page>
                     </notebook>

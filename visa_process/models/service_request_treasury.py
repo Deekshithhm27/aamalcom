@@ -32,6 +32,10 @@ class ServiceRequestTreasury(models.Model):
     state = fields.Selection([('draft','Draft'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft')
 
     confirmation_doc = fields.Binary(string="Confirmation Doc")
+    bank_receipt_one = fields.Binary(string="1. Bank Receipt")
+    bank_receipt_two = fields.Binary(string="2. Bank Receipt")
+    bank_receipt_three = fields.Binary(string="3. Bank Receipt")
+    other_doc = fields.Binary(string="Others")
 
     @api.model_create_multi
     def create(self,vals_list):
