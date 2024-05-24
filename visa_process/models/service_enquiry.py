@@ -525,7 +525,8 @@ class ServiceEnquiry(models.Model):
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
-            department_ids = [(6, 0, self.current_department_ids.ids)]
+            # department_ids = [(6, 0, self.current_department_ids.ids)]
+            department_ids = []
             if line.service_request == 'new_ev':
                 if line.state == 'submitted':
                     level = 'level1'
@@ -542,6 +543,13 @@ class ServiceEnquiry(models.Model):
                 else:
                     level = 'level2'
 
+            for lines in line.service_request_config_id.service_department_lines:
+                if level == 'level1':
+                    department_ids.append((4, lines.department_id.id))
+                    break  # Exit the loop after adding the first department for level1
+                else:
+                    if lines.sequence == 2:  # Only append the second department for level2
+                        department_ids.append((4, lines.department_id.id))
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
@@ -552,7 +560,14 @@ class ServiceEnquiry(models.Model):
             }
 
     def open_reassign_employee_wizard(self):
-        department_ids = [(6, 0, self.current_department_ids.ids)]
+        department_ids = []
+        for lines in line.service_request_config_id.service_department_lines:
+            if level == 'level1':
+                department_ids.append((4, lines.department_id.id))
+                break  # Exit the loop after adding the first department for level1
+            else:
+                if lines.sequence == 2:  # Only append the second department for level2
+                    department_ids.append((4, lines.department_id.id))
         return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
