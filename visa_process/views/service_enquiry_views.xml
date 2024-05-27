@@ -217,7 +217,7 @@
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False)]}">
                                 <group>
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa')),('second_govt_employee_id','=',False)]}">
@@ -234,8 +234,8 @@
                                     <field name="prof_change_final_ref" attrs="{'readonly': [('state', '!=', 'payment_done')]}"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
-                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
                                 </group>
                             </group>
                             <!-- below group is especially for Transfer request initiation -->
@@ -250,12 +250,12 @@
                                     <field name="sponsorship_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
-                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}"/>
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
                                 </group>
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
                                     <field name="upload_payment_doc" readonly="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
                             </group>
 
@@ -905,11 +905,11 @@
                             <group string="Payment Confirmation Documents" attrs="{'invisible': [('state', 'in', ( 'draft','submitted'))]}">
                                 <group attrs="{'invisible': [('self_pay', '!=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
                                 </group>
                                 <group attrs="{'invisible': [('self_pay', '=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','approved')]}"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','approved')]}" force_save="1"/>
                                 </group>
                             </group>
                         </page>
