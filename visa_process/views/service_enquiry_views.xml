@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Service Enquiry">
             	<header>
-            		<field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey","cancel":"red"}' statusbar_visible="draft,submitted,approved,refuse,cancel,done"/>
+            		<field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey","cancel":"red"}' statusbar_visible="draft,submitted,refuse,cancel,done"/>
                     <!-- LT Issuance of HR card Actions start -->
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','iqama_card_req','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
                     
