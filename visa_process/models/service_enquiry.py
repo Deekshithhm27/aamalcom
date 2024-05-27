@@ -397,6 +397,7 @@ class ServiceEnquiry(models.Model):
         string="Is Service Request Client SPOC",
         compute='_compute_is_service_request_client_spoc'
     )
+   
 
     @api.depends('user_id.groups_id')
     def _compute_is_service_request_client_spoc(self):
@@ -404,6 +405,7 @@ class ServiceEnquiry(models.Model):
         client_spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
         aamalcom_spoc_group = self.env.ref('visa_process.group_service_request_manager')
         fin_group = self.env.ref('visa_process.group_service_request_finance_manager')
+        req_admin = self.env.ref('visa_process.group_service_request_administrator')
         for record in self:
             if client_spoc_group:
                 record.is_service_request_client_spoc = client_spoc_group in record.env.user.groups_id
@@ -411,6 +413,10 @@ class ServiceEnquiry(models.Model):
                 record.is_service_request_client_spoc = aamalcom_spoc_group in record.env.user.groups_id
             if fin_group:
                 record.is_service_request_client_spoc = fin_group in record.env.user.groups_id
+            if req_admin:
+                record.is_service_request_client_spoc = req_admin in record.env.user.groups_id
+
+            
 
     # @api.onchange('emp_visa_id')
     # def update_employee_id(self):
@@ -543,7 +549,11 @@ class ServiceEnquiry(models.Model):
                 else:
                     level = 'level2'
 
-            for lines in line.service_request_config_id.service_department_lines:
+            req_lines = line.service_request_config_id.service_department_lines
+            # Sort lines by sequence
+            sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
+            for lines in sorted_lines:
+                print("--------lines.department_id.id",lines.department_id.name)
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
                     break  # Exit the loop after adding the first department for level1
@@ -561,21 +571,25 @@ class ServiceEnquiry(models.Model):
 
     def open_reassign_employee_wizard(self):
         department_ids = []
-        for lines in line.service_request_config_id.service_department_lines:
-            if level == 'level1':
-                department_ids.append((4, lines.department_id.id))
-                break  # Exit the loop after adding the first department for level1
-            else:
-                if lines.sequence == 2:  # Only append the second department for level2
+        for line in self:
+            req_lines = line.service_request_config_id.service_department_lines
+            # Sort lines by sequence
+            sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
+            for lines in sorted_lines:
+                if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-        return {
-                'name': 'Select Employee',
-                'type': 'ir.actions.act_window',
-                'res_model': 'employee.selection.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {'default_department_ids': department_ids,'default_assign_type':'reassign','default_levels':'level2'},
-            }
+                    break  # Exit the loop after adding the first department for level1
+                else:
+                    if lines.sequence == 2:  # Only append the second department for level2
+                        department_ids.append((4, lines.department_id.id))
+            return {
+                    'name': 'Select Employee',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'employee.selection.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {'default_department_ids': department_ids,'default_assign_type':'reassign','default_levels':'level2'},
+                }
 
 
     @api.depends('service_enquiry_pricing_ids.amount')
@@ -961,8 +975,8 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
                 line.doc_uploaded = True
-            elif line.upload_enjaz_doc and line.e_wakala_doc:
-                line.doc_uploaded = True
+            # elif line.upload_enjaz_doc and line.e_wakala_doc:
+            #     line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
                 line.doc_uploaded = True
             else:
@@ -974,6 +988,7 @@ class ServiceEnquiry(models.Model):
                 line.final_doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
                 line.final_doc_uploaded = True
+                # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
