@@ -6,6 +6,8 @@ from datetime import datetime
 from odoo.exceptions import ValidationError,UserError
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+import imghdr
+import base64
 
 
 class ServiceEnquiry(models.Model):
@@ -949,6 +951,43 @@ class ServiceEnquiry(models.Model):
         if self.approver_id:
             partner_ids.append(self.approver_id.user_id.partner_id.id)
         self.message_subscribe(partner_ids=partner_ids)
+
+    # constraints to check only images are being uploaded
+
+    def _is_image(self, binary_data):
+        """Check if the binary data represents an image."""
+        if not binary_data:
+            return True  # No data is fine
+        image_data = base64.b64decode(binary_data)
+        file_type = imghdr.what(None, h=image_data)
+        return file_type in ['jpeg', 'png', 'gif', 'bmp']
+
+    @api.constrains('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
+                    'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa',
+                    'profession_change_doc','upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
+                    'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
+                    'upload_cultural_letter_doc','upload_family_visit_visa_doc','upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc',
+                    'upload_bank_loan_doc','upload_rental_agreement_doc','upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc',
+                    'upload_istiqdam_letter_doc','upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc',
+                    'upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc','upload_sec_doc','residance_doc',
+                    'transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
+    def _check_binary_fields_are_images(self):
+        binary_fields = [
+            'upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
+            'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa',
+            'profession_change_doc','upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
+            'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
+            'upload_cultural_letter_doc','upload_family_visit_visa_doc','upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc',
+            'upload_bank_loan_doc','upload_rental_agreement_doc','upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc',
+            'upload_istiqdam_letter_doc','upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc',
+            'upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc','upload_sec_doc','residance_doc',
+            'transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc'
+        ]
+        for record in self:
+            for field in binary_fields:
+                binary_data = getattr(record, field)
+                if binary_data and not self._is_image(binary_data):
+                    raise ValidationError("Only image files are allowed for the field: %s" % field.replace('_', ' ').title())
 
 
     
