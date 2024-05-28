@@ -12,7 +12,7 @@
     'category': 'Generic Modules/Accounting',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['base','visa_process','hr','om_hr_payroll','mail','account','contacts','hr_holidays'],
+    'depends': ['base','visa_process','hr','om_hr_payroll','mail','account','contacts','hr_holidays','aamalcom_accounting'],
     'data': [
     	'data/sequences.xml',
     	'data/client_salary_rules.xml',
