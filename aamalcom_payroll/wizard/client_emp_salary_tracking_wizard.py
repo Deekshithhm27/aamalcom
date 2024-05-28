@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 from odoo.exceptions import UserError, ValidationError
 
 class ClientEmpSalaryTrackingWizard(models.TransientModel):
@@ -16,7 +16,7 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
                 ('date_end', '<=', wizard.date_end),
                 ('client_parent_id','=',wizard.client_parent_id.id),('is_invoiced','=',False),('state','=','draft')
             ]
-            employee_records = self.env['client.emp.salary.tracking'].search(employee_domain)
+            employee_records = self.env['client.emp.salary.tracking'].sudo().search(employee_domain)
             if not employee_records:
                 raise UserError("No Payroll data to invoice for selected date range")
             gosi_charge = self.env['gosi.charges'].search([('name','!=',False)],limit=1)
@@ -32,7 +32,7 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
             journal = self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal()
 
             # Create an invoice for the client
-            invoice = self.env['account.move'].create({
+            invoice = self.env['account.move'].sudo().create({
                 'partner_id': wizard.client_parent_id.id,
                 'move_type': 'out_invoice',  # or 'in_invoice' depending on your use case
                 'state':'draft',
@@ -46,10 +46,23 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
                 })],
             })
             for employee_record in employee_records:
-                self.env['account.move.salary.line'].create({
+                self.env['account.move.salary.line'].sudo().create({
                     'move_sal_id': invoice.id,
                     'salary_tracking_id': employee_record.id,
                     # 'gosi_charge': ((employee_record.wage + employee_record.hra)* float(gosi_charge.name))/100,
                     'gosi_charge': employee_record.gosi_charges,
                     'client_emp_sequence': employee_record.client_emp_sequence,
                 })
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Success'),
+                'res_model': 'invoice.created.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_message': _('Invoice is created successfully.')}
+            }
+
+
+
+        return {'type': 'ir.actions.act_window_close'}
+

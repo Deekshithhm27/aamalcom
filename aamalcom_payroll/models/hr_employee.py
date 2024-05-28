@@ -33,7 +33,6 @@ class HrEmployee(models.Model):
 
     def confirm_salary_details(self):
         for employee in self:
-            employee.confirm_salary_bool = True
 
             # Find an hr.payroll.structure record with payroll_type='external' and limit to 1
             struct_id = self.env['hr.payroll.structure'].search([('payroll_type', '=', 'external')], limit=1)
@@ -62,6 +61,7 @@ class HrEmployee(models.Model):
                 'other_allowance':employee.client_salary_rule_ids.filtered(lambda x: x.name.code == 'OA').amount,
                 'hr_responsible_id':3
             })
+            employee.confirm_salary_bool = True
 
             # contract_history.contract_ids = [(4, contract.id, False)]
 
