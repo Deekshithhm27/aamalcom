@@ -53,16 +53,16 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
                     'gosi_charge': employee_record.gosi_charges,
                     'client_emp_sequence': employee_record.client_emp_sequence,
                 })
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Success'),
-                'res_model': 'invoice.created.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {'default_message': _('Invoice is created successfully.')}
-            }
+        #     return {
+        #         'type': 'ir.actions.act_window',
+        #         'name': _('Success'),
+        #         'res_model': 'invoice.created.wizard',
+        #         'view_mode': 'form',
+        #         'target': 'new',
+        #         'context': {'default_message': _('Invoice is created successfully.')}
+        #     }
 
 
 
-        return {'type': 'ir.actions.act_window_close'}
+        # return {'type': 'ir.actions.act_window_close'}
 
