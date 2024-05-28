@@ -29,7 +29,7 @@ class ServiceRequestTreasury(models.Model):
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
 
-    state = fields.Selection([('draft','Draft'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft')
+    state = fields.Selection([('draft','Draft'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
     confirmation_doc = fields.Binary(string="Confirmation Doc")
     bank_receipt_one = fields.Binary(string="1. Bank Receipt")

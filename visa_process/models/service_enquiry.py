@@ -553,7 +553,6 @@ class ServiceEnquiry(models.Model):
             # Sort lines by sequence
             sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
             for lines in sorted_lines:
-                print("--------lines.department_id.id",lines.department_id.name)
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
                     break  # Exit the loop after adding the first department for level1
@@ -572,6 +571,21 @@ class ServiceEnquiry(models.Model):
     def open_reassign_employee_wizard(self):
         department_ids = []
         for line in self:
+            if line.service_request == 'new_ev':
+                if line.state == 'submitted':
+                    level = 'level1'
+                if line.state == 'payment_done':
+                    level = 'level2'
+                if line.state == 'approved' and line.assign_govt_emp_two == False:
+                    level = 'level1'
+                if line.state == 'approved' and line.assign_govt_emp_two != False:
+                    level = 'level2'
+
+            else:
+                if line.state == 'submitted':
+                    level = 'level1'
+                else:
+                    level = 'level2'
             req_lines = line.service_request_config_id.service_department_lines
             # Sort lines by sequence
             sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
@@ -682,7 +696,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
-            if line.service_request == 'new_ev':
+            if line.service_request == 'new_ev' or line.service_request == 'transfer_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
