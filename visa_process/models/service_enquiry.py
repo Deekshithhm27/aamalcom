@@ -399,7 +399,7 @@ class ServiceEnquiry(models.Model):
     )
    
 
-    @api.depends('user_id.groups_id')
+    @api.depends('user_id.groups_id','state','service_request_config_id')
     def _compute_is_service_request_client_spoc(self):
         """Compute function to check if the user belongs to group_service_request_client_spoc"""
         client_spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
@@ -407,14 +407,11 @@ class ServiceEnquiry(models.Model):
         fin_group = self.env.ref('visa_process.group_service_request_finance_manager')
         req_admin = self.env.ref('visa_process.group_service_request_administrator')
         for record in self:
-            if client_spoc_group:
-                record.is_service_request_client_spoc = client_spoc_group in record.env.user.groups_id
-            if aamalcom_spoc_group:
-                record.is_service_request_client_spoc = aamalcom_spoc_group in record.env.user.groups_id
-            if fin_group:
-                record.is_service_request_client_spoc = fin_group in record.env.user.groups_id
-            if req_admin:
-                record.is_service_request_client_spoc = req_admin in record.env.user.groups_id
+            is_client_spoc = client_spoc_group in record.env.user.groups_id
+            is_aamalcom_spoc = aamalcom_spoc_group in record.env.user.groups_id
+            is_fin_group = fin_group in record.env.user.groups_id
+            is_req_admin = req_admin in record.env.user.groups_id
+            record.is_service_request_client_spoc = is_client_spoc or is_aamalcom_spoc or is_fin_group or is_req_admin
 
             
 
@@ -705,7 +702,8 @@ class ServiceEnquiry(models.Model):
             line.doc_uploaded = False
             if line.service_request:
                 line.assign_govt_emp_one = True
-            self.update_pricing()
+            if line.service_request != 'transfer_req':
+                self.update_pricing()
             self._add_followers()
 
     def action_require_payment_confirmation(self):
@@ -726,7 +724,8 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_for_approval(self):
         for line in self:
-            if line.service_request == 'transfer_req' and line.aamalcom_pay == True and line.billable_to_client == True:
+            # if line.service_request == 'transfer_req' and line.aamalcom_pay == True and line.billable_to_client == True:
+            if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
             else:
                 line.state = 'waiting_op_approval'
@@ -802,7 +801,10 @@ class ServiceEnquiry(models.Model):
 
     def action_request_fin_payment_confirmation(self):
         for line in self:
+            if line.transfer_amount == 0:
+                raise ValidationError(_('Kindly enter transfer amount'))
             line.state = 'waiting_op_approval'
+            self.update_pricing()
             self.send_email_to_op()
 
     def action_finance_approved(self):
@@ -825,6 +827,8 @@ class ServiceEnquiry(models.Model):
                     line.assign_govt_emp_two = True
                 if line.service_request == 'transfer_req':
                     line.state = 'payment_done'
+                    # if line.billable_to_aamalcom == True:
+                    #     line.assign_govt_emp_two = True
                 if line.service_request == 'new_ev':
                     line.assign_govt_emp_one = True
 
