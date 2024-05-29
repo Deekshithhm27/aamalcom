@@ -212,6 +212,7 @@
         <field name="arch" type="xml">
             <search string="Filter">
                 <field name="employee_id" string="Employee"/>
+                <field name="name" string="Sequence"/>
                 <field name="client_id" string="Client"/>
                 <field name="country_id" string="Nationality"/>
                 <separator/>
