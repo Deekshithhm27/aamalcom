@@ -17,6 +17,7 @@
     	'security/security.xml',
         'security/ir.model.access.csv',
     	'data/sequences.xml',
+        'security/ir_rule.xml',
         'reports/report_templates.xml',
         'reports/report_invoice.xml',
         'reports/account_report_action.xml',
