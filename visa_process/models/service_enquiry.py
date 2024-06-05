@@ -705,6 +705,7 @@ class ServiceEnquiry(models.Model):
             if line.service_request != 'transfer_req':
                 self.update_pricing()
             self._add_followers()
+            self.send_email_to_pm()
 
     def action_require_payment_confirmation(self):
         for line in self:
@@ -742,41 +743,78 @@ class ServiceEnquiry(models.Model):
         users = group.mapped('users')
 
         # Create the custom email body with the button link
+        record_name = self.name or 'Service Request'
         body_html = """
             <p>Hi,</p>
             <p>You have a new Service Request to approve.</p>
+            <p><strong>Service Request:</strong> %s</p>
             <p><a href="%s">View Service Request</a></p>
-        """ % self._get_record_url()  # Call a method to get the record URL
+        """ % (record_name, self._get_record_url()) 
 
         # Send email to each user in the group
         for user in users:
             # Create a new email with the custom body
             mail_values = {
-                'subject': 'New Service Request',
-                'email_to': user.email,
+                'subject': 'Service Request - %s for approval' % record_name,
+                'email_to': user.partner_id.email,
                 'body_html': body_html,
+                # 'email_from': current_user.email,
+                'email_cc': [self.client_id.company_spoc_id.user_id.email],
+                'reply_to': user.partner_id.email,
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
 
     @api.model
     def send_email_to_op(self):
-        group = self.env.ref('visa_process.group_service_request_manager')
+        group = self.env.ref('visa_process.group_service_request_operations_manager')
         users = group.mapped('users')
+        # current_user = self.env.user
 
         # Create the custom email body with the button link
+        record_name = self.name or 'Service Request'
         body_html = """
             <p>Hi,</p>
             <p>You have a new Service Request to approve.</p>
+            <p><strong>Service Request:</strong> %s</p>
             <p><a href="%s">View Service Request</a></p>
-        """ % self._get_record_url()  # Call a method to get the record URL
+        """ % (record_name, self._get_record_url()) 
 
         # Send email to each user in the group
         for user in users:
             # Create a new email with the custom body
             mail_values = {
-                'subject': 'New Service Request',
-                'email_to': user.email,
+                'subject': 'Service Request - %s for approval' % record_name,
+                'email_to': user.partner_id.email,
                 'body_html': body_html,
+                # 'email_from': current_user.email,
+                'email_cc': [self.client_id.company_spoc_id.user_id.email],
+                'reply_to': user.partner_id.email,
+            }
+            self.env['mail.mail'].sudo().create(mail_values).send()
+
+    @api.model
+    def send_email_to_pm(self):
+        # Create the custom email body with the button link
+        for line in self:
+            current_user = self.env.user
+            record_name = line.name or 'Service Request'
+            body_html = """
+                <p>Hi,</p>
+                <p>You have a new Service Request to process:</p>
+                <p><strong>Service Request:</strong> %s</p>
+                <p><a href="%s">View Service Request</a></p>
+            """ % (record_name, self._get_record_url()) 
+
+            # Send email to each user in the group
+        
+            # Create a new email with the custom body
+            
+            mail_values = {
+                'subject': 'New Service Request - %s' % record_name,
+                'email_to': self.client_id.company_spoc_id.user_id.email,
+                'body_html': body_html,
+                'email_from': current_user.email,
+                'reply_to': self.client_id.company_spoc_id.user_id.email,
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
 
