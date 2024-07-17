@@ -881,7 +881,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_done'
             line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev':
+            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req':
                 line.assign_govt_emp_two = True
             if line.service_request == 'prof_change_qiwa':
                 line.doc_uploaded = True
