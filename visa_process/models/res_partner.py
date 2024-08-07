@@ -22,6 +22,7 @@ class ResPartner(models.Model):
     vat = fields.Char(string='VAT', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
     cr_no = fields.Char(string="CR No.")
 
+    arabic_name = fields.Char('Arabic Name')
     arabic_street = fields.Char('Arabic Street')
     arabic_street2 = fields.Char('Arabic Street2')
     arabic_city = fields.Char('Arabic City')
