@@ -54,6 +54,8 @@ class HrEmployee(models.Model):
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
 
     work_location = fields.Char(string="Work Location")
+    work_address=fields.Char(string="Work Address")
+    home_address=fields.Char(string="Personal Address")
     
 
     iqama = fields.Char(string="Designation on Iqama")

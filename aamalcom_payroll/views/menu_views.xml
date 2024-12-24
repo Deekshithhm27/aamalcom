@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_hr_client_payroll_base" name="Client Employee Payroll" sequence="99" groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager">
-    	<menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking" sequence="1"/> 
-        <menuitem id="menu_hr_client_employee_inv" action="action_client_emp_salary_tracking_wizard" sequence="2"/> 
+    <menuitem id="menu_hr_client_payroll_base" name="Client Employee Payroll" sequence="99"
+              groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager">
+        <menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking"
+                  sequence="1"/>
+        <menuitem id="menu_hr_client_employee_inv" action="action_client_emp_salary_tracking_wizard" sequence="2"/>
 
     </menuitem>
-    
-    <menuitem id="menu_base_gosi_charges" parent="visa_process.menu_base_visa_configuration" name="Gosi Charge Configuration" sequence="3" groups="visa_process.group_service_request_manager">
-        <menuitem id="menu_gosi_charges" action="action_gosi_charges" sequence="1" groups="visa_process.group_service_request_manager"/> 
-    </menuitem> 
+
+    <menuitem id="menu_base_gosi_charges" parent="visa_process.menu_base_visa_configuration"
+              name="Gosi Charge Configuration" sequence="3" groups="visa_process.group_service_request_manager">
+        <menuitem id="menu_gosi_charges" action="action_gosi_charges" sequence="1"
+                  groups="visa_process.group_service_request_manager"/>
+    </menuitem>
 
 
-
-    
-    <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Configuration" sequence="102" groups="hr.group_hr_manager">
-    	<menuitem id="menu_hr_client_salary_structure" action="action_hr_client_salary_rules" sequence="1" groups="base.group_no_one"/> 
+    <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Configuration"
+              sequence="102" groups="hr.group_hr_manager">
+        <menuitem id="menu_hr_client_salary_structure" action="action_hr_client_salary_rules" sequence="1"
+                  groups="base.group_no_one"/>
     </menuitem>
 
     <menuitem id="om_hr_payroll.menu_hr_payroll_root"
               name="Payroll"
               sequence="186"
-              web_icon="om_hr_payroll,static/description/icon.png" groups="visa_process.group_service_request_hr_manager,visa_process.group_service_request_payroll_manager"/>
+              web_icon="om_hr_payroll,static/description/icon.png"
+              groups="visa_process.group_service_request_hr_manager,visa_process.group_service_request_payroll_manager"/>
 
     <record id="om_hr_payroll.menu_department_tree" model="ir.ui.menu">
         <field name="groups_id" eval="[(3, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
@@ -75,12 +80,6 @@
         <field name="groups_id" eval="[
             (4, ref('base.group_no_one'))]"/>
     </record>
-
-
-    
-
-
-
 
 
 </odoo>
