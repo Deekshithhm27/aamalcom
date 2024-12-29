@@ -267,7 +267,7 @@
 
      <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
     <record id="employment_visa_external_user_hide_oe_chatter" model="ir.ui.view">
-        <field name="name">Service Enquiry - Hide oe_chatter</field>
+        <field name="name">Employment Visa - Hide oe_chatter</field>
         <field name="model">employment.visa</field>
         <field name="inherit_id" ref="visa_process.employment_visa_form"/>
         <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
