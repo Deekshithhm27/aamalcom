@@ -38,7 +38,7 @@ class HrEmployee(models.Model):
     company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_project_manager",store=True)
 
 
-    iqama_certificate = fields.Binary(string="Iqama")
+    passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
 
 

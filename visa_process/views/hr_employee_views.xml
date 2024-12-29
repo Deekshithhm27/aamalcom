@@ -86,7 +86,7 @@
                     <div class="row">
                         <div class="col-lg-7 d-flex">
                             <group>
-                                <field name="iqama_certificate"/>
+                                <field name="passport_copy"/>
                                 <field name="degree_certificate"/>
                             </group>
                         </div>
