@@ -999,7 +999,8 @@
                     <filter string="Request Type" name="request_type" domain="[]" context="{'group_by': 'service_request_type'}"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by': 'state'}"/>
                     <filter string="Client" name="client_parent_id" domain="[]" context="{'group_by': 'client_parent_id'}"/>
-                    
+                    <filter string="Priority" name="priority" domain="[]"
+                            context="{'group_by': 'priority'}"/>
                 </group>
             </search>
         </field>
