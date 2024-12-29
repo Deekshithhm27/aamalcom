@@ -1095,7 +1095,21 @@
                 No requests found
               </p><p>
                 Try creating new one!!
-              </p>
+            </p>
+        </field>
+    </record>
+
+    <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+    <record id="service_enquiry_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Service Enquiry - Hide oe_chatter</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
         </field>
     </record>    
 </odoo>
