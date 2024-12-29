@@ -83,7 +83,9 @@ class ServiceEnquiry(models.Model):
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True,copy=False)
     iqama_no = fields.Char(string="Iqama No")
-    identification_id = fields.Char(string='Border No.')
+    # identification_id = fields.Char(string='Border No.')
+    passport_no = fields.Char(string='Passport No')
+
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
     transfer_amount = fields.Float(string="Amount")
@@ -99,8 +101,9 @@ class ServiceEnquiry(models.Model):
             if line.employee_id:
                 line.service_request_type = line.employee_id.service_request_type
                 line.iqama_no = line.employee_id.iqama_no
-                line.identification_id = line.employee_id.identification_id
-    
+                # line.identification_id = line.employee_id.identification_id
+                line.passport_no = line.employee_id.passport_id
+
     emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True,domain="[('employee_id','=',employee_id)]")
 
 
