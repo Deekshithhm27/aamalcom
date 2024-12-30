@@ -47,6 +47,9 @@
             <xpath expr="//field[@name='work_location_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='passport_id']" position="after">
+                <field name="sponsor_id" options="{'no_create': True, 'no_edit': True}"/>
+            </xpath>
             <xpath expr="//field[@name='country_of_birth']" position="after">
                 <field name="passport_issuance_city"/>
             </xpath>
