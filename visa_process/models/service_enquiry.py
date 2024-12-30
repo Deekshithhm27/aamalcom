@@ -94,6 +94,10 @@ class ServiceEnquiry(models.Model):
     penalty_cost = fields.Float(string="Penalty Cost",copy=False)
     
 
+    priority = fields.Selection([
+        ('0', 'Low'), ('1', 'Medium'),
+        ('2', 'High'), ('3', 'Highest')],
+        'Priority',default=0)
 
     @api.onchange('employee_id')
     def update_service_request_type_from_employee(self):
@@ -400,7 +404,20 @@ class ServiceEnquiry(models.Model):
         string="Is Service Request Client SPOC",
         compute='_compute_is_service_request_client_spoc'
     )
-   
+
+    #used for readonly attribute - should be entered only pm 
+    is_project_manager = fields.Boolean(
+        compute='_compute_is_project_manager',
+        store=False,
+        default=False
+    )
+
+    @api.depends('is_project_manager')
+    def _compute_is_project_manager(self):
+        for record in self:
+            # Check if the logged-in user belongs to the 'group_service_request_manager'
+            record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
+
 
     @api.depends('user_id.groups_id','state','service_request_config_id')
     def _compute_is_service_request_client_spoc(self):
