@@ -41,6 +41,9 @@ class HrEmployee(models.Model):
     iqama_certificate = fields.Binary(string="Iqama")
     degree_certificate = fields.Binary(string="Degree")
 
+    work_address = fields.Char(string="Work Address")
+    personal_address = fields.Char(string="Persoanl Address")
+
 
     
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
