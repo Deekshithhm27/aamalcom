@@ -85,6 +85,8 @@ class ServiceEnquiry(models.Model):
     iqama_no = fields.Char(string="Iqama No")
     # identification_id = fields.Char(string='Border No.')
     passport_no = fields.Char(string='Passport No')
+    sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True,copy=False)
+
 
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
@@ -417,6 +419,19 @@ class ServiceEnquiry(models.Model):
         for record in self:
             # Check if the logged-in user belongs to the 'group_service_request_manager'
             record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
+
+    #used for readonly attribute - should be entered by the first government employee
+    is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
+
+
+    @api.depends('is_gov_employee')
+    def _compute_is_gov_employee(self):
+        for record in self:
+            # Check if the user is in gov employee groups
+            group_1 = self.env.user.has_group('visa_process.group_service_request_employee')
+
+            # If user is not in either group, set is_gov_employee to True
+            record.is_gov_employee = not group_1
 
 
     @api.depends('user_id.groups_id','state','service_request_config_id')
@@ -893,6 +908,18 @@ class ServiceEnquiry(models.Model):
     def action_new_ev_docs_uploaded(self):
         for line in self:
             line.assign_govt_emp_two = True
+             # If a government employee updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
+            if line.employee_id and line.service_request == 'new_ev':
+                line.employee_id.sudo().write({'sponsor_id': self.sponsor_id})
+
+    def _add_followers(self):
+        """
+            Add Approver as followers
+        """
+        partner_ids = []
+        if self.approver_id:
+            partner_ids.append(self.approver_id.user_id.partner_id.id)
+        self.message_subscribe(partner_ids=partner_ids)
 
 
 
@@ -966,6 +993,9 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.employee_id:
                 line.employee_pay_string = f"{line.employee_id.name}"
+            if line.employee_id.sponsor_id:
+                line.sponsor_id = line.employee_id.sponsor_id
+
 
     @api.onchange('emp_visa_id')
     def fetch_data_from_transfers(self):
@@ -1016,17 +1046,6 @@ class ServiceEnquiry(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('service.enquiry')
         res = super(ServiceEnquiry,self).create(vals_list)
         return res
-
-    def _add_followers(self):
-        """
-            Add Approver as followers
-        """
-        partner_ids = []
-        if self.approver_id:
-            partner_ids.append(self.approver_id.user_id.partner_id.id)
-        self.message_subscribe(partner_ids=partner_ids)
-
-
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',

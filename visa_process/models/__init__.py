@@ -10,6 +10,7 @@ from . import service_request_config
 from . import service_pricing
 from . import visa_ref_documents
 from . import mail_followers
+from . import employee_sponsor
 
 #-------------------------------#
 

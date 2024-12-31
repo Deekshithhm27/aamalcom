@@ -81,6 +81,10 @@
             <menuitem id="menu_print_types" name="Letter Print Types" sequence="7" action="action_print_types"/>
     	</menuitem>
 
+        <menuitem id="menu_employee_sponsor_master" name="Sponsor Numbers" sequence="9" groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator" action="action_employee_sponsor"/>
+
+
+
     </menuitem>
     <menuitem id="menu_partner_phonecode_base" parent="contacts.res_partner_menu_config" name="Phone Codes" sequence="10">
         <menuitem id="menu_partner_phonecode" name="Codes" sequence="1" action="action_partner_phonecodes"/>
