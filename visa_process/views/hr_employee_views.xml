@@ -31,6 +31,14 @@
             <xpath expr="//field[@name='permit_no']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+             <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='private_email']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
 
             <xpath expr="//field[@name='name']" position="replace">
                 <field name="name" placeholder="Name as per Passport" required="True"/>
@@ -117,15 +125,24 @@
                     </group>
                 </group>
             </xpath>
-            <!-- removing create option for standard field -->
             <xpath expr="//field[@name='address_id']" position="replace">
-                <field name="address_id" context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
+                <field name="address_id" invisible="1" context="{'show_address': 1}" 
+                   options='{"always_reload": True, "highlight_first_line": True, "no_create": True, "no_edit": True}'/>
+            </xpath>
+            <xpath expr="//field[@name='address_home_id']" position="after">
+                <field name="personal_address"/>
+            </xpath>
+            <xpath expr="//field[@name='address_id']" position="after">
+                <field name="work_address"/>
             </xpath>
             <xpath expr="//field[@name='address_home_id']" position="replace">
-                <field name="address_home_id" context="{'show_address': 1,'default_type': 'private','form_view_ref': 'base.res_partner_view_form_private'}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
+                <field name="address_home_id" invisible="1" context="{'show_address': 1, 'default_type': 'private', 'form_view_ref': 'base.res_partner_view_form_private'}" 
+                   options='{"always_reload": True, "highlight_first_line": True, "no_create": True, "no_edit": True}'/>
             </xpath>
         </field>
     </record>
+            
+
 
     <record id="aamalcom_hr_kanban_view_employees" model="ir.ui.view">
            <field name="name">hr.employee.kanban</field>

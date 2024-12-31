@@ -43,6 +43,9 @@ class HrEmployee(models.Model):
     passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
 
+    work_address = fields.Char(string="Work Address")
+    personal_address = fields.Char(string="Persoanl Address")
+
 
     
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
