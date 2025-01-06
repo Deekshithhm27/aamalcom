@@ -656,7 +656,7 @@
 
 
                     <!-- Updated -->
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev','iqama_card_req','iqama_renewal'))]}">
+                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev','iqama_card_req','iqama_renewal','prof_change_qiwa','exit_reentry_issuance'))]}">
                         
                         <page string="Documents">
                             <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">

@@ -55,9 +55,10 @@ class ServiceRequestTreasury(models.Model):
                 line.service_request_id.write({'upload_payment_doc':line.confirmation_doc})
             line.state = 'done'
             if line.service_request_id.service_request == 'transfer_req':
-                line.service_request_id.dynamic_action_status = "Waiting for payment confirmation by govt employee"
-            if line.service_request_id.service_request == 'prof_change_qiwa':
-                line.service_request_id.dynamic_action_status = "Waiting for documents upload pending by govt employee"
+                line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by {line.service_request_id.second_govt_employee_id.name}"
+            if line.service_request_id.service_request == 'prof_change_qiwa' and (line.service_request_id.billable_to_aamalcom == True or line.service_request_id.billable_to_client == True):
+                if line.service_request_id.state =='approved':
+                    line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by {line.service_request_id.first_govt_employee_id.name}"
             if line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. First govt employee need to be assigned by: {line.client_id.company_spoc_id.name}"
             if line.service_request_id.service_request in ['hr_card', 'iqama_renewal']:

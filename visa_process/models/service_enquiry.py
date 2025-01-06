@@ -747,7 +747,7 @@ class ServiceEnquiry(models.Model):
             elif line.service_request == 'iqama_card_req':
                 line.dynamic_action_status = f"Require confirmation on payment made by {line.client_id.name}: {self.env.user.company_spoc_id.name}"
             else:
-                line.dynamic_action_status = f"Employee needs to be assigned by {self.env.user.company_spoc_id.name}"
+                line.dynamic_action_status = f"Employee needs to be assigned by: {self.env.user.company_spoc_id.name}"
 
     def action_require_payment_confirmation(self):
         for line in self:
@@ -761,6 +761,16 @@ class ServiceEnquiry(models.Model):
                 if line.state=='submitted' and line.self_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
+            if line.service_request == 'prof_change_qiwa':
+                if line.state=='submitted':
+                    if line.profession_change_doc and not line.profession_change_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Profession Change Request Document")
+            if line.service_request == 'transfer_req':
+                if line.state=='submitted':
+                    if line.transfer_confirmation_doc and not line.transfer_confirmation_ref:
+                        raise ValidationError("Kindly Update Reference Number for Confirmation of Transfer")
+                    if line.upload_qiwa_doc and not line.qiwa_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Qiwa Contract")
 
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by {line.client_id.name}"
@@ -793,6 +803,18 @@ class ServiceEnquiry(models.Model):
                 if line.state=='submitted' and (line.billable_to_client == True or line.billable_to_aamalcom==True):
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
+            if line.service_request == 'prof_change_qiwa':
+                if line.state=='submitted':
+                    if line.profession_change_doc and not line.profession_change_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Profession Change Request Document")
+
+            if line.service_request == 'transfer_req':
+                if line.state=='submitted':
+                    if line.transfer_confirmation_doc and not line.transfer_confirmation_ref:
+                        raise ValidationError("Kindly Update Reference Number for Confirmation of Transfer")
+                    if line.upload_qiwa_doc and not line.qiwa_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Qiwa Contract")
+
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
                 line.dynamic_action_status = f'Waiting for approval by {line.client_id.name}'
@@ -806,7 +828,7 @@ class ServiceEnquiry(models.Model):
             line.state = 'client_approved'
             line.assign_govt_emp_two = True
             # Approved by {self.env.user.name}.
-            line.dynamic_action_status = f'Employee needs to be assigned by: {self.env.user.company_spoc_id.name}'
+            line.dynamic_action_status = f'Approved by {line.client_id.name}. Second govt employee needs to be assigned by: {self.env.user.company_spoc_id.name}'
 
 
     @api.model
@@ -926,6 +948,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.transfer_amount == 0:
                 raise ValidationError(_('Kindly enter transfer amount'))
+            if line.upload_jawazat_doc and not line.jawazat_doc_ref:
+                raise ValidationError("Kindly Update Reference Number for Jawazat Document")
+
+
             line.state = 'waiting_op_approval'
             line.dynamic_action_status = "Waiting for approval by OM"
             self.update_pricing()
@@ -994,11 +1020,16 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','hr_card','iqama_renewal') and line.state == 'payment_initiation':
+            if line.service_request in ('new_ev','hr_card','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
                 if not line.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            line.dynamic_action_status = f'Payment done by {line.client_id.name}. Second govt employee need to be assigned by {line.client_id.company_spoc_id.name}'
+            
+            if line.service_request =='prof_change_qiwa':
+                line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
+            else:
+                line.dynamic_action_status = f'Payment done by {line.client_id.name}. Second govt employee need to be assigned by {line.client_id.company_spoc_id.name}'
+
             line.state = 'payment_done'
             line.doc_uploaded = False
             if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req':
@@ -1037,14 +1068,86 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
-            # 'sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'
-            if line.service_request in ('ins_class_upgrade','iqama_no_generation','qiwa'):
+            if line.service_request == 'exit_reentry_issuance':
+                if line.state =='submitted':
+                    if not line.confirmation_of_exit_reentry_ref:
+                        raise ValidationError("Kindly Update Reference Number for Confirmation of Exit re-entry Document")
+                    if not line.exit_reentry_visa_ref:
+                        raise ValidationError("Kindly Update Reference Number for Exit Re-entry Visa Document")
+            if line.service_request == 'transfer_req':
+                if line.state =='payment_done' and line.self_pay == True:
+                    if not line.jawazat_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Jawazat Document")
+                    if not line.sponsorship_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Confirmation of Sponsorship Document")
+                    if not line.muqeem_print_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                if line.state == 'payment_done' and (line.billable_to_client==True or line.billable_to_aamalcom==True):
+                    if not line.jawazat_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Jawazat Document")
+                    if not line.sponsorship_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Confirmation of Sponsorship Document")
+                    if not line.muqeem_print_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    if not line.payment_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
+
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','family_visit_visa','cultural_letter','employment_contract','family_visa_letter','istiqdam_form','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
                 if line.upload_qiwa_doc and not line.qiwa_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
+                if line.upload_salary_certificate_doc and not line.salary_certificate_ref:
+                    raise ValidationError("Kindly Update Reference Number for Salary Certificate Document")
+                if line.upload_sec_doc and not line.sec_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for SEC Letter Document")
+                if line.upload_gosi_doc and not line.gosi_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Gosi Letter Document")
+                if line.upload_bank_letter_doc and not line.bank_letter_ref:
+                    raise ValidationError("Kindly Update Reference Number for Bank letter")
+                if line.upload_vehicle_lease_doc and not line.vehicle_lease_ref:
+                    raise ValidationError("Kindly Update Reference Number for Vehicle lease letter")
+                if line.upload_apartment_lease_doc and not line.apartment_lease_ref:
+                    raise ValidationError("Kindly Update Reference Number for Apartment lease letter")
+                if line.upload_istiqdam_letter_doc and not line.istiqdam_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Istiqdam Letter")
+                if line.upload_family_visa_letter_doc and not line.family_visa_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Family visa letter")
+                if line.upload_employment_contract_doc and not line.employment_contract_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Employment Contract")
+                if line.upload_cultural_letter_doc and not line.cultural_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Cultural Letter/Bonafide Letter")
+                if line.upload_family_visit_visa_doc and not line.family_visit_visa_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Family visit visa")
+                if line.upload_emp_secondment_or_cub_contra_ltr_doc and not line.emp_secondment_ltr_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
+                if line.upload_car_loan_doc and not line.car_loan_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Car loan letter")
+                if line.upload_bank_loan_doc and not line.bank_loan_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Bank loan letter")
+                if line.upload_rental_agreement_doc and not line.rental_agreement_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Rental agreement letter")
+                if line.upload_exception_letter_doc and not line.exception_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Exception letter")
+                if line.upload_attestation_waiver_letter_doc and not line.attestation_waiver_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Attestation Waiver letter")
+                if line.upload_embassy_letter_doc and not line.embassy_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Embassy letter")
+                if line.upload_istiqdam_form_doc and not line.istiqdam_form_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Istiqdam form")
+                if line.upload_bilingual_salary_certificate_doc and not line.bilingual_salary_certificate_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Bilingual Salary Certificate")
+                if line.upload_contract_letter_doc and not line.contract_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Contract letter")
+                if line.upload_bank_account_opening_letter_doc and not line.bank_account_opening_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Bank account Opening Letter")
+                if line.upload_bank_limit_upgrading_letter_doc and not line.bank_limit_upgrading_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Bank limit upgrading letter")
+                if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Final exit issuance document")
+
 
             if line.service_request == 'prof_change_qiwa':
                 treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
