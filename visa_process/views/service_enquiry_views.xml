@@ -146,7 +146,6 @@
                                 <field name="req_completion_date" invisible="1"/>
                             
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
-                                <!-- <field name="priority" widget="priority"/> -->
                                 
                             </group>
                         </div>
