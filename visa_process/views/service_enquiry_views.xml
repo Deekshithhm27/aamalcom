@@ -129,8 +129,9 @@
                                 <field name="is_project_manager" invisible="1"/>
                                 <field name="priority" widget="priority" attrs="{'readonly': [('is_project_manager', '!=', True)], 'invisible': [('state', '=','draft')]}"/>
                                 <field name="iqama_no" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="identification_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="passport_no" attrs="{'readonly': [('state', '!=','draft')]}" string="Passport No"/>
-                                <field name="dynamic_action_status"/>
+                                <field name="dynamic_action_status" invisible="1"/>
                                 <field name="is_gov_employee" invisible="1"/>
                                 <field name="sponsor_id" attrs="{'readonly': ['|',('is_gov_employee', '!=', True),('service_request','!=', 'new_ev')]}" options="{'no_create': True, 'no_edit': True}" force_save="1"/>
                                 <field name="service_request" invisible="1"/>
