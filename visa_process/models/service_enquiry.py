@@ -757,7 +757,7 @@ class ServiceEnquiry(models.Model):
                     if not line.issuance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
 
-            if line.service_request =='hr_card':
+            if line.service_request in ('hr_card','iqama_renewal'):
                 if line.state=='submitted' and line.self_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
@@ -789,7 +789,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_for_approval(self):
         for line in self:
-            if line.service_request =='hr_card':
+            if line.service_request in ('hr_card','iqama_renewal'):
                 if line.state=='submitted' and (line.billable_to_client == True or line.billable_to_aamalcom==True):
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
@@ -994,7 +994,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','hr_card') and line.state == 'payment_initiation':
+            if line.service_request in ('new_ev','hr_card','iqama_renewal') and line.state == 'payment_initiation':
                 if not line.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
@@ -1031,7 +1031,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Enzaj Document")
                     if not line.e_wakala_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for E Wakala Document")
-            if line.service_request == 'hr_card':
+            if line.service_request in ('hr_card','iqama_renewal'):
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
