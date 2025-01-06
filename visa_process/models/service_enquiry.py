@@ -429,7 +429,7 @@ class ServiceEnquiry(models.Model):
     def _compute_is_gov_employee(self):
         for record in self:
             # Check if the user is in gov employee groups
-            record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee')
+            record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee') or self.env.user.has_group('visa_process.group_service_request_manager')
 
 
 
