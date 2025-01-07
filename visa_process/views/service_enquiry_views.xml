@@ -986,6 +986,9 @@
                 <field name="employee_id" string="Employee"/>
                 <field name="approver_id" string="Approver"/>
                 <field name="client_parent_id" string="Client"/>
+                <field name="iqama_no" string="Iqama Number"/>
+                <field name="passport_no" string="Passport Number"/>
+                <field name="sponsor_id" string="Sponsor Number"/>
                 <field name="service_request_config_id" string="Service Request"/>
                 <filter string="Draft Requests" name="draft_requests" domain="[('state', '=','draft')]"/>
                 <filter string="Submitted Requests" name="submitted_requests" domain="[('state', '=','submitted')]"/>
