@@ -31,14 +31,12 @@
             <xpath expr="//field[@name='permit_no']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-             <xpath expr="//field[@name='phone']" position="attributes">
+            <xpath expr="//field[@name='phone']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
             <xpath expr="//field[@name='private_email']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
 
             <xpath expr="//field[@name='name']" position="replace">
                 <field name="name" placeholder="Name as per Passport" required="True"/>
@@ -125,24 +123,20 @@
                     </group>
                 </group>
             </xpath>
-            <xpath expr="//field[@name='address_id']" position="replace">
-                <field name="address_id" invisible="1" context="{'show_address': 1}" 
-                   options='{"always_reload": True, "highlight_first_line": True, "no_create": True, "no_edit": True}'/>
-            </xpath>
             <xpath expr="//field[@name='address_home_id']" position="after">
                 <field name="personal_address"/>
             </xpath>
             <xpath expr="//field[@name='address_id']" position="after">
                 <field name="work_address"/>
             </xpath>
+            <xpath expr="//field[@name='address_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//field[@name='address_home_id']" position="replace">
-                <field name="address_home_id" invisible="1" context="{'show_address': 1, 'default_type': 'private', 'form_view_ref': 'base.res_partner_view_form_private'}" 
-                   options='{"always_reload": True, "highlight_first_line": True, "no_create": True, "no_edit": True}'/>
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
-            
-
 
     <record id="aamalcom_hr_kanban_view_employees" model="ir.ui.view">
            <field name="name">hr.employee.kanban</field>
@@ -230,6 +224,19 @@
                </kanban>
             </field>
         </record>
+
+    <record id="hr_employee_search_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.search.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/> 
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside"> 
+                <field name="iqama_no" string="Iqama Number"/>
+                <field name="passport_id" string="Passport Number"/>
+                <field name="sponsor_id" string="Sponsor Number"/>
+            </xpath>
+        </field>
+    </record>
 
 
     <!-- Overriding records -->
