@@ -98,8 +98,8 @@ class ServiceEnquiry(models.Model):
     
 
     priority = fields.Selection([
-        ('0', 'Low'), ('1', 'Medium'),
-        ('2', 'High'), ('3', 'Highest')],
+        ('0', 'No Priority'), ('1', 'Low'),
+        ('2', 'Medium'), ('3', 'High')],
         'Priority',default=0)
 
     @api.onchange('employee_id')
