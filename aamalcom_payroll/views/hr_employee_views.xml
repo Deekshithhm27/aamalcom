@@ -16,7 +16,8 @@
         	</xpath>
             <xpath expr="//page[@name='hr_settings']" position="after">
             	<page name="salary" string="Salary Details" attrs="{'invisible': [('custom_employee_type', '!=', 'external')]}">
-                    <field name="client_salary_rule_ids">
+                    <field name="is_salary_update" invisible="1"/>
+                    <field name="client_salary_rule_ids" attrs="{'readonly': [('is_salary_update', '!=', True)]}" >
                         <form>
                             <group>
                                 <group>

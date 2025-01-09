@@ -17,6 +17,8 @@ class HrEmployee(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
     hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
     identification_id = fields.Char(string='Border No.', groups="hr.group_hr_user", tracking=True)
+    sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True,copy=False)
+
     
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -38,10 +40,11 @@ class HrEmployee(models.Model):
     company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_project_manager",store=True)
 
 
-    iqama_certificate = fields.Binary(string="Iqama")
+    passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
-
-
+    
+    work_address = fields.Char(string="Work Address")
+    personal_address = fields.Char(string="Persoanl Address")
     
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
 

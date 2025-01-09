@@ -33,6 +33,7 @@
         'views/configurations/service_request_config_views.xml',
         'views/configurations/service_pricing_views.xml',
         'views/configurations/visa_ref_documents_views.xml',
+        'views/configurations/employee_sponsor_views.xml',
 
         
         'views/hr_employee_views.xml',

@@ -219,4 +219,19 @@
         </field>
     </record>
 
+    <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+
+    <record id="local_transfer_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Hide oe_chatter</field>
+        <field name="model">local.transfer</field>
+        <field name="inherit_id" ref="visa_process.local_transfer_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

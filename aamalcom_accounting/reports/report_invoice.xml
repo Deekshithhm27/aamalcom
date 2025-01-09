@@ -106,6 +106,9 @@
                         </div>
                         <div class="col-6" style="margin-top:5px">
                             <div class="text-right">
+                                <t t-if="o.partner_id.arabic_name">
+                                    <span class="text-right arabic" style="padding-right:5px;" t-field="o.partner_id.arabic_name"/><br/>
+                                </t>
                                 <t t-if="o.partner_id.street">
                                     <span class="text-right arabic" style="padding-right:5px;" t-field="o.partner_id.arabic_street"/><br/>
                                 </t>
@@ -118,21 +121,35 @@
                                 <t t-if="o.partner_id.arabic_country">
                                     <span class="text-right arabic" style="padding-right:5px;" t-field="o.partner_id.arabic_country"/><br/>
                                 </t>
+                                <br/>
+                                <div t-if="o.partner_id.vat"><span t-field="o.partner_id.vat" class="arabic"/> :رقم ضريبة القيمة المضافة</div>
+                                <div t-if="o.partner_id.cr_no"> <span t-field="o.partner_id.cr_no" class="arabic"/> : رقم السجل التجاري</div>
                             </div>
                         </div>
                     </div>
                     <div class="row" style="border:1pt solid grey;width:100%;height:130px;margin-left:0px">
-                        <div class="col-6" style="margin-top:5px">
+                        <div class="col-5" style="margin-top:5px">
                             <p>
                                 <strong>Invoice‬‬ ‫‪Number‬‬: </strong><span t-field="o.name"/><br/>
                                 <strong>Invoice‬‬ Date: </strong><span t-field="o.invoice_date"/><br/>
-                                ‫<strong>‪Payment Terms‬: </strong><span t-field="o.invoice_payment_term_id"/><br/>
+                                <t t-if="o.invoice_payment_term_id">
+                                    ‫<strong>‪Payment Terms‬: </strong><span t-field="o.invoice_payment_term_id"/><br/>
+                                </t>
                             </p>
                         </div>
-                        <div class="col-4"/>
                         <div class="col-2" style="margin-top:5px">
                             <img t-if="doc.l10n_sa_qr_code_str" style="display:block;" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('QR', quote_plus(doc.l10n_sa_qr_code_str), 110, 110)"/>
                         </div>
+                        <div class="col-5" style="margin-top:5px">
+                            <p class="text-right">
+                                <span t-field="o.name"/> <strong> : رقم الفاتورة</strong><br/>
+                                <span t-field="o.invoice_date"/> <strong> : تاريخ الفاتورة</strong><br/>
+                                <t t-if="o.invoice_payment_term_id">
+                                    <span t-field="o.invoice_payment_term_id"/>‫<strong> : شروط الدفع</strong><br/>
+                                </t>
+                            </p>
+                        </div>
+                        
                     </div>
                     <table style="border:1pt solid grey;width:100%;color:black; margin-top:0pt; color:black;" class="table-condensed">
                         <thead>
@@ -408,13 +425,22 @@
                                 </div>
                                 <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
                                     <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.residance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.residance_doc)" style="max-height:100%;max-width:100%"/>
+                                        <!-- <img t-if="doc_lists.service_enquiry_id.residance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.residance_doc)" style="max-height:100%;max-width:100%"/> -->
+                                        <t t-if="doc_lists.service_enquiry_id.residance_doc">
+                                            <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.residance_doc.decode('utf-8') if doc_lists.service_enquiry_id.residance_doc else ''))"/>
+
+                                        </t>
                                         <t t-esc="doc_lists.service_enquiry_id.residance_doc_ref"/>
                                     </div>
                                 </div>
                                 <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
                                     <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.muqeem_print_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.muqeem_print_doc)" style="max-height:100%;max-width:100%"/>
+                                        <!-- <img t-if="doc_lists.service_enquiry_id.muqeem_print_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.muqeem_print_doc)" style="max-height:100%;max-width:100%"/> -->
+                                        <t t-if="doc_lists.service_enquiry_id.muqeem_print_doc">
+                                            <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.muqeem_print_doc or ''))" style="width:100%; height:600px;"/>
+                                        </t>
+
+
                                         <t t-esc="doc_lists.service_enquiry_id.muqeem_print_doc_ref"/>
                                     </div>
                                 </div>

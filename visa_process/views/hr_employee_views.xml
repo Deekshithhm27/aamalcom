@@ -28,6 +28,15 @@
             <xpath expr="//field[@name='coach_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='permit_no']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='private_email']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 
             <xpath expr="//field[@name='name']" position="replace">
                 <field name="name" placeholder="Name as per Passport" required="True"/>
@@ -43,6 +52,9 @@
             </xpath>
             <xpath expr="//field[@name='work_location_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='passport_id']" position="after">
+                <field name="sponsor_id" options="{'no_create': True, 'no_edit': True}"/>
             </xpath>
             <xpath expr="//field[@name='country_of_birth']" position="after">
                 <field name="passport_issuance_city"/>
@@ -83,7 +95,7 @@
                     <div class="row">
                         <div class="col-lg-7 d-flex">
                             <group>
-                                <field name="iqama_certificate"/>
+                                <field name="passport_copy"/>
                                 <field name="degree_certificate"/>
                             </group>
                         </div>
@@ -111,12 +123,17 @@
                     </group>
                 </group>
             </xpath>
-            <!-- removing create option for standard field -->
-            <xpath expr="//field[@name='address_id']" position="replace">
-                <field name="address_id" context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
+            <xpath expr="//field[@name='address_home_id']" position="after">
+                <field name="personal_address"/>
             </xpath>
-            <xpath expr="//field[@name='address_home_id']" position="replace">
-                <field name="address_home_id" context="{'show_address': 1,'default_type': 'private','form_view_ref': 'base.res_partner_view_form_private'}" options='{"always_reload": True, "highlight_first_line": True,"no_create": True, "no_edit": True}'/>
+            <xpath expr="//field[@name='address_id']" position="after">
+                <field name="work_address"/>
+            </xpath>
+            <xpath expr="//field[@name='address_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='address_home_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
@@ -207,6 +224,19 @@
                </kanban>
             </field>
         </record>
+
+    <record id="hr_employee_search_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.search.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/> 
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside"> 
+                <field name="iqama_no" string="Iqama Number"/>
+                <field name="passport_id" string="Passport Number"/>
+                <field name="sponsor_id" string="Sponsor Number"/>
+            </xpath>
+        </field>
+    </record>
 
 
     <!-- Overriding records -->

@@ -18,6 +18,7 @@
     	'data/client_salary_rules.xml',
     	'data/hr_payroll_data.xml',
     	'security/ir.model.access.csv',
+        'security/security.xml',
         'views/gosi_charges_views.xml',
         'views/hr_contract_views.xml',
     	'views/salary_structure_views.xml',
