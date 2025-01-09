@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class ServiceEnquiry(models.Model):
     _name = 'service.enquiry'
     _order = 'id desc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _description = "Service Enquiry"
 
