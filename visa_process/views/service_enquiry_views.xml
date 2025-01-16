@@ -82,9 +82,15 @@
                     <!-- Issuance of new EV end -->
 
             	</header>
+                <field name="latest_existing_request_id" invisible="1"/>
+                <div groups="visa_process.group_service_request_client_spoc"
+                     class="alert alert-info mb-0" role="alert"
+                     attrs="{'invisible': ['|',('latest_existing_request_id', '=', False),('state', '!=', 'draft')]}">
+                    This employee service request already exists <bold>(Ticket : <field name="latest_existing_request_name"/>).</bold>You may continue.
+                </div>
                 <sheet>
 
-                    <div class="oe_button_box" name="button_box">
+                <div class="oe_button_box" name="button_box">
                         <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.action_service_request_treasury_active)d" icon="fa-bars" attrs="{'invisible':[('total_treasury_requests','=',0)]}" groups="visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                             <field name="total_treasury_requests" widget="statinfo"/>
                         </button>

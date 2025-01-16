@@ -56,11 +56,24 @@ class ServiceEnquiry(models.Model):
 
     dynamic_action_status = fields.Char('Action Status', readonly=True, default='Draft')
 
+    latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
+    latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
+
     @api.onchange('service_request_config_id')
     def update_process_type(self):
         for line in self:
             if line.service_request_config_id:
                 line.process_type = line.service_request_config_id.process_type
+            # Passing the latest existing request name in the alert message for visibility,
+            if line.service_request_config_id and line.employee_id:
+                latest_existing_request = self.search([
+                    ('employee_id', '=', line.employee_id.id),
+                    ('service_request_config_id', '=', line.service_request_config_id.id)
+                ], limit=1)
+                if latest_existing_request:
+                    if latest_existing_request:
+                        line.latest_existing_request_id = True
+                        line.latest_existing_request_name = latest_existing_request.display_name
 
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
@@ -1251,6 +1264,16 @@ class ServiceEnquiry(models.Model):
         for vals in vals_list:
             vals['name'] = self.env['ir.sequence'].next_by_code('service.enquiry')
         res = super(ServiceEnquiry,self).create(vals_list)
+        # Create the latest existing request name for the alert message visibility,
+        if res.service_request_config_id and res.employee_id:
+            latest_existing_request = self.search([
+                ('employee_id', '=', res.employee_id.id),
+                ('service_request_config_id', '=', res.service_request_config_id.id),
+                ('id', '!=', res.id)
+            ], limit=1)
+            if latest_existing_request:
+                res.latest_existing_request_id = True
+                res.latest_existing_request_name = latest_existing_request.display_name
         return res
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
