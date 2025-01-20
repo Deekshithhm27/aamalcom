@@ -227,7 +227,7 @@ class ServiceEnquiry(models.Model):
     cultural_letter_doc_ref = fields.Char(string="Ref No.*")
     draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
     updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
-    updated_istiqdam_form_doc_file_name = fields.Char(string="Updated Istiqdam Form")
+    upload_istiqdam_form_doc_file_name = fields.Char(string="Updated Istiqdam Form")
     upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
     istiqdam_form_doc_ref = fields.Char(string="Ref No.*")
     upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
