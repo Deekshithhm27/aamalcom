@@ -74,9 +74,9 @@ class ServiceEnquiry(models.Model):
                     if latest_existing_request:
                         line.latest_existing_request_id = True
                         line.latest_existing_request_name = latest_existing_request.display_name
-
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
+
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
@@ -152,91 +152,135 @@ class ServiceEnquiry(models.Model):
     medical_doc = fields.Binary(string="Medical Doc")
 
     upload_hr_card = fields.Binary(string="HR Card Document")
+    upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
+    upload_jawazat_doc_file_name = fields.Char(string="Jawazat Document")
     jawazat_doc_ref = fields.Char(string="Ref No.*")
     upload_sponsorship_doc = fields.Binary(string="Confirmation of Sponsorship")
+    upload_sponsorship_doc_file_name = fields.Char(string="Confirmation of Sponsorship")
     sponsorship_doc_ref = fields.Char(string="Ref No.*")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
+    upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True)
     payment_doc_ref = fields.Char(string="Ref No.*")
     residance_doc = fields.Binary(string="Residance Permit Document")
+    residance_doc_file_name = fields.Char(string="Residance Permit Document")
     residance_doc_ref = fields.Char(string="Ref No.*")
     transfer_confirmation_doc = fields.Binary(string="Confirmation of Transfer")
+    transfer_confirmation_doc_file_name = fields.Char(string="Confirmation of Transfer")
     transfer_confirmation_ref = fields.Char(string="Ref No.*")
     muqeem_print_doc = fields.Binary(string="Muqeem Print Document")
+    muqeem_print_doc_file_name = fields.Char(string="Muqeem Print Document")
     muqeem_print_doc_ref = fields.Char(string="Ref No.*")
 
     upload_upgrade_insurance_doc = fields.Binary(string="Confirmation of Insurance upgarde Document")
+    upload_upgrade_insurance_doc_file_name = fields.Char(string="Confirmation of Insurance upgarde Document")
     upgarde_ins_doc_ref = fields.Char(string="Ref No.*")
 
     request_date = fields.Datetime(string="Request Date",default=fields.Datetime.now)
 
     upload_iqama_card_doc = fields.Binary(string="Upload Iqama Card")
+    upload_iqama_card_doc_file_name = fields.Char(string="Upload Iqama Card")
     iqama_card_ref = fields.Char(string="Ref No.*")
     upload_iqama_card_no_doc = fields.Binary(string="Upload Iqama Card")
+    upload_iqama_card_no_doc_file_name = fields.Binary(string="Upload Iqama Card")
     iqama_card_no_ref = fields.Char(string="Ref No.*")
     upload_qiwa_doc = fields.Binary(string="Upload Qiwa Contract")
+    upload_qiwa_doc_file_name = fields.Char(string="Qiwa Card")
     qiwa_doc_ref = fields.Char(string="Ref No.*")
     upload_gosi_doc = fields.Binary(string="Upload GOSI Update")
+    upload_gosi_doc_file_name=fields.Char(string="GOSI Update")
     gosi_doc_ref = fields.Char(string="Ref No.*")
     profession_change_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_doc_file_name = fields.Char(string="Profession Change Doc")
     profession_change_doc_ref = fields.Char(string="Ref No.*")
     profession_change_final_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_final_doc_file_name = fields.Char(string="Profession Change Req. Doc")
     prof_change_final_ref = fields.Char(string="Ref No.*")
     upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
+    upload_salary_certificate_doc_file_name = fields.Char(string="Salary Certificate")
     salary_certificate_ref = fields.Char(string="Ref No.*")
     upload_bank_letter_doc = fields.Binary(string="Bank Letter")
+    upload_bank_letter_doc_file_name = fields.Char(string="Bank Letter")
     bank_letter_ref = fields.Char(string="Ref No.*")
     upload_vehicle_lease_doc = fields.Binary(string="Letter for Vehicle lease")
+    upload_vehicle_lease_doc_file_name = fields.Char(string="Letter for Vehicle lease")
     vehicle_lease_ref = fields.Char(string="Ref No.*")
     upload_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
+    upload_apartment_lease_doc_file_name = fields.Char(string="Letter for Apartment lease")
     apartment_lease_ref = fields.Char(string="Ref No.*")
     upload_family_visa_letter_doc = fields.Binary(string="Family Visa Letter")
+    upload_family_visa_letter_doc_file_name = fields.Char(string="Family Visa Letter")
     family_visa_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_visit_visa_app_doc = fields.Binary(string="Upload Visit Visa application")
+    upload_visit_visa_app_doc_file_name = fields.Char(string="Visit Visa application")
     visit_visa_app_doc_ref = fields.Char(string="Ref No.*")
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
+    upload_family_visit_visa_doc_file_name = fields.Char(string="Family Visit Visa Doc")
     family_visit_visa_doc_ref = fields.Char(string="Ref No.*")
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
+    upload_employment_contract_doc_file_name = fields.Char(string="Employment Contract")
+
     employment_contract_doc_ref = fields.Char(string="Ref No.*")
     upload_cultural_letter_doc = fields.Binary(string="Cultural Letter")
+    upload_cultural_letter_doc_file_name= fields.Char(string="Cultural Letter")
     cultural_letter_doc_ref = fields.Char(string="Ref No.*")
     draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
     updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
+    updated_istiqdam_form_doc_file_name = fields.Char(string="Updated Istiqdam Form")
     upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
     istiqdam_form_doc_ref = fields.Char(string="Ref No.*")
     upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
+    upload_confirmation_of_exit_reentry_file_name = fields.Char(string="Upload Confirmation of Exit re-entry")
+
     confirmation_of_exit_reentry_ref = fields.Char(string="Ref No.*")
     upload_exit_reentry_visa = fields.Binary(string="Exit Re-entry Visa")
+    upload_exit_reentry_visa_file_name = fields.Char(string="Exit Re-entry Visa")
+
     exit_reentry_visa_ref = fields.Char(string="Ref No.*")
     upload_final_exit_issuance_doc = fields.Binary(string="Final Exit issuance doc")
+    upload_final_exit_issuance_doc_file_name = fields.Char(string="Final Exit issuance doc")
+
     final_exit_issuance_doc_ref = fields.Char(string="Ref No.*")
     upload_soa_doc = fields.Binary(string="SOA Doc")
+    upload_soa_doc_file_name = fields.Char(string="SOA Doc")
     soa_doc_ref = fields.Char(string="Ref No.*")
     upload_emp_secondment_or_cub_contra_ltr_doc = fields.Binary(string="Employee secondment / Subcontract Document")
+    upload_emp_secondment_or_cub_contra_ltr_doc_file_name = fields.Char(string="Employee secondment / Subcontract Document")
     emp_secondment_ltr_doc_ref = fields.Char(string="Ref No.*")
     upload_car_loan_doc = fields.Binary(string="Car Loan Document")
+    upload_car_loan_doc_file_name = fields.Char(string="Car Loan Document")
     car_loan_doc_ref = fields.Char(string="Ref No.*")
     upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
+    upload_bank_loan_doc_file_name = fields.Char(string="Bank Loan Document")
     bank_loan_doc_ref = fields.Char(string="Ref No.*")
     upload_rental_agreement_doc = fields.Binary(string="Rental Agreement Document")
+    upload_rental_agreement_doc_file_name = fields.Char(string="Rental Agreement Document")
     rental_agreement_doc_ref = fields.Char(string="Ref No.*")
     upload_exception_letter_doc = fields.Binary(string="Exception Document")
+    upload_exception_letter_doc_file_name = fields.Char(string="Exception Document")
     exception_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_attestation_waiver_letter_doc = fields.Binary(string="Attestation Waiver Document")
+    upload_attestation_waiver_letter_doc_file_name = fields.Char(string="Attestation Waiver Document")
     attestation_waiver_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_embassy_letter_doc = fields.Binary(string="Embassy Letter")
+    upload_embassy_letter_doc_file_name = fields.Char(string="Embassy Letter")
     embassy_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_istiqdam_letter_doc = fields.Binary(string="Istiqdam Letter")
+    upload_istiqdam_letter_doc_file_name= fields.Char(string="Istiqdam Letter")
     istiqdam_letter_doc_ref = fields.Char(string="Ref No.*")
     # upload_sce_letter_doc = fields.Binary(string="SCE Letter")
     upload_bilingual_salary_certificate_doc = fields.Binary(string="Bilingual Salary Certificate")
+    upload_bilingual_salary_certificate_doc_file_name = fields.Char(string="Bilingual Salary Certificate")
     bilingual_salary_certificate_doc_ref = fields.Char(string="Ref No.*")
     upload_contract_letter_doc = fields.Binary(string="Contract Letter")
+    upload_contract_letter_doc_file_name = fields.Char(string="Contract Letter")
     contract_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_bank_account_opening_letter_doc = fields.Binary(string="Bank account Opening Letter")
+    upload_bank_account_opening_letter_doc_file_name = fields.Char(string="Bank account Opening Letter")
     bank_account_opening_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_bank_limit_upgrading_letter_doc = fields.Binary(string="Bank Limit upgrading Letter")
+    upload_bank_limit_upgrading_letter_doc_file_name = fields.Char(string="Bank Limit upgrading Letter")
     bank_limit_upgrading_letter_doc_ref = fields.Char(string="Ref No.*")
 
     
@@ -259,12 +303,16 @@ class ServiceEnquiry(models.Model):
     coc_for_ewakala = fields.Boolean(string="COC for Ewakala",compute="update_coc_for_ewakala",store=True)
 
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
+    upload_issuance_doc_file_name = fields.Char(string="Upload Issuance of Visa Document")
     issuance_doc_ref = fields.Char(string="Ref No.*")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
+    upload_enjaz_doc_file_name = fields.Char(string="Enjaz Document")
     enjaz_doc_ref = fields.Char(string="Ref No.*")
     e_wakala_doc = fields.Binary(string="E Wakala Document")
+    e_wakala_doc_file_name = fields.Char(string="E Wakala Document")
     e_wakala_doc_ref = fields.Char(string="Ref No.*")
     upload_sec_doc = fields.Binary(string="SEC Letter")
+    upload_sec_doc_file_name = fields.Char(string="SEC Letter")
     sec_doc_ref = fields.Char(string="Ref No.*")
 
     visa_document = fields.Binary(string="Visa Document")
@@ -515,6 +563,371 @@ class ServiceEnquiry(models.Model):
                 record.billable_to_aamalcom_string = False
                 record.aamalcom_pay_string = False
                 record.employee_pay_string = False
+    #Code to rename the filename 
+
+    @api.model
+
+    def create(self, vals):
+
+        if 'upload_car_loan_doc' in vals:
+
+            employee_id = vals.get('employee_id')  # Assuming employee_id is a Many2one field
+
+            iqama_no = vals.get('iqama_no', 'UnknownIqama')
+
+            service_request_config_id = vals.get('service_request_config_id')  # Assuming service_request_config_id is a Many2one field
+
+            employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
+
+            service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
+
+            vals['upload_car_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CarLoanDoc.pdf"
+
+        if 'upload_issuance_doc' in vals:
+
+            vals['upload_issuance_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_Issuance of Visa Document.pdf"
+
+        if 'upload_payment_doc' in vals:
+
+            vals['upload_payment_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDocument.pdf"
+
+        if 'upload_enjaz_doc' in vals:
+
+            vals['upload_enjaz_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EnjazDocument.pdf"
+
+        if 'e_wakala_doc' in vals:
+
+            vals['e_wakala_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EwakalaDocument.pdf"
+
+        if 'upload_hr_card' in vals:
+
+            vals['upload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_HRCard.pdf"
+
+        if 'residance_doc' in vals:
+
+            vals['residance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ResidancePermitDoc.pdf"
+
+        if 'muqeem_print_doc' in vals:
+
+            vals['muqeem_print_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemPrintDocument.pdf"
+
+        if 'upload_upgrade_insurance_doc' in vals:
+
+            vals['upload_upgrade_insurance_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_InsuranceupgardeDocument.pdf"
+
+        if 'upload_iqama_card_no_doc' in vals:
+
+            vals['upload_iqama_card_no_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
+
+        if 'upload_iqama_card_doc' in vals:
+
+            vals['upload_iqama_card_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
+
+        if 'upload_qiwa_doc' in vals:
+
+            vals['upload_qiwa_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
+
+        if 'upload_gosi_doc' in vals:
+
+            vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
+
+        if 'upload_confirmation_of_exit_reentry' in vals:
+
+            vals['upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
+
+        if 'upload_exit_reentry_visa' in vals:
+
+            vals['upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
+
+        if 'profession_change_doc' in vals:
+
+            vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
+
+        if 'profession_change_final_doc_' in vals:
+
+            vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
+
+        if 'upload_salary_certificate_doc' in vals:
+
+            vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
+
+        if 'upload_bank_letter_doc' in vals:
+
+            vals['upload_bank_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLetterDoc.pdf"
+
+        if 'upload_vehicle_lease_doc' in vals:
+
+            vals['upload_vehicle_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForVehicleLeaseDoc.pdf"
+
+        if 'upload_apartment_lease_doc' in vals:
+
+            vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
+
+        if 'upload_istiqdam_form_doc' in vals:
+
+            vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
+
+        if 'upload_family_visa_letter_doc' in vals:
+
+            vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
+
+        if 'upload_visit_visa_app_doc' in vals:
+
+            vals['upload_visit_visa_app_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_VistVisaApplicationDoc.pdf"
+
+        if 'upload_employment_contract_doc' in vals:
+
+            vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
+
+        if 'upload_cultural_letter_doc' in vals:
+
+            vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
+
+        if 'upload_family_visit_visa_doc' in vals:
+
+            vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
+
+        if 'upload_sec_doc' in vals:
+
+            vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDoc.pdf"
+
+        if 'upload_emp_secondment_or_cub_contra_ltr_doc' in vals:
+
+            vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
+
+        if 'upload_bank_loan_doc' in vals:
+
+            vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
+
+        if 'upload_rental_agreement_doc' in vals:
+
+            vals['upload_rental_agreement_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_RentalAgreementLetterDoc.pdf"
+
+        if 'upload_exception_letter_doc' in vals:
+
+            vals['upload_exception_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExceptionLetterDoc.pdf"
+
+        if 'upload_attestation_waiver_letter_doc' in vals:
+
+            vals['upload_attestation_waiver_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestationWaiverLetterDoc.pdf"
+
+        if 'upload_embassy_letter_doc' in vals:
+
+            vals['upload_embassy_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmbassyLetterDoc.pdf"
+
+        if 'upload_istiqdam_letter_doc' in vals:
+
+            vals['upload_istiqdam_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamLetterDoc.pdf"
+
+        if 'upload_bilingual_salary_certificate_doc' in vals:
+
+            vals['upload_bilingual_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BillinugalSalaryCertifiacte.pdf"
+
+        if 'upload_contract_letter_doc' in vals:
+
+            vals['upload_contract_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ContractLetterDoc.pdf"
+
+        if 'upload_bank_account_opening_letter_doc' in vals:
+
+            vals['upload_bank_account_opening_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankAccountOpeningLetterDoc.pdf"
+
+        if 'upload_bank_limit_upgrading_letter_doc' in vals:
+
+            vals['upload_bank_limit_upgrading_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLimitUpgradingLetterDoc.pdf"
+
+        if 'transfer_confirmation_doc' in vals:
+
+            vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
+
+        if 'upload_jawazat_doc' in vals:
+
+            vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
+
+        if 'upload_sponsorship_doc' in vals:
+
+            vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
+
+        
+
+        return super(ServiceEnquiry, self).create(vals)
+
+
+
+    def write(self, vals):
+
+        for record in self:
+
+            employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
+
+            iqama_no = record.iqama_no or 'UnknownIqama'
+
+            service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
+
+            if 'upload_car_loan_doc' in vals:
+
+                vals['upload_car_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CarLoanDoc.pdf"
+
+            if 'upload_issuance_doc' in vals:
+
+                vals['upload_issuance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IssuanceDocument.pdf"
+
+            if 'upload_payment_doc' in vals:
+
+                vals['upload_payment_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDocument.pdf"
+
+            if 'upload_enjaz_doc' in vals:
+
+                vals['upload_enjaz_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EnjazDocument.pdf"
+
+            if 'e_wakala_doc' in vals:
+
+                vals['e_wakala_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EwakalaDocument.pdf"
+
+            if 'upload_hr_card' in vals:
+
+                vals['upload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_HR Card.pdf"
+
+            if 'residance_doc' in vals:
+
+                vals['residance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ResidancePermitDoc.pdf"
+
+            if 'muqeem_print_doc' in vals:
+
+                vals['muqeem_print_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemPrintDocument.pdf"
+
+            if 'upload_upgrade_insurance_doc' in vals:
+
+                vals['upload_upgrade_insurance_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_Insurance upgarde Document.pdf"
+
+            if 'upload_iqama_card_no_doc' in vals:
+
+                vals['upload_iqama_card_no_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
+
+            if 'upload_iqama_card_doc' in vals:
+
+                vals['upload_iqama_card_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
+
+            if 'upload_qiwa_doc' in vals:
+
+                vals['upload_qiwa_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
+
+            if 'upload_gosi_doc' in vals:
+
+                vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
+
+            if 'upload_confirmation_of_exit_reentry' in vals:
+
+                vals['upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
+
+            if 'upload_exit_reentry_visa' in vals:
+
+                vals['upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
+
+            if 'profession_change_doc' in vals:
+
+                vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
+
+            if 'profession_change_final_doc_' in vals:
+
+                vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
+
+            if 'upload_salary_certificate_doc' in vals:
+
+                vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
+
+            if 'upload_bank_letter_doc' in vals:
+
+                vals['upload_bank_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLetterDoc.pdf"
+
+            if 'upload_vehicle_lease_doc' in vals:
+
+                vals['upload_vehicle_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForVehicleLeaseDoc.pdf"
+
+            if 'upload_apartment_lease_doc' in vals:
+
+                vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
+
+            if 'upload_istiqdam_form_doc' in vals:
+
+                vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
+
+            if 'upload_family_visa_letter_doc' in vals:
+
+                vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
+
+            if 'upload_employment_contract_doc' in vals:
+
+                vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
+
+            if 'upload_cultural_letter_doc' in vals:
+
+                vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
+
+            if 'upload_family_visit_visa_doc' in vals:
+
+                vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
+
+            if 'upload_sec_doc' in vals:
+
+                vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDoc.pdf"
+
+            if 'upload_emp_secondment_or_cub_contra_ltr_doc' in vals:
+
+                vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
+
+            if 'upload_bank_loan_doc' in vals:
+
+                vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
+
+            if 'upload_rental_agreement_doc' in vals:
+
+                vals['upload_rental_agreement_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_RentalAgreementLetterDoc.pdf"
+
+            if 'upload_exception_letter_doc' in vals:
+
+                vals['upload_exception_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExceptionLetterDoc.pdf"
+
+            if 'upload_attestation_waiver_letter_doc' in vals:
+
+                vals['upload_attestation_waiver_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestationWaiverLetterDoc.pdf"
+
+            if 'upload_embassy_letter_doc' in vals:
+
+                vals['upload_embassy_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmbassyLetterDoc.pdf"
+
+            if 'upload_istiqdam_letter_doc' in vals:
+
+                vals['upload_istiqdam_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamLetterDoc.pdf"
+
+            if 'upload_bilingual_salary_certificate_doc' in vals:
+
+                vals['upload_bilingual_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BillinugalSalaryCertifiacte.pdf"
+
+            if 'upload_contract_letter_doc' in vals:
+
+                vals['upload_contract_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ContractLetterDoc.pdf"
+
+            if 'upload_bank_account_opening_letter_doc' in vals:
+
+                vals['upload_bank_account_opening_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankAccountOpeningLetterDoc.pdf"
+
+            if 'upload_bank_limit_upgrading_letter_doc' in vals:
+
+                vals['upload_bank_limit_upgrading_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLimitUpgradingLetterDoc.pdf"
+
+            if 'transfer_confirmation_doc' in vals:
+
+                vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
+
+            if 'upload_jawazat_doc' in vals:
+
+                vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
+
+            if 'upload_sponsorship_doc' in vals:
+
+                vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
+
+        return super(ServiceEnquiry, self).write(vals)
 
     @api.depends('state', 'service_request_config_id')
     def update_departments(self):
