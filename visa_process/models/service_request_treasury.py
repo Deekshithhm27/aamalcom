@@ -61,7 +61,7 @@ class ServiceRequestTreasury(models.Model):
                     line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by {line.service_request_id.first_govt_employee_id.name}"
             if line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. First govt employee need to be assigned by: {line.client_id.company_spoc_id.name}"
-            if line.service_request_id.service_request in ['hr_card', 'iqama_renewal']:
+            if line.service_request_id.service_request in ['hr_card', 'iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. Second govt employee need to be assigned by: {line.client_id.company_spoc_id.name}"
 
 

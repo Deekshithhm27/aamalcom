@@ -50,7 +50,7 @@
                     <!-- <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved')),('service_request', 'not in', ('new_ev'))]}" groups="visa_process.group_service_request_manager"/> -->
                     <!--  -->
                     <!-- Profession change in Qiwa merged with EV Request-->
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),('service_request', '!=', 'prof_change_qiwa')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved','payment_done')),'|',('doc_uploaded', '=',False),'|',('service_request', '!=', 'prof_change_qiwa'), '|', ('profession_change_final_doc', '=', False),('muqeem_print_doc', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Issuance of HR card Actions end -->
 
                     <!-- LT Medical Health Insurance Upload start-->
@@ -248,14 +248,14 @@
                                     <field name="residance_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
                                 <group string="Profession Change Req. Doc" attrs="{'invisible':[('service_request', '!=','prof_change_qiwa')]}">
-                                    <field name="profession_change_final_doc" attrs="{'readonly': [('state', '!=', 'payment_done')]}" force_save="1" filename="profession_change_doc_file_name"/>
+                                    <field name="profession_change_final_doc" attrs="{'readonly': [('state', 'not in', ('approved','payment_done'))]}" force_save="1" filename="profession_change_doc_file_name"/>
                                      <field name="profession_change_final_doc_file_name"  invisible="1"/>
-                                    <field name="prof_change_final_ref" attrs="{'readonly': [('state', '!=', 'payment_done')]}" force_save="1"/>
+                                    <field name="prof_change_final_ref" attrs="{'readonly': [('state', 'not in', ('approved','payment_done'))]}" force_save="1"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1" filename="muqeem_print_doc_file_name"/>
+                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="muqeem_print_doc_file_name"/>
                                      <field name="muqeem_print_doc_file_name"  invisible="1"/>
-                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
+                                    <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
                             </group>
                             <!-- below group is especially for Transfer request initiation -->

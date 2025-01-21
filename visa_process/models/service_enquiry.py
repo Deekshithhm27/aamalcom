@@ -1406,7 +1406,7 @@ class ServiceEnquiry(models.Model):
                 # line.dynamic_action_status = f'Need approval to submit the treasury confirmation document - FM: {user_names}'
                 line.dynamic_action_status = f'Submission pending for the treasury department by {self.env.user.name}'
 
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'prof_change_qiwa':
                     line.assign_govt_emp_two = True
                 if line.service_request == 'transfer_req':
                     line.state = 'payment_done'
@@ -1450,18 +1450,17 @@ class ServiceEnquiry(models.Model):
                 if not line.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            
-            if line.service_request =='prof_change_qiwa':
-                line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
-            else:
-                line.dynamic_action_status = f'Payment done by {line.client_id.name}. Second govt employee need to be assigned by {line.client_id.company_spoc_id.name}'
+            # if line.service_request =='prof_change_qiwa':
+            #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
+            # else:
+            line.dynamic_action_status = f'Payment done by {line.client_id.name}. Second govt employee need to be assigned by {line.client_id.company_spoc_id.name}'
 
             line.state = 'payment_done'
             line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req':
+            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
                 line.assign_govt_emp_two = True
-            if line.service_request == 'prof_change_qiwa':
-                line.doc_uploaded = True
+            # if line.service_request == 'prof_change_qiwa':
+            #     # line.doc_uploaded = True
 
     
 
@@ -1576,6 +1575,10 @@ class ServiceEnquiry(models.Model):
 
 
             if line.service_request == 'prof_change_qiwa':
+                if not line.prof_change_final_ref:
+                    raise ValidationError("Kindly Update Reference Number for Profession Change Document")
+                if not line.muqeem_print_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
                 treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
                 if treasury_id:
                     for srt in treasury_id:

@@ -76,13 +76,13 @@ class ServiceRequestTreasury(models.Model):
                 line.service_request_id._schedule_ticket_activity(
                     user_id=client_manager_user_id,
                     summary='Action Required on Ticket',
-                    note='Do review and take action (Employee need to be assigned) on this ticket.'
+                    note='Do review and take action (First govt employee need to be assigned) on this ticket.'
                 )
-            if line.service_request_id.service_request in ['hr_card', 'iqama_renewal']:
+            if line.service_request_id.service_request in ['hr_card', 'iqama_renewal','prof_change_qiwa']:
                 line.service_request_id._schedule_ticket_activity(
                     user_id=client_manager_user_id,
                     summary='Action Required on Ticket',
-                    note='Do review and take action (Employee need to be assigned) on this ticket.'
+                    note='Do review and take action (Second govt employee need to be assigned) on this ticket.'
                 )
         return result
 
