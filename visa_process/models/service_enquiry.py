@@ -1169,11 +1169,11 @@ class ServiceEnquiry(models.Model):
             self._add_followers()
             self.send_email_to_pm()
             if line.service_request == 'new_ev':
-                line.dynamic_action_status = f"Submit for approval by: {self.env.user.company_spoc_id.name}"
+                line.dynamic_action_status = f"Submit for approval by PM"
             elif line.service_request == 'iqama_card_req':
-                line.dynamic_action_status = f"Require confirmation on payment made by {line.client_id.name}: {self.env.user.company_spoc_id.name}"
+                line.dynamic_action_status = f"Require confirmation on payment made by PM"
             else:
-                line.dynamic_action_status = f"Employee needs to be assigned by: {self.env.user.company_spoc_id.name}"
+                line.dynamic_action_status = f"Employee needs to be assigned by PM"
 
     def action_require_payment_confirmation(self):
         for line in self:
@@ -1199,7 +1199,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Qiwa Contract")
 
             line.state = 'payment_initiation'
-            line.dynamic_action_status = f"Requesting Payment confirmation Document by {line.client_id.name}"
+            line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
             line.doc_uploaded = False
 
             
@@ -1207,7 +1207,7 @@ class ServiceEnquiry(models.Model):
     def action_new_ev_require_payment_confirmation(self):
         for line in self:
             line.state = 'payment_initiation'
-            line.dynamic_action_status = f"Requesting Payment confirmation Document by {line.client_id.name}"
+            line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
             line.doc_uploaded = False
 
 
@@ -1243,7 +1243,7 @@ class ServiceEnquiry(models.Model):
 
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
-                line.dynamic_action_status = f'Waiting for approval by {line.client_id.name}'
+                line.dynamic_action_status = f'Waiting for approval by client spoc'
             else:
                 line.state = 'waiting_op_approval'
                 line.dynamic_action_status = "Waiting for approval by OM"
@@ -1254,7 +1254,7 @@ class ServiceEnquiry(models.Model):
             line.state = 'client_approved'
             line.assign_govt_emp_two = True
             # Approved by {self.env.user.name}.
-            line.dynamic_action_status = f'Approved by {line.client_id.name}. Second govt employee needs to be assigned by: {self.env.user.company_spoc_id.name}'
+            line.dynamic_action_status = f'Approved by client spoc. Second govt employee needs to be assigned by PM'
 
 
     @api.model
@@ -1404,7 +1404,7 @@ class ServiceEnquiry(models.Model):
                 # users = group.users
                 # user_names = ' or '.join(users.mapped('name'))
                 # line.dynamic_action_status = f'Need approval to submit the treasury confirmation document - FM: {user_names}'
-                line.dynamic_action_status = f'Submission pending for the treasury department by {self.env.user.name}'
+                line.dynamic_action_status = f'Submission pending for the treasury department by FM'
 
                 if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'prof_change_qiwa':
                     line.assign_govt_emp_two = True
@@ -1424,7 +1424,7 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
             line.assign_govt_emp_two = True
-            line.dynamic_action_status = f"Documents uploaded by {self.env.user.name}. Second govt employee needs to be assigned by {line.client_id.company_spoc_id.name}"
+            line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
             # If a government employee updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
             if line.employee_id and line.service_request == 'new_ev':
                 if not line.employee_id.sponsor_id:
@@ -1453,7 +1453,7 @@ class ServiceEnquiry(models.Model):
             # if line.service_request =='prof_change_qiwa':
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
-            line.dynamic_action_status = f'Payment done by {line.client_id.name}. Second govt employee need to be assigned by {line.client_id.company_spoc_id.name}'
+            line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
 
             line.state = 'payment_done'
             line.doc_uploaded = False
@@ -1473,7 +1473,7 @@ class ServiceEnquiry(models.Model):
     def action_submit_initiate(self):
         for line in self:
             line.state = 'submitted'
-            line.dynamic_action_status = f"Employee needs to be assigned by: {self.env.user.company_spoc_id.name}"
+            line.dynamic_action_status = f"Employee needs to be assigned by PM"
             if line.service_request:
                 line.assign_govt_emp_one = True
             self.update_pricing()
@@ -1587,16 +1587,16 @@ class ServiceEnquiry(models.Model):
                         else:
                             line.state = 'done'
                             line.req_completion_date = fields.Datetime.now()
-                            line.dynamic_action_status = f"All documents uploaded by {self.env.user.name}. Process Completed"
+                            line.dynamic_action_status = f"Process Completed"
 
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
-                    line.dynamic_action_status = f"All documents uploaded by {self.env.user.name}. Process Completed"
+                    line.dynamic_action_status = f"Process Completed"
 
             else:
                 line.state = 'done'
-                line.dynamic_action_status = f"All documents uploaded by {self.env.user.name}. Process Completed"
+                line.dynamic_action_status = f"Process Completed"
                 line.req_completion_date = fields.Datetime.now()
 
     # LT Medical Health Insurance Upload end
@@ -1660,7 +1660,7 @@ class ServiceEnquiry(models.Model):
     def action_iqama_payment_received_confirmation(self):
         for line in self:
             line.state = 'payment_done'
-            line.dynamic_action_status = f"Payment received . Employee needs to be assigned by {line.client_id.company_spoc_id.name}"
+            line.dynamic_action_status = f"Employee needs to be assigned by PM"
 
     def action_iqama_process_complete(self):
         for line in self:
@@ -1668,7 +1668,7 @@ class ServiceEnquiry(models.Model):
                 if line.state == 'payment_done':
                     if line.upload_iqama_card_doc and not line.iqama_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
-            line.dynamic_action_status = f"Documents Uploaded by {self.env.user.name}. Process Completed"
+            line.dynamic_action_status = f"Process Completed"
             line.state = 'done'
 
     # New Physical Iqama Card Request(cost 1,000sar) end
