@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="mail_activity_type_ticket_action" model="mail.activity.type">
+        <field name="name">Ticket Activity</field>
+        <field name="res_model">service.enquiry</field>
+        <field name="icon">fa-tasks</field>
+    </record>
+</odoo>
