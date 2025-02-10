@@ -56,11 +56,11 @@
                     <!-- LT Medical Health Insurance Upload start-->
 
                     <!-- 2 step process. Pm assign employee, emp updates document and completes process -->
-                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_client_spoc"/>
 
 
 
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','bank_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
                    
@@ -202,8 +202,8 @@
                         </group>
                     </group>
 
-                    <notebook attrs="{'invisible':[('service_request','not in',('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}">
-                        <page string="Documents" attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
+                    <notebook id="notebook_one" attrs="{'invisible':[('service_request','not in',('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}">
+                        <page id="page_one" string="Documents " attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
                             <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
                                 <group string="Hr Card Document" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
                                     <field name="upload_hr_card" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_hr_card_file_name"/>
@@ -311,8 +311,8 @@
                         </group>
                         
                     </group>
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'exit_reentry_issuance')]}">
-                        <page string="Documents">
+                    <notebook id="notebook_two" attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'exit_reentry_issuance')]}">
+                        <page id="page_two" string="Documents">
                             <group>
                                 <group>
                                     <field name="upload_confirmation_of_exit_reentry" attrs="{'readonly': [('state', '!=','submitted')]}" force_save="1" filename="upload_confirmation_of_exit_reentry_file_name"/>
@@ -388,8 +388,8 @@
                             Remove this-->
                         </group>
                     </group>
-                    <notebook attrs="{'invisible': ['|',('state', 'in',('draft','submitted')),'|',('first_govt_employee_id','=',False),('service_request', '!=', 'iqama_card_req')]}">
-                        <page string="Documents">
+                    <notebook id="notebook_three" attrs="{'invisible': ['|',('state', 'in',('draft','submitted')),'|',('first_govt_employee_id','=',False),('service_request', '!=', 'iqama_card_req')]}">
+                        <page id="page_three" string="Documents ">
                             <group>
                                 <group>
                                     <field name="upload_iqama_card_doc" attrs="{'readonly': [('state', '!=','payment_done')]}" filename="upload_iqama_card_doc_file_name"/>
@@ -417,7 +417,7 @@
                     <!-- Salary Certificate Stop-->
                     <!-- #################################################### -->
                     <!-- Bank Letter start-->
-                    <group name="lt_bank_letter" attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}">
+                    <!-- <group name="lt_bank_letter" attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}">
                         <group>
                             <field name="bank_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="purpose" attrs="{'readonly': [('state', '!=','draft')]}"/>
@@ -426,7 +426,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
-                    </group>
+                    </group> -->
                  
                     <!-- Bank Letter Stop-->
                     <!-- Letter for Vehicle Lease start-->
@@ -541,19 +541,7 @@
                     </group>
  
                     <!-- Car Loan Letter Stop-->
-                    <!-- Bank Loan Letter start-->
-                    <group name="lt_bank_loan" attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}">
-                        <group>
-                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                        <group>
-                            
-                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group>
                     
-             
-                    <!-- Bank Loan Letter Stop-->
                     <!-- Rental Agreement Letter start-->
                     <group name="rental_agreement" attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}">
                         <group>
@@ -679,9 +667,9 @@
 
 
                     <!-- Updated -->
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev','iqama_card_req','iqama_renewal','prof_change_qiwa','exit_reentry_issuance'))]}">
+                    <notebook id="notebook_four" attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev','iqama_card_req','iqama_renewal','prof_change_qiwa','exit_reentry_issuance'))]}">
                         
-                        <page string="Documents">
+                        <page id="page_four" string="Documents">
                             <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">
                                 <group>
                                     <field name="upload_sec_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_sec_doc_file_name"/>
@@ -795,13 +783,7 @@
                                     <field name="car_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                            <group attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}" string="Bank Loan">
-                                <group>
-                                    <field name="upload_bank_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_bank_loan_doc_file_name"/>
-                                     <field name="upload_bank_loan_doc_file_name"  invisible="1"/>
-                                    <field name="bank_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>
+                            <!--  -->
                              <group attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}" string="Rental Agreement">
                                 <group>
                                     <field name="upload_rental_agreement_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_rental_agreement_doc_file_name"/>
@@ -905,10 +887,10 @@
                     </group>
                     <!-- SOA start-->
                     
-                    <notebook>
+                    <notebook id="notebook_five">
                         
                         <!-- SOA start-->
-                        <page string="Documents" attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'soa')]}">
+                        <page id="page_five" string="Documents " attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'soa')]}">
                             <group>
                                 <group>
                                     <field name="upload_soa_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
@@ -941,8 +923,8 @@
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'new_ev')]}">
-                        <page string="Documents" attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
+                    <notebook id="notebook_six" attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'new_ev')]}">
+                        <page id="page_six" string="Documents " attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
                             <group>
                                 <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
                                     <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}" filename="upload_issuance_doc_file_name"/>
@@ -975,7 +957,7 @@
                         </page>
                     </notebook>
                     
-                    <notebook groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
+                    <notebook id="service_pricing_notebook" groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                         <!-- should not be visible for final_exit_issuance -->
                         <page string="Service Pricing">
                             <field name="service_enquiry_pricing_ids">

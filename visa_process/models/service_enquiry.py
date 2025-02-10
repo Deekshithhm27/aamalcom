@@ -251,9 +251,7 @@ class ServiceEnquiry(models.Model):
     upload_car_loan_doc = fields.Binary(string="Car Loan Document")
     upload_car_loan_doc_file_name = fields.Char(string="Car Loan Document")
     car_loan_doc_ref = fields.Char(string="Ref No.*")
-    # upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
-    # upload_bank_loan_doc_file_name = fields.Char(string="Bank Loan Document")
-    # bank_loan_doc_ref = fields.Char(string="Ref No.*")
+    
     upload_rental_agreement_doc = fields.Binary(string="Rental Agreement Document")
     upload_rental_agreement_doc_file_name = fields.Char(string="Rental Agreement Document")
     rental_agreement_doc_ref = fields.Char(string="Ref No.*")
@@ -695,9 +693,8 @@ class ServiceEnquiry(models.Model):
 
             vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
 
-        # if 'upload_bank_loan_doc' in vals:
+       
 
-        #     vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
 
         if 'upload_rental_agreement_doc' in vals:
 
@@ -875,9 +872,7 @@ class ServiceEnquiry(models.Model):
 
                 vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
 
-            # if 'upload_bank_loan_doc' in vals:
-
-            #     vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
+            
 
             if 'upload_rental_agreement_doc' in vals:
 
@@ -1550,8 +1545,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
                 if line.upload_car_loan_doc and not line.car_loan_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Car loan letter")
-                # if line.upload_bank_loan_doc and not line.bank_loan_doc_ref:
-                #     raise ValidationError("Kindly Update Reference Number for Bank loan letter")
+                
                 if line.upload_rental_agreement_doc and not line.rental_agreement_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Rental agreement letter")
                 if line.upload_exception_letter_doc and not line.exception_letter_doc_ref:
