@@ -1,0 +1,53 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request.ll</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+            
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'bank_loan')]}"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|', ('state', '=', 'done'), ('assigned_govt_emp_one', '=', False), ('upload_bank_loan_doc', '=', False),('upload_fee_receipt_doc', '=', False), ('service_request', '!=', 'bank_loan')]}"/>
+
+            </xpath>
+
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="attributes">
+                <attribute name="attrs">{'invisible': [('service_request', '=', 'bank_loan')]}</attribute>
+            </xpath>
+
+            
+            
+
+            <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                <group name="lt_bank_loan" attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}">
+                        <group>
+                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
+                            
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                </group>
+
+                <notebook attrs="{'invisible': ['|', ('state', '=', 'draft'), ('service_request', '!=', 'bank_loan')]}">
+                    <page string="Documents" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('first_govt_employee_id', '=', False)]}">
+                        <group attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}" string="Bank Loan">
+                                <group>
+                                    <field name="upload_bank_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_bank_loan_doc_file_name"/>
+                                     <field name="upload_bank_loan_doc_file_name"  invisible="1"/>
+                                    <field name="bank_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                                <group>
+                                    <field name="upload_fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_fee_receipt_doc_file_name"/>
+                                     <field name="upload_fee_receipt_doc_file_name"  invisible="1"/>
+                                    <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                            </group>
+                        
+                    </page>
+                </notebook>
+               
+            </xpath>
+        </field>
+    </record>
+</odoo>

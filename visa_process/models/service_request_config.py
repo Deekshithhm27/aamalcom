@@ -33,7 +33,7 @@ class ServiceRequestConfg(models.Model):
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
-        ('car_loan','Car Loan Letter'),('bank_loan','Bank Loan Letter'),('rental_agreement','Rental Agreement Letter'),
+        ('car_loan','Car Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
         ('embassy_letter','Embassy Letters- as Per Respective Embassy requirement'),('istiqdam_letter','Istiqdam Letter'),
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),

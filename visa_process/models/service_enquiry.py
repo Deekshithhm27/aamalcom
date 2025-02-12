@@ -87,7 +87,7 @@ class ServiceEnquiry(models.Model):
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
-        ('car_loan','Car Loan Letter'),('bank_loan','Bank Loan Letter'),('rental_agreement','Rental Agreement Letter'),
+        ('car_loan','Car Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
         ('embassy_letter','Embassy Letters- as Per Respective Embassy requirement'),('istiqdam_letter','Istiqdam Letter'),
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
@@ -251,9 +251,7 @@ class ServiceEnquiry(models.Model):
     upload_car_loan_doc = fields.Binary(string="Car Loan Document")
     upload_car_loan_doc_file_name = fields.Char(string="Car Loan Document")
     car_loan_doc_ref = fields.Char(string="Ref No.*")
-    upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
-    upload_bank_loan_doc_file_name = fields.Char(string="Bank Loan Document")
-    bank_loan_doc_ref = fields.Char(string="Ref No.*")
+    
     upload_rental_agreement_doc = fields.Binary(string="Rental Agreement Document")
     upload_rental_agreement_doc_file_name = fields.Char(string="Rental Agreement Document")
     rental_agreement_doc_ref = fields.Char(string="Ref No.*")
@@ -695,9 +693,8 @@ class ServiceEnquiry(models.Model):
 
             vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
 
-        if 'upload_bank_loan_doc' in vals:
+       
 
-            vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
 
         if 'upload_rental_agreement_doc' in vals:
 
@@ -875,9 +872,7 @@ class ServiceEnquiry(models.Model):
 
                 vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
 
-            if 'upload_bank_loan_doc' in vals:
-
-                vals['upload_bank_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLoanLetter.pdf"
+            
 
             if 'upload_rental_agreement_doc' in vals:
 
@@ -1550,8 +1545,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
                 if line.upload_car_loan_doc and not line.car_loan_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Car loan letter")
-                if line.upload_bank_loan_doc and not line.bank_loan_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Bank loan letter")
+                
                 if line.upload_rental_agreement_doc and not line.rental_agreement_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Rental agreement letter")
                 if line.upload_exception_letter_doc and not line.exception_letter_doc_ref:
@@ -1697,7 +1691,7 @@ class ServiceEnquiry(models.Model):
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
-        'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
+        'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
         'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
@@ -1708,7 +1702,7 @@ class ServiceEnquiry(models.Model):
             line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
-            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc or line.upload_bank_loan_doc or line.upload_rental_agreement_doc or \
+            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc  or line.upload_rental_agreement_doc or \
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
             line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
