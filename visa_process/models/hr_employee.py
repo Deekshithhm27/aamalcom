@@ -14,7 +14,7 @@ class HrEmployee(models.Model):
     sequence = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
 
     client_emp_sequence = fields.Char(string="Employee Id",help="Employee Id as per client database")
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True)
     hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
     identification_id = fields.Char(string='Border No.', groups="hr.group_hr_user", tracking=True)
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True,copy=False)

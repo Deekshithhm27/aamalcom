@@ -23,6 +23,7 @@
         'views/hr_contract_views.xml',
     	'views/salary_structure_views.xml',
     	'views/employment_visa_views.xml',
+        'views/temporary_work_visa_views.xml',
     	'views/local_transfer_views.xml',
     	'views/hr_salary_rule_views.xml',
     	'views/hr_employee_views.xml',

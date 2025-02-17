@@ -4,6 +4,7 @@ from . import hr_client_salary_rule
 from . import hr_contract
 from . import hr_salary_rule
 from . import employement_visa
+from . import temporary_work_visa
 from . import local_transfer
 from . import hr_employee
 from . import client_emp_salary_tracking

@@ -32,6 +32,32 @@
         <field name="groups" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
     </record>
 
+    <!-- Temporary WOrk Visa Rules -->
+    <record id="ir_rule_temporary_work_visa" model="ir.rule">
+        <field name="name">Temporary Work Visa Service Request - Client</field>
+        <field name="model_id" ref="model_temporary_work_visa"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_temporary_work_visa_spoc_approval" model="ir.rule">
+        <field name="name">Temporary Work Visa Service Request Amalcom Spoc</field>
+        <field name="model_id" ref="model_temporary_work_visa"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+    </record>
+    <record id="ir_rule_temporary_work_visa_ge" model="ir.rule">
+        <field name="name">Temporary Work Visa Service Request GE</field>
+        <field name="model_id" ref="model_temporary_work_visa"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'),ref('visa_process.group_service_request_govt_manager'),ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+    <record id="ir_rule_temporary_work_visa_admin" model="ir.rule">
+        <field name="name">Temporary Work Visa Service Request Admin</field>
+        <field name="model_id" ref="model_temporary_work_visa"/>
+        <field name="domain_force">[(1, '=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
+    </record>
+
     <!-- Local Transfer Rules -->
     <record id="ir_rule_local_transfer" model="ir.rule">
         <field name="name">Local Transfer Service Request - Client</field>

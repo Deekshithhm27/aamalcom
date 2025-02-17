@@ -20,7 +20,7 @@ class ServicePricing(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
 
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",default='lt_request',tracking=True)
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",default='lt_request',tracking=True)
 
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]")
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
@@ -83,7 +83,7 @@ class ServicePricingLine(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",related="pricing_id.service_request_type")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",related="pricing_id.service_request_type")
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",related="pricing_id.service_request_config_id")
 
     duration_id = fields.Many2one('employment.duration',string="Duration",domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
