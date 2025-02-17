@@ -42,6 +42,7 @@
         'views/res_company_views.xml',
         
         'views/employment_visa_views.xml',
+        'views/temporary_work_visa_views.xml',
         'views/local_transfer_views.xml',
         'views/service_request_treasury_views.xml',
         'views/smart_buttons_views.xml',

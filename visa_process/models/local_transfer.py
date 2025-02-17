@@ -27,7 +27,7 @@ class LocalTransfer(models.Model):
     client_company_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="['&',('custom_employee_type', '=', 'external'),'&',('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth *",tracking=True,copy=False)
     private_email = fields.Char(string="Email Id *",tracking=True,copy=False)
     country_id = fields.Many2one('res.country',string="Nationality",tracking=True,copy=False)
