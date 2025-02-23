@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
         <field name="arch" type="xml">
             <!--oe_chatter is internal-only.So this medium for client and PM communication.-->
-            <xpath expr="//group[field[@name='letter_cost']]" position="after">
+            <xpath expr="//group/field[@name='request_note']" position="before">
                 <notebook
                         groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager">
                     <page string="Communication History">
