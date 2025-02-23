@@ -356,11 +356,18 @@ class ServiceEnquiry(models.Model):
     document_upload = fields.Binary(string="Document Upload")
     logical_reason = fields.Text(string="Logical Reason to be stated")
     border_id_doc = fields.Binary(string="Upload Iqama /Passport with border ID")
-    # cost_to_be_borne_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client')],string="Cost To be borne by")
     iqama_upload = fields.Binary(string="Iqama Upload")
     profession_change = fields.Char(string="Profession change to")
     soa_date = fields.Date(string="Duration")
     duration = fields.Char(string="Duration")
+
+    fee_receipt_doc = fields.Binary(string="Fee Receipt Document")
+    fee_receipt_doc_file_name = fields.Char(string="Fee Receipt File Name")
+    fee_receipt_doc_ref = fields.Char(string="Ref No.*")
+
+    confirmation_doc = fields.Binary(string="Confirmation Document")
+    confirmation_doc_file_name = fields.Char(string="Confirmation Document File Name")
+    confirmation_doc_ref = fields.Char(string="Ref No.*")
 
 
     # EV fields
