@@ -981,12 +981,12 @@
 
                     
 
-                    <field name="request_note" placeholder="Query Details......"/>
-                    <field name="note" readonly="1" attrs="{'invisible': [('service_request', 'not in',( 'iqama_card_req','prof_change_qiwa'))]}"/>
                     <field name="visit_visa_note" readonly="1" attrs="{'invisible': [('service_request', '!=','family_visit_visa')]}"/>
                     <group>
                         <field name="letter_cost" attrs="{'invisible':[('letter_print_type_id','!=',True)]}"/>
                     </group>
+                    <field name="request_note" placeholder="Query Details......"/>
+                    <field name="note" readonly="1" attrs="{'invisible': [('service_request', 'not in',( 'iqama_card_req','prof_change_qiwa'))]}"/>
                 </sheet>
                 <!-- additional fields -->
                 <field name="total_amount" invisible="1"/>
