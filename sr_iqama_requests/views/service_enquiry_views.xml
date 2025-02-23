@@ -69,32 +69,32 @@
                 <group name="iqama_print_confirmation_doc" string="Fee Confirmation Documents"
                        attrs="{'invisible': ['|',('service_request', '!=', 'iqama_print'),('first_govt_employee_id','=',False)]}">
                     <group>
+                        <field name="is_gov_employee" invisible="1"/>
                         <field name="fee_receipt_doc" string="Fee Receipt Document"
-                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_user', '!=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
                                filename="fee_receipt_doc_file_name"/>
                         <field name="fee_receipt_doc_file_name" invisible="1"/>
-                        <field name="is_gov_user" invisible="1"/>
                         <field name="fee_receipt_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_user', '!=',True)]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"/>
                     </group>
                     <group>
                         <field name="confirmation_doc" string="Confirmation Document"
-                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_user', '!=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
                                filename="confirmation_doc_file_name" force_save="1"/>
                         <field name="confirmation_doc_file_name" invisible="1" force_save="1"/>
                         <field name="confirmation_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_user', '!=',True)]}" force_save="1"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}" force_save="1"/>
                     </group>
                 </group>
                 <group name="iqama_print_scanned_doc" string="Iqama Scanned Document"
                        attrs="{'invisible': ['|',('service_request', '!=', 'iqama_print'),('state','not in',('payment_done','done'))]}">
                     <group>
                         <field name="iqama_scanned_doc"
-                               attrs="{'readonly': ['|',('is_action_iqama_uploaded', '=','True'),('is_gov_user', '!=',True)]}"
+                               attrs="{'readonly': ['|',('is_action_iqama_uploaded', '=','True'),('is_gov_employee', '!=',True)]}"
                                filename="iqama_scanned_doc_file_name"/>
                         <field name="iqama_scanned_doc_file_name" invisible="1"/>
                         <field name="iqama_scanned_doc_ref"
-                               attrs="{'readonly': ['|',('is_action_iqama_uploaded', '=','True'),('is_gov_user', '!=',True)]}"/>
+                               attrs="{'readonly': ['|',('is_action_iqama_uploaded', '=','True'),('is_gov_employee', '!=',True)]}"/>
                     </group>
                 </group>
             </xpath>

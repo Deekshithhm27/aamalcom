@@ -23,15 +23,6 @@ class ServiceEnquiry(models.Model):
     is_confirmation_given_to_client = fields.Boolean(default=False)
     is_action_iqama_uploaded = fields.Boolean(default=False)
 
-    # Used for readonly attribute
-    is_gov_user = fields.Boolean(compute='_compute_is_gov_user', store=False)
-
-    @api.depends('is_gov_user')
-    def _compute_is_gov_user(self):
-        for record in self:
-            # Check if the user is in gov employee groups
-            record.is_gov_user = self.env.user.has_group('visa_process.group_service_request_employee')
-
     @api.onchange('service_request')
     def _onchange_service_request(self):
         for line in self:
