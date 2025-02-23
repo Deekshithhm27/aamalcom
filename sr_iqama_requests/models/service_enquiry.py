@@ -23,6 +23,15 @@ class ServiceEnquiry(models.Model):
     is_confirmation_given_to_client = fields.Boolean(default=False)
     is_action_iqama_uploaded = fields.Boolean(default=False)
 
+    # Used for readonly attribute
+    is_gov_user = fields.Boolean(compute='_compute_is_gov_user', store=False)
+
+    @api.depends('is_gov_user')
+    def _compute_is_gov_user(self):
+        for record in self:
+            # Check if the user is in gov employee groups
+            record.is_gov_user = self.env.user.has_group('visa_process.group_service_request_employee')
+
     @api.onchange('service_request')
     def _onchange_service_request(self):
         for line in self:
@@ -39,6 +48,10 @@ class ServiceEnquiry(models.Model):
                 elif record.iqama_for == 'family':
                     if not record.dependent_document_ids:
                         raise ValidationError("Kindly Update Dependent Documents")
+                    # Check if person_name is added but dependent_iqama_id is missing
+                    for dependent in record.dependent_document_ids:
+                        if dependent.person_name and not dependent.dependent_iqama_id:
+                            raise ValidationError(f"Kindly Update Dependent Iqama for {dependent.person_name}")
                 else:
                     raise ValidationError("Kindly Update Iqama For for self/family")
 
@@ -63,13 +76,13 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'iqama_print':
                 if line.iqama_scanned_doc and not line.iqama_scanned_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Scanned Document")
-                line.dynamic_action_status = 'Iqama scanned copy is uploaded, PM needs to close the ticket'
+                line.dynamic_action_status = 'Iqama scanned copy is uploaded, PM needs to sent confirmation to the client'
                 line.is_action_iqama_uploaded = True
 
     def action_confirmation_given_to_client(self):
         for line in self:
             if line.service_request == 'iqama_print':
-                line.dynamic_action_status = 'Confirmation given to client on Iqama Print.'
+                line.dynamic_action_status = 'Confirmation given to client on Iqama Print.PM needs to close the ticket'
                 line.is_confirmation_given_to_client = True
 
 
