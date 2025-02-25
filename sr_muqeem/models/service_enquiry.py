@@ -37,7 +37,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Expiry of ERE")
                 if line.is_resubmission:
                     line.dynamic_action_status = 'Ticket resubmitted, Employee needs to be assigned by PM'
-
         return result
 
     def action_valid_ere(self):
@@ -62,10 +61,29 @@ class ServiceEnquiry(models.Model):
 
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
-        for line in self:
-            if line.service_request in 'muqeem_dropout':
-                if line.fee_receipt_doc and not line.fee_receipt_doc_ref:
+        for record in self:
+            if record.service_request in 'muqeem_dropout':
+                if record.fee_receipt_doc and not record.fee_receipt_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
-                if line.muqeem_confirmation_doc and not line.muqeem_confirmation_doc_ref:
+                if record.muqeem_confirmation_doc and not record.muqeem_confirmation_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation Document")
+                invoice_line_ids = []
+                for line in record.service_enquiry_pricing_ids:
+                    invoice_line_ids.append((0, 0, {
+                        'name': line.name,
+                        'employee_id': record.employee_id.id,
+                        'price_unit': line.amount,
+                        'quantity': 1,
+                        'service_enquiry_id': record.id
+                    }))
+
+                # Create draft.account.move record
+                account_move = self.env['draft.account.move'].create({
+                    'client_id': record.client_id.id,
+                    'client_parent_id': record.client_id.parent_id.id,
+                    'service_enquiry_id': record.id,
+                    'employee_id': record.employee_id.id,
+                    'move_type': 'service_ticket',
+                    'invoice_line_ids': invoice_line_ids,
+                })
         return result

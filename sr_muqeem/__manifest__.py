@@ -10,7 +10,7 @@
     'category': 'Services',
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
-    'depends': ['base', 'mail', 'visa_process','sr_iqama_requests'],
+    'depends': ['base', 'mail', 'visa_process',],
     'data': [
         'views/service_enquiry_views.xml',
     ],
