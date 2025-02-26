@@ -454,7 +454,7 @@ class ServiceEnquiry(models.Model):
     assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee",copy=False)
     first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True,copy=False)
     second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True,copy=False)
-    company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",domain="[('custom_employee_type','=','internal')]")
+   
 
     current_department_ids = fields.Many2many('hr.department','service_enquiry_dept_ids',string="Department",compute="update_departments")
 
@@ -478,10 +478,7 @@ class ServiceEnquiry(models.Model):
         compute='_compute_is_service_request_client_spoc'
     )
 
-    is_service_request_manager = fields.Boolean(
-        string="Is Service Request Project Manager"
     
-    )
 
     #used for readonly attribute - should be entered only pm 
     is_project_manager = fields.Boolean(

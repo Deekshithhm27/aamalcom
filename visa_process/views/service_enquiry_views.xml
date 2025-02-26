@@ -150,8 +150,8 @@
                                 <field name="second_govt_employee_id" invisible="1"/>
                                 <field name="current_department_ids" invisible="1" widget="many2many_tags"/>
                                 <field name="req_completion_date" invisible="1"/>
-                                <field name="company_spoc_id" invisible="1"/>
-                                <field name="is_service_request_manager" invisible="1"/>
+                                
+                                
                             
                             
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
@@ -962,10 +962,10 @@
                     <notebook id="notebook_seven" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('service_request', '!=', 'new_ev')]}">
                         <page id="page_seven" string="Documents" attrs="{'invisible': [('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev')]}">
                             <group>
-                                <group attrs="{'invisible': [('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev')], 'readonly': [('company_spoc_id', '=', False)]}">
-                                    <field name="upload_proof_of_request_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted')),('is_service_request_manager','=',True)]}" filename="upload_proof_of_request_file_name"/>
+                                <group attrs="{'invisible': [('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev')]}">
+                                    <field name="upload_proof_of_request_doc" attrs="{'readonly': [('state', 'not in',('submitted'))]}" filename="upload_proof_of_request_file_name"/>
                                     <field name="upload_proof_of_request_file_name" invisible="1"/>
-                                    <field name="proof_of_request_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted')),('is_service_request_manager','=',True)]}"/>
+                                    <field name="proof_of_request_ref" attrs="{'readonly': [('state', 'not in',('submitted'))]}"/>
                                 </group>
                             </group>
                         </page>
