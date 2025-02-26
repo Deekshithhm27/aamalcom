@@ -785,7 +785,7 @@ class ServiceEnquiry(models.Model):
                 vals['upload_issuance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IssuanceDocument.pdf"
             if 'upload_proof_of_request_doc' in vals:
 
-            vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"    
+                vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"    
 
             if 'upload_payment_doc' in vals:
 
