@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="inherit_service_enquiry_form" model="ir.ui.view">
+        <field name="name">service.enquiry.form.inherited</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('muqeem_dropout'))]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_submit_initiate" string="Re Submit" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('state', '!=', 'ere_valid'),('service_request', '!=', 'muqeem_dropout')]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_valid_ere" string="Valid ERE" type="object"
+                        attrs="{'invisible': ['|', ('state', '!=', 'submitted'),('service_request', '!=', 'muqeem_dropout')]}"
+                        groups="visa_process.group_service_request_employee"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('fee_receipt_doc', '=',False),'|',('muqeem_confirmation_doc', '=',False),'|',('service_request', '!=', 'muqeem_dropout'),('service_enquiry_pricing_ids', '=', [])]}"
+                        groups="visa_process.group_service_request_employee"/>
+            </xpath>
+            <xpath expr="//group[@name='lt_hr_card'][1]" position="before">
+                <group name="muqeem_dropout_request"
+                       attrs="{'invisible': [('service_request', '!=', 'muqeem_dropout')]}">
+                    <group>
+                        <field name="is_inside_ksa" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="expiry_of_ere" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('state', '=','ere_valid'),('assigned_govt_emp_one','=',False)]}</attribute>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group name="muqeem_dropout_confirmation_doc" string="Fee Confirmation Documents"
+                       attrs="{'invisible': ['|',('service_request', '!=', 'muqeem_dropout'),'|',('assigned_govt_emp_one','=',False),('state', '=','ere_valid')]}">
+                    <group>
+                        <field name="is_gov_employee" invisible="1"/>
+                        <field name="fee_receipt_doc" string="Fee Receipt Document"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               filename="fee_receipt_doc_file_name"/>
+                        <field name="fee_receipt_doc_file_name" invisible="1"/>
+                        <field name="fee_receipt_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"/>
+                    </group>
+                    <group>
+                        <field name="muqeem_confirmation_doc" string="Confirmation Document"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               filename="muqeem_confirmation_doc_file_name"/>
+                        <field name="muqeem_confirmation_doc_file_name" invisible="1"/>
+                        <field name="muqeem_confirmation_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//group[field[@name='letter_cost']]" position="after">
+                <notebook groups="visa_process.group_service_request_employee"
+                          attrs="{'invisible': [('service_request', '!=', 'muqeem_dropout')]}">
+                    <page string="Service Pricing">
+                        <field name="service_enquiry_pricing_ids" attrs="{'readonly': [('state', '!=', 'submitted')]}">
+                            <tree editable="bottom">
+                                <field name="service_enquiry_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="service_pricing_id"
+                                       domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]"
+                                       invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="remarks"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+</odoo>

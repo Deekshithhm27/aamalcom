@@ -303,6 +303,9 @@ class ServiceEnquiry(models.Model):
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
     upload_issuance_doc_file_name = fields.Char(string="Upload Issuance of Visa Document")
     issuance_doc_ref = fields.Char(string="Ref No.*")
+    upload_proof_of_request_doc = fields.Binary(string="Upload Proof of Request Document")
+    upload_proof_of_request_file_name = fields.Char(string="Proof of Request  Document")
+    proof_of_request_ref = fields.Char(string="Ref No.*")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
     upload_enjaz_doc_file_name = fields.Char(string="Enjaz Document")
     enjaz_doc_ref = fields.Char(string="Ref No.*")
@@ -451,6 +454,7 @@ class ServiceEnquiry(models.Model):
     assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee",copy=False)
     first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True,copy=False)
     second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True,copy=False)
+   
 
     current_department_ids = fields.Many2many('hr.department','service_enquiry_dept_ids',string="Department",compute="update_departments")
 
@@ -474,6 +478,8 @@ class ServiceEnquiry(models.Model):
         compute='_compute_is_service_request_client_spoc'
     )
 
+    
+
     #used for readonly attribute - should be entered only pm 
     is_project_manager = fields.Boolean(
         compute='_compute_is_project_manager',
@@ -487,7 +493,7 @@ class ServiceEnquiry(models.Model):
             # Check if the logged-in user belongs to the 'group_service_request_manager'
             record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
 
-    #used for readonly attribute - should be entered by the first government employee
+    #used for  readonly attribute - should be entered by the first government employee
     is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
 
 
@@ -495,7 +501,7 @@ class ServiceEnquiry(models.Model):
     def _compute_is_gov_employee(self):
         for record in self:
             # Check if the user is in gov employee groups
-            record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee') or self.env.user.has_group('visa_process.group_service_request_manager')
+            record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee')
 
 
 
@@ -591,7 +597,10 @@ class ServiceEnquiry(models.Model):
         if 'upload_issuance_doc' in vals:
 
             vals['upload_issuance_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_Issuance of Visa Document.pdf"
+        if 'upload_proof_of_request_doc' in vals:
 
+            vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"
+        
         if 'upload_payment_doc' in vals:
 
             vals['upload_payment_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDocument.pdf"
@@ -774,6 +783,9 @@ class ServiceEnquiry(models.Model):
             if 'upload_issuance_doc' in vals:
 
                 vals['upload_issuance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IssuanceDocument.pdf"
+            if 'upload_proof_of_request_doc' in vals:
+
+            vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"    
 
             if 'upload_payment_doc' in vals:
 
@@ -1215,6 +1227,12 @@ class ServiceEnquiry(models.Model):
 
     def action_new_ev_submit_for_approval(self):
         for line in self:
+            if line.service_request == 'new_ev':
+                if line.state in ('submitted'):
+                    if not line.upload_proof_of_request_doc:
+                        raise ValidationError("Kindly Update Proof of Request Document")
+                    if not line.proof_of_request_ref:
+                        raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
             line.state = 'waiting_op_approval'
 
             # group = self.env.ref('visa_process.group_service_request_operations_manager')
