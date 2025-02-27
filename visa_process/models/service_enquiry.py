@@ -208,9 +208,7 @@ class ServiceEnquiry(models.Model):
     upload_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
     upload_apartment_lease_doc_file_name = fields.Char(string="Letter for Apartment lease")
     apartment_lease_ref = fields.Char(string="Ref No.*")
-    upload_visit_visa_app_doc = fields.Binary(string="Upload Visit Visa application")
-    upload_visit_visa_app_doc_file_name = fields.Char(string="Visit Visa application")
-    visit_visa_app_doc_ref = fields.Char(string="Ref No.*")
+    
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
     upload_employment_contract_doc_file_name = fields.Char(string="Employment Contract")
     employment_contract_doc_ref = fields.Char(string="Ref No.*")
@@ -661,16 +659,9 @@ class ServiceEnquiry(models.Model):
             vals['upload_vehicle_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForVehicleLeaseDoc.pdf"
 
         if 'upload_apartment_lease_doc' in vals:
-
             vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
 
-
-        if 'upload_visit_visa_app_doc' in vals:
-
-            vals['upload_visit_visa_app_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_VistVisaApplicationDoc.pdf"
-
         if 'upload_employment_contract_doc' in vals:
-
             vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
 
         if 'upload_cultural_letter_doc' in vals:
