@@ -82,10 +82,9 @@ class ServiceEnquiry(models.Model):
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
         ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
         ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),
-        ('apartment_lease','Letter for Apartment Lease'),('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
-        ('family_visa_letter','Family Visa Letter'),('employment_contract','Employment contract'),
+        ('apartment_lease','Letter for Apartment Lease'),
+        ('employment_contract','Employment contract'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
-        ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
         ('car_loan','Car Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
@@ -93,7 +92,7 @@ class ServiceEnquiry(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True,copy=False)
     iqama_no = fields.Char(string="Iqama No")
@@ -209,27 +208,15 @@ class ServiceEnquiry(models.Model):
     upload_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
     upload_apartment_lease_doc_file_name = fields.Char(string="Letter for Apartment lease")
     apartment_lease_ref = fields.Char(string="Ref No.*")
-    upload_family_visa_letter_doc = fields.Binary(string="Family Visa Letter")
-    upload_family_visa_letter_doc_file_name = fields.Char(string="Family Visa Letter")
-    family_visa_letter_doc_ref = fields.Char(string="Ref No.*")
     upload_visit_visa_app_doc = fields.Binary(string="Upload Visit Visa application")
     upload_visit_visa_app_doc_file_name = fields.Char(string="Visit Visa application")
     visit_visa_app_doc_ref = fields.Char(string="Ref No.*")
-    upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
-    upload_family_visit_visa_doc_file_name = fields.Char(string="Family Visit Visa Doc")
-    family_visit_visa_doc_ref = fields.Char(string="Ref No.*")
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
     upload_employment_contract_doc_file_name = fields.Char(string="Employment Contract")
-
     employment_contract_doc_ref = fields.Char(string="Ref No.*")
     upload_cultural_letter_doc = fields.Binary(string="Cultural Letter")
     upload_cultural_letter_doc_file_name= fields.Char(string="Cultural Letter")
     cultural_letter_doc_ref = fields.Char(string="Ref No.*")
-    draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
-    updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
-    upload_istiqdam_form_doc_file_name = fields.Char(string="Updated Istiqdam Form")
-    upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
-    istiqdam_form_doc_ref = fields.Char(string="Ref No.*")
     upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
     upload_confirmation_of_exit_reentry_file_name = fields.Char(string="Upload Confirmation of Exit re-entry")
 
@@ -677,13 +664,6 @@ class ServiceEnquiry(models.Model):
 
             vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
 
-        if 'upload_istiqdam_form_doc' in vals:
-
-            vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
-
-        if 'upload_family_visa_letter_doc' in vals:
-
-            vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
 
         if 'upload_visit_visa_app_doc' in vals:
 
@@ -697,10 +677,6 @@ class ServiceEnquiry(models.Model):
 
             vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
 
-        if 'upload_family_visit_visa_doc' in vals:
-
-            vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
-
         if 'upload_sec_doc' in vals:
 
             vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDoc.pdf"
@@ -708,9 +684,6 @@ class ServiceEnquiry(models.Model):
         if 'upload_emp_secondment_or_cub_contra_ltr_doc' in vals:
 
             vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
-
-       
-
 
         if 'upload_rental_agreement_doc' in vals:
 
@@ -863,13 +836,8 @@ class ServiceEnquiry(models.Model):
 
                 vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
 
-            if 'upload_istiqdam_form_doc' in vals:
+            
 
-                vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
-
-            if 'upload_family_visa_letter_doc' in vals:
-
-                vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
 
             if 'upload_employment_contract_doc' in vals:
 
@@ -878,10 +846,6 @@ class ServiceEnquiry(models.Model):
             if 'upload_cultural_letter_doc' in vals:
 
                 vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
-
-            if 'upload_family_visit_visa_doc' in vals:
-
-                vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
 
             if 'upload_sec_doc' in vals:
 
@@ -1537,7 +1501,7 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','family_visit_visa','cultural_letter','employment_contract','family_visa_letter','istiqdam_form','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
@@ -1558,14 +1522,10 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Apartment lease letter")
                 if line.upload_istiqdam_letter_doc and not line.istiqdam_letter_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Istiqdam Letter")
-                if line.upload_family_visa_letter_doc and not line.family_visa_letter_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Family visa letter")
                 if line.upload_employment_contract_doc and not line.employment_contract_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Employment Contract")
                 if line.upload_cultural_letter_doc and not line.cultural_letter_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Cultural Letter/Bonafide Letter")
-                if line.upload_family_visit_visa_doc and not line.family_visit_visa_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Family visit visa")
                 if line.upload_emp_secondment_or_cub_contra_ltr_doc and not line.emp_secondment_ltr_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
                 if line.upload_car_loan_doc and not line.car_loan_doc_ref:
@@ -1579,8 +1539,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Attestation Waiver letter")
                 if line.upload_embassy_letter_doc and not line.embassy_letter_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Embassy letter")
-                if line.upload_istiqdam_form_doc and not line.istiqdam_form_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Istiqdam form")
                 if line.upload_bilingual_salary_certificate_doc and not line.bilingual_salary_certificate_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Bilingual Salary Certificate")
                 if line.upload_contract_letter_doc and not line.contract_letter_doc_ref:
@@ -1629,14 +1587,7 @@ class ServiceEnquiry(models.Model):
                 if line.service_request_type == 'lt_request':
                     line.service_request_config_id = False
 
-    @api.depends('service_request')
-    def auto_fill_istiqdam_form(self):
-        for line in self:
-            if line.service_request == 'istiqdam_form':
-                istiqdam_id = self.env['visa.ref.documents'].search([('is_istiqdam_doc','=',True)],limit=1)
-                line.draft_istiqdam = istiqdam_id.istiqdam_doc
-            else:
-                line.draft_istiqdam = False
+    
     @api.onchange('employee_id')
     def update_employee_string(self):
         for line in self:
@@ -1714,8 +1665,8 @@ class ServiceEnquiry(models.Model):
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
-        'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
-        'upload_cultural_letter_doc','upload_family_visit_visa_doc',
+        'upload_apartment_lease_doc','upload_employment_contract_doc',
+        'upload_cultural_letter_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
@@ -1725,8 +1676,7 @@ class ServiceEnquiry(models.Model):
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
             line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
-            line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
-            line.upload_family_visit_visa_doc or \
+            line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc  or line.upload_rental_agreement_doc or \
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \

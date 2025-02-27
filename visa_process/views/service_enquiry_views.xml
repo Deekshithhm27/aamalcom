@@ -11,15 +11,15 @@
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','iqama_card_req','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
                     
 
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_one" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
 
                     <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req','new_ev'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- Ev buttons -->
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_three" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_new_ev_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('self_pay','=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
                     <button name="action_new_ev_docs_uploaded" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|',('assign_govt_emp_two','=',True),'|',('state','!=','approved'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
@@ -31,7 +31,7 @@
                     <!-- transfer request Initiation start -->
                     <!-- <button name="action_submit_for_approval" string="Submit For Approval" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('aamalcom_pay','=',False),'|',('doc_uploaded', '=',False),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_employee"/> -->
                     <button name="action_client_spoc_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_client_approval'),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_client_spoc"/>
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_four" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
                     <button name="action_request_fin_payment_confirmation" string="Request Payment Confirmation" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),('second_level_doc_uploaded','!=',True)]}" groups="visa_process.group_service_request_employee"/>
                     
 
@@ -56,11 +56,11 @@
                     <!-- LT Medical Health Insurance Upload start-->
 
                     <!-- 2 step process. Pm assign employee, emp updates document and completes process -->
-                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_client_spoc"/>
 
 
 
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','istiqdam_form','family_visa_letter','employment_contract','cultural_letter','family_visit_visa','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','general_query'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
                    
@@ -69,7 +69,7 @@
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),('service_request','not in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
@@ -458,30 +458,8 @@
                     </group>
 
                     <!-- Letter for apartment Lease Stop-->
-                    <!-- Istiqdam Form start-->
-                    <group name="lt_istiqdam_form" attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}">
-                        <group>
-                            <field name="draft_istiqdam" attrs="{'readonly': [('draft_istiqdam', '!=',False)]}"/>
-                            
-                        </group>
-                        <group>
-                            <field name="updated_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group>
-        
-                    <!-- Istiqdam Form Stop-->
-                    <!-- Family Visa Letter start-->
-                    <group name="lt_family_visa_letter" attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}">
-                        <group>
-                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                        <group>
-                            
-                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group>
-             
-                    <!-- Family Visa Letter Stop-->
+                    
+                    
                     <!-- Employment Contract start-->
                     <group name="lt_employment_contract" attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}">
                         <group>
@@ -508,17 +486,7 @@
                     
                   
                     <!-- Cultural Letter Stop-->
-                    <!-- Family Visit Visa start-->
-                    <group name="lt_family_visit_visa" attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}">
-                        <group>
-                            <field name="upload_visit_visa_app_doc" attrs="{'readonly': [('state', '!=','draft')]}" filename="upload_visit_visa_app_doc_file_name"/>
-                             <field name="upload_visit_visa_app_doc_file_name"  invisible="1"/>
-                            <field name="visit_visa_app_doc_ref" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group>
-                    
-        
-                    <!-- Family Visit Visa Stop-->
+                   
                     <!-- Employee secondment start-->
                     <group name="lt_emp_secondment_or_cub_contra_ltr" attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}">
                         <group>
@@ -737,20 +705,8 @@
                                     <field name="apartment_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                            <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam form (family visa letter)">
-                                <group>
-                                    <field name="upload_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
-                                     <field name="upload_istiqdam_form_doc_file_name"  invisible="1"/>
-                                    <field name="istiqdam_form_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>
-                            <group attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}" string="Family Visa Letter">
-                                <group>
-                                    <field name="upload_family_visa_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
-                                     <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
-                                    <field name="family_visa_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>
+                            
+                           
                             <group attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}" string="Employment Contract">
                                 <group>
                                     <field name="upload_employment_contract_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_employment_contract_doc_file_name"/>
@@ -765,13 +721,7 @@
                                     <field name="cultural_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                             <group attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}" string="Family visit visa">
-                                <group>
-                                    <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
-                                     <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
-                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>
+                             
                             <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee secondment / Subcontract Document">
                                 <group>
                                     <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"/>
@@ -819,7 +769,7 @@
 
                             <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
                                 <group>
-                                    <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
+                                    <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_letter_doc_file_name"/>
                                      <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
                                     <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
@@ -991,11 +941,6 @@
                     </notebook>
                     <!-- SEC Letter Stop-->
                         
-                    
-
-                    
-
-                    <field name="visit_visa_note" readonly="1" attrs="{'invisible': [('service_request', '!=','family_visit_visa')]}"/>
                     <group>
                         <field name="letter_cost" attrs="{'invisible':[('letter_print_type_id','!=',True)]}"/>
                     </group>

@@ -28,10 +28,9 @@ class ServiceRequestConfg(models.Model):
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
         ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
         ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),
-        ('apartment_lease','Letter for Apartment Lease'),('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
-        ('family_visa_letter','Family Visa Letter'),('employment_contract','Employment contract'),
+        ('apartment_lease','Letter for Apartment Lease'),
+        ('employment_contract','Employment contract'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
-        ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
         ('car_loan','Car Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
@@ -39,7 +38,7 @@ class ServiceRequestConfg(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",required=True)
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date')],string="Requests",required=True)
 
     sequence = fields.Integer(string="Sequence",help="Gives the sequence order when displaying a list of Service Types in Tickets.")
 
