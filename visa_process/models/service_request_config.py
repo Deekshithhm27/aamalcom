@@ -25,7 +25,7 @@ class ServiceRequestConfg(models.Model):
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
-        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
+        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
         ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
         ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),
         ('apartment_lease','Letter for Apartment Lease'),
