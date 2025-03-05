@@ -79,7 +79,7 @@ class ServiceEnquiry(models.Model):
 
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
-        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
+        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
         ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
         ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),
         ('apartment_lease','Letter for Apartment Lease'),
@@ -215,14 +215,6 @@ class ServiceEnquiry(models.Model):
     upload_cultural_letter_doc = fields.Binary(string="Cultural Letter")
     upload_cultural_letter_doc_file_name= fields.Char(string="Cultural Letter")
     cultural_letter_doc_ref = fields.Char(string="Ref No.*")
-    upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
-    upload_confirmation_of_exit_reentry_file_name = fields.Char(string="Upload Confirmation of Exit re-entry")
-
-    confirmation_of_exit_reentry_ref = fields.Char(string="Ref No.*")
-    upload_exit_reentry_visa = fields.Binary(string="Exit Re-entry Visa")
-    upload_exit_reentry_visa_file_name = fields.Char(string="Exit Re-entry Visa")
-
-    exit_reentry_visa_ref = fields.Char(string="Ref No.*")
     upload_final_exit_issuance_doc = fields.Binary(string="Final Exit issuance doc")
     upload_final_exit_issuance_doc_file_name = fields.Char(string="Final Exit issuance doc")
 
@@ -313,7 +305,6 @@ class ServiceEnquiry(models.Model):
 
     # Common fields
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True,domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
-    exit_type = fields.Selection([('single','Single'),('multiple','Multiple')],string="Type")
 
     
     self_bill_string = fields.Char(string="Self Bill String", compute="_compute_self_bill_string")
@@ -331,8 +322,6 @@ class ServiceEnquiry(models.Model):
 
     billable_to_aamalcom_string = fields.Char(string="Billable to Aamalcom",compute="_compute_self_bill_string")
     billable_to_aamalcom = fields.Boolean(string="Billable to Aamalcom")
-            
-    to_be_issued_date = fields.Date(string="To be issued from")
 
     current_insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Current Insurance Class")
     class_to_be_changed = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class to be changed to!")
@@ -630,14 +619,6 @@ class ServiceEnquiry(models.Model):
 
             vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
 
-        if 'upload_confirmation_of_exit_reentry' in vals:
-
-            vals['upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-
-        if 'upload_exit_reentry_visa' in vals:
-
-            vals['upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-
         if 'profession_change_doc' in vals:
 
             vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
@@ -794,14 +775,6 @@ class ServiceEnquiry(models.Model):
             if 'upload_gosi_doc' in vals:
 
                 vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
-
-            if 'upload_confirmation_of_exit_reentry' in vals:
-
-                vals['upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-
-            if 'upload_exit_reentry_visa' in vals:
-
-                vals['upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
 
             if 'profession_change_doc' in vals:
 
@@ -1071,7 +1044,7 @@ class ServiceEnquiry(models.Model):
                     ('service_request', '=', record.service_request)], limit=1)
             # iqama_card_req - payment will be collected offline
             # if record.aamalcom_pay and record.service_request == 'transfer_req' or record.service_request != 'iqama_card_req':
-            if record.aamalcom_pay and record.service_request == 'new_ev' or record.service_request == 'hr_card' or record.service_request == 'iqama_renewal' or record.service_request == 'exit_reentry_issuance' or record.service_request == 'prof_change_qiwa':
+            if record.aamalcom_pay and record.service_request == 'new_ev' or record.service_request == 'hr_card' or record.service_request == 'iqama_renewal' or record.service_request == 'prof_change_qiwa':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -1468,12 +1441,6 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
-            if line.service_request == 'exit_reentry_issuance':
-                if line.state =='submitted':
-                    if not line.confirmation_of_exit_reentry_ref:
-                        raise ValidationError("Kindly Update Reference Number for Confirmation of Exit re-entry Document")
-                    if not line.exit_reentry_visa_ref:
-                        raise ValidationError("Kindly Update Reference Number for Exit Re-entry Visa Document")
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:
@@ -1654,7 +1621,7 @@ class ServiceEnquiry(models.Model):
         return res
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
-        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
+        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc',
@@ -1672,8 +1639,6 @@ class ServiceEnquiry(models.Model):
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
             line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
-                line.doc_uploaded = True
-            elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
