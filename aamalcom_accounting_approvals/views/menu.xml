@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_vendors_root" name="Vendors" sequence="10"/>
+    <menuitem id="menu_vendors_root" name="Vendors" sequence="10" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager"/>
 
     <menuitem id="menu_vendor_bills"
               name="Vendor Invoices"
