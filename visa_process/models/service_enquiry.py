@@ -1373,7 +1373,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
             line.assign_govt_emp_two = True
             line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
-            # If a government employee updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
+            # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
             if line.employee_id and line.service_request == 'new_ev':
                 if not line.employee_id.sponsor_id:
                     line.employee_id.sudo().write({'sponsor_id': self.sponsor_id})
@@ -1435,6 +1435,12 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Enzaj Document")
                     if not line.e_wakala_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for E Wakala Document")
+                    # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
+                    if line.employee_id and line.sponsor_id:
+                        if not line.employee_id.sponsor_id:
+                            line.employee_id.sudo().write({'sponsor_id': line.sponsor_id})
+                        else:
+                            line.sponsor_id = line.employee_id.sponsor_id
             if line.service_request in ('hr_card','iqama_renewal'):
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
