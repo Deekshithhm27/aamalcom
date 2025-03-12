@@ -9,7 +9,7 @@
     'author': 'Aamalcom',
     'website': 'https://www.aamalcom.com',
     'category': 'Operations/Workflow',
-    'depends': ['base', 'mail', 'visa_process'],
+    'depends': ['base', 'mail', 'visa_process','sr_iqama_requests','sr_exit_reentry', 'sr_muqeem'],
     'data': [
         'data/activity.xml',
     ],

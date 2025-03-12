@@ -22,10 +22,16 @@ class EmployeeSelectionWizard(models.TransientModel):
             ])
             activity_ids.unlink()
             assign_employee_user_id = self.employee_id.user_id.id
-            active_enquiry._schedule_ticket_activity(
-                user_id=assign_employee_user_id,
-                summary='Action Required on Ticket',
-                note='Do review and take action (Documents upload) on this ticket.'
-            )
-
+            if active_enquiry.service_request == 'exit_reentry_issuance_ext' and not active_enquiry.aamalcom_pay:
+                active_enquiry._schedule_ticket_activity(
+                    user_id=assign_employee_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Review and request payment confirmation) on this ticket.'
+                )
+            else:
+                active_enquiry._schedule_ticket_activity(
+                    user_id=assign_employee_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Documents upload) on this ticket.'
+                )
         return result
