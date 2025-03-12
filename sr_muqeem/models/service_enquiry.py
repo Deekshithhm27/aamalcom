@@ -49,16 +49,6 @@ class ServiceEnquiry(models.Model):
                 line.assigned_govt_emp_one = False
                 line.is_resubmission = True
 
-                partner_id = line.client_id.id
-                user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
-                if user:
-                    line.activity_schedule(
-                        'mail.mail_activity_data_todo',
-                        user_id=user.id,
-                        summary="ERE Still Valid - Action Required(Cancel)",
-                        note="The ERE is still valid. The request can be re initiated after expiry on."
-                    )
-
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
         for record in self:
