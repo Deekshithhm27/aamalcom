@@ -8,9 +8,14 @@ class ServiceEnquiry(models.Model):
     _inherit = 'service.enquiry'
 
     service_request = fields.Selection(
-        selection_add=[('exit_reentry_issuance', 'Exit Rentry issuance'),
-                       ('exit_reentry_issuance_ext', 'Exit Re-entry (Extension)')], string="Requests", required=True,
-        ondelete={'exit_reentry_issuance_ext': 'cascade', 'exit_reentry_issuance': 'cascade'})
+        selection_add=[
+            ('exit_reentry_issuance','Exit Rentry Issuance'),('exit_reentry_issuance_ext','Exit Re-entry(Extension)')
+        ],
+        string="Service Request",
+        store=True,
+        copy=False
+    )
+
 
     # Fields - Exit Rentry issuance
     exit_type = fields.Selection([('single', 'Single'),('multiple', 'Multiple')], string="Type", store=True)
@@ -28,7 +33,16 @@ class ServiceEnquiry(models.Model):
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
     is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
-
+    
+    @api.onchange('exit_type')
+    def _onchange_exit_type(self):
+        if self.exit_type == 'single':
+            return {'domain': {'employment_duration': [('name', 'ilike', 'SER')]}}  # Matches any duration containing 'SER'
+        elif self.exit_type == 'multiple':
+            return {'domain': {'employment_duration': [('name', 'ilike', 'MER')]}}  # Matches any duration containing 'MER'
+        else:
+            return {'domain': {'employment_duration': []}}
+    
     @api.model_create_multi
     def create(self, vals):
         result = super(ServiceEnquiry, self).create(vals)
@@ -100,7 +114,7 @@ class ServiceEnquiry(models.Model):
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
                             record.service_enquiry_pricing_ids.create({
-                                'name':pricing_id.name,
+                                'name':f"{p_line.duration_id.name}",
                                 'service_enquiry_id':record.id,
                                 'service_pricing_id':pricing_id.id,
                                 'service_pricing_line_id':p_line.id,
@@ -234,4 +248,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For Upload Confirmation Of ERE Extend")
                 if record.ere_extension_doc and not record.ere_extension_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For ERE Extend Visa")
+
+            record.state = 'done'  
+            record.dynamic_action_status = "Process Completed"        
         return result
