@@ -1,0 +1,90 @@
+<odoo>
+    <data>
+        <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+            <field name="name">service.enquiry.form.request.ll</field>
+            <field name="model">service.enquiry</field>
+            <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'salary_advance')]}"/>
+                    <button name="action_submit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'refuse'), ('service_request', '!=', 'salary_advance')]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="action_salary_advance_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('service_request', '!=', 'salary_advance')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_op_refuse" string="Refuse" type="object" class="oe_highlight" 
+                        attrs="{'invisible': ['|', ('service_request', '!=', 'salary_advance'), ('state', '!=', 'waiting_op_approval')]}" 
+                        groups="visa_process.group_service_request_operations_manager"/>
+                    <button name="action_gm_refuse" string="Refuse" type="object" class="oe_highlight" 
+                        attrs="{'invisible': ['|', ('service_request', '!=', 'salary_advance'), ('state', '!=', 'waiting_gm_approval')]}" 
+                        groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_process_complete"
+                        string="Process Complete"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': ['|', ('service_request', '!=', 'salary_advance'), ('state', '!=', 'approved')]}" 
+                        groups="visa_process.group_service_request_manager"/>    
+                </xpath>
+
+                <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                    <group name="salary_advance" attrs="{'invisible': [('service_request', '!=', 'salary_advance')]}">
+                        <group>
+                            <field name="salary_advance_amount" string="Salary Advance Amount" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="nature_of_advance" string="Nature of Advance" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="invoiced" widget="boolean_button" string="Invoiced" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="to_be_invoiced" widget="boolean_button" string="To be Invoiced" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group attrs="{'invisible': [('invoiced', '=', False)]}">
+                            <field name="invoiced_ref" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="hide_unpaid_reason" invisible="1"/>
+                            <field name="unpaid_inv_reason" attrs="{'invisible': [('hide_unpaid_reason', '=', True)]}"/>
+                        </group>
+                    </group>
+                    <group string="Payment Confirmation Documents" 
+                        attrs="{'invisible': ['|', ('service_request', '!=', 'salary_advance'), ('state', 'in', ('draft', 'submitted'))]}">
+                        <group attrs="{'invisible': [('self_pay', '!=', True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('self_pay', '=', True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//group[field[@name='letter_cost']]" position="after">
+                    <notebook groups="visa_process.group_service_request_manager" attrs="{'invisible': ['|', '|', ('service_request', '!=', 'salary_advance'), ('state', 'not in', ['approved', 'done']), ('to_be_invoiced', '=', False)]}">
+                        <page string="Service Pricing">
+                            
+                            <field name="service_enquiry_pricing_ids">
+                            <tree editable="bottom">
+                                
+                            <field name="service_enquiry_id" invisible="1"/>
+                            <field name="name"/>
+                            <field name="service_pricing_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="remarks"/>
+                            </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </xpath>
+
+
+
+                <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@id='open_assign_employee_wizard_five']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', 'not in', ('payment_done', 'approved')), '|', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)]}</attribute>
+                </xpath>
+                <xpath expr="//notebook[@id='service_pricing_notebook']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('service_request', '=', 'salary_advance')]}</attribute>
+                </xpath>    
+            </field>
+        </record>
+    </data>
+</odoo>

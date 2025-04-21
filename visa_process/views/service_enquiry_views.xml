@@ -9,9 +9,11 @@
                     <field name="state" widget="statusbar" statusbar_colors='{"done":"blue","draft":"grey","cancel":"red"}' statusbar_visible="draft,submitted,refuse,cancel,done"/>
                     <!-- LT Issuance of HR card Actions start -->
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','iqama_card_req','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
-                    
+
 
                     <button id="open_assign_employee_wizard_one" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
+
+
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
                     <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
@@ -33,7 +35,7 @@
                     <button name="action_client_spoc_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_client_approval'),('service_request', '!=','transfer_req')]}" groups="visa_process.group_service_request_client_spoc"/>
                     <button id="open_assign_employee_wizard_four" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
                     <button name="action_request_fin_payment_confirmation" string="Request Payment Confirmation" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('client_approved')),('second_level_doc_uploaded','!=',True)]}" groups="visa_process.group_service_request_employee"/>
-                    
+
 
                     <!-- Transfer request initiation end -->
 
@@ -63,7 +65,7 @@
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','exit_reentry_issuance','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
-                   
+
                     <!-- New Physical Iqama Card Request(cost 1,000sar) start-->
                     <!-- <button name="action_iqama_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_client_spoc"/> -->
 
@@ -78,7 +80,7 @@
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
 
 
-                   
+
                     <!-- Issuance of new EV end -->
 
                 </header>
@@ -122,10 +124,10 @@
                         <field name="final_doc_uploaded" invisible="1"/>
                         <field name="is_service_request_client_spoc" invisible="1"/>
                         <!-- <separator string="Transfer Type" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/> -->
-                        
+
                         <h1>
                            <field name="name" readonly="1"/>
-                            
+
                         </h1>
 
                         <div class="o_row">
@@ -139,7 +141,12 @@
                                 <field name="passport_no" attrs="{'readonly': [('state', '!=','draft')]}" string="Passport No"/>
                                 <field name="dynamic_action_status" invisible="1"/>
                                 <field name="is_gov_employee" invisible="1"/>
-                                <field name="sponsor_id" attrs="{'readonly': ['|',('is_gov_employee', '!=', True),('service_request','!=', 'new_ev')]}" options="{'no_create': True, 'no_edit': True}" force_save="1"/>
+                                <field name="sponsor_id" attrs="{'readonly': ['|',
+                                             ('service_request', '!=', 'new_ev'),
+                                             '!', '|',
+                                             ('is_gov_employee', '=', True),
+                                             ('is_project_manager', '=', True),
+                                             ]}" options="{'no_create': True, 'no_edit': True}" force_save="1"/>
                                 <field name="service_request" invisible="1"/>
                                 <field name="assign_govt_emp_one" invisible="1"/>
                                 <field name="assigned_govt_emp_one" invisible="1"/>
@@ -150,12 +157,12 @@
                                 <field name="second_govt_employee_id" invisible="1"/>
                                 <field name="current_department_ids" invisible="1" widget="many2many_tags"/>
                                 <field name="req_completion_date" invisible="1"/>
-                                
-                                
-                            
-                            
+
+
+
+
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
-                                
+
                             </group>
                         </div>
                     </div>
@@ -180,18 +187,18 @@
                         <group attrs="{'invisible': [('service_request', '!=', 'hr_card')]}">
                             <field name="insurance_availability" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="medical_doc" attrs="{'invisible': [('insurance_availability', '!=', 'yes')],'readonly': [('state', '!=','draft')]}"/>
-                            
+
                         </group>
-                        
+
                     </group>
-                   
+
                     <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','new_ev','transfer_req'))]}">
                         <group string="Fees to be paid by">
                             <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
                             <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
-                           
+
                         </group>
                         <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
                             <field name="billable_to_client_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
@@ -199,8 +206,8 @@
 
                             <field name="billable_to_aamalcom_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            
-                            
+
+
 
                         </group>
                     </group>
@@ -217,13 +224,13 @@
                                     <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="transfer_confirmation_doc_file_name"/>
                                      <field name="transfer_confirmation_doc_file_name"  invisible="1"/>
                                     <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                                    
+
                                 </group>
                                 <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
                                     <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_qiwa_doc_file_name"/>
                                      <field name="upload_qiwa_doc_file_name"  invisible="1"/>
                                     <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                                    
+
                                 </group>
 
                                 <group string="Profession Change Document" attrs="{'invisible':[('service_request', '!=','prof_change_qiwa')]}">
@@ -245,6 +252,16 @@
                                      <field name="upload_jawazat_doc_file_name"  invisible="1"/>
                                     <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
+                                <group string="Re-Upload Hr Card Document" attrs="{'invisible':[('service_request', '!=', 'hr_card')]}">
+                                    <field name="reupload_hr_card" 
+                                        attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1" 
+                                        filename="reupload_hr_card_file_name"/>
+                                    <field name="reupload_hr_card_file_name" invisible="1"/>
+                                    <field name="rehr_card_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}"
+                                   
+                                    force_save="1"/>
+                                </group>
+
                                 <group string="Residance Permit" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
                                     <field name="residance_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="residance_doc_file_name"/>
                                      <field name="residance_doc_file_name"  invisible="1"/>
@@ -268,7 +285,7 @@
                                      <field name="upload_jawazat_doc_file_name"  invisible="1"/>
                                     <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('client_approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
-                                
+
                                 <group string="Confirmation of Sponsorship" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
                                     <field name="upload_sponsorship_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
                                      <field name="upload_sponsorship_doc_file_name"  invisible="1"/>
@@ -287,8 +304,8 @@
                             </group>
 
                         </page>
-                    
-                        
+
+
                     </notebook>
                     <!-- LT Issuance of HR Card and Iqama Renewal and Profession Change req in Qiwa end-->
                     <!-- ############################################ -->
@@ -301,7 +318,7 @@
                         <group>
                             <field name="logical_reason" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
-                        
+
                     </group>
 
                     <!-- LT Medical Health Insurance Upload end-->
@@ -314,7 +331,7 @@
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-  
+
                     <!-- ##################################################### -->
                     <!-- LT Medical Iqama No. Generation start-->
                     <group name="lt_iqama_no_generation" attrs="{'invisible': [('service_request', '!=', 'iqama_no_generation')]}">
@@ -322,7 +339,7 @@
                             <field name="request_date" readonly="1"/>
                         </group>
                     </group>
-               
+
                     <!-- LT Medical Iqama No. Generation end-->
                     <!-- ###################################################### -->
                     <!-- New Physical Iqama Card Request(cost 1,000sar) start-->
@@ -332,7 +349,7 @@
                             <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
                             <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
-                           
+
                         </group>
                         <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
                             <field name="billable_to_client_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
@@ -340,14 +357,14 @@
 
                             <field name="billable_to_aamalcom_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            
+
                         </group>
                     </group>
                     <group attrs="{'invisible': [('service_request', '!=', 'iqama_card_req')]}">
                         <group>
                             <field name="reason_for_loss_of_iqama" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="letter_from_police_station" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> 
+                            <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             Remove this-->
                         </group>
                     </group>
@@ -362,7 +379,7 @@
                             </group>
                         </page>
                     </notebook>
-                    
+
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
                     <!-- #################################################### -->
                     <!-- Salary Certificate start-->
@@ -376,7 +393,7 @@
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                    
+
                     <!-- Salary Certificate Stop-->
                     <!-- #################################################### -->
                     <!-- Bank Letter start-->
@@ -390,7 +407,7 @@
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group> -->
-                 
+
                     <!-- Bank Letter Stop-->
                     <!-- Letter for Vehicle Lease start-->
                     <group name="lt_vehicle_lease" attrs="{'invisible': [('service_request', '!=', 'vehicle_lease')]}">
@@ -403,7 +420,7 @@
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-           
+
                     <!-- Letter for Vehicle Lease Stop-->
                     <!-- Letter for apartment Lease start-->
                     <group name="lt_apartment_lease" attrs="{'invisible': [('service_request', '!=', 'apartment_lease')]}">
@@ -418,47 +435,47 @@
                     </group>
 
                     <!-- Letter for apartment Lease Stop-->
-                    
-                    
+
+
                     <!-- Employment Contract start-->
                     <group name="lt_employment_contract" attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-        
+
                     <!-- Employment Contract Stop-->
-                    
+
                     <!-- Cultural Letter start-->
                     <group name="lt_cultural_letter" attrs="{'invisible': [('service_request', '!=', 'cultural_letter')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                    
-                  
+
+
                     <!-- Cultural Letter Stop-->
-                   
+
                     <!-- Employee secondment start-->
                     <group name="lt_emp_secondment_or_cub_contra_ltr" attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                    
-     
+
+
                     <!-- Employee secondment Stop-->
                     <!-- Car Loan Letter start-->
                     <group name="lt_car_loan" attrs="{'invisible': [('service_request', '!=', 'car_loan')]}">
@@ -466,25 +483,25 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
- 
+
                     <!-- Car Loan Letter Stop-->
-                    
+
                     <!-- Rental Agreement Letter start-->
                     <group name="rental_agreement" attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                    
-              
+
+
                     <!-- Rental Agreement Letter Stop-->
                     <!-- Exception Letter start-->
                     <group name="exception_letter" attrs="{'invisible': [('service_request', '!=', 'exception_letter')]}">
@@ -492,11 +509,11 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-        
+
                     <!-- Exception Letter Stop-->
                     <!-- Attestation Waiver letter start-->
                     <group name="attestation_waiver_letter" attrs="{'invisible': [('service_request', '!=', 'attestation_waiver_letter')]}">
@@ -504,7 +521,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
@@ -513,7 +530,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
@@ -523,7 +540,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
@@ -533,7 +550,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group> -->
@@ -543,7 +560,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
@@ -554,7 +571,7 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
@@ -565,26 +582,26 @@
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                     <!-- Bank account opening Letter Stop-->
-                   
-                    
+
+
                     <!-- Bank limit upgrading Letter start-->
                     <group name="bank_limit_upgrading_letter" attrs="{'invisible': [('service_request', '!=', 'bank_limit_upgrading_letter')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                     <!-- Bank limit upgrading Letter stop-->
-       
-                    
+
+
                     <!-- Final exit issuance start-->
                     <group name="lt_final_exit_issuance" attrs="{'invisible': [('service_request', '!=', 'final_exit_issuance')]}">
                         <group>
@@ -599,7 +616,7 @@
 
                     <!-- Updated -->
                     <notebook id="notebook_four" attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card','transfer_req','new_ev','iqama_card_req','iqama_renewal','prof_change_qiwa',))]}">
-                        
+
                         <page id="page_four" string="Documents">
                             <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">
                                 <group>
@@ -665,8 +682,8 @@
                                     <field name="apartment_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                            
-                           
+
+
                             <group attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}" string="Employment Contract">
                                 <group>
                                     <field name="upload_employment_contract_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_employment_contract_doc_file_name"/>
@@ -681,7 +698,7 @@
                                     <field name="cultural_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                             
+
                             <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee secondment / Subcontract Document">
                                 <group>
                                     <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"/>
@@ -779,15 +796,15 @@
                             </group>
                         </page>
                     </notebook>
-            
-                    
+
+
 
                     <!-- Contract Letter start-->
-                    
+
                     <!-- Contract Letter stop-->
-                    
-                   
-                    
+
+
+
 
                     <!-- SOA start-->
                     <group name="lt_soa" attrs="{'invisible': [('service_request', '!=', 'soa')]}">
@@ -799,9 +816,9 @@
                         </group>
                     </group>
                     <!-- SOA start-->
-                    
+
                     <notebook id="notebook_five">
-                        
+
                         <!-- SOA start-->
                         <page id="page_five" string="Documents " attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'soa')]}">
                             <group>
@@ -813,18 +830,19 @@
                         </page>
                         <!-- SOA Stop-->
                     </notebook>
-                  
-                    
+
+
 
                     <group name="ev_new_ev" attrs="{'invisible': [('service_request', '!=', 'new_ev')]}">
                         <group>
+                            <field name="old_ev_id"  options="{'no_create': True, 'no_edit': True}"/>
                             <field name="visa_country_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="visa_stamping_city_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="profession" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="visa_religion" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
-                            
+
                             <field name="no_of_visa" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> -->
                             <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
@@ -843,6 +861,7 @@
                                     <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}" filename="upload_issuance_doc_file_name"/>
                                      <field name="upload_issuance_doc_file_name"  invisible="1"/>
                                     <field name="issuance_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
+            
                                 </group>
                                 <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('new_ev')),('second_govt_employee_id','=',False)]}">
                                     <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
@@ -853,7 +872,7 @@
                                      <field name="e_wakala_doc_file_name"  invisible="1"/>
                                     <field name="e_wakala_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
-                                
+
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': [('state', 'in', ( 'draft','submitted'))]}">
                                 <group attrs="{'invisible': [('self_pay', '!=',True)]}">
@@ -880,7 +899,7 @@
                             </group>
                         </page>
                     </notebook>
-                    
+
                     <notebook id="service_pricing_notebook" groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                         <!-- should not be visible for final_exit_issuance -->
                         <page string="Service Pricing">
@@ -900,7 +919,7 @@
 
                     </notebook>
                     <!-- SEC Letter Stop-->
-                        
+
                     <group>
                         <field name="letter_cost" attrs="{'invisible':[('letter_print_type_id','!=',True)]}"/>
                     </group>
@@ -984,7 +1003,7 @@
                 Try creating new one!!
               </p>
         </field>
-    </record> 
+    </record>
     <record id="action_service_enquiry_administrator" model="ir.actions.act_window">
         <field name="name">Service Tickets</field>
         <field name="res_model">service.enquiry</field>
@@ -997,7 +1016,7 @@
                 Try creating new one!!
               </p>
         </field>
-    </record> 
+    </record>
     <record id="action_service_enquiry_manager" model="ir.actions.act_window">
         <field name="name">Service Enquiry</field>
         <field name="res_model">service.enquiry</field>
@@ -1006,7 +1025,7 @@
         <field name="context">{'group_by': 'state'}</field>
         <field name="domain">[('approver_user_id', '=', uid)]</field>
 
-    </record> 
+    </record>
     <record id="action_service_enquiry_docs" model="ir.actions.act_window">
         <field name="name">Service Tickets</field>
         <field name="res_model">service.enquiry</field>
@@ -1021,7 +1040,7 @@
                 Try creating new one!!
               </p>
         </field>
-    </record> 
+    </record>
     <record id="action_service_enquiry_op_approval" model="ir.actions.act_window">
         <field name="name">Tickets for Approval</field>
         <field name="res_model">service.enquiry</field>
@@ -1036,7 +1055,7 @@
                 Try creating new one!!
               </p>
         </field>
-    </record> 
+    </record>
     <record id="action_service_enquiry_gm_approval" model="ir.actions.act_window">
         <field name="name">Tickets for Approval</field>
         <field name="res_model">service.enquiry</field>
@@ -1050,7 +1069,7 @@
                 Try creating new one!!
               </p>
         </field>
-    </record> 
+    </record>
     <record id="action_service_enquiry_finance_approval" model="ir.actions.act_window">
         <field name="name">Tickets for Approval</field>
         <field name="res_model">service.enquiry</field>
@@ -1078,5 +1097,5 @@
                 </div>
             </xpath>
         </field>
-    </record>    
+    </record>
 </odoo>

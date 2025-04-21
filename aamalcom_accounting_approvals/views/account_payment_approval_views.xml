@@ -7,10 +7,10 @@
             <form string="Payments for Approval">
             	<header>
             		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"approved":"green","draft":"grey","waiting":"yellow","reject":"red"}'/>
-            		<button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="aamalcom_accounting.group_payment_approval_officer"/>
-            		<button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="aamalcom_accounting.group_payment_approval_manager"/>
-            		<button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="aamalcom_accounting.group_payment_approval_manager"/>
-            		<button name="action_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in', ('draft','reject','cancel','approved'))]}" groups="aamalcom_accounting.group_payment_approval_manager"/>
+            		<button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="aamalcom_accounting_approvals.group_payment_approval_officer"/>
+            		<button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="aamalcom_accounting_approvals.group_payment_approval_manager"/>
+            		<button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="aamalcom_accounting_approvals.group_payment_approval_manager"/>
+            		<button name="action_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in', ('draft','reject','cancel','approved'))]}" groups="aamalcom_accounting_approvals.group_payment_approval_manager"/>
             	</header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
@@ -91,8 +91,8 @@
         <field name="res_model">account.payment.approval</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id': ref('aamalcom_accounting.payment_account_approval_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('aamalcom_accounting.payment_account_approval_form')})]"/>
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('aamalcom_accounting_approvals.payment_account_approval_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('aamalcom_accounting_approvals.payment_account_approval_form')})]"/>
         <field name="domain">[('service_enquiry_id', '=', active_id)]</field>
     </record>
 

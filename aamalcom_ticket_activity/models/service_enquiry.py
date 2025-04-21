@@ -16,7 +16,7 @@ class ServiceEnquiry(models.Model):
         result = super(ServiceEnquiry, self).action_submit()
         client_manager_user_id = self.env.user.company_spoc_id.user_id.id
         for line in self:
-            if line.service_request == 'new_ev':
+            if line.service_request in ['new_ev', 'exit_reentry_issuance_ext'] and line.aamalcom_pay:
                 self._schedule_ticket_activity(
                     user_id=client_manager_user_id,
                     summary='Action Required on Ticket',
@@ -331,6 +331,54 @@ class ServiceEnquiry(models.Model):
     def action_submit_payment_confirmation(self):
         result = super(ServiceEnquiry, self).action_submit_payment_confirmation()
         for line in self:
+            if line.service_request in ['exit_reentry_issuance_ext']:
+                # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+                activity_id = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('user_id', '=', self.env.user.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_id.action_feedback(feedback='Approved')
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+                first_govt_employee_id = line.first_govt_employee_id.user_id.id
+                self._schedule_ticket_activity(
+                    user_id=first_govt_employee_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Documents upload) on this ticket.'
+                )
+            else:
+                # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+                activity_id = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('user_id', '=', self.env.user.id),
+                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_id.action_feedback(feedback='Approved')
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+                client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Employee needs to be assigned) on this ticket.'
+                )
+        return result
+
+    # function-government employee submits the iqama print documents to the PM
+    def action_iqama_uploaded(self):
+        result = super(ServiceEnquiry, self).action_iqama_uploaded()
+        for line in self:
             # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
             activity_id = self.env['mail.activity'].search([
                 ('res_id', '=', self.id),
@@ -348,18 +396,68 @@ class ServiceEnquiry(models.Model):
             self._schedule_ticket_activity(
                 user_id=client_manager_user_id,
                 summary='Action Required on Ticket',
-                note='Do review and take action (Employee needs to be assigned) on this ticket.'
+                note='Do review and take action (send confirmation to the client and close) on this ticket.'
             )
+        return result
+
+    def action_valid_ere(self):
+        result = super(ServiceEnquiry, self).action_valid_ere()
+        for line in self:
+            # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', self.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+            # If one user completes the activity or action on the record, delete activities for other users
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', self.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+            partner_id = line.client_id.id
+            client_spoc_user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+            if client_spoc_user:
+                self._schedule_ticket_activity(
+                    user_id=client_spoc_user.id,
+                    summary='ERE Still Valid - Action Required',
+                    note='The ERE is still valid. The request can be re initiated after expiry on.'
+                )
         return result
 
     def action_submit_initiate(self):
         result = super(ServiceEnquiry, self).action_submit_initiate()
         client_manager_user_id = self.env.user.company_spoc_id.user_id.id
-        self._schedule_ticket_activity(
-            user_id=client_manager_user_id,
-            summary='Action Required on Ticket',
-            note='Do review and take action (Employee needs to be assigned) on this ticket.'
-        )
+        for line in self:
+            #muqeem dropout
+            # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', self.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=',
+                 self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            if activity_id:
+                activity_id.action_feedback(feedback='Done')
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Ticket Resubmitted, Employee needs to be assigned) on this ticket.'
+                )
+            else:
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Employee needs to be assigned) on this ticket.'
+                )
         return result
 
     def action_process_complete(self):

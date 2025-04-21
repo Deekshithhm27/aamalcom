@@ -1,0 +1,127 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_fam_resi" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request.familyResident</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', 'not in', ('family_resident', 'family_visa_letter','istiqdam_form','family_visit_visa'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', 'not in', ('family_visa_letter', 'family_resident', 'istiqdam_form', 'family_visit_visa')), '|', ('assigned_govt_emp_one', '!=', True), ('family_visa_doc_uploaded', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="lt_family_resident" attrs="{'invisible': [('service_request', '!=', 'family_resident')]}">
+                        <group>
+                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group> 
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                </group>
+                <!-- Family Visa Letter start-->
+                    <group name="lt_family_visa_letter" attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}">
+                        <group>
+                            <field name="draft_if_any"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
+                            
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                    </group>
+             
+                    <!-- Family Visa Letter Stop-->
+                    <!-- Family Visit Visa  start-->
+                    <group name="lt_family_visit_visa" attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}">
+                        <group>
+                            <field name="upload_visit_visa_app_doc" attrs="{'readonly': [('state', '!=','draft')]}" filename="upload_visit_visa_app_doc_file_name"/>
+                             <field name="upload_visit_visa_app_doc_file_name"  invisible="1"/>
+                            
+                        </group>
+                        <group>
+                            
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                    </group>
+             
+                    <!-- Family visit Visa Stop-->  
+                    <!-- Istiqdam Form start-->
+                    <group name="lt_istiqdam_form" attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}">
+                        <group>
+                            <field name="draft_istiqdam" attrs="{'readonly': [('draft_istiqdam', '!=',False)]}"/>
+                            
+                        </group>
+                        <group>
+                            <field name="updated_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                    </group>
+        
+                    <!-- Istiqdam Form Stop-->
+                    
+               
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <field name="service_request" invisible="1"/>
+                <group>
+                    <field name="family_visa_doc_uploaded" readonly="1" invisible="1"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group  
+                       attrs="{'invisible': ['|',('service_request', '!=', 'family_resident'),('first_govt_employee_id','=',False)]}">
+                    <group>
+                        <field name="fee_receipt_doc" string="Fee Receipt Document"
+                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               filename="fee_receipt_doc_file_name"/>
+                        <field name="fee_receipt_doc_file_name" invisible="1"/>
+                        <field name="fee_receipt_doc_ref"
+                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                              
+                    </group>
+                    <group>
+                        <field name="upload_attested_application_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_attested_application_file_name"/>
+                        <field name="upload_attested_application_file_name"  invisible="1"/>
+                        <field name="attested_application_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                        
+                        
+                    </group>
+                    
+                </group>
+                <group attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}" string="Family Visa Letter">
+                                <group>
+                                    <field name="upload_family_visa_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visa_letter_doc_file_name"/>
+                                     <field name="upload_family_visa_letter_doc_file_name"  invisible="1"/>
+                                    <field name="family_visa_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                            </group>
+                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam form (family visa letter)">
+                                <group>
+                                    <field name="upload_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
+                                     <field name="upload_istiqdam_form_doc_file_name"  invisible="1"/>
+                                    <field name="istiqdam_form_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                            </group>
+                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
+                                <group>
+                                    <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
+                                     <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
+                                    <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                            </group>
+                <group attrs="{'invisible': [('service_request', '!=', 'family_visit_visa')]}" string="Family visit visa">
+                                <group>
+                                    <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
+                                     <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
+                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                </group>
+                            </group>                        
+                
+            </xpath>
+            <xpath expr="//notebook[@id='service_pricing_notebook']" position="inside">
+                <field name="visit_visa_note" readonly="1" attrs="{'invisible': [('service_request', '!=','family_visit_visa')]}"/>
+            </xpath>
+
+
+        </field>
+    </record>
+</odoo>
