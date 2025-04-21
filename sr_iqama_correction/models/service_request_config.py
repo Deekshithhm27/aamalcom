@@ -5,11 +5,10 @@ class ServiceEnquiry(models.Model):
 
     service_request = fields.Selection(
         selection_add=[
-            ('bank_loan','Bank Loan Letter')
+            ('iqama_correction', 'Iqama Correction')
         ],
         string="Service Requests",
         store=True,
         copy=False,
-        ondelete={'bank_loan': 'cascade'}
-
+        ondelete={'iqama_correction': 'cascade'}
     )

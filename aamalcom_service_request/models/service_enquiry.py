@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'passport_info_update': 'cascade'}
     )
     
     upload_new_passport_doc = fields.Binary(string="New Passport Document")

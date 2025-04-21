@@ -11,7 +11,13 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Request",
         store=True,
-        copy=False
+        copy=False,
+        ondelete={
+            'family_resident': 'cascade',
+            'family_visa_letter': 'cascade',
+            'istiqdam_form': 'cascade',
+            'family_visit_visa': 'cascade',
+        }
     )
 
     upload_attested_application_doc = fields.Binary(string="Upload Attested Application")
