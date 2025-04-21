@@ -1009,9 +1009,6 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'new_ev':
                 if line.state in ('submitted'):
                     if not line.proof_of_request_ref:
-                        if not line.sponsor_number_ev:
-                            raise ValidationError("Kindly Update Sponsor Number for Issuance of Doc")
-                    if not line.proof_of_request_ref:
                         if not line.upload_proof_of_request_doc:
                             raise ValidationError("Kindly Update Proof of Request Document")
                     if not line.proof_of_request_ref:
