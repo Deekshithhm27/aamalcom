@@ -288,7 +288,6 @@ class ServiceEnquiry(models.Model):
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
     upload_issuance_doc_file_name = fields.Char(string="Upload Issuance of Visa Document")
     issuance_doc_ref = fields.Char(string="Ref No.*")
-    sponsor_number_ev = fields.Char(string="Sponsor No.*")
     upload_proof_of_request_doc = fields.Binary(string="Upload Proof of Request Document")
     upload_proof_of_request_file_name = fields.Char(string="Proof of Request  Document")
     proof_of_request_ref = fields.Char(string="Ref No.*")

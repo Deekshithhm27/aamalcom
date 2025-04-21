@@ -12,9 +12,6 @@
 
 
                     <button id="open_assign_employee_wizard_one" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
-                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary"
-                    attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')), ('assigned_govt_emp_one','=',False)]}"
-                    groups="visa_process.group_service_request_manager"/>
 
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','submitted','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
@@ -864,7 +861,7 @@
                                     <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}" filename="upload_issuance_doc_file_name"/>
                                      <field name="upload_issuance_doc_file_name"  invisible="1"/>
                                     <field name="issuance_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
-                                    <field name="sponsor_number_ev" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
+            
                                 </group>
                                 <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('new_ev')),('second_govt_employee_id','=',False)]}">
                                     <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
