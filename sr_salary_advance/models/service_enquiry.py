@@ -8,7 +8,7 @@ class ServiceEnquiry(models.Model):
         selection_add=[('salary_advance', 'Salary Advance')],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'salary_advance': 'cascade'}
     )
     invoiced_ref = fields.Many2one(
         'account.move',
