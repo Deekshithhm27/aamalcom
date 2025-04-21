@@ -273,7 +273,7 @@ class ServiceEnquiry(models.Model):
     # EV Fields
     old_ev_id = fields.Many2one(
         'service.enquiry',
-        string="Old EV",
+        string="Ref SR-EV",
         domain="[('service_request', '=', 'new_ev'), ('state', '=', 'done'),('employee_id','=',employee_id)]",
        
     )
