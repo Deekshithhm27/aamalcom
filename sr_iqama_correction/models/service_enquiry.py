@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'iqama_correction': 'cascade'}
     )
 
     type_of_request = fields.Char(string="Type of Request")
