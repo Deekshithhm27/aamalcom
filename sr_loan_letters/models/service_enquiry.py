@@ -12,7 +12,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'bank_loan': 'cascade'}
     )
 
     upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
