@@ -9,7 +9,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'visitor_report': 'cascade'}
     )
     upload_visitor_report_doc = fields.Binary(string="Upload Visitor Report")
     upload_visitor_report_doc_file_name = fields.Char(string="Visitor Report")
