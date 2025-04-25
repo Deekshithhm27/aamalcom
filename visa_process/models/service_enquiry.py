@@ -1536,18 +1536,18 @@ class ServiceEnquiry(models.Model):
             else:
                 line.doc_uploaded = False
             if line.upload_jawazat_doc:
-                line.second_level_doc_uploaded = True    
+                line.doc_uploaded = True    
             if line.upload_sponsorship_doc and line.muqeem_print_doc:
-                line.final_doc_uploaded = True
+                line.doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
-                line.final_doc_uploaded = True
+                line.doc_uploaded = True
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
-                line.final_doc_uploaded = True
+                line.doc_uploaded = True
             elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
-                line.final_doc_uploaded = True
+                line.doc_uploaded = True
             else:
-                line.final_doc_uploaded = False
+                line.doc_uploaded = False
 
     @api.onchange('service_request')
     def update_doc_updated(self):
