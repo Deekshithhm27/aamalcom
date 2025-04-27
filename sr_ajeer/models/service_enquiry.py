@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'ajeer_permit': 'cascade'}
         
     )
     ajeer_permit_type = fields.Selection([('secondement_permit', 'Secondment Ajeer Permit'),('contracting_permit', 'Ajeer Contracting Permit')], string="Ajeer Permit Type", store=True)
