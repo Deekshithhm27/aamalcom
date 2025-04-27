@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'dependents_ere': 'cascade'}
     )
 
     def action_dependents_ere_submit_for_approval(self):
