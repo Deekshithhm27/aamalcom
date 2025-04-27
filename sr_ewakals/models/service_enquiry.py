@@ -11,7 +11,11 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Request",
         store=True,
-        copy=False
+        copy=False,ondelete={
+            'e_wakala': 'cascade',
+            'cancelled_e_wakala': 'cascade'
+            
+        }
     )
 
     block_visa_doc = fields.Binary(string="Block Visa Document")
