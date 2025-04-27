@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'cancel_ere': 'cascade'}
     )
     
     service_request_id = fields.Many2one('service.enquiry',order='create_date DESC', )
