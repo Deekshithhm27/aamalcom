@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_account_move_line_client_spoc,access_account_move_line_client_spoc,account.model_account_move_line,visa_process.group_service_request_client_spoc,1,0,0,0
+access_account_move_client_spoc,access_account_move_client_spoc,account.model_account_move,visa_process.group_service_request_client_spoc,1,0,0,0
 
 access_draft_account_move_user,access_draft_account_move_user,model_draft_account_move,base.group_user,1,1,1,1
 access_draft_account_move_line_user,access_draft_account_move_line_user,model_draft_account_move_line,base.group_user,1,1,1,1
