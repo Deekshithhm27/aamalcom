@@ -237,6 +237,20 @@
             </xpath>
         </field>
     </record>
+    <record id="hr_employee_custom_tree_view" model="ir.ui.view">
+    <field name="name">hr.employee.custom.tree</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//tree" position="replace">
+            <tree string="Employee List - Customized">
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="iqama_no"/>
+            </tree>
+        </xpath>
+    </field>
+    </record>
 
 
     <!-- Overriding records -->
