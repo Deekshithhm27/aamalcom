@@ -10,13 +10,7 @@ class ServiceEnquiry(models.Model):
         store=True,
         copy=False,ondelete={'salary_advance': 'cascade'}
     )
-    invoiced_ref = fields.Many2one(
-        'account.move',
-        string="Invoiced Ref No.*",
-        store=True,
-        tracking=True,
-        copy=False
-    )
+    
     salary_advance_amount = fields.Float("Salary Advance Amount")
     nature_of_advance = fields.Text("Nature of Advance")
     invoiced = fields.Boolean(string="Invoiced")
@@ -27,6 +21,16 @@ class ServiceEnquiry(models.Model):
         compute="_compute_hide_unpaid_reason",
         store=False
     )
+    invoiced_ref = fields.Many2one(
+    'account.move',
+    string="Invoiced Ref No.*",
+    domain="[('partner_id', '=', client_id)]",
+    store=True,
+    tracking=True,
+    copy=False
+    )
+
+
     
     @api.model
     def update_pricing(self):  

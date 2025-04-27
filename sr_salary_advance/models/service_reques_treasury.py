@@ -22,6 +22,7 @@ class InheritedServiceRequestTreasury(models.Model):
             if line.service_request_id.service_request == 'salary_advance':
                 # Upload confirmation_doc to the service.request model
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
+                line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
 
                 # Only modify dynamic_action_status if the state is 'approved'
                 if line.service_request_id.state == 'approved':
