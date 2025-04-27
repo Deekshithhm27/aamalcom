@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'courier_charges': 'cascade'}
     )
     
     upload_courier_doc = fields.Binary(string="Document To Be Couried")
