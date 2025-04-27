@@ -53,9 +53,8 @@ class ServiceEnquiry(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
-
     dynamic_action_status = fields.Char('Action Status', readonly=True, default='Draft')
-
+    submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
 
@@ -500,6 +499,14 @@ class ServiceEnquiry(models.Model):
             is_fin_group = fin_group in record.env.user.groups_id
             is_req_admin = req_admin in record.env.user.groups_id
             record.is_service_request_client_spoc = is_client_spoc or is_aamalcom_spoc or is_fin_group or is_req_admin
+
+    def action_doc_uplaod_submit(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                record.state = 'approved'
+                record.submit_clicked = True
 
             
 
@@ -1325,7 +1332,7 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
@@ -1340,8 +1347,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Gosi Letter Document")
                 if line.upload_bank_letter_doc and not line.bank_letter_ref:
                     raise ValidationError("Kindly Update Reference Number for Bank letter")
-                if line.fee_receipt_doc and not line.fee_receipt_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Fee Receipt")
                 if line.upload_vehicle_lease_doc and not line.vehicle_lease_ref:
                     raise ValidationError("Kindly Update Reference Number for Vehicle lease letter")
                 if line.upload_apartment_lease_doc and not line.apartment_lease_ref:
@@ -1485,7 +1490,7 @@ class ServiceEnquiry(models.Model):
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
-        'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','fee_receipt_doc','upload_vehicle_lease_doc',
+        'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
@@ -1497,10 +1502,12 @@ class ServiceEnquiry(models.Model):
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
             line.upload_salary_certificate_doc or \
-            line.upload_employment_contract_doc or\
-            line.upload_bilingual_salary_certificate_doc or \
+            line.upload_employment_contract_doc or \
+            line.upload_bilingual_salary_certificate_doc or  \
             line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
+            # elif line.upload_enjaz_doc and line.e_wakala_doc:
+            #     line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
                 line.doc_uploaded = True
             elif line.upload_bank_letter_doc and line.fee_receipt_doc:
@@ -1523,8 +1530,6 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             elif line.upload_cultural_letter_doc and line.fee_receipt_doc:
                 line.doc_uploaded = True
-            elif line.upload_contract_letter_doc and line.fee_receipt_doc:
-                line.doc_uploaded = True
             elif line.upload_car_loan_doc and line.fee_receipt_doc:
                 line.doc_uploaded = True
             elif line.upload_bank_limit_upgrading_letter_doc and line.fee_receipt_doc:
@@ -1536,18 +1541,19 @@ class ServiceEnquiry(models.Model):
             else:
                 line.doc_uploaded = False
             if line.upload_jawazat_doc:
-                line.doc_uploaded = True    
+                line.second_level_doc_uploaded = True
+                
             if line.upload_sponsorship_doc and line.muqeem_print_doc:
-                line.doc_uploaded = True
+                line.final_doc_uploaded = True
             elif line.upload_enjaz_doc and line.e_wakala_doc:
-                line.doc_uploaded = True
+                line.final_doc_uploaded = True
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
-                line.doc_uploaded = True
+                line.final_doc_uploaded = True
             elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
-                line.doc_uploaded = True
+                line.final_doc_uploaded = True
             else:
-                line.doc_uploaded = False
+                line.final_doc_uploaded = False
 
     @api.onchange('service_request')
     def update_doc_updated(self):
