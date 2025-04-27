@@ -1,0 +1,85 @@
+<odoo>
+    <data>
+        <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+            <field name="name">service.enquiry.form.request.ll</field>
+            <field name="model">service.enquiry</field>
+            <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" 
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'ajeer_permit')]}"/>
+                    <button name="action_ajeer_permit_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('service_request', '!=', 'ajeer_permit'), ('upload_screenshot_of_saddad', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_process_complete"
+                        string="Process Complete"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': ['|','|', ('service_request', '!=', 'ajeer_permit'), ('state', '!=', 'approved'),('upload_ajeer_permit_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>     
+                </xpath>
+
+                <xpath expr="//notebook[@id='notebook_four']" position="before">
+                    <group name="ajeer_permit" attrs="{'invisible': [('service_request', '!=', 'ajeer_permit')]}">
+                        <group string="Fees to be paid by">
+                        <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                        <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                        <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                        <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>  
+                    </group>
+                    <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
+                        <field name="billable_to_client_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="billable_to_aamalcom_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                    </group>
+                </xpath> 
+                
+                <xpath expr="//notebook[@id='notebook_four']" position="before">
+                    <group name="ajeer_permit" attrs="{'invisible': [('service_request', '!=', 'ajeer_permit')]}">
+                        <group>
+                            <field name="ajeer_permit_type" widget="boolean_button" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="employment_duration" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                         <!-- Location Headline Section -->
+                        <group string="Location">
+                            <field name="mol_number" />
+                            <field name="cr_number" />
+                        </group>
+                    </group>
+                </xpath>
+                <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group attrs="{'invisible': ['|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False)]}">
+                    <group>
+                        <field name="upload_screenshot_of_saddad" 
+                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               filename="upload_screenshot_of_saddad_file_name"/>
+                        <field name="upload_screenshot_of_saddad_file_name" invisible="1"/>
+                        <field name="saddad_number"
+                               attrs="{'readonly': [('state', '!=','submitted')]}"/>    
+                    </group>
+                    <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'ajeer_permit'), ('state', 'in', ('draft', 'submitted'))]}">
+                        <group attrs="{'invisible': [('self_pay', '!=',True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name"  invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                        </group>
+                        <group attrs="{'invisible': [('self_pay', '=',True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name"  invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': ['|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False),'|',('state','=','approved')]}">
+                        <field name="upload_ajeer_permit_doc" 
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}"
+                               filename="upload_ajeer_permit_doc_file_name"/>
+                        <field name="upload_ajeer_permit_doc_file_name" invisible="1"/>
+                        <field name="ajeer_permit_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}"/>    
+                    </group>
+                </group>
+            </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
