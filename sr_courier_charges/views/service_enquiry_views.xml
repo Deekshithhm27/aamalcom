@@ -1,0 +1,108 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'courier_charges')]}"/>
+                <button name="action_submit_for_review_courier" string="Submit for Review" type="object" class="oe_highlight"
+    attrs="{'invisible': [
+        '|',
+            ('state', 'not in', ('submitted', 'approved', 'done')),
+        '|',
+            ('upload_courier_proof_doc', '=', False),
+            '|',
+                ('submit_clicked', '=', True),
+                '|',
+                    ('service_enquiry_pricing_ids', '=', False),
+                    ('service_enquiry_pricing_ids', '=', [])
+    ]}"
+/>
+
+                <button name="action_approve" string="Approve" type="object" class="btn-primary"
+                attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('service_request', '!=', 'courier_charges'),'|', ('upload_courier_proof_doc', '=', False), ('courier_ref', '=', False)]}"
+                groups="visa_process.group_service_request_manager"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'),('courier_payment_doc', '=', False),'|',('service_request', '!=', 'courier_charges')]}"/>
+            </xpath>   
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group attrs="{'invisible': [('service_request', '!=', 'courier_charges')]}">
+                    <!-- Documents Upload Section -->
+                    <group string="Documents Upload">
+                        <field name="upload_courier_doc" attrs="{'readonly': [('state', '!=','draft')]}"
+                        filename="upload_courier_file_name"/>
+                        <field name="upload_courier_file_name" invisible="1"/> 
+                        <field name="submit_clicked" invisible="1"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group attrs="{'invisible': [('service_request', '!=', 'courier_charges')]}">
+                    <group string="Fees to be paid by">
+                        <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                        <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                        <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                        <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>  
+                    </group>
+                    <!-- Billing Details -->
+                    <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
+                        <field name="billable_to_client_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="billable_to_aamalcom_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>  
+            </xpath>
+
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group attrs="{'invisible': ['|', ('service_request', '!=', 'courier_charges'), ('first_govt_employee_id', '=', False)]}">
+                    <group>
+                        <field name="upload_courier_proof_doc" 
+                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               filename="upload_courier_proof_doc_file_name"/>
+                        <field name="upload_courier_proof_doc_file_name" invisible="1"/>
+                        <field name="courier_ref"
+                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                        <field name="tracking_id" 
+                               attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" /> 
+                            
+                    </group>
+                </group>    
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group string="Payment Confirmation Documents"
+                           attrs="{'invisible': ['|', ('service_request', '!=', 'courier_charges'), ('state', 'not in', ('approved', 'done')),'|',('first_govt_employee_id', '=', False)]}">
+                        <group>
+                             <field name="courier_payment_doc" 
+                               attrs="{'readonly': [('state', '!=','approved')]}"
+                               filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                            <field name="payment_doc_ref"
+                                  attrs="{'readonly': [('state', '!=','approved')]}"/> 
+                            <field name="courier_amount" 
+                                />   
+                        </group>
+                    </group>
+            </xpath> 
+            <xpath expr="//field[@name='request_note']" position="before">
+                <notebook groups="visa_process.group_service_request_employee" attrs="{'invisible': [('service_request', '!=', 'courier_charges')]}">
+                    <page string="Service Pricing">
+                        <field name="service_enquiry_pricing_ids" attrs="{'readonly': [('state', '!=', 'submitted')]}">
+                            <tree editable="bottom">
+                                <field name="service_enquiry_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="remarks" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>             
+        </field>
+    </record>
+</odoo>
