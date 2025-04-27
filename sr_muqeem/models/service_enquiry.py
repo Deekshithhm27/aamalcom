@@ -38,6 +38,12 @@ class ServiceEnquiry(models.Model):
                 if line.is_resubmission:
                     line.dynamic_action_status = 'Ticket resubmitted, Employee needs to be assigned by PM'
         return result
+        
+    @api.onchange('service_request')
+    def _onchange_service_request(self):
+        for line in self:
+            if line.service_request == 'muqeem_dropout':
+                line.aamalcom_pay = True
 
     def action_valid_ere(self):
         """Change status to 'ERE is Valid' and notify the client SPOC"""
