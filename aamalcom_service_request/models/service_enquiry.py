@@ -10,7 +10,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Requests",
         store=True,
-        copy=False
+        copy=False,ondelete={'passport_info_update': 'cascade'}
     )
     
     upload_new_passport_doc = fields.Binary(string="New Passport Document")
@@ -77,7 +77,7 @@ class ServiceEnquiry(models.Model):
                 if record.fee_receipt_doc and not record.fee_receipt_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if record.upload_muqeem_doc and not record.muqeem_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Confirmation Document")
+                    raise ValidationError("Kindly Update Reference Number for Muqeem Document")
                 invoice_line_ids = []
                 for line in record.service_enquiry_pricing_ids:
                     invoice_line_ids.append((0, 0, {

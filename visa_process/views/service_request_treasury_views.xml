@@ -33,6 +33,7 @@
                            <field name="client_id" readonly="1"/>
                            <field name="employment_duration" readonly="1"/>
                            <field name="total_amount" readonly="1"/>
+                           <field name="issue_date" attrs="{'readonly': [('state', '=','done')],'invisible': [('state','=','draft')]}"/>
                         </group>
                     </group>
                     <notebook attrs="{'invisible':[('state','=','draft')]}">
@@ -40,6 +41,7 @@
                     		<group>
                     			<group string="Confirmation Document">
                     				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="confirmation_doc_ref" attrs="{'readonly':[('state','=','done')]}"/>
                     			</group>
                                 <group string="Bank Receipts">
                                     <field name="bank_receipt_one" attrs="{'readonly':[('state','=','done')]}"/>

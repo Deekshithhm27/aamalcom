@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <odoo>
-
+    <!--Treasury record smart button action-->
+    <record id="action_service_request_treasury_account_move" model="ir.actions.act_window">
+        <field name="name">Service Request Details</field>
+        <field name="res_model">service.request.treasury</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.service_request_treasury_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.service_request_treasury_form')})]"/>
+        <field name="domain">[('account_move_id', '=', active_id)]</field>
+    </record>
     <record id="view_move_form_inherit" model="ir.ui.view">
         <field name="name">account.move.form</field>
         <field name="model">account.move</field>
@@ -80,15 +89,6 @@
 
         </field>
     </record>
-    <!--Treasury record smart button action-->
-    <record id="action_service_request_treasury_account_move" model="ir.actions.act_window">
-        <field name="name">Service Request Details</field>
-        <field name="res_model">service.request.treasury</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_ids" eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.service_request_treasury_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.service_request_treasury_form')})]"/>
-        <field name="domain">[('account_move_id', '=', active_id)]</field>
-    </record>
+    
 
 </odoo>

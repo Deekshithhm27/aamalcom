@@ -53,9 +53,8 @@ class ServiceEnquiry(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
-
     dynamic_action_status = fields.Char('Action Status', readonly=True, default='Draft')
-
+    submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
 
@@ -153,6 +152,9 @@ class ServiceEnquiry(models.Model):
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
+    reupload_hr_card = fields.Binary(string="Updated HR Card Document")
+    reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
+    rehr_card_ref = fields.Char(string="Ref No.*")
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
     upload_jawazat_doc_file_name = fields.Char(string="Jawazat Document")
     jawazat_doc_ref = fields.Char(string="Ref No.*")
@@ -268,7 +270,12 @@ class ServiceEnquiry(models.Model):
 
 
     # EV Fields
-
+    old_ev_id = fields.Many2one(
+        'service.enquiry',
+        string="Ref SR-EV",
+        domain="[('service_request', '=', 'new_ev'), ('state', '=', 'done'),('employee_id','=',employee_id)]",
+       
+    )
     visa_country_id = fields.Many2one('res.country',string="Visa issuing country")
     visa_state_id = fields.Char(string="Visa issuing city")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion")
@@ -493,6 +500,14 @@ class ServiceEnquiry(models.Model):
             is_req_admin = req_admin in record.env.user.groups_id
             record.is_service_request_client_spoc = is_client_spoc or is_aamalcom_spoc or is_fin_group or is_req_admin
 
+    def action_doc_uplaod_submit(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                record.state = 'approved'
+                record.submit_clicked = True
+
             
 
     # @api.onchange('emp_visa_id')
@@ -551,324 +566,167 @@ class ServiceEnquiry(models.Model):
     #Code to rename the filename 
 
     @api.model
-
     def create(self, vals):
-
         if 'upload_car_loan_doc' in vals:
-
             employee_id = vals.get('employee_id')  # Assuming employee_id is a Many2one field
-
             iqama_no = vals.get('iqama_no', 'UnknownIqama')
-
             service_request_config_id = vals.get('service_request_config_id')  # Assuming service_request_config_id is a Many2one field
-
             employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
-
             service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
-
             vals['upload_car_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CarLoanDoc.pdf"
-
         if 'upload_issuance_doc' in vals:
-
             vals['upload_issuance_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_Issuance of Visa Document.pdf"
         if 'upload_proof_of_request_doc' in vals:
-
             vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"
-        
         if 'upload_payment_doc' in vals:
-
             vals['upload_payment_doc_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDocument.pdf"
-
         if 'upload_enjaz_doc' in vals:
-
             vals['upload_enjaz_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EnjazDocument.pdf"
-
         if 'e_wakala_doc' in vals:
-
             vals['e_wakala_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EwakalaDocument.pdf"
-
         if 'upload_hr_card' in vals:
-
             vals['upload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_HRCard.pdf"
-
+        if 'reupload_hr_card' in vals:
+            vals['reupload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_UpdatedHRDoc.pdf"
         if 'residance_doc' in vals:
-
             vals['residance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ResidancePermitDoc.pdf"
-
         if 'muqeem_print_doc' in vals:
-
             vals['muqeem_print_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemPrintDocument.pdf"
-
         if 'upload_upgrade_insurance_doc' in vals:
-
             vals['upload_upgrade_insurance_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_InsuranceupgardeDocument.pdf"
-
         if 'upload_iqama_card_no_doc' in vals:
-
             vals['upload_iqama_card_no_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
-
         if 'upload_iqama_card_doc' in vals:
-
             vals['upload_iqama_card_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
-
         if 'upload_qiwa_doc' in vals:
-
-            vals['upload_qiwa_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
-
+            vals['upload_qiwa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
         if 'upload_gosi_doc' in vals:
-
             vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
-
         if 'profession_change_doc' in vals:
-
             vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
-
         if 'profession_change_final_doc_' in vals:
-
             vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
-
         if 'upload_salary_certificate_doc' in vals:
-
             vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
-
         if 'upload_bank_letter_doc' in vals:
-
             vals['upload_bank_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLetterDoc.pdf"
-
         if 'upload_vehicle_lease_doc' in vals:
-
             vals['upload_vehicle_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForVehicleLeaseDoc.pdf"
-
         if 'upload_apartment_lease_doc' in vals:
             vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
-
         if 'upload_employment_contract_doc' in vals:
             vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
-
         if 'upload_cultural_letter_doc' in vals:
-
             vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
-
         if 'upload_sec_doc' in vals:
-
             vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDoc.pdf"
-
         if 'upload_emp_secondment_or_cub_contra_ltr_doc' in vals:
-
             vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
-
         if 'upload_rental_agreement_doc' in vals:
-
             vals['upload_rental_agreement_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_RentalAgreementLetterDoc.pdf"
-
         if 'upload_exception_letter_doc' in vals:
-
             vals['upload_exception_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExceptionLetterDoc.pdf"
-
         if 'upload_attestation_waiver_letter_doc' in vals:
-
             vals['upload_attestation_waiver_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestationWaiverLetterDoc.pdf"
-
         if 'upload_embassy_letter_doc' in vals:
-
             vals['upload_embassy_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmbassyLetterDoc.pdf"
-
         if 'upload_istiqdam_letter_doc' in vals:
-
             vals['upload_istiqdam_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamLetterDoc.pdf"
-
         if 'upload_bilingual_salary_certificate_doc' in vals:
-
             vals['upload_bilingual_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BillinugalSalaryCertifiacte.pdf"
-
         if 'upload_contract_letter_doc' in vals:
-
             vals['upload_contract_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ContractLetterDoc.pdf"
-
         if 'upload_bank_account_opening_letter_doc' in vals:
-
             vals['upload_bank_account_opening_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankAccountOpeningLetterDoc.pdf"
-
         if 'upload_bank_limit_upgrading_letter_doc' in vals:
-
             vals['upload_bank_limit_upgrading_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLimitUpgradingLetterDoc.pdf"
-
         if 'transfer_confirmation_doc' in vals:
-
             vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
-
         if 'upload_jawazat_doc' in vals:
-
             vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
-
         if 'upload_sponsorship_doc' in vals:
-
             vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
-
-        
-
         return super(ServiceEnquiry, self).create(vals)
 
-
-
     def write(self, vals):
-
         for record in self:
-
             employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
-
             iqama_no = record.iqama_no or 'UnknownIqama'
-
             service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
-
             if 'upload_car_loan_doc' in vals:
-
                 vals['upload_car_loan_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CarLoanDoc.pdf"
-
             if 'upload_issuance_doc' in vals:
-
                 vals['upload_issuance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IssuanceDocument.pdf"
             if 'upload_proof_of_request_doc' in vals:
-
                 vals['upload_proof_of_request_file_name']=f"{employee_name}_{iqama_no}_{service_request_name}_ProofOfRequestDoc.pdf"    
-
             if 'upload_payment_doc' in vals:
-
                 vals['upload_payment_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDocument.pdf"
-
             if 'upload_enjaz_doc' in vals:
-
                 vals['upload_enjaz_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EnjazDocument.pdf"
-
             if 'e_wakala_doc' in vals:
-
                 vals['e_wakala_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EwakalaDocument.pdf"
-
             if 'upload_hr_card' in vals:
-
                 vals['upload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_HR Card.pdf"
-
+            if 'reupload_hr_card' in vals:
+                vals['reupload_hr_card_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_UpdatedHRDoc.pdf"
             if 'residance_doc' in vals:
-
                 vals['residance_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ResidancePermitDoc.pdf"
-
             if 'muqeem_print_doc' in vals:
-
                 vals['muqeem_print_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemPrintDocument.pdf"
-
             if 'upload_upgrade_insurance_doc' in vals:
-
                 vals['upload_upgrade_insurance_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_Insurance upgarde Document.pdf"
-
             if 'upload_iqama_card_no_doc' in vals:
-
                 vals['upload_iqama_card_no_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
-
             if 'upload_iqama_card_doc' in vals:
-
                 vals['upload_iqama_card_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IqamaCard.pdf"
-
             if 'upload_qiwa_doc' in vals:
-
-                vals['upload_qiwa_doc_field_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
-
+                vals['upload_qiwa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_QiwaDocument.pdf"
             if 'upload_gosi_doc' in vals:
-
                 vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
-
             if 'profession_change_doc' in vals:
-
                 vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
-
             if 'profession_change_final_doc_' in vals:
-
                 vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
-
             if 'upload_salary_certificate_doc' in vals:
-
                 vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
-
             if 'upload_bank_letter_doc' in vals:
-
                 vals['upload_bank_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLetterDoc.pdf"
-
             if 'upload_vehicle_lease_doc' in vals:
-
                 vals['upload_vehicle_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForVehicleLeaseDoc.pdf"
-
             if 'upload_apartment_lease_doc' in vals:
-
                 vals['upload_apartment_lease_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_LetterForAppartmentLeaseDoc.pdf"
-
-            
-
-
             if 'upload_employment_contract_doc' in vals:
-
                 vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
-
             if 'upload_cultural_letter_doc' in vals:
-
                 vals['upload_cultural_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_CulturalLetter.pdf"
-
             if 'upload_sec_doc' in vals:
-
                 vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDoc.pdf"
-
             if 'upload_emp_secondment_or_cub_contra_ltr_doc' in vals:
-
                 vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
-
-            
-
             if 'upload_rental_agreement_doc' in vals:
-
                 vals['upload_rental_agreement_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_RentalAgreementLetterDoc.pdf"
-
             if 'upload_exception_letter_doc' in vals:
-
                 vals['upload_exception_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExceptionLetterDoc.pdf"
-
             if 'upload_attestation_waiver_letter_doc' in vals:
-
                 vals['upload_attestation_waiver_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestationWaiverLetterDoc.pdf"
-
             if 'upload_embassy_letter_doc' in vals:
-
                 vals['upload_embassy_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmbassyLetterDoc.pdf"
-
             if 'upload_istiqdam_letter_doc' in vals:
-
                 vals['upload_istiqdam_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamLetterDoc.pdf"
-
             if 'upload_bilingual_salary_certificate_doc' in vals:
-
                 vals['upload_bilingual_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BillinugalSalaryCertifiacte.pdf"
-
             if 'upload_contract_letter_doc' in vals:
-
                 vals['upload_contract_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ContractLetterDoc.pdf"
-
             if 'upload_bank_account_opening_letter_doc' in vals:
-
                 vals['upload_bank_account_opening_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankAccountOpeningLetterDoc.pdf"
-
             if 'upload_bank_limit_upgrading_letter_doc' in vals:
-
                 vals['upload_bank_limit_upgrading_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_BankLimitUpgradingLetterDoc.pdf"
-
             if 'transfer_confirmation_doc' in vals:
-
                 vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
-
             if 'upload_jawazat_doc' in vals:
-
                 vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
-
             if 'upload_sponsorship_doc' in vals:
-
                 vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
-
         return super(ServiceEnquiry, self).write(vals)
 
     @api.depends('state', 'service_request_config_id')
@@ -1157,8 +1015,9 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request == 'new_ev':
                 if line.state in ('submitted'):
-                    if not line.upload_proof_of_request_doc:
-                        raise ValidationError("Kindly Update Proof of Request Document")
+                    if not line.proof_of_request_ref:
+                        if not line.upload_proof_of_request_doc:
+                            raise ValidationError("Kindly Update Proof of Request Document")
                     if not line.proof_of_request_ref:
                         raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
             line.state = 'waiting_op_approval'
@@ -1441,7 +1300,15 @@ class ServiceEnquiry(models.Model):
                             line.employee_id.sudo().write({'sponsor_id': line.sponsor_id})
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
-            if line.service_request in ('hr_card','iqama_renewal'):
+            if line.service_request =='hr_card':
+                if line.state in ('payment_done','approved'):
+                    if not line.rehr_card_ref:
+                        raise ValidationError("Kindly Update Reference Number for Updated HR Document")
+                    if not line.residance_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
+                    if not line.muqeem_print_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+            if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
@@ -1494,7 +1361,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
                 if line.upload_car_loan_doc and not line.car_loan_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Car loan letter")
-                
                 if line.upload_rental_agreement_doc and not line.rental_agreement_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Rental agreement letter")
                 if line.upload_exception_letter_doc and not line.exception_letter_doc_ref:
@@ -1513,8 +1379,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Bank limit upgrading letter")
                 if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Final exit issuance document")
-
-
             if line.service_request == 'prof_change_qiwa':
                 if not line.prof_change_final_ref:
                     raise ValidationError("Kindly Update Reference Number for Profession Change Document")
@@ -1529,12 +1393,10 @@ class ServiceEnquiry(models.Model):
                             line.state = 'done'
                             line.req_completion_date = fields.Datetime.now()
                             line.dynamic_action_status = f"Process Completed"
-
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
                     line.dynamic_action_status = f"Process Completed"
-
             else:
                 line.state = 'done'
                 line.dynamic_action_status = f"Process Completed"
@@ -1634,21 +1496,47 @@ class ServiceEnquiry(models.Model):
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
+        'upload_sec_doc','residance_doc','reupload_hr_card','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
-            line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
-            line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
-            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc  or line.upload_rental_agreement_doc or \
-            line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
-            line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
+            line.upload_salary_certificate_doc or \
+            line.upload_employment_contract_doc or \
+            line.upload_bilingual_salary_certificate_doc or  \
+            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_vehicle_lease_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_apartment_lease_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_emp_secondment_or_cub_contra_ltr_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_sec_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_rental_agreement_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_istiqdam_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_exception_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_embassy_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_cultural_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_car_loan_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_limit_upgrading_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_account_opening_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_attestation_waiver_letter_doc and line.fee_receipt_doc:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
@@ -1661,6 +1549,8 @@ class ServiceEnquiry(models.Model):
                 line.final_doc_uploaded = True
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
+                line.final_doc_uploaded = True
+            elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False
@@ -1677,10 +1567,6 @@ class ServiceEnquiry(models.Model):
         for line in self:
             employee_id = self.env['service.request.treasury'].search([('service_request_id', '=', line.id)])
             line.total_treasury_requests = len(employee_id)
-
-
-
-
 
 
 class ServiceEnquiryPricingLine(models.Model):

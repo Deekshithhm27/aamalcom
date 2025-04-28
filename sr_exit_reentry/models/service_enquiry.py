@@ -13,7 +13,7 @@ class ServiceEnquiry(models.Model):
         ],
         string="Service Request",
         store=True,
-        copy=False
+        copy=False,ondelete={'exit_reentry_issuance_ext': 'cascade','exit_reentry_issuance': 'cascade'}
     )
 
 

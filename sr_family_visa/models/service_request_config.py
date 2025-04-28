@@ -16,7 +16,7 @@ class ServiceEnquiry(models.Model):
         ondelete={
             'family_resident': 'cascade',
             'family_visa_letter': 'cascade',
+            'istiqdam_form': 'cascade',
             'family_visit_visa': 'cascade',
-            'istiqdam_form': 'cascade'
         }
     )
