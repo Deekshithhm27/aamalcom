@@ -8,7 +8,7 @@ class ServiceEnquiry(models.Model):
         selection_add=[('general_query', 'General Query')],
         string="Service Requests",
         store=True,
-        copy=False,
+        copy=False,ondelete={'general_query': 'cascade'}
     )
 
     upload_doc = fields.Binary(string="Upload Attached Document")
