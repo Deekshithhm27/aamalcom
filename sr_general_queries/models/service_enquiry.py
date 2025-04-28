@@ -5,7 +5,7 @@ class ServiceEnquiry(models.Model):
     _inherit = "service.enquiry"
 
     service_request = fields.Selection(
-        selection_add=[('general_query','General Query')],
+        selection_add=[('general_query', 'General Query')],
         string="Service Requests",
         store=True,
         copy=False,ondelete={'general_query': 'cascade'}
@@ -14,19 +14,17 @@ class ServiceEnquiry(models.Model):
     upload_doc = fields.Binary(string="Upload Attached Document")
     upload_doc_file_name = fields.Char(string="Document")
     doc_ref = fields.Char(string="Ref No.*")
+    
+    assigned_department_id = fields.Many2one('hr.department', string="Assigned Employee Department")  # New Field
 
     def open_assign_employee_wizard(self):
         """ Extend the original method to add 'general_query' condition. """
-
-        # Call the original method first
         res = super(ServiceEnquiry, self).open_assign_employee_wizard()
 
         for line in self:
             if line.service_request == 'general_query':
-                all_departments = self.env['hr.department'].search([]).ids  # Get all department IDs
+                all_departments = self.env['hr.department'].search([]).ids
                 department_ids = [(4, dept_id) for dept_id in all_departments]
-                
-                # Modify the context with new department_ids
                 res['context'].update({'default_department_ids': department_ids})
 
         return res

@@ -5,4 +5,16 @@
         <field name="res_model">service.enquiry</field>
         <field name="icon">fa-tasks</field>
     </record>
+
+    <record id="mail_activity_type_local_transfer_action" model="mail.activity.type">
+        <field name="name">Local Transfer Activity</field>
+        <field name="res_model">local.transfer</field>
+        <field name="icon">fa-tasks</field>
+    </record>
+
+    <record id="mail_activity_type_employment_visa_action" model="mail.activity.type">
+        <field name="name">Employment Visa Activity</field>
+        <field name="res_model">employment.visa</field>
+        <field name="icon">fa-tasks</field>
+    </record>
 </odoo>

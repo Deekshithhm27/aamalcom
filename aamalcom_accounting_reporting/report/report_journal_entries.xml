@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="inherit_report_journal_entries" inherit_id="accounting_pdf_reports.report_journal_entries">
+        <xpath expr="//div[@class='row'][last()]" position="after">
+            <div class="row" style="margin-top: 20px; font-size: 12px;">
+                <div style="border-top: 1px solid black; padding-top: 5px;">
+                    <span>Printed Date/Time: </span>
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M:%S')"/>
+                    <br/>
+                    <span>Printed By: </span>
+                    <span t-esc="user.name"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

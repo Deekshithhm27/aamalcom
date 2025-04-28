@@ -28,6 +28,7 @@ class ServiceRequestTreasury(models.Model):
     client_parent_id = fields.Many2one('res.partner',string="Client")
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
+    issue_date = fields.Date(string='Issue Date')
 
     state = fields.Selection([('draft','Draft'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
@@ -71,6 +72,8 @@ class ServiceRequestTreasury(models.Model):
                 line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. First govt employee need to be assigned by PM"
             if line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. Second govt employee need to be assigned by PM"
+            if not line.issue_date:
+                raise ValidationError("Kindly update issue date before upload confirmation")
 
 
 
