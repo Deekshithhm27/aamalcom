@@ -23,6 +23,9 @@ class ServiceEnquiry(models.Model):
     is_confirmation_given_to_client = fields.Boolean(default=False)
     is_action_iqama_uploaded = fields.Boolean(default=False)
 
+    state = fields.Selection(
+        selection_add=[('confirmation_doc_submitted', 'Confirmation Doc Submitted')], ondelete={'confirmation_doc_submitted': 'cascade'})
+
     @api.onchange('service_request')
     def _onchange_service_request(self):
         for line in self:
@@ -59,8 +62,8 @@ class ServiceEnquiry(models.Model):
                 if line.confirmation_doc and not line.confirmation_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation Document")
 
-                line.dynamic_action_status = 'Payment confirmation uploaded, Upload of Iqama scanned copy is pending.'
-                line.state = 'payment_done'
+                line.dynamic_action_status = 'Confirmation documents uploaded, Upload of Iqama scanned copy is pending.'
+                line.state = 'confirmation_doc_submitted'
 
     def action_iqama_uploaded(self):
         for line in self:
