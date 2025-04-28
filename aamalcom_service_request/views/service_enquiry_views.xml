@@ -10,7 +10,25 @@
             </xpath> 
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="attributes">
                 <attribute name="attrs">{'invisible': [('service_request', '=', 'passport_info_update')]}</attribute>
-            </xpath>     
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                    <group name="visitor_report_update_fees_bill"
+                       attrs="{'invisible': [('service_request', '!=', 'passport_info_update')]}">
+                    <group string="Fees to be paid by">
+                        <field name="aamalcom_pay_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                    </group>
+                    <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
+                        <field name="billable_to_client_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="billable_to_aamalcom_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>
+                </xpath>     
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                 <group name="passport_info_update" attrs="{'invisible': [('service_request', '!=', 'passport_info_update')]}">
                     <!-- Documents Upload Section -->
@@ -27,12 +45,11 @@
                 <group  
                        attrs="{'invisible': ['|',('service_request', '!=', 'passport_info_update'),('first_govt_employee_id','=',False)]}">
                     <group>
-                        <field name="fee_receipt_doc" string="Fee Receipt Document"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                        <field name="fee_receipt_doc" string="Fee Receipt Document" attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}"
                                filename="fee_receipt_doc_file_name"/>
                         <field name="fee_receipt_doc_file_name" invisible="1"/>
                         <field name="fee_receipt_doc_ref"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                               attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}"/>
                         <field name="muqeem_points" 
                                        attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />       
                     </group>

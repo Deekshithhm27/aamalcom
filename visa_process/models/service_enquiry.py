@@ -53,9 +53,8 @@ class ServiceEnquiry(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
-
     dynamic_action_status = fields.Char('Action Status', readonly=True, default='Draft')
-
+    submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
 
@@ -500,6 +499,14 @@ class ServiceEnquiry(models.Model):
             is_fin_group = fin_group in record.env.user.groups_id
             is_req_admin = req_admin in record.env.user.groups_id
             record.is_service_request_client_spoc = is_client_spoc or is_aamalcom_spoc or is_fin_group or is_req_admin
+
+    def action_doc_uplaod_submit(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                record.state = 'approved'
+                record.submit_clicked = True
 
             
 
@@ -1494,16 +1501,42 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
-            line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
-            line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
-            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc  or line.upload_rental_agreement_doc or \
-            line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
-            line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc or line.upload_issuance_doc:
+            line.upload_salary_certificate_doc or \
+            line.upload_employment_contract_doc or \
+            line.upload_bilingual_salary_certificate_doc or  \
+            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_vehicle_lease_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_apartment_lease_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_emp_secondment_or_cub_contra_ltr_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_sec_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_rental_agreement_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_istiqdam_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_exception_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_embassy_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_cultural_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_car_loan_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_limit_upgrading_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_bank_account_opening_letter_doc and line.fee_receipt_doc:
+                line.doc_uploaded = True
+            elif line.upload_attestation_waiver_letter_doc and line.fee_receipt_doc:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False

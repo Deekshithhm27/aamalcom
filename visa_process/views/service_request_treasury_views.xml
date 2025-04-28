@@ -40,6 +40,7 @@
                     		<group>
                     			<group string="Confirmation Document">
                     				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="confirmation_doc_ref" attrs="{'readonly':[('state','=','done')]}"/>
                     			</group>
                                 <group string="Bank Receipts">
                                     <field name="bank_receipt_one" attrs="{'readonly':[('state','=','done')]}"/>

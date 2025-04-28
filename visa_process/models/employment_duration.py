@@ -11,13 +11,14 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class EmploymentDuration(models.Model):
 
     _name = 'employment.duration'
-    _order = 'name asc'
+    _order = 'sequence asc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
     _description = "Employment Duration"
 
     name = fields.Char(string="Duration",help="3 months, 6 months, 1 year etc..",tracking=True)
     active = fields.Boolean('Active', default=True)
+    sequence = fields.Integer(string="Sequence", default=1)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
 

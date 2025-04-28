@@ -14,8 +14,13 @@ class ServiceEnquiry(models.Model):
     upload_visitor_report_doc = fields.Binary(string="Upload Visitor Report")
     upload_visitor_report_doc_file_name = fields.Char(string="Visitor Report")
     visitor_report_doc_ref = fields.Char(string="Ref No.*")
-    
     muqeem_points = fields.Integer(string="Points")
+
+    @api.onchange('service_request')
+    def _onchange_service_request(self):
+        for line in self:
+            if line.service_request == 'visitor_report':
+                line.aamalcom_pay = True
 
     @api.model
     def create(self, vals):

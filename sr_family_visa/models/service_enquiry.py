@@ -100,6 +100,15 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         super(ServiceEnquiry, self).action_submit()
 
+    def action_submit_payment_confirmation(self):
+        result = super(ServiceEnquiry, self).action_submit_payment_confirmation()
+        for record in self:
+            if record.service_request == 'family_visit_visa':
+                if record.upload_payment_doc and not record.payment_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
+                record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
+        return result
+
     @api.depends('service_request')
     def auto_fill_istiqdam_form(self):
         for line in self:

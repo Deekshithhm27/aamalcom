@@ -45,10 +45,12 @@
                         <group attrs="{'invisible': [('self_pay', '!=', True)]}">
                             <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                             <field name="upload_payment_doc_file_name" invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                         </group>
                         <group attrs="{'invisible': [('self_pay', '=', True)]}">
                             <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                             <field name="upload_payment_doc_file_name" invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                         </group>
                     </group>
                 </xpath>
@@ -72,11 +74,8 @@
                         </page>
                     </notebook>
                 </xpath>
-
-
-
                 <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev'))]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','exit_reentry_issuance_ext','dependents_ere'))]}</attribute>
                 </xpath>
                 <xpath expr="//button[@id='open_assign_employee_wizard_five']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', 'not in', ('payment_done', 'approved')), '|', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)]}</attribute>

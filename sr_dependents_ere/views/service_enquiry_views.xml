@@ -1,0 +1,51 @@
+<odoo>
+    <data>
+        <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+            <field name="name">service.enquiry.form.request.ll</field>
+            <field name="model">service.enquiry</field>
+            <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'dependents_ere')]}"/>
+                    <button name="action_process_complete"
+                        string="Process Complete"
+                        type="object" class="btn-primary"
+                        attrs="{'invisible': ['|','|', ('service_request', '!=', 'dependents_ere'), ('state', '!=', 'approved'),('upload_payment_doc', '=', False)]}" 
+                        groups="visa_process.group_service_request_finance_manager"/>
+                    <button name="action_dependents_ere_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('service_request', '!=', 'dependents_ere')]}" groups="visa_process.group_service_request_manager"/>    
+                </xpath>
+
+                <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                    <group name="dependents_ere" attrs="{'invisible': [('service_request', '!=', 'dependents_ere')]}">
+                        <group>
+                            <field name="upload_iqama_card_no_doc" string="Iqama Card" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="iqama_card_no_ref" string="Iqama Number" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="exit_type" attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
+                            <field name="employment_duration" attrs="{'readonly': [('state', '!=','draft')]}"
+                               options="{'no_create': True, 'no_edit': True}"/>
+                        </group> 
+                    </group>
+                    <group string="Payment Confirmation Documents" 
+                        attrs="{'invisible': ['|', ('service_request', '!=', 'dependents_ere'), ('state', 'in', ('draft', 'submitted'))]}">
+                        <group attrs="{'invisible': [('self_pay', '!=', True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('self_pay', '=', True)]}">
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@id='open_assign_employee_wizard_five']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', 'not in', ('payment_done', 'approved')), '|', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)]}</attribute>
+                </xpath>
+                
+            </field>
+        </record>
+    </data>
+</odoo>
