@@ -15,6 +15,7 @@ It allows for streamlined and automated email communications for various use cas
     'website': 'http://www.aamalcom.com',
     'depends': ['base', 'mail', 'visa_process'],
     'data': [
+        'data/mail_template.xml',
         'security/ir.model.access.csv',
         'views/service_enquiry_views.xml',
     ],

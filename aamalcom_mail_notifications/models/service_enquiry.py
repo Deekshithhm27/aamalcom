@@ -24,36 +24,10 @@ class ServiceEnquiry(models.Model):
                 # Clear the message_text field after sending the message
                 record.message_text = False
 
-                # if client sent mail to pm else sent to client
+                # client sent mail to pm else sent to client
                 if self.env.user.partner_id.id == record.client_id.id:
-                    mail_values = {
-                        'subject': f'Service Enquiry Communication - {record.name}',
-                        'email_from': self.env.user.user_id.partner_id.email,
-                        'email_to': record.client_id.company_spoc_id.user_id.email,
-                        'body_html': f"""
-                                <div>
-                                    <p>Dear Sir,</p>
-                                    <p>You have received a message from {self.env.user.name}.:</p>
-                                    <p>"{message}"</p>
-                                </div>
-                                <div>Thank You</div>
-                            """,
-                    }
-                    mail_id = self.env['mail.mail'].sudo().create(mail_values)
-                    mail_id.sudo().send()
+                    template = self.env.ref('aamalcom_mail_notifications.mail_template_service_enquiry_client_sent')
+                    template.with_context(custom_message=message).send_mail(record.id, force_send=True)
                 else:
-                    mail_values = {
-                        'subject': f'Service Enquiry Communication - {record.name}',
-                        'email_from': self.env.user.user_id.partner_id.email,
-                        'email_to': record.client_id.email,
-                        'body_html': f"""
-                                <div>
-                                    <p>Dear Sir,</p>
-                                    <p>You have received a message from {self.env.user.name}.:</p>
-                                    <p>"{message}"</p>
-                                </div>
-                                <div>Thank You</div>
-                            """,
-                    }
-                    mail_id = self.env['mail.mail'].sudo().create(mail_values)
-                    mail_id.sudo().send()
+                    template = self.env.ref('aamalcom_mail_notifications.mail_template_service_enquiry_internal_sent')
+                    template.with_context(custom_message=message).send_mail(record.id, force_send=True)
