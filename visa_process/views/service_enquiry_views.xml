@@ -410,19 +410,13 @@
 
                     <!-- Salary Certificate Stop-->
                     <!-- #################################################### -->
-                    <!-- Bank Letter start-->
-                    <!-- <group name="lt_bank_letter" attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}">
-                        <group>
-                            <field name="bank_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="purpose" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group> -->
-
-                    <!-- Bank Letter Stop-->
+                   <group name="lt_bank_letter" attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}">
+                         
+                         <group>
+                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                             <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                     </group> 
+                     </group>
                     <!-- Letter for Vehicle Lease start-->
                     <group name="lt_vehicle_lease" attrs="{'invisible': [('service_request', '!=', 'vehicle_lease')]}">
                         <group>
@@ -638,6 +632,11 @@
                                      <field name="upload_sec_doc_file_name"  invisible="1"/>
                                     <field name="sec_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'ins_class_upgrade')]}" string="Medical Health insurance class upgrade">
                                 <group>
@@ -681,6 +680,11 @@
                                      <field name="upload_bank_letter_doc_file_name"  invisible="1"/>
                                     <field name="bank_letter_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'vehicle_lease')]}" string="Vehicle Lease">
                                 <group>
@@ -688,6 +692,11 @@
                                      <field name="upload_vehicle_lease_doc_file_name"  invisible="1"/>
                                     <field name="vehicle_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'apartment_lease')]}" string="Apartment Lease">
                                 <group>
@@ -695,6 +704,11 @@
                                      <field name="upload_apartment_lease_doc_file_name"  invisible="1"/>
                                     <field name="apartment_lease_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
 
@@ -711,6 +725,11 @@
                                      <field name="upload_cultural_letter_doc_file_name"  invisible="1"/>
                                     <field name="cultural_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee secondment / Subcontract Document">
@@ -719,6 +738,11 @@
                                      <field name="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"  invisible="1"/>
                                     <field name="emp_secondment_ltr_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'car_loan')]}" string="Car Loan">
                                 <group>
@@ -726,6 +750,11 @@
                                      <field name="upload_car_loan_doc_file_name"  invisible="1"/>
                                     <field name="car_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <!--  -->
                              <group attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}" string="Rental Agreement">
@@ -734,6 +763,11 @@
                                      <field name="upload_rental_agreement_doc_file_name"  invisible="1"/>
                                     <field name="rental_agreement_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'exception_letter')]}" string="Exception Letter">
                                 <group>
@@ -741,6 +775,11 @@
                                      <field name="upload_exception_letter_doc_file_name"  invisible="1"/>
                                     <field name="exception_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': ['|',('service_request', '!=', 'attestation_waiver_letter'),('first_govt_employee_id','=',False)]}" string="Attestation Waiver Document">
                                 <group>
@@ -748,6 +787,11 @@
                                      <field name="upload_attestation_waiver_letter_doc_file_name"  invisible="1"/>
                                     <field name="attestation_waiver_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'embassy_letter')]}" string="Embassy Letter">
@@ -756,6 +800,11 @@
                                      <field name="upload_embassy_letter_doc_file_name"  invisible="1"/>
                                     <field name="embassy_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
@@ -764,6 +813,11 @@
                                      <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
                                     <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
                             <!-- <group attrs="{'invisible': [('service_request', '!=', 'sce_letter')]}" string="SCE Letter">
@@ -785,6 +839,11 @@
                                      <field name="upload_contract_letter_doc_file_name"  invisible="1"/>
                                     <field name="contract_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_account_opening_letter')]}" string="Bank Acc Opening Letter">
                                 <group>
@@ -792,6 +851,11 @@
                                      <field name="upload_bank_account_opening_letter_doc_file_name"  invisible="1"/>
                                     <field name="bank_account_opening_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'bank_limit_upgrading_letter')]}" string="Bank Limit Upgrading Letter">
@@ -800,6 +864,11 @@
                                      <field name="upload_bank_limit_upgrading_letter_doc_file_name"  invisible="1"/>
                                     <field name="bank_limit_upgrading_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
+                                <group>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                      <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'final_exit_issuance')]}" string="Final Exit Issuance">
                                 <group>
