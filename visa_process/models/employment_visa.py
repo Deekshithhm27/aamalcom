@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class EmploymentVisa(models.Model):
     _name = 'employment.visa'
     _order = 'id desc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _description = "EV Request"
 

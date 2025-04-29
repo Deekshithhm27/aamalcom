@@ -11,7 +11,6 @@
     'category': 'Accounting',
     'depends': ['account', 'accounting_pdf_reports'],
     'data': [
-        'report/report_financial.xml',
         'report/report_journal_entries.xml',
     ],
     'installable': True,
