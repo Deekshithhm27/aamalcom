@@ -10,7 +10,7 @@
                 <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight"
                         attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', '!=', 'iqama_print')]}"
                         groups="visa_process.group_service_request_client_spoc"/>
-                <button name="action_payment_confirmation_uploaded" string="Payment Confirmation Uploaded" type="object"
+                <button name="action_payment_confirmation_uploaded" string="Confirmation Uploaded" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_print'),'|',('fee_receipt_doc', '=',False),'|',('confirmation_doc', '=',False),('service_enquiry_pricing_ids', '=', []),]}"
                         groups="visa_process.group_service_request_employee"/>
@@ -20,10 +20,10 @@
                         groups="visa_process.group_service_request_employee"/>
                 <button name="action_confirmation_given_to_client" string="Confirmation given to client" type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('state','!=','confirmation_doc_submitted'),'|',('service_request', '!=', 'iqama_print'),'|',('iqama_scanned_doc', '=', False),'|',('is_action_iqama_uploaded', '=', False),('is_confirmation_given_to_client', '=', True)]}"
+                        attrs="{'invisible': ['|',('state','!=','iqama_state_updated'),'|',('service_request', '!=', 'iqama_print'),'|',('iqama_scanned_doc', '=', False),'|',('is_action_iqama_uploaded', '=', False),('is_confirmation_given_to_client', '=', True)]}"
                         groups="visa_process.group_service_request_manager"/>
                 <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"
-                        attrs="{'invisible': ['|',('state','!=','confirmation_doc_submitted'),'|',('service_request', '!=', 'iqama_print'),('is_confirmation_given_to_client', '=', False),]}"
+                        attrs="{'invisible': ['|',('state','!=','iqama_state_updated'),'|',('service_request', '!=', 'iqama_print'),('is_confirmation_given_to_client', '=', False),]}"
                         groups="visa_process.group_service_request_manager"/>
                 <field name="is_confirmation_given_to_client" invisible="1"/>
                 <field name="is_action_iqama_uploaded" invisible="1"/>
