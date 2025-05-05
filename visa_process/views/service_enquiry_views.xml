@@ -1027,10 +1027,6 @@
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="service_request"/>
-                <field name="service_request_type"/>
-                <field name="approver_id"/>
-                <field name="approver_user_id" invisible="1"/>
-                <field name="state" optional="show"/>
                 <field name="dynamic_action_status"/>
             </tree>
         </field>
