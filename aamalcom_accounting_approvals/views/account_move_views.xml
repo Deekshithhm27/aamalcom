@@ -82,7 +82,7 @@
                         attrs="{'invisible': ['|',('move_type', '!=', 'out_refund'),('state','!=','approved')]}"/>
                 <button name="action_finance_approved" string="Approve" type="object" class="oe_highlight"
                         attrs="{'invisible': ['|',('move_type', '!=', 'out_refund'),('state','!=','draft')]}"
-                        groups="account.group_account_user"/>
+                        groups="account.group_account_user, !visa_process.group_service_request_finance_manager"/>
             </xpath>
             <!--From treasury confirmation document is uploaded and passed to the upload_payment_doc field in the Vendor invoice other screen.-->
             <xpath expr="//field[@name='to_check']" position="after">

@@ -8,8 +8,8 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     state = fields.Selection(selection=[('draft', 'Draft'),
-            ('approval_needed', 'Waiting for Approval'),
-            ('manager_approval', 'Waiting for Manager Approval'),
+            ('approval_needed', 'Waiting for OM Approval'),
+            ('manager_approval', 'Waiting for GM Approval'),
             ('approved', 'Approved'),
             ('waiting_fin_approval', 'Waiting FM Approval'),
             ('posted', 'Posted'),
