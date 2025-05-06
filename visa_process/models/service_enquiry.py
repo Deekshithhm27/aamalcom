@@ -506,6 +506,7 @@ class ServiceEnquiry(models.Model):
                 if record.reupload_hr_card and not record.rehr_card_ref:
                     raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
                 record.state = 'approved'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM needs to assign 2nd Govt Employee"
                 record.submit_clicked = True
 
             

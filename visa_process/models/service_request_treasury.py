@@ -62,7 +62,8 @@ class ServiceRequestTreasury(models.Model):
                 # Upload confirmation_doc to the service.request model
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
                 line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
-                line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. First govt employee need to upload Documents"
+                if line.service_request_id.state == 'approved':
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
             if line.service_request_id.service_request == 'transfer_req':
                 line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by second govt employee"
             if line.service_request_id.service_request == 'prof_change_qiwa' and (line.service_request_id.billable_to_aamalcom == True or line.service_request_id.billable_to_client == True):
