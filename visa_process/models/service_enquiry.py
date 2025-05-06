@@ -1229,8 +1229,6 @@ class ServiceEnquiry(models.Model):
                 if line.state=='approved' and line.aamalcom_pay == True and (line.billable_to_aamalcom == True or line.billable_to_client == True):
                     if not line.issuance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
-                    if not line.payment_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
             line.assign_govt_emp_two = True
             line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
             # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
@@ -1256,7 +1254,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request in ('new_ev','hr_card','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
                 if not line.payment_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
+                    raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
 
             # if line.service_request =='prof_change_qiwa':
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'

@@ -57,6 +57,7 @@ class ServiceRequestTreasury(models.Model):
                 raise ValidationError("Kindly Update Reference Number for Confirmation  Document")
             if line.service_request_id.service_request == 'new_ev' or line.service_request_id.service_request == 'transfer_req':
                 line.service_request_id.write({'upload_payment_doc':line.confirmation_doc})
+                line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
             line.state = 'done'
             if line.service_request_id.service_request == 'hr_card':
                 # Upload confirmation_doc to the service.request model
