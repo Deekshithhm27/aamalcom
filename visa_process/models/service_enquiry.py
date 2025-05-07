@@ -459,14 +459,14 @@ class ServiceEnquiry(models.Model):
         compute='_compute_is_service_request_client_spoc'
     )
 
-    
-
     #used for readonly attribute - should be entered only pm 
     is_project_manager = fields.Boolean(
         compute='_compute_is_project_manager',
         store=False,
         default=False
     )
+
+    refuse_reason = fields.Text(string="Refuse Reason", readonly=True,tracking=True)
 
     @api.depends('is_project_manager')
     def _compute_is_project_manager(self):
