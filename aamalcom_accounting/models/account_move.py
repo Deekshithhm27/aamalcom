@@ -40,6 +40,9 @@ class AccountMove(models.Model):
 
     move_particulars_ids = fields.One2many('account.move.particulars','invoice_id',string="Particulars")
     amount_total_in_words = fields.Char(string="Total Amount In Words", compute="_compute_amount_total_in_words")
+    # fields for alert : customer already has a same-amount invoice in the same month
+    latest_existing_invoice_id = fields.Boolean(string='Has Duplicate Invoice', copy=False)
+    latest_existing_invoice_name = fields.Char(string='Latest Duplicate Invoice', readonly=True, copy=False)
 
     @api.model
     def create(self, vals):
@@ -93,6 +96,31 @@ class AccountMove(models.Model):
                 order.amount_total_in_words = amount_in_words
             else:
                 order.amount_total_in_words = "Currency not defined"
+
+    # Warn when a customer already has a same-amount invoice in the same month
+    @api.onchange('partner_id', 'invoice_line_ids', 'invoice_date')
+    def _onchange_customer_amount_date(self):
+        for record in self:
+            record.latest_existing_invoice_id = False
+            record.latest_existing_invoice_name = False
+            # Checking account.move is invoice
+            if self.move_type == 'out_invoice':
+                # Get first and last date of the month
+                month_start = record.date.replace(day=1)
+                month_end = (month_start.replace(month=month_start.month % 12 + 1, day=1) - timedelta(days=1))
+
+                # Search for duplicate records within the same month
+                domain = [
+                    ('partner_id', '=', record.partner_id.id),
+                    ('amount_untaxed', '=', record.amount_untaxed),
+                    ('invoice_date', '>=', month_start),
+                    ('invoice_date', '<=', month_end),
+                ]
+                existing = self.env['account.move'].search(domain, limit=1)
+
+                if existing:
+                    record.latest_existing_invoice_id = True
+                    record.latest_existing_invoice_name = existing.draft_invoice_sequence
 
     
 
