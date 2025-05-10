@@ -43,53 +43,30 @@ class ServiceEnquiry(models.Model):
         else:
             return {'domain': {'employment_duration': []}}
     
-    @api.model_create_multi
+    
+    @api.model
     def create(self, vals):
-        result = super(ServiceEnquiry, self).create(vals)
-        if 'upload_confirmation_of_exit_reentry' in vals:
-            employee_id = vals.get('employee_id')
-            iqama_no = vals.get('iqama_no', 'UnknownIqama')
-            service_request_config_id = vals.get(
-                'service_request_config_id')
-            employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
-            service_request_name = self.env['service.request.config'].browse(
-                service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
-
-            vals[
-                'upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-
-        if 'upload_exit_reentry_visa' in vals:
-            employee_id = vals.get('employee_id')
-            iqama_no = vals.get('iqama_no', 'UnknownIqama')
-            service_request_config_id = vals.get(
-                'service_request_config_id')
-            employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
-            service_request_name = self.env['service.request.config'].browse(
-                service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
-
-            vals[
-                'upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-        return result
+        employee_id = vals.get('employee_id')
+        iqama_no = vals.get('iqama_no', 'UnknownIqama')
+        service_request_config_id = vals.get('service_request_config_id')
+        employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
+        service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
+        if 'confirmation_doc' in vals:
+            vals['confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ConfirmationDoc.pdf"
+        if 'ere_extension_doc' in vals:
+            vals['ere_extension_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EREExtendVisaDoc.pdf"
+        return super(ServiceEnquiry, self).create(vals)
 
     def write(self, vals):
-        result = super(ServiceEnquiry, self).write(vals)
         for record in self:
-            if 'upload_confirmation_of_exit_reentry' in vals:
-                employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
-                iqama_no = record.iqama_no or 'UnknownIqama'
-                service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
-
-                vals[
-                    'upload_confirmation_of_exit_reentry_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-
-            if 'upload_exit_reentry_visa' in vals:
-                employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
-                iqama_no = record.iqama_no or 'UnknownIqama'
-                service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
-
-                vals[
-                    'upload_exit_reentry_visa_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ExitRe-Entry.pdf"
-        return result
+            employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
+            iqama_no = record.iqama_no or 'UnknownIqama'
+            service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
+            if 'confirmation_doc' in vals:
+                vals['confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ConfirmationDoc.pdf"
+            if 'ere_extension_doc' in vals:
+                vals['ere_extension_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EREExtendVisaDoc.pdf"
+        return super(ServiceEnquiry, self).write(vals)
 
     @api.onchange('upload_confirmation_of_exit_reentry', 'upload_exit_reentry_visa', 'confirmation_doc',
                   'ere_extension_doc', )
@@ -167,8 +144,10 @@ class ServiceEnquiry(models.Model):
                         'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
                     )
             if record.service_request == 'exit_reentry_issuance_ext' and record.aamalcom_pay:
-                record.dynamic_action_status = "Submit for approval by PM"
+                record.state = 'waiting_op_approval'
+                record.dynamic_action_status = "Waiting  for approval by OH"
         return result
+
     # Initial flow of exit_reentry_issuance
     def action_submit_initiate(self):
         result = super(ServiceEnquiry, self).action_submit()
