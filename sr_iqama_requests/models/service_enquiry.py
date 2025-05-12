@@ -24,7 +24,9 @@ class ServiceEnquiry(models.Model):
     is_action_iqama_uploaded = fields.Boolean(default=False)
 
     state = fields.Selection(
-        selection_add=[('confirmation_doc_submitted', 'Confirmation Doc Submitted')], ondelete={'confirmation_doc_submitted': 'cascade'})
+        selection_add=[('confirmation_doc_submitted', 'Confirmation Doc Submitted'),
+                       ('iqama_state_updated', 'Iqama State Updated')],
+        ondelete={'confirmation_doc_submitted': 'cascade', 'iqama_state_updated': 'cascade'})
 
     @api.onchange('service_request')
     def _onchange_service_request(self):
@@ -72,6 +74,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Iqama Scanned Document")
                 line.dynamic_action_status = 'Iqama scanned copy is uploaded, PM needs to sent confirmation to the client'
                 line.is_action_iqama_uploaded = True
+                line.state = 'iqama_state_updated'
 
     def action_confirmation_given_to_client(self):
         for line in self:

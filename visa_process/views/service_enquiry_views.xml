@@ -19,6 +19,7 @@
                     <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_two','=',False),('assigned_govt_emp_two','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
 
+
                     <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req','new_ev'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- Ev buttons -->
                     <button id="open_assign_employee_wizard_three" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
@@ -83,7 +84,41 @@
 
 
                     <!-- Issuance of new EV end -->
-
+                    <!-- Show Refuse Button only to specific users in each state - Start -->
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','submitted')]}"
+                            groups="visa_process.group_service_request_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': ['|',('state','!=','waiting_op_approval'),('service_request', '=', 'salary_advance')]}"
+                            groups="visa_process.group_service_request_operations_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': ['|',('state','!=','waiting_gm_approval'),('service_request', '=', 'salary_advance')]}"
+                            groups="visa_process.group_service_request_general_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','waiting_fin_approval')]}"
+                            groups="visa_process.group_service_request_finance_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','not in',('submitted','approved','client_approved'))]}"
+                            groups="visa_process.group_service_request_employee"/>
+                    <!-- Show Refuse Button only to specific users in each state - End -->
+                    <button name="action_submit" string="Re-Submit" type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('state', '!=', 'refuse'), ('service_request', '=', 'salary_advance')]}"
+                            groups="visa_process.group_service_request_client_spoc"/>
                 </header>
                 <field name="latest_existing_request_id" invisible="1"/>
                 <div groups="visa_process.group_service_request_client_spoc"
@@ -313,7 +348,7 @@
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
                                     <field name="upload_payment_doc" readonly="1" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    <field name="payment_doc_ref" readonly="1"/>
                                 </group>
                             </group>
 
@@ -961,7 +996,7 @@
                                 <group attrs="{'invisible': [('self_pay', '!=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    <field name="payment_doc_ref" readonly="1" force_save="1"/>
                                 </group>
                                 <group attrs="{'invisible': [('self_pay', '=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
@@ -1008,6 +1043,9 @@
                     </group>
                     <field name="request_note" placeholder="Query Details......"/>
                     <field name="note" readonly="1" attrs="{'invisible': [('service_request', 'not in',( 'iqama_card_req','prof_change_qiwa'))]}"/>
+                    <group>
+                    <field name="refuse_reason"/>
+                    </group>
                 </sheet>
                 <!-- additional fields -->
                 <field name="total_amount" invisible="1"/>
@@ -1027,10 +1065,6 @@
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="service_request"/>
-                <field name="service_request_type"/>
-                <field name="approver_id"/>
-                <field name="approver_user_id" invisible="1"/>
-                <field name="state" optional="show"/>
                 <field name="dynamic_action_status"/>
             </tree>
         </field>

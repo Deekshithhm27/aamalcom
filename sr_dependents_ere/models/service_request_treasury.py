@@ -19,8 +19,4 @@ class InheritedServiceRequestTreasury(models.Model):
                     # Set the specific dynamic action status for 'dependents_ere'
                     line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Process needs to be completed by PM."
 
-            # Ensure that other service requests don't get the 'dependents_ere' message
-            elif line.service_request_id.service_request not in ['dependents_ere']:
-                # Default dynamic action status for other service requests
-                if line.service_request_id.state == 'approved':
-                    line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee needs to be assigned by PM."
+            

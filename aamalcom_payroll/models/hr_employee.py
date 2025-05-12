@@ -38,6 +38,11 @@ class HrEmployee(models.Model):
         default=False
     )
     salary_note = fields.Char(tracking=True)
+    is_project_manager = fields.Boolean(
+        compute='_compute_is_project_manager',
+        store=False,
+        default=False
+    )
 
     @api.depends('is_salary_update')
     def _compute_salary_update(self):
@@ -87,6 +92,12 @@ class HrEmployee(models.Model):
     def update_salary_confirmation(self):
         for line in self:
             line.confirm_salary_bool = False
+
+    @api.depends('is_project_manager')
+    def _compute_is_project_manager(self):
+        for record in self:
+            # Check if the logged-in user belongs to the 'group_service_request_manager'
+            record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
 
 
 class EmpSalaryLines(models.Model):
