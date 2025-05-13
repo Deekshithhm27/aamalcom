@@ -29,19 +29,15 @@ class ServiceEnquiry(models.Model):
     tracking=True,
     copy=False
     )
-
-
-    
+ 
     @api.model
     def update_pricing(self):  
         super(ServiceEnquiry, self).update_pricing()  
-
         for record in self:
             if record.to_be_invoiced and record.service_request == 'salary_advance':
                 pricing_id = self.env['service.pricing'].search([
                     ('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
-
                 for p_line in pricing_id.pricing_line_ids:
                     if p_line.duration_id == record.employment_duration:
                         record.service_enquiry_pricing_ids.create({
@@ -52,7 +48,6 @@ class ServiceEnquiry(models.Model):
                             'amount': p_line.amount,
                             'remarks': p_line.remarks
                         })
-
                 if record.salary_advance_amount > 0:
                     record.service_enquiry_pricing_ids.create({
                         'name': 'Salary Advance',
@@ -83,6 +78,8 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Salary Advance Amount")
                 if not record.nature_of_advance:
                     raise ValidationError("Nature of Advance cannot be empty.")
+                if record.invoiced and not record.invoiced_ref:
+                    raise ValidationError("Select at least one Invoiced Reference Number")
                 if not record.invoiced and not record.to_be_invoiced:
                     raise ValidationError("Either 'Invoiced' or 'To be Invoiced' must be checked.")
 
