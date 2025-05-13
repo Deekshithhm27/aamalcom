@@ -112,6 +112,24 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
                 if not record.block_visa_doc:
                     raise ValidationError("Kindly Update Block Visa Document")
+                if not record.visa_gender:
+                    raise ValidationError("Kindly select anyone gender")
+                if not record.visa_country_id:
+                    raise ValidationError("Kindly select anyone Visa Issuing Country")
+                if not record.visa_stamping_city_id:
+                    raise ValidationError("Kindly select anyone Visa Stamping City")
+                if not record.profession:
+                    raise ValidationError("Kindly update profession")
+                if not record.visa_religion:
+                    raise ValidationError("Kindly select anyone Visa Religion")
+                if not record.letter_print_type_id:
+                    raise ValidationError("Kindly select anyone type")
+                if not record.no_of_visa:
+                    raise ValidationError("Kindly update Number of Visa")
+                if not record.agency_allocation:
+                    raise ValidationError("Kindly update agency allocation name")
+
+
             if record.service_request == 'cancelled_e_wakala':
                 if not record.attached_issued_visa_doc:
                     raise ValidationError("Kindly Update Issued Visa Document")
