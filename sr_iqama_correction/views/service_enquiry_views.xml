@@ -6,10 +6,9 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'iqama_correction')]}" groups="visa_process.group_service_request_client_spoc"/>
-                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', 
-                ('service_request', 'not in', 'iqama_correction'), '|', ('assigned_govt_emp_one', '!=', True), '|', ('upload_muqeem_doc', '=', False), '|', 
-                ('upload_muqeem_points_doc', '=', False), 
-                ('upload_correction_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+                
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',  ('state', '=', 'done'), '|', ('assigned_govt_emp_one', '=', False), '|', ('upload_correction_doc', '=', False), '|', ('upload_muqeem_doc', '=', False), '|', ('upload_muqeem_points_doc', '=', False),'|', ('service_enquiry_pricing_ids', '=', False), ('service_enquiry_pricing_ids', '=', []),'|',('service_request', 'not in', ['iqama_correction'])]}" groups="visa_process.group_service_request_employee"/>
+
             </xpath> 
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="attributes">
                 <attribute name="attrs">{'invisible': [('service_request', '=', 'iqama_correction')]}</attribute>
@@ -53,6 +52,23 @@
                     </group>
                 </group>  
             </xpath>
+            <xpath expr="//field[@name='request_note']" position="before">
+                <notebook groups="visa_process.group_service_request_employee" attrs="{'invisible': [('service_request', '!=', 'iqama_correction')]}">
+                    <page string="Service Pricing">
+                        <field name="service_enquiry_pricing_ids" attrs="{'readonly': [('state', '!=', 'submitted')]}">
+                            <tree editable="bottom">
+                                <field name="service_enquiry_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="remarks" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>  
             
         </field>
     </record>
