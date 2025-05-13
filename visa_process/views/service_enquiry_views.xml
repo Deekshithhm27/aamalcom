@@ -1071,6 +1071,7 @@
                 <field name="employee_id"/>
                 <field name="service_request"/>
                 <field name="dynamic_action_status"/>
+                <field name="create_date" string="Date and Time" />
             </tree>
         </field>
     </record>
