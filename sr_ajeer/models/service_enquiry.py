@@ -16,6 +16,7 @@ class ServiceEnquiry(models.Model):
     ajeer_permit_type = fields.Selection([('secondement_permit', 'Secondment Ajeer Permit'),('contracting_permit', 'Ajeer Contracting Permit')], string="Ajeer Permit Type", store=True)
     mol_number = fields.Char(string="MoL Number")
     cr_number = fields.Char(string="CR Number")
+    location = fields.Char(string="Location")
     saddad_number = fields.Char(string="Saddad Number")
     upload_screenshot_of_saddad = fields.Binary(string="Saddad Document")
     upload_screenshot_of_saddad_file_name=fields.Char(string="Saddad Document")

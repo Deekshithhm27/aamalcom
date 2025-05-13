@@ -41,9 +41,10 @@
                             <field name="employment_duration" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                          <!-- Location Headline Section -->
-                        <group string="Location">
+                        <group string="Details Required">
                             <field name="mol_number" />
                             <field name="cr_number" />
+                            <field name="location"/>
                         </group>
                     </group>
                 </xpath>
