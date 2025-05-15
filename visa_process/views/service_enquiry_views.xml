@@ -488,7 +488,7 @@
                     <!-- Employment Contract start-->
                     <group name="lt_employment_contract" attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}">
                         <group>
-                            <field name="old_ev_id" string="Reference EV" options="{'no_create': True, 'no_edit': True}"/>
+
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                         <group>
@@ -1072,6 +1072,8 @@
                 <field name="employee_id"/>
                 <field name="service_request"/>
                 <field name="dynamic_action_status"/>
+                <field name="approver_id"/>
+                <field name="approver_user_id" invisible="1"/>
                 <field name="create_date" string="Date and Time" />
             </tree>
         </field>
