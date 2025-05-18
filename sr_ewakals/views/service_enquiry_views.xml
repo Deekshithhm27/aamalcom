@@ -52,12 +52,24 @@
                 <group name="e_wakala" attrs="{'invisible': [('service_request', '!=', 'e_wakala')]}">
                 <group > 
                         <field name="ewakala_doc_uploaded" readonly="1" invisible="1"/>
-                        <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         <field name="block_visa_doc" attrs="{'readonly': [('state', '!=','draft')]}" filename="block_visa_doc_file_name"/>
+                        <field name="visa_gender"/>
+                        <field name="visa_country_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                        <field name="visa_stamping_city_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                        <field name="profession" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="visa_religion" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         <field name="block_visa_doc_file_name" invisible="1"/> 
                         <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
-                </group>
+                    <group>
+                            <field name="no_of_visa" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <!-- <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/> -->
+                            <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="hr_agency" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="coc_for_ewakala"/>
+                        </group>
+                    </group>
+                    
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside"> 
             <group  attrs="{'invisible': ['|',('service_request', '!=', 'e_wakala'),('first_govt_employee_id','=',False)]}">

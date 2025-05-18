@@ -55,27 +55,29 @@ class ServiceRequestTreasury(models.Model):
         for line in self:
             if line.confirmation_doc and not line.confirmation_doc_ref:
                 raise ValidationError("Kindly Update Reference Number for Confirmation  Document")
-            if line.service_request_id.service_request == 'new_ev' or line.service_request_id.service_request == 'transfer_req':
-                line.service_request_id.write({'upload_payment_doc':line.confirmation_doc})
-                line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
-            line.state = 'done'
-            if line.service_request_id.service_request == 'hr_card':
-                # Upload confirmation_doc to the service.request model
-                line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
-                line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
-                if line.service_request_id.state == 'approved':
-                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
-            if line.service_request_id.service_request == 'transfer_req':
-                line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by second govt employee"
-            if line.service_request_id.service_request == 'prof_change_qiwa' and (line.service_request_id.billable_to_aamalcom == True or line.service_request_id.billable_to_client == True):
-                if line.service_request_id.state =='approved':
-                    line.service_request_id.dynamic_action_status = f"Approved by Finance Manager. Process to be completed by first govt employee."
-            if line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
-                line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. First govt employee need to be assigned by PM"
-            if line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
-                line.service_request_id.dynamic_action_status = f"Service request approved by Finance Team. Second govt employee need to be assigned by PM"
             if not line.issue_date:
                 raise ValidationError("Kindly update issue date before upload confirmation")
+            # Upload documents for specific services
+            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card']:
+                line.service_request_id.write({
+                    'upload_payment_doc': line.confirmation_doc,
+                    'payment_doc_ref': line.confirmation_doc_ref
+                    })
+            line.state = 'done'
+            # Set dynamic_action_status based on conditions
+            if line.service_request_id.service_request == 'hr_card':
+                if line.service_request_id.state == 'approved':
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
+            elif line.service_request_id.service_request == 'transfer_req':
+                line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by second govt employee"
+            elif line.service_request_id.service_request == 'prof_change_qiwa' and (
+                line.service_request_id.billable_to_aamalcom or line.service_request_id.billable_to_client):
+                if line.service_request_id.state == 'approved':
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by first govt employee."
+            elif line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
+                line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Second govt employee need to be assigned by PM"
+            elif line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
+                line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
 
 
 
