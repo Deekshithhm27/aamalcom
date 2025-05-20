@@ -13,7 +13,7 @@
         'depends': [
         'base',
         'mail',
-        'visa_process',
+        'visa_process','aamalcom_service_request'
     ],
     'data': [
         'views/service_enquiry_views.xml',
