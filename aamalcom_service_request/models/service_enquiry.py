@@ -34,7 +34,7 @@ class ServiceEnquiry(models.Model):
             if record.muqeem_points:
                 base_cost = record.muqeem_points * 0.2
                 vat_cost = base_cost * 0.15
-                record.final_muqeem_cost = base_cost + vat_cost
+                record.final_muqeem_cost = round(total, 2)
     
     
     
