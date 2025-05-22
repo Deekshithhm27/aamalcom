@@ -467,18 +467,26 @@ class ServiceEnquiry(models.Model):
     )
 
     refuse_reason = fields.Text(string="Refuse Reason", readonly=True,tracking=True)
+    #used for  readonly attribute - should be entered by the first government employee
+    is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
 
-    @api.depends('is_project_manager')
+    is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
+
+    # @api.depends('is_client_spoc')
+    def _compute_is_client_spoc(self):
+        for record in self:
+            # Check if the user is in gov employee groups
+            record.is_client_spoc = self.env.user.has_group('visa_process.group_service_request_client_spoc')
+
+
+    # @api.depends('is_project_manager')
     def _compute_is_project_manager(self):
         for record in self:
             # Check if the logged-in user belongs to the 'group_service_request_manager'
             record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
 
-    #used for  readonly attribute - should be entered by the first government employee
-    is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
 
-
-    @api.depends('is_gov_employee')
+    # @api.depends('is_gov_employee')
     def _compute_is_gov_employee(self):
         for record in self:
             # Check if the user is in gov employee groups
