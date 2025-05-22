@@ -41,6 +41,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request == 'iqama_correction':
                 # Dynamic level based on state and assigned_govt_emp_two
+                department_ids = []
                 if line.state == 'submitted':
                     level = 'level1'
                 if line.state == 'payment_done' and not line.assigned_govt_emp_two:
