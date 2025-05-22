@@ -156,6 +156,11 @@
                         <field name="confirmation_doc_ref" string="Ref No.*"
                                attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
                                force_save="1"/>
+                        
+                        <field name="muqeem_points" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
+                        <field name="final_muqeem_cost" readonly="1"/>
+                         
                     </group>
                     <group>
                         <field name="ere_extension_doc" string="ERE Extend Visa"
@@ -165,6 +170,7 @@
                         <field name="ere_extension_doc_ref" string="Ref No.*"
                                attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
                                force_save="1"/>
+                        
                     </group>
                 </group>
             </xpath>

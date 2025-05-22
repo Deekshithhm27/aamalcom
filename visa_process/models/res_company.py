@@ -21,3 +21,8 @@ class ResCompany(models.Model):
     arabic_state = fields.Char('Arabic State')
     arabic_country = fields.Char('Arabic Country')
     arabic_zip = fields.Char('Arabic Zip')
+    company_spoc_id = fields.Many2one(
+    'hr.employee',
+    string="Project Manager",
+    domain="[('custom_employee_type','=','internal')]"
+)

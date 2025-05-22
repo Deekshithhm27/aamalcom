@@ -21,8 +21,23 @@ class ServiceEnquiry(models.Model):
     upload_muqeem_doc_file_name = fields.Char(string="Muqeem Document")
     muqeem_doc_ref = fields.Char(string="Ref No.*")
     muqeem_points = fields.Integer(string="Points")
+    final_muqeem_cost = fields.Monetary(
+    string="Final Muqeem Points Cost (with VAT)",
+    currency_field='currency_id',
+    compute='_compute_final_muqeem_cost',
+    store=True,
+    readonly=True
+    )
+    @api.depends('muqeem_points')
+    def _compute_final_muqeem_cost(self):
+        for record in self:
+            if record.muqeem_points:
+                base_cost = record.muqeem_points * 0.2
+                vat_cost = base_cost * 0.15
+                record.final_muqeem_cost = round(total, 2)
     
-
+    
+    
     @api.model
     def create(self, vals):
         """Handles file naming conventions while creating a record."""
@@ -55,7 +70,7 @@ class ServiceEnquiry(models.Model):
                 vals['fee_receipt_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FeeReceiptDoc.pdf"
             if 'upload_muqeem_doc' in vals:
                 vals['upload_muqeem_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemDoc.pdf"
-        return super(ServiceEnquiry, self).write(vals)    
+        return super(ServiceEnquiry, self).write(vals) 
 
     def action_submit(self):
         """Validation checks before submitting the service request."""
@@ -69,7 +84,7 @@ class ServiceEnquiry(models.Model):
                 spoc_name = self.env.user.company_spoc_id.name if self.env.user.company_spoc_id else 'Unknown SPOC'
                 line.dynamic_action_status = _(f"Passport update request submitted for review by: {spoc_name}")
         return True
-
+        
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
         for record in self:
@@ -78,25 +93,13 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if record.upload_muqeem_doc and not record.muqeem_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Document")
-                invoice_line_ids = []
-                for line in record.service_enquiry_pricing_ids:
-                    invoice_line_ids.append((0, 0, {
-                        'name': line.name,
-                        'employee_id': record.employee_id.id,
-                        'price_unit': line.amount,
-                        'quantity': 1,
-                        'service_enquiry_id': record.id
-                    }))
-                # Create draft.account.move record
-                account_move = self.env['draft.account.move'].create({
-                    'client_id': record.client_id.id,
-                    'client_parent_id': record.client_id.parent_id.id,
-                    'service_enquiry_id': record.id,
-                    'employee_id': record.employee_id.id,
-                    'move_type': 'service_ticket',
-                    'invoice_line_ids': invoice_line_ids,
-                })
+                if not record.muqeem_points:
+                    raise ValidationError("Kindly Update Muqeem Points")
+
+
         return result
+
+    
 
 
 class ServiceEnquiryPricingLine(models.Model):
