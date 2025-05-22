@@ -183,6 +183,7 @@
                                 <field name="passport_no" attrs="{'readonly': [('state', '!=','draft')]}" string="Passport No"/>
                                 <field name="dynamic_action_status" invisible="1"/>
                                 <field name="is_gov_employee" invisible="1"/>
+                                <field name="is_client_spoc" invisible="1"/>
                                 <field name="sponsor_id" attrs="{'readonly': ['|',
                                              ('service_request', '!=', 'new_ev'),
                                              '!', '|',

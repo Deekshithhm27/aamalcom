@@ -180,11 +180,7 @@ class ServiceEnquiry(models.Model):
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
         return result
 
-    @api.depends('is_client_spoc')
-    def _compute_is_client_spoc(self):
-        for record in self:
-            # Check if the user is in gov employee groups
-            record.is_client_spoc = self.env.user.has_group('visa_process.group_service_request_client_spoc')
+    
 
     def open_assign_employee_wizard(self):
         """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
