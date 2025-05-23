@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class EmploymentVisa(models.Model):
     _name = 'employment.visa'
     _order = 'id desc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _description = "EV Request"
 
@@ -24,7 +24,7 @@ class EmploymentVisa(models.Model):
     company_partner_id = fields.Many2one('res.partner', string='Company Partner', required=True, default=lambda self: self.env.user.company_id.partner_id)
     currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
 
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="['&',('custom_employee_type', '=', 'external'),'&',('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")

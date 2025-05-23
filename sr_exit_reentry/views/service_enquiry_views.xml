@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="inherit_service_enquiry_form" model="ir.ui.view">
+        <field name="name">service.enquiry.form.inherited</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('exit_reentry_issuance_ext',))]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary"
+                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('aamalcom_pay','=',True),('service_request','!=','exit_reentry_issuance_ext')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),('service_request','!=','exit_reentry_issuance_ext')]}"
+                        groups="visa_process.group_service_request_employee"/>
+                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request','!=','exit_reentry_issuance_ext')]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('exit_reentry_issuance_ext',))]}"
+                        groups="visa_process.group_service_request_employee"/>
+            </xpath>
+            <!--            Added web ribbon after approval pm assign employee-->
+            <xpath expr="//sheet/widget" position="after">
+                <widget name="web_ribbon" title="Assign Employee"
+                        attrs="{'invisible': ['|',('state','!=','approved'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','!=','exit_reentry_issuance_ext')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                <widget name="web_ribbon" title="Assign Employee"
+                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('aamalcom_pay','=',True),('service_request','!=','exit_reentry_issuance_ext')]}"
+                        groups="visa_process.group_service_request_manager"/>
+            </xpath>
+            <!--            Hides the first button of open_assign_employee_wizard from the Visa Process module, showing it here.-->
+            <xpath expr="//form/header/button[@name='open_assign_employee_wizard']" position="attributes">
+                <attribute name="attrs">{'invisible':
+                    ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev','exit_reentry_issuance_ext'))]}
+                </attribute>
+            </xpath>
+            <!--            Hides the widget from the Visa Process module, showing it here (submit approval flow).-->
+            <xpath expr="//sheet/widget[1]" position="attributes">
+                <attribute name="attrs">{'invisible':
+                    ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev','exit_reentry_issuance_ext'))]}
+                </attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='lt_hr_card'][1]" position="before">
+                <group name="exit_reentry_issuance"
+                       attrs="{'invisible': [('service_request', '!=', 'exit_reentry_issuance')]}">
+                    <group>
+                        <field name="exit_type" attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
+                        <field name="employment_duration" attrs="{'readonly': [('state', '!=','draft')]}"
+                               options="{'no_create': True, 'no_edit': True}"/>
+                    </group>
+                    <group>
+                        <field name="to_be_issued_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>
+                <group name="exit_reentry_issuance_data"
+                       attrs="{'invisible': [('service_request', '!=', 'exit_reentry_issuance_ext')]}">
+                    <group>
+                        <field name="service_request_id" string="Earlier ERE"
+                               attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="exit_type" force_save="1"
+                               readonly="1"/>  <!-- readonly:If the ERE visa type is single, it cannot be extended multiple  -->
+                    </group>
+                    <group>
+                        <field name="upload_exit_reentry_visa" force_save="1"
+                               attrs="{'readonly': [('upload_exit_reentry_visa', '!=',False)]}"
+                               filename="upload_exit_reentry_visa_file_name"/>
+                        <field name="upload_exit_reentry_visa_file_name" invisible="1"/>
+                        <field name="exit_reentry_visa_ref" readonly="1"
+                               force_save="1"/>
+                    </group>
+                </group>
+                <group name="exit_reentry_issuance_ext_fields"
+                       attrs="{'invisible': [('service_request', '!=', 'exit_reentry_issuance_ext')]}">
+                    <group>
+                        <field name="employment_duration" string="Duration"
+                               attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>
+                <group name="exit_reentry_issuance_ext_update_fees_bill"
+                       attrs="{'invisible': [('service_request', 'not in', ('exit_reentry_issuance_ext','exit_reentry_issuance'))]}">
+                    <group string="Fees to be paid by">
+                        <field name="self_bill_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                        <field name="aamalcom_pay_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                        <field name="employee_pay_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"
+                               attrs="{'invisible': [('employee_id', '=',False)]}"/>
+                        <field name="employee_pay" nolabel="1"
+                               attrs="{'readonly': [('state', '!=','draft')],'invisible': [('employee_id', '=',False)]}"/>
+                    </group>
+                    <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
+                        <field name="billable_to_client_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="billable_to_aamalcom_string" readonly="1" nolabel="1"
+                               style="color: black; font-weight: bold;"/>
+                        <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group string="Payment Confirmation Documents"
+                       attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('service_request','!=','exit_reentry_issuance_ext')]}">
+                    <group>
+                        <field name="upload_payment_doc"
+                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
+                               force_save="1" filename="upload_payment_doc_file_name"/>
+                        <field name="upload_payment_doc_file_name" invisible="1"/>
+                        <field name="is_client_spoc" invisible="1"/>
+                        <field name="payment_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
+                               force_save="1"/>
+                    </group>
+                </group>
+                <group name="exit_reentry_issuance_gov_data"
+                       attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'exit_reentry_issuance')]}">
+                    <group>
+                        <field name="upload_confirmation_of_exit_reentry"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"
+                               filename="upload_confirmation_of_exit_reentry_file_name"/>
+                        <field name="upload_confirmation_of_exit_reentry_file_name" invisible="1"/>
+                        <field name="confirmation_of_exit_reentry_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"/>
+                    </group>
+                    <group>
+                        <field name="upload_exit_reentry_visa"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"
+                               filename="upload_exit_reentry_visa_file_name"/>
+                        <field name="upload_exit_reentry_visa_file_name" invisible="1" force_save="1"/>
+                        <field name="exit_reentry_visa_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"/>
+                    </group>
+                </group>
+                <group name="ere_extend_doc"
+                       attrs="{'invisible': ['|',('service_request', '!=', 'exit_reentry_issuance_ext'),('state', 'not in', ('payment_done','done','approved'))]}">
+                    <group>
+                        <field name="confirmation_doc" string="Upload Confirmation of ERE Extend"
+                               attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
+                               filename="confirmation_doc_file_name" force_save="1"/>
+                        <field name="confirmation_doc_file_name" invisible="1"/>
+                        <field name="confirmation_doc_ref" string="Ref No.*"
+                               attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
+                               force_save="1"/>
+                        
+                        <field name="muqeem_points" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
+                        <field name="final_muqeem_cost" readonly="1"/>
+                         
+                    </group>
+                    <group>
+                        <field name="ere_extension_doc" string="ERE Extend Visa"
+                               attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
+                               filename="ere_extension_doc_file_name" force_save="1"/>
+                        <field name="ere_extension_doc_file_name" invisible="1"/>
+                        <field name="ere_extension_doc_ref" string="Ref No.*"
+                               attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"
+                               force_save="1"/>
+                        
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
+

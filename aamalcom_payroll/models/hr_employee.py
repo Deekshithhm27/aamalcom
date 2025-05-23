@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from datetime import datetime, timedelta
+
 
 
 class HrEmployee(models.Model):
@@ -30,6 +30,27 @@ class HrEmployee(models.Model):
     client_salary_rule_ids = fields.One2many('emp.salary.line', 'employee_id', string="Salary Structure")
 
     confirm_salary_bool = fields.Boolean(string="Salary Details Confirmed",default=False)
+
+     # used for readonly attribute 
+    is_salary_update = fields.Boolean(
+        compute='_compute_salary_update',
+        store=False,
+        default=False
+    )
+    salary_note = fields.Char(tracking=True)
+    is_project_manager = fields.Boolean(
+        compute='_compute_is_project_manager',
+        store=False,
+        default=False
+    )
+
+    @api.depends('is_salary_update')
+    def _compute_salary_update(self):
+        for record in self:
+            # Check if the logged-in user belongs to the 'group_allow_salary_updates'
+            record.is_salary_update = self.env.user.has_group('aamalcom_payroll.group_allow_salary_updates')
+
+
 
     def confirm_salary_details(self):
         for employee in self:
@@ -62,6 +83,8 @@ class HrEmployee(models.Model):
                 'hr_responsible_id':3
             })
             employee.confirm_salary_bool = True
+            if contract:
+                self.salary_note = "Salary details are updated and new contract has been created"
 
             # contract_history.contract_ids = [(4, contract.id, False)]
 
@@ -69,6 +92,12 @@ class HrEmployee(models.Model):
     def update_salary_confirmation(self):
         for line in self:
             line.confirm_salary_bool = False
+
+    @api.depends('is_project_manager')
+    def _compute_is_project_manager(self):
+        for record in self:
+            # Check if the logged-in user belongs to the 'group_service_request_manager'
+            record.is_project_manager = self.env.user.has_group('visa_process.group_service_request_manager')
 
 
 class EmpSalaryLines(models.Model):

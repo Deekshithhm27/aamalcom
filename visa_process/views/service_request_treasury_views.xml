@@ -40,6 +40,8 @@
                     		<group>
                     			<group string="Confirmation Document">
                     				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="confirmation_doc_ref" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="issue_date" attrs="{'readonly': [('state', '=','done')],'invisible': [('state','=','draft')]}"/>
                     			</group>
                                 <group string="Bank Receipts">
                                     <field name="bank_receipt_one" attrs="{'readonly':[('state','=','done')]}"/>
@@ -54,6 +56,7 @@
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
                 </div>
             </form>
         </field>

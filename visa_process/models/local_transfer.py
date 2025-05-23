@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class LocalTransfer(models.Model):
     _name = 'local.transfer'
     _order = 'id desc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _description = "Local Transfer"
 
@@ -27,7 +27,7 @@ class LocalTransfer(models.Model):
     client_company_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="['&',('custom_employee_type', '=', 'external'),'&',('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth *",tracking=True,copy=False)
     private_email = fields.Char(string="Email Id *",tracking=True,copy=False)
     country_id = fields.Many2one('res.country',string="Nationality",tracking=True,copy=False)
@@ -118,6 +118,7 @@ class LocalTransfer(models.Model):
                 line.contact_no = line.employee_id.contact_no
                 line.phone_code_id = line.employee_id.phone_code_id
                 line.iqama_no = line.employee_id.iqama_no
+                line.passport_copy = line.employee_id.passport_copy
 
 
     def unlink(self):

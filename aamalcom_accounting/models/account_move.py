@@ -34,49 +34,21 @@ class AccountMove(models.Model):
     
     draft_invoice_sequence = fields.Char('Draft Invoice Number', index=True, copy=False, default='New')
 
-
-    state = fields.Selection(selection=[('draft', 'Draft'),
-            ('approval_needed', 'Waiting for Approval'),
-            ('manager_approval', 'Waiting for Manager Approval'),
-            ('approved', 'Approved'),
-            ('posted', 'Posted'),
-            ('cancel', 'Cancelled')], string='Status', required=True, readonly=True, copy=False, tracking=True,
-        default='draft')
     invoice_type = fields.Selection([('direct','Direct Invoice'),('operation','Operations')],string="Invoice Type",default='direct',copy=False)
 
     invoice_initiated_by = fields.Many2one('res.users',string="Invoice initiated by")
-    first_approver_id = fields.Many2one('res.users',string="First Approver")
-    final_approver_id = fields.Many2one('res.users',string="Final Approver")
 
     move_particulars_ids = fields.One2many('account.move.particulars','invoice_id',string="Particulars")
     amount_total_in_words = fields.Char(string="Total Amount In Words", compute="_compute_amount_total_in_words")
+    # fields for alert : customer already has a same-amount invoice in the same month
+    latest_existing_invoice_id = fields.Boolean(string='Has Duplicate Invoice', copy=False)
+    latest_existing_invoice_name = fields.Char(string='Latest Duplicate Invoice', readonly=True, copy=False)
 
     @api.model
     def create(self, vals):
         if vals.get('draft_invoice_sequence', 'New') == 'New':
             vals['draft_invoice_sequence'] = self.env['ir.sequence'].next_by_code('account.move.draft.invoice') or '/'
         return super(AccountMove, self).create(vals)
-
-    def action_submit_for_approval(self):
-        for line in self:
-            if not line.line_ids.filtered(lambda line: not line.display_type):
-                raise UserError(_('You need to add a line before posting.'))
-            line.state = 'approval_needed'
-
-    def action_manager_approval(self):
-        for line in self:
-            line.state = 'approved'
-            line.final_approver_id = self.env.user.id
-
-    
-    def action_first_approval(self):
-        for line in self:
-            line.state = 'manager_approval'
-            line.first_approver_id = self.env.user.id
-
-    def action_direct_post(self):
-        self.action_post()
-
 
     # reports
     def action_invoice_tax_report(self, type):
@@ -124,6 +96,31 @@ class AccountMove(models.Model):
                 order.amount_total_in_words = amount_in_words
             else:
                 order.amount_total_in_words = "Currency not defined"
+
+    # Warn when a customer already has a same-amount invoice in the same month
+    @api.onchange('partner_id', 'invoice_line_ids', 'invoice_date')
+    def _onchange_customer_amount_date(self):
+        for record in self:
+            record.latest_existing_invoice_id = False
+            record.latest_existing_invoice_name = False
+            # Checking account.move is invoice
+            if self.move_type == 'out_invoice':
+                # Get first and last date of the month
+                month_start = record.date.replace(day=1)
+                month_end = (month_start.replace(month=month_start.month % 12 + 1, day=1) - timedelta(days=1))
+
+                # Search for duplicate records within the same month
+                domain = [
+                    ('partner_id', '=', record.partner_id.id),
+                    ('amount_untaxed', '=', record.amount_untaxed),
+                    ('invoice_date', '>=', month_start),
+                    ('invoice_date', '<=', month_end),
+                ]
+                existing = self.env['account.move'].search(domain, limit=1)
+
+                if existing:
+                    record.latest_existing_invoice_id = True
+                    record.latest_existing_invoice_name = existing.draft_invoice_sequence
 
     
 

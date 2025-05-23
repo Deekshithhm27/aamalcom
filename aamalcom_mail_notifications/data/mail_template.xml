@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--    client sent mail to pm-->
+    <record id="mail_template_service_enquiry_client_sent" model="mail.template">
+        <field name="name">Service Enquiry Email</field>
+        <field name="model_id" ref="aamalcom_mail_notifications.model_service_enquiry"/>
+        <field name="subject">Service Enquiry Communication - {{object.name}}</field>
+        <field name="email_from">{{user.partner_id.email}}</field>
+        <field name="email_to">{{object.client_id.company_spoc_id.user_id.partner_id.email}}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>Dear Sir,</p>
+                <p>You have received a message from<t t-out="user.name"/>:
+                </p>
+                <p>
+                    <t t-out="ctx.get('custom_message')"/>
+                </p>
+                <br/>
+                Thank You,
+                <br/>
+            </div>
+        </field>
+    </record>
+    <!--internal user(pm) sent to client-->
+    <record id="mail_template_service_enquiry_internal_sent" model="mail.template">
+        <field name="name">Service Enquiry Email</field>
+        <field name="model_id" ref="aamalcom_mail_notifications.model_service_enquiry"/>
+        <field name="subject">Service Enquiry Communication - {{object.name}}</field>
+        <field name="email_from">{{user.partner_id.email}}</field>
+        <field name="email_to">{{object.client_id.email}}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>Dear Sir,</p>
+                <p>You have received a message from<t t-out="user.name"/>:
+                </p>
+                <p>
+                    <t t-out="ctx.get('custom_message')"/>
+                </p>
+                <br/>
+                Thank You,
+                <br/>
+            </div>
+        </field>
+    </record>
+</odoo>

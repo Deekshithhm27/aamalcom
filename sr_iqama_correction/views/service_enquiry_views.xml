@@ -1,0 +1,116 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'iqama_correction')]}" groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_first_govt_emp_submit" string="Submit for Review by PM" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|',('process_of_type','!=','process_by_employee'),'|', ('upload_jawazat_doc', '=', False), '|', ('service_request', '!=', 'iqama_correction'), ('submit_clicked', '=', True)]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('process_of_type','!=','process_by_employee'),('service_request','!=','iqama_correction')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request','!=','iqama_correction')]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                        
+                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" 
+                class="btn-primary" attrs="{'invisible': ['|', '|',
+            ('state', 'not in', ('payment_done', 'approved')),
+            ('service_request', '!=', 'iqama_correction'), 
+            ('assigned_govt_emp_two', '=', True)]}" groups="visa_process.group_service_request_manager"/>
+                
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '=', 'done'),'|', ('assigned_govt_emp_one', '=', False),
+                '|', ('process_of_type', '!=', 'process_by_employee'),'|', ('upload_muqeem_doc', '=', False),('service_request', 'not in', ['iqama_correction'])]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_process_complete_gro" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '=', 'done'),'|', ('assigned_govt_emp_one', '=', False),'|', ('process_of_type', '!=', 'process_by_gro'),'|', ('upload_confirmation_of_exit_reentry', '=', False),('service_request', 'not in', ['iqama_correction'])]}" groups="visa_process.group_service_request_employee"/>
+
+            </xpath> 
+            
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="iqama_correction" attrs="{'invisible': [('service_request', '!=', 'iqama_correction')]}">
+                    <group>
+                        <field name="type_of_request" attrs="{'readonly': [('state', '!=','draft')]}" />
+                        <field name="attached_doc" attrs="{'readonly': [('state', '!=','draft')]}" /> 
+                        </group>  
+                </group> 
+                <group name="lt_bank_loan" attrs="{'invisible': ['|',('service_request', '!=', 'iqama_correction'),('state', 'not in',('submitted','payment_initiation','payment_done','done'))]}">
+                        <group>
+                            <field name="draft_if_any" attrs="{'readonly': [('is_project_manager', '!=', True)]}" force_save="1"/>
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('is_project_manager', '!=', True)]}" force_save="1"/>
+                        </group>
+                </group>
+                <group name="iqama_correction" attrs="{'invisible': ['|',('service_request', '!=', 'iqama_correction'),('state', 'not in',('submitted','payment_initiation','payment_done','done'))]}">
+                <group>
+                        <field name="upload_noc_doc" 
+                                       attrs="{'readonly': [('is_project_manager', '!=', True)]}"  
+                                       filename="upload_noc_doc_file_name"/>
+                                <field name="upload_noc_doc_file_name" invisible="1"/>
+                                <field name="noc_doc_ref" 
+                                       attrs="{'readonly': [('is_project_manager', '!=', True)]}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group  
+                       attrs="{'invisible': ['|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False)]}">
+                    <group>
+                        <field name="upload_jawazat_doc" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}"  
+                                       filename="upload_jawazat_doc_file_name"/>
+                                <field name="upload_jawazat_doc_file_name" invisible="1"/>
+                                <field name="jawazat_doc_ref" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
+                    </group>
+                    <group attrs="{'invisible': ['|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False)]}">
+                        <field name="process_of_type"/>
+                    </group>
+                    <group attrs="{'invisible': ['|', ('service_request', '!=', 'iqama_correction'), '|', ('first_govt_employee_id','=',False), ('process_of_type','!=','process_by_gro')]}">
+                        <field name="upload_confirmation_of_exit_reentry"
+                               string="Confirmation Documents" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"
+                               filename="upload_confirmation_of_exit_reentry_file_name"/>
+                        <field name="upload_confirmation_of_exit_reentry_file_name" invisible="1"/>
+                        <field name="confirmation_of_exit_reentry_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"
+                               force_save="1"/>
+                    </group>
+                    <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', 
+                             ('state', 'in', ('draft','submitted')),
+                             '|',
+                             ('service_request','!=','iqama_correction'),
+                             ('process_of_type','!=', 'process_by_employee')]}">
+                            <field name="upload_payment_doc"
+                                attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
+                                force_save="1"
+                                filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name" invisible="1"/>
+                            <field name="is_client_spoc" invisible="1"/>
+                            <field name="payment_doc_ref"
+                            attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)],
+                            'invisible':[('aamalcom_pay','=',True)]}"
+                            force_save="1"/>
+                    </group>
+                </group> 
+                 <group attrs="{'invisible': ['|', 
+                          ('service_request', '!=', 'iqama_correction'), 
+                          '|', 
+                          ('state', 'not in', ('payment_done', 'done', 'approved')), 
+                          ('process_of_type', '!=', 'process_by_employee')]}"> 
+                    <group>
+                        <field name="upload_muqeem_doc" string="Upload Muqeem Documents"
+                        attrs="{'readonly': ['|', ('state', 'not in', ('payment_done','approved')), ('is_gov_employee', '!=', True)]}"
+                        filename="upload_muqeem_doc_file_name"
+                            force_save="1"/>
+                            <field name="upload_muqeem_doc_file_name" invisible="1"/>
+                            <field name="muqeem_doc_ref" string="Ref No.*"
+                            attrs="{'readonly': ['|', ('state', 'not in', ('payment_done','approved')), ('is_gov_employee', '!=', True)]}"
+                                force_save="1"/>
+                        </group>
+                </group>
+
+            </xpath>             
+        </field>
+    </record>
+</odoo>

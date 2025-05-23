@@ -187,6 +187,7 @@
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
                 </div>
             </form>
         </field>
@@ -264,4 +265,18 @@
               </p>
         </field>
     </record>
+
+     <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+    <record id="employment_visa_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Employment Visa - Hide oe_chatter</field>
+        <field name="model">employment.visa</field>
+        <field name="inherit_id" ref="visa_process.employment_visa_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
+        </field>
+    </record>    
 </odoo>

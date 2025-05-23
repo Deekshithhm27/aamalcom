@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class ServiceRequestTreasury(models.Model):
     _name = 'service.request.treasury'
     _order = 'id desc'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _description = "Reference Documents"
 
@@ -28,10 +28,12 @@ class ServiceRequestTreasury(models.Model):
     client_parent_id = fields.Many2one('res.partner',string="Client")
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
+    issue_date = fields.Date(string='Issue Date')
 
     state = fields.Selection([('draft','Draft'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
-    confirmation_doc = fields.Binary(string="Confirmation Doc")
+    confirmation_doc = fields.Binary(string="Confirmation Doc*")
+    confirmation_doc_ref = fields.Char(string="Ref No.*")
     bank_receipt_one = fields.Binary(string="1. Bank Receipt")
     bank_receipt_two = fields.Binary(string="2. Bank Receipt")
     bank_receipt_three = fields.Binary(string="3. Bank Receipt")
@@ -47,9 +49,38 @@ class ServiceRequestTreasury(models.Model):
     def action_submit(self):
         for line in self:
             line.state = 'submitted'
+            line.service_request_id.dynamic_action_status = f'Submitted to the Treasury Department by FM. Document upload confirmation is pending.'
 
     def action_upload_confirmation(self):
         for line in self:
-            if line.service_request_id.service_request == 'new_ev' or line.service_request_id.service_request == 'transfer_req':
-                line.service_request_id.write({'upload_payment_doc':line.confirmation_doc})
+            if line.confirmation_doc and not line.confirmation_doc_ref:
+                raise ValidationError("Kindly Update Reference Number for Confirmation  Document")
+            if not line.issue_date:
+                raise ValidationError("Kindly update issue date before upload confirmation")
+            # Upload documents for specific services
+            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card']:
+                line.service_request_id.write({
+                    'upload_payment_doc': line.confirmation_doc,
+                    'payment_doc_ref': line.confirmation_doc_ref
+                    })
             line.state = 'done'
+            # Set dynamic_action_status based on conditions
+            if line.service_request_id.service_request == 'hr_card':
+                if line.service_request_id.state == 'approved':
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
+            elif line.service_request_id.service_request == 'transfer_req':
+                line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by second govt employee"
+            elif line.service_request_id.service_request == 'prof_change_qiwa' and (
+                line.service_request_id.billable_to_aamalcom or line.service_request_id.billable_to_client):
+                if line.service_request_id.state == 'approved':
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by first govt employee."
+            elif line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
+                line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Second govt employee need to be assigned by PM"
+            elif line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
+                line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="inherit_service_enquiry_form" model="ir.ui.view">
+        <field name="name">service.enquiry.form.inherited</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <!--oe_chatter is internal-only.So this medium for client and PM communication.-->
+            <xpath expr="//field[@name='request_note']" position="before">
+                <notebook
+                        groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager">
+                    <page string="Communication History">
+                        <label for="message_text" string="Message"/>
+                        <div>
+                            <field name="message_text" placeholder="Type your message here..."/>
+                            <button name="send_message" type="object" string="Send" class="btn-primary"/>
+                        </div>
+                        <field name="message_history_ids">
+                            <tree create="false" default_order="date desc">
+                                <field name="date" readonly="1"/>
+                                <field name="sender" readonly="1"/>
+                                <field name="message" readonly="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+</odoo>

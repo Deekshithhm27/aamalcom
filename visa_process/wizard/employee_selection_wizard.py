@@ -12,6 +12,12 @@ class EmployeeSelectionWizard(models.TransientModel):
 
     def apply_selected_employee(self):
         active_enquiry = self.env['service.enquiry'].browse(self._context.get('active_id'))
+        departments = self.department_ids.mapped('name')
+        if departments:
+            department_names = ', '.join(departments)
+            active_enquiry.dynamic_action_status = (
+                f"Documents upload pending by employee from {department_names} department."
+            )
         if self.assign_type == 'assign':
             if self.employee_id:
                 if active_enquiry.service_request == 'new_ev':

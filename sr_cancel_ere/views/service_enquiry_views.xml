@@ -1,0 +1,45 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'cancel_ere')]}" groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{
+            'invisible': ['|', '|', '|',
+                ('state', '=', 'done'), 
+                ('service_request', '!=', 'cancel_ere'), 
+                ('assigned_govt_emp_one', '!=', True), 
+                ('ere_cancellation_doc', '=', False)
+            ]
+        }"
+        groups="visa_process.group_service_request_employee"/>
+
+            </xpath> 
+            
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="iqama_correction" attrs="{'invisible': [('service_request', '!=', 'cancel_ere')]}">
+                    <group name="cancel_ere"
+                       attrs="{'invisible': [('service_request', '!=', 'cancel_ere')]}">
+                    
+                        <field name="remarks_ere" attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
+                        <field name="service_request_id" string="Earlier ERE"
+                               attrs="{'readonly': [('state', '!=','draft')]}"/>
+                </group> 
+            </group>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group attrs="{'invisible': ['|',('service_request', '!=', 'cancel_ere'),('first_govt_employee_id','=',False)]}">
+                    <group>
+                        <field name="ere_cancellation_doc"
+                        attrs="{'readonly': ['|', ('state', '!=', 'submitted'), ('is_gov_employee', '!=', True)]}"
+                        force_save="1" filename="ere_cancellation_doc_file_name"/>
+                        <field name="ere_cancellation_doc_file_name" invisible="1"/><field name="ere_cancellation_doc_ref"
+                        attrs="{'readonly': ['|', ('state', '!=', 'submitted'), ('is_gov_employee', '!=', True)]}"/>
+                    </group>
+                </group>           
+            </xpath>
+        </field>
+    </record>
+</odoo>

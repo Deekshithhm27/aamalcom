@@ -24,4 +24,9 @@
         <menuitem id="menu_opening_balance" name="Opening Balance" action="aamalcom_accounting.action_account_chart_template_op_tree" sequence="1"/>
 
     </menuitem>
+
+    <!--    Rename Bills menu to Vendor Invoices-->
+    <record id="account.menu_action_move_in_invoice_type" model="ir.ui.menu">
+        <field name="name">Vendor Invoices</field>
+    </record>
 </odoo>

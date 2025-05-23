@@ -25,6 +25,8 @@
         'reports/service_request_treasury_report.xml',
         'reports/action.xml',
 
+        'wizard/refuse_reason_wizard_view.xml',
+
         'views/configurations/hr_agency_views.xml',
         'views/configurations/hr_employee_company_views.xml',
         'views/configurations/employment_duration_views.xml',
@@ -33,6 +35,7 @@
         'views/configurations/service_request_config_views.xml',
         'views/configurations/service_pricing_views.xml',
         'views/configurations/visa_ref_documents_views.xml',
+        'views/configurations/employee_sponsor_views.xml',
 
         
         'views/hr_employee_views.xml',
@@ -41,6 +44,7 @@
         'views/res_company_views.xml',
         
         'views/employment_visa_views.xml',
+        'views/temporary_work_visa_views.xml',
         'views/local_transfer_views.xml',
         'views/service_request_treasury_views.xml',
         'views/smart_buttons_views.xml',

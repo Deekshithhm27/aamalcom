@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="0">
+
+     <record id="group_allow_salary_updates" model="res.groups">
+        <field name="name">Allow Salary Updates</field>
+        <field name="comment">The user will have access to add employee salary computation.</field>
+        <field name="implied_ids" eval="[(4, ref('base.user_root')),(4, ref('base.group_user'))]"/>
+    </record>
+
+</data>
+    
+</odoo>

@@ -14,7 +14,6 @@
     'license': 'OPL-1',
     'depends': ['base','visa_process','account','l10n_gcc_invoice','om_account_followup','om_recurring_payments','payment','om_account_budget','utm'],
     'data': [
-    	'security/security.xml',
         'security/ir.model.access.csv',
     	'data/sequences.xml',
         'security/ir_rule.xml',
@@ -24,14 +23,11 @@
         'data/mail_templates.xml',
         'views/account_account_views.xml',
         'views/draft_account_move_views.xml',
-        'views/account_payment_approval_views.xml',
-        'views/account_payment_views.xml',
         'views/service_enquiry_views.xml',
         'views/account_move_views.xml',
         'wizard/batch_invoice_creation_wizard_views.xml',
         'views/menu_hide_views.xml',
         'views/menu.xml'
-
     ],
     'demo': [
         # 'demo/visa_demo.xml',

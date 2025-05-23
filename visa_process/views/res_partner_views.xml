@@ -23,6 +23,7 @@
             </xpath>
             <xpath expr="//group[1]" position="inside">
                 <group>
+                    <field name="arabic_name"/>
                     <label for="arabic_street" string="Arabic Address"/>
                     <div class="o_address_format">
                         <field name="arabic_street" placeholder="Arabic Street..." class="o_address_street"/>
