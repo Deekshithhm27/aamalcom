@@ -53,7 +53,7 @@ class ServiceEnquiry(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual",copy=False)
-    dynamic_action_status = fields.Char('Action Status', readonly=True, default='Draft')
+    dynamic_action_status = fields.Char('Action Status', default='Draft')
     submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
