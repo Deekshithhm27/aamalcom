@@ -1230,7 +1230,7 @@ class ServiceEnquiry(models.Model):
 
     def action_new_ev_docs_uploaded(self):
         for line in self:
-            if line.service_requespt =='new_ev':
+            if line.service_request =='new_ev':
                 if line.state=='approved' and line.aamalcom_pay == True and (line.billable_to_aamalcom == True or line.billable_to_client == True):
                     if not line.issuance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
