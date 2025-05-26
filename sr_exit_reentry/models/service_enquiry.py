@@ -33,17 +33,17 @@ class ServiceEnquiry(models.Model):
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
     is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
+
     
     @api.onchange('exit_type')
     def _onchange_exit_type(self):
-        if self.exit_type == 'single':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'SER')]}}  # Matches any duration containing 'SER'
-        elif self.exit_type == 'multiple':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'MER')]}}  # Matches any duration containing 'MER'
-        else:
-            return {'domain': {'employment_duration': []}}
-    
-    
+        for line in self:
+            if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
+                if self.exit_type == 'single':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER')]}}  # Matches any duration containing 'SER'
+                elif self.exit_type == 'multiple':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER')]}}  # Matches any duration containing 'MER'
+        
     @api.model
     def create(self, vals):
         employee_id = vals.get('employee_id')
@@ -87,6 +87,7 @@ class ServiceEnquiry(models.Model):
                 [('service_request_type', '=', record.service_request_type),
                  ('service_request', '=', record.service_request)], limit=1)
             if record.service_request == 'exit_reentry_issuance_ext' or record.service_request == 'exit_reentry_issuance':
+                print("-------pridinc id",pricing_id)
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
