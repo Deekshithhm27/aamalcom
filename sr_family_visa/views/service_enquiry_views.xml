@@ -152,7 +152,7 @@
                                     <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>  
-                <group attrs="{'invisible': ['|', '|', ('service_request', '!=', 'family_visit_visa'), ('aamalcom_pay_string', '!=', True), ('self_bill_string', '!=', True)]}">
+                <group attrs="{'invisible': ['|', '|', ('service_request', '!=', 'family_visit_visa'), ('aamalcom_pay', '!=', True), ('self_bill_string', '!=', True)]}">
                                 <group>
                                     <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
                                      <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
