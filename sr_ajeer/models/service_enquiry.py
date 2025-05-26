@@ -25,14 +25,12 @@ class ServiceEnquiry(models.Model):
     upload_ajeer_permit_doc_file_name=fields.Char(string="Ajeer Permit Document")
 
 
-
     @api.onchange('ajeer_permit_type')
     def _onchange_ajeer_permit_type(self):
         if self.ajeer_permit_type == 'secondement_permit':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'SAP')]}}  # Matches any duration containing 'SAP'
+            return {'domain': {'employment_duration': [('name', 'ilike', 'Secondment Ajeer permit'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'SAP'
         elif self.ajeer_permit_type == 'contracting_permit':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'ACP')]}}  # Matches any duration containing 'ACP'
-        
+            return {'domain': {'employment_duration': [('name', 'ilike', 'Contracting Ajeer permit'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'ACP'
     
     def action_submit(self):
         """Validation checks before submitting the service request."""
