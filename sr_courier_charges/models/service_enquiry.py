@@ -59,31 +59,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(_("Please upload the Courier document."))
         return True
         
-    @api.model
-    def update_pricing(self):  
-        super(ServiceEnquiry, self).update_pricing()  
-        for record in self:
-            if record.service_request == 'courier_charges':
-                pricing_id = self.env['service.pricing'].search([
-                    ('service_request_type', '=', record.service_request_type),
-                    ('service_request', '=', record.service_request)], limit=1)
-                for p_line in pricing_id.pricing_line_ids:
-                    if p_line.duration_id == record.employment_duration:
-                        record.service_enquiry_pricing_ids.create({
-                            'name': pricing_id.name,
-                            'service_enquiry_id': record.id,
-                            'service_pricing_id': pricing_id.id,
-                            'service_pricing_line_id': p_line.id,
-                            'amount': p_line.amount,
-                            'remarks': p_line.remarks
-                        })
-                if record.courier_amount > 0:
-                    record.service_enquiry_pricing_ids.create({
-                        'name': 'Courier Amount',
-                        'amount': record.courier_amount,
-                        'service_enquiry_id': record.id,
-                    })
-    
 
     def action_submit_for_review_courier(self):
         for line in self:
@@ -95,7 +70,6 @@ class ServiceEnquiry(models.Model):
                 line.submit_clicked = True
     
     
-
 
     def action_approve(self):
         for record in self:
