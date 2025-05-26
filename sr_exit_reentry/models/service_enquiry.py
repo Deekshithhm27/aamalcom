@@ -40,9 +40,9 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
                 if self.exit_type == 'single':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER')]}}  # Matches any duration containing 'SER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'SER'
                 elif self.exit_type == 'multiple':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER')]}}  # Matches any duration containing 'MER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'MER'
         
     @api.model
     def create(self, vals):
