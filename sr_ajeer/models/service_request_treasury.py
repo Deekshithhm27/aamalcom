@@ -3,12 +3,6 @@ from odoo import models, fields, api
 class InheritedServiceRequestTreasury(models.Model):
     _inherit = 'service.request.treasury'
 
-    total_amount = fields.Monetary(
-        string="Price", 
-        compute="_compute_total_amount", 
-        store=True, 
-        currency_field='currency_id'
-    )
 
 
     def action_upload_confirmation(self):
