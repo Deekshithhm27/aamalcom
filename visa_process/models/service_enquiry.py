@@ -154,6 +154,7 @@ class ServiceEnquiry(models.Model):
     hr_card_ref = fields.Char(string="Ref No.*")
     reupload_hr_card = fields.Binary(string="Updated HR Card Document")
     reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
+    # reupload hr card ref
     rehr_card_ref = fields.Char(string="Ref No.*")
     upload_jawazat_doc = fields.Binary(string="Jawazat Document")
     upload_jawazat_doc_file_name = fields.Char(string="Jawazat Document")
@@ -515,7 +516,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
-                record.approver_id = self.env.user.company_spoc_id.id
                 record.submit_clicked = True
 
             
