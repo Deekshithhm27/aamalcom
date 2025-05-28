@@ -79,11 +79,11 @@ class ServiceRequestTreasury(models.Model):
                     line.service_request_id.action_user_id = line.service_request_id.first_govt_employee_id.user_id.id
             elif line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Second govt employee need to be assigned by PM"
-                line.service_request_id.action_user_id = line.service_request_id.assigned_govt_emp_one.user_id.id
+                line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
 
             elif line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
-                line.service_request_id.action_user_id = line.service_request_id.assigned_govt_emp_one.user_id.id
+                line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
 
 
 

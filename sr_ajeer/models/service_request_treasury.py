@@ -18,4 +18,5 @@ class InheritedServiceRequestTreasury(models.Model):
                 if line.service_request_id.state == 'approved':
                     # Set the specific dynamic action status for 'ajeer_permit'
                     line.service_request_id.dynamic_action_status = "Service request approved by Finance Team.1st govt employee Needs to uplaod Ajeer Intimation doc"
+                    line.service_request_id.action_user_id=line.service_request_id.first_govt_employee_id.user_id.id
             
