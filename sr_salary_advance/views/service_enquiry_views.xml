@@ -58,18 +58,16 @@
                 <xpath expr="//group[field[@name='letter_cost']]" position="after">
                     <notebook groups="visa_process.group_service_request_manager" attrs="{'invisible': ['|', '|', ('service_request', '!=', 'salary_advance'), ('state', 'not in', ['approved', 'done']), ('to_be_invoiced', '=', False)]}">
                         <page string="Service Pricing">
-                            
                             <field name="service_enquiry_pricing_ids">
-                            <tree editable="bottom">
-                                
-                            <field name="service_enquiry_id" invisible="1"/>
-                            <field name="name"/>
-                            <field name="service_pricing_id" invisible="1"/>
-                            <field name="company_id" invisible="1"/>
-                            <field name="currency_id" invisible="1"/>
-                            <field name="amount" sum="Total"/>
-                            <field name="remarks"/>
-                            </tree>
+                                <tree editable="bottom">
+                                    <field name="service_enquiry_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="service_pricing_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="remarks"/>
+                                </tree>
                             </field>
                         </page>
                     </notebook>
