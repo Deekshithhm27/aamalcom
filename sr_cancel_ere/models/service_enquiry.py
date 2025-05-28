@@ -51,5 +51,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Cancellation Doc")
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
+                record.action_user_id= False
         return result
       

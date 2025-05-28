@@ -66,6 +66,7 @@ class ServiceEnquiry(models.Model):
                 if line.upload_courier_proof_doc and not line.courier_ref:
                     raise ValidationError(_("Kindly Update Reference Number for Attached Courier Document"))
                 line.dynamic_action_status = _("Review is Pending by PM")  
+                line.action_user_id = line.approver_id.user_id.id 
                 line.state = 'submitted'
                 line.submit_clicked = True
     
@@ -76,7 +77,7 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'courier_charges':
                     record.state = 'approved'
                     record.dynamic_action_status = "Documents Upload Pending by 1st Govt Employee"
-                
+                    record.action_user_id = record.first_govt_employee_id.user_id.id
     
     
     def action_process_complete(self):
