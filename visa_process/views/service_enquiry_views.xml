@@ -1020,7 +1020,7 @@
                         </page>
                     </notebook>
 
-                    <notebook id="service_pricing_notebook" groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
+                    <notebook id="service_pricing_notebook" name="pricing_notebook" groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator">
                         <!-- should not be visible for final_exit_issuance -->
                         <page string="Service Pricing">
                             <field name="service_enquiry_pricing_ids">
