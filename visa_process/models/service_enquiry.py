@@ -37,6 +37,7 @@ class ServiceEnquiry(models.Model):
     # below values are updated on change of service request
     approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
+    action_user_id = fields.Many2one('res.users', string="Action Pending With")
     
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -516,6 +517,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
                 record.submit_clicked = True
 
             
@@ -980,10 +982,13 @@ class ServiceEnquiry(models.Model):
             self.send_email_to_pm()
             if line.service_request == 'new_ev':
                 line.dynamic_action_status = f"Submit for approval by PM"
+                line.action_user_id = line.approver_id.user_id.id
             elif line.service_request == 'iqama_card_req':
                 line.dynamic_action_status = f"Require confirmation on payment made by PM"
+                line.action_user_id = line.approver_id.user_id.id
             else:
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
+                line.action_user_id = line.approver_id.user_id.id
             
 
     def action_require_payment_confirmation(self):
@@ -1036,7 +1041,13 @@ class ServiceEnquiry(models.Model):
             # users = group.users
             # user_names = ' or '.join(users.mapped('name'))
             # # Assign to dynamic status and approver_id
+            group = self.env.ref('visa_process.group_service_request_operations_manager')
+            users = group.users
+            employee = self.env['hr.employee'].search([
+            ('user_id', 'in', users.ids)
+            ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
+            line.action_user_id = employee.user_id
             self.send_email_to_op()
 
     def action_submit_for_approval(self):
@@ -1062,11 +1073,13 @@ class ServiceEnquiry(models.Model):
                 line.dynamic_action_status = f'Waiting for approval by client spoc'
             else:
                 line.state = 'waiting_op_approval'
-                # group = self.env.ref('visa_process.group_service_request_operations_manager')
-                # users = group.users
-                # user_names = ' or '.join(users.mapped('name'))
-                # Assign to dynamic status and approver_id
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
                 line.dynamic_action_status = f"Waiting for approval by OM"
+                line.action_user_id = employee.user_id
                 self.send_email_to_op()
 
     def action_client_spoc_approve(self):
@@ -1075,6 +1088,7 @@ class ServiceEnquiry(models.Model):
             line.assign_govt_emp_two = True
             # Approved by {self.env.user.name}.
             line.dynamic_action_status = f'Approved by client spoc. Second govt employee needs to be assigned by PM'
+            line.action_user_id = line.approver_id.user_id.id
 
 
     @api.model
@@ -1168,11 +1182,13 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'waiting_gm_approval'
             line.op_approver_id = current_employee
-            # group = self.env.ref('visa_process.group_service_request_general_manager')
-            # users = group.users
-            # user_names = ' or '.join(users.mapped('name'))
-            # Assign to dynamic status and approver_id
+            group = self.env.ref('visa_process.group_service_request_general_manager')
+            users = group.users
+            employee = self.env['hr.employee'].search([
+            ('user_id', 'in', users.ids)
+            ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by GM"
+            line.action_user_id = employee.user_id
             self.send_email_to_gm()
 
     def action_gm_approved(self):
@@ -1180,7 +1196,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'waiting_fin_approval'
             line.gm_approver_id = current_employee
-            line.dynamic_action_status = f"Waiting for approval by FM:"
+            finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
+            line.dynamic_action_status = "Waiting for approval by FM"
+            line.action_user_id = finance_manager.user_id
+
 
 
     def action_request_fin_payment_confirmation(self):
@@ -1194,7 +1213,13 @@ class ServiceEnquiry(models.Model):
             # users = group.users
             # user_names = ' or '.join(users.mapped('name'))
             # Assign to dynamic status and approver_id
+            group = self.env.ref('visa_process.group_service_request_operations_manager')
+            users = group.users
+            employee = self.env['hr.employee'].search([
+            ('user_id', 'in', users.ids)
+            ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
+            line.action_user_id = employee.user_id
             self.update_pricing()
             self.send_email_to_op()
 
@@ -1236,6 +1261,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
             line.assign_govt_emp_two = True
             line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
+            line.action_user_id = line.approver_id.user_id.id
             # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
             if line.employee_id and line.service_request == 'new_ev':
                 if not line.employee_id.sponsor_id:
@@ -1265,7 +1291,7 @@ class ServiceEnquiry(models.Model):
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
             line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
-
+            line.action_user_id = line.approver_id.user_id.id
             line.state = 'payment_done'
             line.doc_uploaded = False
             if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
@@ -1285,6 +1311,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'submitted'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
+            line.action_user_id = line.approver_id.user_id.id
             if line.service_request:
                 line.assign_govt_emp_one = True
             self.update_pricing()
@@ -1397,13 +1424,16 @@ class ServiceEnquiry(models.Model):
                             line.state = 'done'
                             line.req_completion_date = fields.Datetime.now()
                             line.dynamic_action_status = f"Process Completed"
+                            line.action_user_id= False
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
                     line.dynamic_action_status = f"Process Completed"
+                    line.action_user_id= False
             else:
                 line.state = 'done'
                 line.dynamic_action_status = f"Process Completed"
+                line.action_user_id= False
                 line.req_completion_date = fields.Datetime.now()
 
     # LT Medical Health Insurance Upload end
@@ -1461,6 +1491,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_done'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
+            line.action_user_id = line.approver_id.user_id.id
 
     def action_iqama_process_complete(self):
         for line in self:
@@ -1469,6 +1500,7 @@ class ServiceEnquiry(models.Model):
                     if line.upload_iqama_card_doc and not line.iqama_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
             line.dynamic_action_status = f"Process Completed"
+            line.action_user_id=False
             line.state = 'done'
 
     # New Physical Iqama Card Request(cost 1,000sar) end
