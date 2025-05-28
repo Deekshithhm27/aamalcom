@@ -103,7 +103,7 @@
                 <notebook groups="visa_process.group_service_request_employee"
                           attrs="{'invisible': [('service_request', '!=', 'iqama_print')]}">
                     <page string="Service Pricing">
-                        <field name="service_enquiry_pricing_ids" attrs="{'readonly': [('state', '!=', 'submitted')]}">
+                        <field name="service_enquiry_pricing_ids">
                             <tree editable="bottom">
                                 <field name="service_enquiry_id" invisible="1"/>
                                 <field name="name"/>
