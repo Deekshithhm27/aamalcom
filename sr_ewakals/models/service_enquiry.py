@@ -136,7 +136,7 @@ class ServiceEnquiry(models.Model):
                 if record.attached_issued_visa_doc and not record.attached_issued_visa_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Attached Issued Visa Document")
             record.state = 'submitted'  
-            record.dynamic_action_status = "PM Needs to assign 1st GE"
+            
 
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()

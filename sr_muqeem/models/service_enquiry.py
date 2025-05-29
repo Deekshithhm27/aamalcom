@@ -37,6 +37,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Expiry of ERE")
                 if line.is_resubmission:
                     line.dynamic_action_status = 'Ticket resubmitted, Employee needs to be assigned by PM'
+                    line.action_user_id = line.approver_id.user_id.id
         return result
         
     @api.onchange('service_request')

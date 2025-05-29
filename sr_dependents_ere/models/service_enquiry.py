@@ -17,11 +17,23 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'dependents_ere':
                 record.state = 'waiting_op_approval'
-                record.dynamic_action_status = "Waiting for approval by OM"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
                 record.send_email_to_op()
 
     def action_submit(self):
         super(ServiceEnquiry, self).action_submit()
+        for record in self:
+            if record.service_request == 'dependents_ere':
+                if not record.employment_duration:
+                    raise ValidationError('Please select Duration.')
+                record.dynamic_action_status = "Waiting for Review by PM"
+                record.action_user_id = record.approver_id.user_id.id 
 
     @api.model
     def update_pricing(self):

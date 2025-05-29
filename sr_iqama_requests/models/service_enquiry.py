@@ -65,6 +65,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Confirmation Document")
 
                 line.dynamic_action_status = 'Confirmation documents uploaded, Upload of Iqama scanned copy is pending.'
+                line.action_user_id = line.first_govt_employee_id.user_id.id
                 line.state = 'confirmation_doc_submitted'
 
     def action_iqama_uploaded(self):
@@ -73,6 +74,7 @@ class ServiceEnquiry(models.Model):
                 if line.iqama_scanned_doc and not line.iqama_scanned_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Scanned Document")
                 line.dynamic_action_status = 'Iqama scanned copy is uploaded, PM needs to sent confirmation to the client'
+                line.action_user_id = line.approver_id.user_id.id
                 line.is_action_iqama_uploaded = True
                 line.state = 'iqama_state_updated'
 

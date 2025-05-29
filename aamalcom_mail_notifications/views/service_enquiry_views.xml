@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <odoo>
-    <record id="inherit_service_enquiry_form" model="ir.ui.view">
+    <record id="aamalcom_mail_notifications_service_enquiry_form" model="ir.ui.view">
         <field name="name">service.enquiry.form.inherited</field>
         <field name="model">service.enquiry</field>
         <field name="inherit_id" ref="visa_process.service_enquiry_form"/>

@@ -17,5 +17,6 @@ class EmployeeSelectionWizardInherit(models.TransientModel):
                 active_enquiry.dynamic_action_status = (
                     f"Documents upload pending by employee from {active_enquiry.assigned_department_id.name} department."
                 )
+                active_enquiry.action_user_id =self.employee_id.user_id.id
 
         return res

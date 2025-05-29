@@ -33,17 +33,17 @@ class ServiceEnquiry(models.Model):
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
     is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
+
     
     @api.onchange('exit_type')
     def _onchange_exit_type(self):
-        if self.exit_type == 'single':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'SER')]}}  # Matches any duration containing 'SER'
-        elif self.exit_type == 'multiple':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'MER')]}}  # Matches any duration containing 'MER'
-        else:
-            return {'domain': {'employment_duration': []}}
-    
-    
+        for line in self:
+            if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
+                if self.exit_type == 'single':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'SER'
+                elif self.exit_type == 'multiple':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'MER'
+        
     @api.model
     def create(self, vals):
         employee_id = vals.get('employee_id')
@@ -87,6 +87,7 @@ class ServiceEnquiry(models.Model):
                 [('service_request_type', '=', record.service_request_type),
                  ('service_request', '=', record.service_request)], limit=1)
             if record.service_request == 'exit_reentry_issuance_ext' or record.service_request == 'exit_reentry_issuance':
+                print("-------pridinc id",pricing_id)
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -145,7 +146,13 @@ class ServiceEnquiry(models.Model):
                     )
             if record.service_request == 'exit_reentry_issuance_ext' and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
-                record.dynamic_action_status = "Waiting  for approval by OH"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
         return result
 
     # Initial flow of exit_reentry_issuance
@@ -178,6 +185,7 @@ class ServiceEnquiry(models.Model):
                 if record.upload_payment_doc and not record.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
+                record.action_user_id = record.first_govt_employee_id.user_id.id
         return result
 
     
@@ -225,5 +233,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For ERE Extend Visa")
 
             record.state = 'done'  
-            record.dynamic_action_status = "Process Completed"        
+            record.dynamic_action_status = "Process Completed"  
+            record.action_user_id=False      
         return result

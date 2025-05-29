@@ -37,7 +37,7 @@
                         </group>
                     </group>
                     <notebook>
-                    	<page string="invoice_lines" >
+                    	<page string="Invoice Lines" >
                     		<field name="invoice_line_ids">
                     			<tree editable="bottom">
                     				<field name="employee_id" invisible="1"/>
