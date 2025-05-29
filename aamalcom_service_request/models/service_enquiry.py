@@ -83,7 +83,8 @@ class ServiceEnquiry(models.Model):
                 if not line.upload_old_passport_doc:
                     raise ValidationError(_("Please upload the old passport document."))
                 spoc_name = self.env.user.company_spoc_id.name if self.env.user.company_spoc_id else 'Unknown SPOC'
-                line.dynamic_action_status = _(f"Passport update request submitted for review by: {spoc_name}")
+                line.dynamic_action_status = _(f"Passport update request submitted for review by")
+                line.action_user_id = line.approver_id.user_id.id
         return True
         
     def action_process_complete(self):

@@ -7,11 +7,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'dependents_ere')]}"/>
-                    <button name="action_process_complete"
-                        string="Process Complete"
-                        type="object" class="btn-primary"
-                        attrs="{'invisible': ['|','|', ('service_request', '!=', 'dependents_ere'), ('state', '!=', 'approved'),('upload_payment_doc', '=', False)]}" 
-                        groups="visa_process.group_service_request_finance_manager"/>
+                
                     <button name="action_dependents_ere_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('service_request', '!=', 'dependents_ere')]}" groups="visa_process.group_service_request_manager"/>    
                 </xpath>
 
@@ -39,12 +35,8 @@
                 </xpath>
 
                 <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev'))]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','salary_advance'))]}</attribute>
                 </xpath>
-                <xpath expr="//button[@id='open_assign_employee_wizard_five']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', 'not in', ('payment_done', 'approved')), '|', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)]}</attribute>
-                </xpath>
-                
             </field>
         </record>
     </data>

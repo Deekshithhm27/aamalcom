@@ -146,7 +146,13 @@ class ServiceEnquiry(models.Model):
                     )
             if record.service_request == 'exit_reentry_issuance_ext' and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
-                record.dynamic_action_status = "Waiting  for approval by OH"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
         return result
 
     # Initial flow of exit_reentry_issuance
@@ -179,6 +185,7 @@ class ServiceEnquiry(models.Model):
                 if record.upload_payment_doc and not record.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
+                record.action_user_id = record.first_govt_employee_id.user_id.id
         return result
 
     
@@ -226,5 +233,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For ERE Extend Visa")
 
             record.state = 'done'  
-            record.dynamic_action_status = "Process Completed"        
+            record.dynamic_action_status = "Process Completed"  
+            record.action_user_id=False      
         return result

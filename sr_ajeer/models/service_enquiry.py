@@ -80,7 +80,13 @@ class ServiceEnquiry(models.Model):
                 if record.upload_screenshot_of_saddad and not record.saddad_number:
                     raise ValidationError("Kindly Update Saddad Number")
                 record.state = 'waiting_op_approval'
-                record.dynamic_action_status = "Waiting for approval by OM"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                line.dynamic_action_status = f"Waiting for approval by OM"
+                line.action_user_id = employee.user_id
                 record.send_email_to_op()
 
     def update_pricing(self):
@@ -114,6 +120,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Ajeer Permit Doc")
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
+                record.action_user_id= False
         return result
             
     
