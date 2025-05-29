@@ -68,16 +68,23 @@ class ServiceRequestTreasury(models.Model):
             if line.service_request_id.service_request == 'hr_card':
                 if line.service_request_id.state == 'approved':
                     line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
+                    line.service_request_id.action_user_id = line.service_request_id.first_govt_employee_id.user_id.id
             elif line.service_request_id.service_request == 'transfer_req':
                 line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by second govt employee"
+                line.service_request_id.action_user_id = line.service_request_id.second_govt_employee_id.user_id.id
             elif line.service_request_id.service_request == 'prof_change_qiwa' and (
                 line.service_request_id.billable_to_aamalcom or line.service_request_id.billable_to_client):
                 if line.service_request_id.state == 'approved':
                     line.service_request_id.dynamic_action_status = "Approved by Finance Manager. Process to be completed by first govt employee."
+                    line.service_request_id.action_user_id = line.service_request_id.first_govt_employee_id.user_id.id
             elif line.service_request_id.service_request in ['iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Second govt employee need to be assigned by PM"
+                line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
+
             elif line.service_request_id.service_request not in ['transfer_req', 'hr_card', 'iqama_renewal', 'prof_change_qiwa']:
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
+                line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
+
 
 
 

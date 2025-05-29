@@ -18,6 +18,7 @@ class EmployeeSelectionWizard(models.TransientModel):
             active_enquiry.dynamic_action_status = (
                 f"Documents upload pending by employee from {department_names} department."
             )
+            active_enquiry.action_user_id =self.employee_id.user_id.id
         if self.assign_type == 'assign':
             if self.employee_id:
                 if active_enquiry.service_request == 'new_ev':

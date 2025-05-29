@@ -11,4 +11,6 @@ class ServiceRequestTreasury(models.Model):
                 record.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
                 record.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
                 record.service_request_id.dynamic_action_status = "Approved & payment confirmation by finance manager.Employee needs to be assigned by PM."
+                record.service_request_id.action_user_id = record.service_request_id.approver_id.user_id.id
+
         return result

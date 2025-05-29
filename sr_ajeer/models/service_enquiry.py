@@ -25,14 +25,12 @@ class ServiceEnquiry(models.Model):
     upload_ajeer_permit_doc_file_name=fields.Char(string="Ajeer Permit Document")
 
 
-
     @api.onchange('ajeer_permit_type')
     def _onchange_ajeer_permit_type(self):
         if self.ajeer_permit_type == 'secondement_permit':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'SAP')]}}  # Matches any duration containing 'SAP'
+            return {'domain': {'employment_duration': [('name', 'ilike', 'Secondment Ajeer permit'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'SAP'
         elif self.ajeer_permit_type == 'contracting_permit':
-            return {'domain': {'employment_duration': [('name', 'ilike', 'ACP')]}}  # Matches any duration containing 'ACP'
-        
+            return {'domain': {'employment_duration': [('name', 'ilike', 'Contracting Ajeer permit'),('service_request_type','=',self.service_request_type)]}}  # Matches any duration containing 'ACP'
     
     def action_submit(self):
         """Validation checks before submitting the service request."""
@@ -82,7 +80,13 @@ class ServiceEnquiry(models.Model):
                 if record.upload_screenshot_of_saddad and not record.saddad_number:
                     raise ValidationError("Kindly Update Saddad Number")
                 record.state = 'waiting_op_approval'
-                record.dynamic_action_status = "Waiting for approval by OM"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
                 record.send_email_to_op()
 
     def update_pricing(self):
@@ -116,6 +120,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Ajeer Permit Doc")
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
+                record.action_user_id= False
         return result
             
     

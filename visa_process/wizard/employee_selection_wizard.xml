@@ -6,8 +6,8 @@
 	    <field name="arch" type="xml">
 	        <form>
 	            <group>
-	                <field name="employee_id"/>
-	                <field name="department_ids" widget="many2many_tags" readonly="1"/>
+	                <field name="employee_id" options="{'no_create': True, 'no_edit': True}"/>
+	                <field name="department_ids" widget="many2many_tags" readonly="1" />
 	                <field name="assign_type" readonly="1" invisible="1"/>
 	                <field name="levels" readonly="1" invisible="1"/>
 	            </group>

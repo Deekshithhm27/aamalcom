@@ -20,7 +20,7 @@
                            <field name="active" invisible="1"/>
                         </group>
                         <group string="Select Service Request to which duration is to be allocated">
-                            <field name="service_request_config_id"/>
+                            <field name="service_request_config_id" options="{'no_create': True, 'no_edit': True}"/>
                         </group>
                     </group>
                     

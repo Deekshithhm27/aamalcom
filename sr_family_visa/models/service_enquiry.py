@@ -107,6 +107,7 @@ class ServiceEnquiry(models.Model):
                 if record.upload_payment_doc and not record.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
+                record.action_user_id = record.first_govt_employee_id.user_id.id
         return result
 
     @api.depends('service_request')

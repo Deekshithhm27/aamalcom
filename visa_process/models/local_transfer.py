@@ -119,6 +119,7 @@ class LocalTransfer(models.Model):
                 line.phone_code_id = line.employee_id.phone_code_id
                 line.iqama_no = line.employee_id.iqama_no
                 line.passport_copy = line.employee_id.passport_copy
+                line.iqama = line.employee_id.iqama
 
 
     def unlink(self):
