@@ -85,8 +85,8 @@ class ServiceEnquiry(models.Model):
                 employee = self.env['hr.employee'].search([
                 ('user_id', 'in', users.ids)
                 ], limit=1)
-                line.dynamic_action_status = f"Waiting for approval by OM"
-                line.action_user_id = employee.user_id
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
                 record.send_email_to_op()
 
     def update_pricing(self):
