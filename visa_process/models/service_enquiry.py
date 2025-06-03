@@ -28,7 +28,6 @@ class ServiceEnquiry(models.Model):
     
     client_id = fields.Many2one('res.partner',string="Client Spoc",default=lambda self: self.env.user.partner_id)
     client_parent_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
-    client_spoc_id = fields.Many2one('res.partner', string='Client SPOC',default=lambda self: self.env.user.partner_id.parent_id )
 
     # priority = fields.Selection([
     #     ('clear','Clear'),
