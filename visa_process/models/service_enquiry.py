@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
+
+
 class ServiceEnquiry(models.Model):
     _name = 'service.enquiry'
     _order = 'id desc'
@@ -26,6 +28,8 @@ class ServiceEnquiry(models.Model):
     
     client_id = fields.Many2one('res.partner',string="Client Spoc",default=lambda self: self.env.user.partner_id)
     client_parent_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
+    client_spoc_id = fields.Many2one('res.partner', string='Client SPOC',default=lambda self: self.env.user.partner_id.parent_id )
+
     # priority = fields.Selection([
     #     ('clear','Clear'),
     #     ('urgent', 'Urgent'),
@@ -1016,6 +1020,10 @@ class ServiceEnquiry(models.Model):
 
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            partner_id = line.client_id.id
+            user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+            if user:
+                line.action_user_id = user.id
             line.doc_uploaded = False
 
             
@@ -1024,6 +1032,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            partner_id = line.client_id.id
+            user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+            if user:
+                line.action_user_id = user.id
             line.doc_uploaded = False
 
 
@@ -1071,6 +1083,10 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
                 line.dynamic_action_status = f'Waiting for approval by client spoc'
+                partner_id = line.client_id.id
+                user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+                if user:
+                    line.action_user_id = user.id
             else:
                 line.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
@@ -1528,7 +1544,7 @@ class ServiceEnquiry(models.Model):
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_employment_contract_doc',
-        'upload_cultural_letter_doc',
+        'upload_cultural_letter_doc','fee_receipt_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
