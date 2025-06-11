@@ -39,6 +39,7 @@ class ServiceEnquiry(models.Model):
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     action_user_id = fields.Many2one('res.users', string="Action Pending With")
     
+    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
@@ -474,6 +475,9 @@ class ServiceEnquiry(models.Model):
 
     is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
 
+    
+
+
     # @api.depends('is_client_spoc')
     def _compute_is_client_spoc(self):
         for record in self:
@@ -616,7 +620,7 @@ class ServiceEnquiry(models.Model):
             vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
         if 'profession_change_doc' in vals:
             vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
-        if 'profession_change_final_doc_' in vals:
+        if 'profession_change_final_doc' in vals:
             vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
         if 'upload_salary_certificate_doc' in vals:
             vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
@@ -1016,6 +1020,10 @@ class ServiceEnquiry(models.Model):
 
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            partner_id = line.client_id.id
+            user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+            if user:
+                line.action_user_id = user.id
             line.doc_uploaded = False
 
             
@@ -1024,6 +1032,10 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            partner_id = line.client_id.id
+            user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+            if user:
+                line.action_user_id = user.id
             line.doc_uploaded = False
 
 
@@ -1071,6 +1083,10 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
                 line.dynamic_action_status = f'Waiting for approval by client spoc'
+                partner_id = line.client_id.id
+                user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
+                if user:
+                    line.action_user_id = user.id
             else:
                 line.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
