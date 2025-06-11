@@ -8,8 +8,8 @@ from odoo.exceptions import ValidationError
 class ServiceEnquiry(models.Model):
     _inherit = 'service.enquiry'
 
-    service_request = fields.Selection(selection_add=[('muqeem_dropout', 'Muqeem Dropout')],
-                                       ondelete={'muqeem_dropout': 'cascade'})
+    service_request = fields.Selection(selection_add=[('muqeem_dropout', 'Muqeem Dropout'),('muqeem_dependents','Dependents Muqeem Details')],
+                                       ondelete={'muqeem_dropout': 'cascade','muqeem_dependents': 'cascade'})
     state = fields.Selection(selection_add=[('ere_valid', 'Valid ERE')], ondelete={'ere_valid': 'cascade'})
 
     is_inside_ksa = fields.Boolean(string="Inside KSA",
@@ -28,7 +28,26 @@ class ServiceEnquiry(models.Model):
     #         if line.service_request in 'muqeem_dropout':
     #             if line.is_inside_ksa:
     #                 raise ValidationError("Not applicable for employees inside KSA. Only applicable for those outside KSA.")
+    @api.model
+    def create(self, vals):
+        employee_id = vals.get('employee_id')
+        iqama_no = vals.get('iqama_no', 'UnknownIqama')
+        service_request_config_id = vals.get('service_request_config_id')
+        employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
+        service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
+        if 'muqeem_confirmation_doc' in vals:
+            vals['muqeem_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemDoc.pdf"
+        return super(ServiceEnquiry, self).create(vals)
 
+    def write(self, vals):
+        for record in self:
+            employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
+            iqama_no = record.iqama_no or 'UnknownIqama'
+            service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
+            if 'muqeem_confirmation_doc' in vals:
+                vals['muqeem_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MuqeemDoc.pdf"
+        return super(ServiceEnquiry, self).write(vals)
+    
     def action_submit_initiate(self):
         result = super(ServiceEnquiry, self).action_submit_initiate()
         for line in self:
@@ -59,6 +78,9 @@ class ServiceEnquiry(models.Model):
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
         for record in self:
+            if record.service_request in 'muqeem_dependents':
+                if record.muqeem_confirmation_doc and not record.muqeem_confirmation_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Muqeem Dependents Document")
             if record.service_request in 'muqeem_dropout':
                 if record.fee_receipt_doc and not record.fee_receipt_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
