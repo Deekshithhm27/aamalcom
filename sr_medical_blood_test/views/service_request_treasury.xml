@@ -1,0 +1,29 @@
+<odoo>
+    <record id="view_service_request_treasury_form_medical" model="ir.ui.view">
+        <field name="name">service.request.treasury.form.medical.blood.test</field>
+        <field name="model">service.request.treasury</field>
+        <field name="inherit_id" ref="visa_process.service_request_treasury_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_details_updated" type="object" string="Details Updated"
+                class="btn-primary" attrs="{'invisible': ['|', '|',('service_request_type', '!=', 'medical_blood_test'), ('state', '!=', 'submitted'), ('total_amount', '=', 0)]}"  groups="visa_process.group_service_request_finance_manager"/>
+            </xpath>
+            <xpath expr="//button[@name='action_upload_confirmation']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|','|',('state', '=', 'submitted'),('confirmation_doc','=',False),
+                ('service_request_type', '=', 'medical_blood_test')]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='total_amount']" position="before">
+                <field name="service_request_type" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='total_amount']" position="attributes">
+            <attribute name="readonly">0</attribute>
+            <attribute name="attrs">{'invisible': [('service_request_type', '!=', 'medical_blood_test')]}</attribute>
+            </xpath>
+            <!-- Add Clinic Name field, only if service_request_type == medical_blood_test -->
+            <xpath expr="//field[@name='total_amount']" position="after">
+                <field name="clinic_name" attrs="{'invisible': [('service_request_type', '!=', 'medical_blood_test')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
