@@ -153,12 +153,17 @@
                                 </group>
                             </group>  
                 <group attrs="{'invisible': ['|','|',('service_request', '!=', 'family_visit_visa'), ('aamalcom_pay', '!=', True),('state', 'not in', ('submitted'))]}">
-                                <group>
-                                    <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
-                                     <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
-                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>       
+                    <group>
+                        <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                        <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                        <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                    </group>
+                    <group>
+                        <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
+                        <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
+                        <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                    </group>
+                </group>       
                 
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
