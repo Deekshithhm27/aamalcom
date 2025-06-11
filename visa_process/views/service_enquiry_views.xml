@@ -82,7 +82,7 @@
 
                     
 
-                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee5" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),('assign_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),('assign_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
