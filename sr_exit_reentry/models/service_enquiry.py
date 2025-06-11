@@ -144,7 +144,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(
                         'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
                     )
-            if record.service_request == 'exit_reentry_issuance_ext' and record.aamalcom_pay:
+            if record.service_request in ['exit_reentry_issuance_ext', 'exit_reentry_issuance'] and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
                 users = group.users
