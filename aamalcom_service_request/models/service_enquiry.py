@@ -13,6 +13,7 @@ class ServiceEnquiry(models.Model):
         copy=False,ondelete={'passport_info_update': 'cascade'}
     )
     
+    process_kind = fields.Selection([('muqeem_online', 'Muqeem(Online Process)'),('jawazat_manual', 'Jawazat(Manual Process)')], string="Process Type", store=True)
     upload_new_passport_doc = fields.Binary(string="New Passport Document")
     upload_new_passport_doc_file_name = fields.Char(string="New Passport Doc")
     upload_old_passport_doc = fields.Binary(string="Old Passport Document")
@@ -110,10 +111,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if record.upload_muqeem_doc and not record.muqeem_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Document")
-                if not record.muqeem_points:
-                    raise ValidationError("Kindly Update Muqeem Points")
-
-
         return result
 
     
