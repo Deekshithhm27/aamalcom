@@ -59,31 +59,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(_("Please upload the Courier document."))
         return True
         
-    @api.model
-    def update_pricing(self):  
-        super(ServiceEnquiry, self).update_pricing()  
-        for record in self:
-            if record.service_request == 'courier_charges':
-                pricing_id = self.env['service.pricing'].search([
-                    ('service_request_type', '=', record.service_request_type),
-                    ('service_request', '=', record.service_request)], limit=1)
-                for p_line in pricing_id.pricing_line_ids:
-                    if p_line.duration_id == record.employment_duration:
-                        record.service_enquiry_pricing_ids.create({
-                            'name': pricing_id.name,
-                            'service_enquiry_id': record.id,
-                            'service_pricing_id': pricing_id.id,
-                            'service_pricing_line_id': p_line.id,
-                            'amount': p_line.amount,
-                            'remarks': p_line.remarks
-                        })
-                if record.courier_amount > 0:
-                    record.service_enquiry_pricing_ids.create({
-                        'name': 'Courier Amount',
-                        'amount': record.courier_amount,
-                        'service_enquiry_id': record.id,
-                    })
-    
 
     def action_submit_for_review_courier(self):
         for line in self:
@@ -91,18 +66,18 @@ class ServiceEnquiry(models.Model):
                 if line.upload_courier_proof_doc and not line.courier_ref:
                     raise ValidationError(_("Kindly Update Reference Number for Attached Courier Document"))
                 line.dynamic_action_status = _("Review is Pending by PM")  
+                line.action_user_id = line.approver_id.user_id.id 
                 line.state = 'submitted'
                 line.submit_clicked = True
     
     
-
 
     def action_approve(self):
         for record in self:
             if record.service_request == 'courier_charges':
                     record.state = 'approved'
                     record.dynamic_action_status = "Documents Upload Pending by 1st Govt Employee"
-                
+                    record.action_user_id = record.first_govt_employee_id.user_id.id
     
     
     def action_process_complete(self):

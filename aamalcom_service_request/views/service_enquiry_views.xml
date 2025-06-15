@@ -6,7 +6,8 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'passport_info_update')]}"/>
-                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',  ('state', '=', 'done'), '|', ('assigned_govt_emp_one', '=', False), '|', ('fee_receipt_doc', '=', False), '|', ('upload_muqeem_doc', '=', False), '|', ('service_enquiry_pricing_ids', '=', False), ('service_enquiry_pricing_ids', '=', [])]}"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|','|','|','|',  ('state', '=', 'done'), ('assigned_govt_emp_one', '=', False), ('process_kind','!=','muqeem_online'),('fee_receipt_doc', '=', False), ('upload_muqeem_doc', '=', False)]}"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|','|','|',  ('state', '=', 'done'), ('assigned_govt_emp_one', '=', False), ('process_kind','!=','jawazat_manual'),('upload_muqeem_doc', '=', False)]}"/>
             </xpath> 
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="attributes">
                 <attribute name="attrs">{'invisible': [('service_request', '=', 'passport_info_update')]}</attribute>
@@ -41,9 +42,16 @@
                 </group>
                 
             </xpath>
+             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group  attrs="{'invisible': ['|',('service_request', '!=', 'passport_info_update'),('first_govt_employee_id','=',False)]}">
+                    <group>
+                        <field name="process_kind"/>
+                    </group>
+                </group>
+            </xpath>
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                 <group  
-                       attrs="{'invisible': ['|',('service_request', '!=', 'passport_info_update'),('first_govt_employee_id','=',False)]}">
+                       attrs="{'invisible': ['|','|',('service_request', '!=', 'passport_info_update'),('process_kind','!=','muqeem_online'),('first_govt_employee_id','=',False)]}">
                     <group>
                         <field name="fee_receipt_doc" string="Fee Receipt Document" attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}"
                                filename="fee_receipt_doc_file_name"/>
@@ -53,9 +61,6 @@
                         <field name="muqeem_points" 
                                        attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
                         <field name="final_muqeem_cost" readonly="1"/>
-
-                       
-
                     </group>
                     <group>
                         <field name="upload_muqeem_doc" 
@@ -65,12 +70,23 @@
                                 <field name="muqeem_doc_ref" 
                                        attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
                     </group>
-                </group>  
+                </group> 
+                 <group  
+                       attrs="{'invisible': ['|',('service_request', '!=', 'passport_info_update'),('process_kind','!=','jawazat_manual')]}">
+                       <group>
+                        <field name="upload_muqeem_doc" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}"  
+                                       filename="upload_muqeem_doc_file_name"/>
+                                <field name="upload_muqeem_doc_file_name" invisible="1"/>
+                                <field name="muqeem_doc_ref" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
+                    </group>
+                       </group> 
             </xpath>
             <xpath expr="//field[@name='request_note']" position="before">
-                <notebook groups="visa_process.group_service_request_employee" attrs="{'invisible': [('service_request', '!=', 'passport_info_update')]}">
+                <notebook groups="visa_process.group_service_request_manager" attrs="{'invisible': [('service_request', '!=', 'passport_info_update')]}">
                     <page string="Service Pricing">
-                        <field name="service_enquiry_pricing_ids" attrs="{'readonly': [('state', '!=', 'submitted')]}">
+                        <field name="service_enquiry_pricing_ids">
                             <tree editable="bottom">
                                 <field name="service_enquiry_id" invisible="1"/>
                                 <field name="name"/>
@@ -78,7 +94,7 @@
                                 <field name="company_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="amount" sum="Total"/>
-                                <field name="remarks" invisible="1"/>
+                                <field name="remarks"/>
                             </tree>
                         </field>
                     </page>

@@ -13,6 +13,7 @@ class ServiceEnquiry(models.Model):
         copy=False,ondelete={'passport_info_update': 'cascade'}
     )
     
+    process_kind = fields.Selection([('muqeem_online', 'Muqeem(Online Process)'),('jawazat_manual', 'Jawazat(Manual Process)')], string="Process Type", store=True)
     upload_new_passport_doc = fields.Binary(string="New Passport Document")
     upload_new_passport_doc_file_name = fields.Char(string="New Passport Doc")
     upload_old_passport_doc = fields.Binary(string="Old Passport Document")
@@ -22,12 +23,24 @@ class ServiceEnquiry(models.Model):
     muqeem_doc_ref = fields.Char(string="Ref No.*")
     muqeem_points = fields.Integer(string="Points")
     final_muqeem_cost = fields.Monetary(
-    string="Final Muqeem Points Cost (with VAT)",
-    currency_field='currency_id',
-    compute='_compute_final_muqeem_cost',
-    store=True,
-    readonly=True
+        string="Final Muqeem Points Cost (with VAT)",
+        currency_field='currency_id',
+        compute='_compute_final_muqeem_cost',
     )
+
+    @api.onchange('final_muqeem_cost')
+    def _update_muqeem_pricing_line(self):
+        for line in self:
+            if line.final_muqeem_cost:
+                existing_line = line.service_enquiry_pricing_ids[:1]
+                if existing_line:
+                    existing_line.amount = line.final_muqeem_cost
+                else:
+                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                        'name': 'Muqeem Fee',
+                        'amount':line.final_muqeem_cost,
+                        'service_enquiry_id': line.id
+                        })
     @api.depends('muqeem_points')
     def _compute_final_muqeem_cost(self):
         for record in self:
@@ -36,7 +49,10 @@ class ServiceEnquiry(models.Model):
                 vat_cost = base_cost * 0.15
                 total = base_cost + vat_cost
                 record.final_muqeem_cost = round(total, 2)
-    
+            else:
+                record.final_muqeem_cost = 0.0
+
+
     
     
     @api.model
@@ -83,7 +99,8 @@ class ServiceEnquiry(models.Model):
                 if not line.upload_old_passport_doc:
                     raise ValidationError(_("Please upload the old passport document."))
                 spoc_name = self.env.user.company_spoc_id.name if self.env.user.company_spoc_id else 'Unknown SPOC'
-                line.dynamic_action_status = _(f"Passport update request submitted for review by: {spoc_name}")
+                line.dynamic_action_status = _(f"Passport update request submitted for review by")
+                line.action_user_id = line.approver_id.user_id.id
         return True
         
     def action_process_complete(self):
@@ -94,10 +111,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if record.upload_muqeem_doc and not record.muqeem_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Document")
-                if not record.muqeem_points:
-                    raise ValidationError("Kindly Update Muqeem Points")
-
-
         return result
 
     

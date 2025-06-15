@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+            <field name="name">service.enquiry.form.request.medical.blood.tes</field>
+            <field name="model">service.enquiry</field>
+            <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" 
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'medical_blood_test')]}"/>
+                <button name="action_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'not in', ('submitted')),('upload_stamped_visa_doc', '=', False),('service_request', '!=', 'medical_blood_test')]}"/>
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'medical_blood_test'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+                    </xpath>
+                    <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                    <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.action_service_request_treasury_active)d" icon="fa-bars" attrs="{'invisible':['|',('total_treasury_requests','=',0),('service_request', '!=', 'medical_blood_test')]}" groups="visa_process.group_service_request_manager">
+                            <field name="total_treasury_requests" widget="statinfo"/>
+                        </button>
+                    </xpath>
+
+                <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                    <group string="Stamped Visa Documents" name="medical_blood_test" attrs="{'invisible': ['|',('service_request', '!=', 'medical_blood_test'),('state', '=', 'draft')]}">
+                        <group>
+                        <field name="upload_stamped_visa_doc"  attrs="{'readonly': [('is_project_manager', '!=', True)]}" filename="upload_stamped_visa_doc_file_name"/>
+                        <field name="upload_stamped_visa_doc_file_name" invisible="1"/>
+                        <field name="stamped_visa_doc_ref" attrs="{'readonly': [('is_project_manager', '!=', True)]}"/>
+                    </group>
+                    </group>
+                    <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
+                        <group >
+                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name"  invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': ['|', 
+                          ('service_request', '!=', 'medical_blood_test'), 
+                          ('state', 'not in', ('payment_done', 'done', 'approved')), 
+                          ]}"> 
+                    <group>
+                        <field name="upload_medical_test_doc" 
+                       
+                        filename="upload_medical_test_doc_file_name"
+                            force_save="1"  attrs="{'readonly': [('state', '!=','approved')]}"/>
+                            <field name="upload_medical_test_doc_file_name" invisible="1"/>
+                            <field name="medical_test_doc_ref" string="Ref No.*"
+                                force_save="1" attrs="{'readonly': [('state', '!=','approved')]}"/>
+                        </group>
+                </group>
+                </xpath>
+                
+                <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'medical_blood_test'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','exit_reentry_issuance_ext','dependents_ere','medical_blood_test'))]}</attribute>
+                </xpath>
+                <xpath expr="//widget[@name='web_ribbon']" position="attributes">
+                <attribute name="attrs">
+                {'invisible': ['|', ('service_request', '=', 'medical_blood_test'), '|',('state','!=','submitted'), '|',('assign_govt_emp_one','=',False), ('assigned_govt_emp_one','=',True)]}
+                </attribute>
+            </xpath>
+                </field>
+            </record>
+        </data>
+    </odoo>

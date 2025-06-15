@@ -45,7 +45,7 @@
         							<field name="user_id" invisible="1"/>
                                     <field name="sequence" widget="handle"/>
                 					<field name="name" invisible="1"/>
-                					<field name="department_id"/>
+                					<field name="department_id" options="{'no_create': True, 'no_edit': True}"/>
                                     <field name="sequence" invisible="1"/>
                 					
                 				</tree>

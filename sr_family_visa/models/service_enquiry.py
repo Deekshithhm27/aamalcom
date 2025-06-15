@@ -47,7 +47,7 @@ class ServiceEnquiry(models.Model):
             record.family_visa_doc_uploaded = bool(
             record.upload_attested_application_doc and record.fee_receipt_doc
             or record.upload_istiqdam_form_doc
-            or record.upload_family_visit_visa_doc
+            or record.upload_family_visit_visa_doc and record.fee_receipt_doc
             or record.upload_family_visa_letter_doc
         )
 
@@ -107,6 +107,7 @@ class ServiceEnquiry(models.Model):
                 if record.upload_payment_doc and not record.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
+                record.action_user_id = record.first_govt_employee_id.user_id.id
         return result
 
     @api.depends('service_request')
@@ -134,6 +135,8 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Istiqdam form")
             if record.service_request == 'family_visit_visa':
                 if record.upload_family_visit_visa_doc and not record.family_visit_visa_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Family visit visa")      
+                    raise ValidationError("Kindly Update Reference Number for Family visit visa") 
+                if record.fee_receipt_doc and not record.fee_receipt_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Fee Receipt")     
 
     
