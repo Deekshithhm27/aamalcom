@@ -44,6 +44,8 @@ class ServiceEnquiry(models.Model):
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
         ('waiting_client_approval', 'Waiting Client Spoc Approval'),
+        ('submitted_to_insurance','Submitted to Insurance'),
+        ('submit_to_pm','Submitted to PM'),
         ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
