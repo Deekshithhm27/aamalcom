@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="transfer_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="report_data">
+                <div class="page">
+                    <h1 style="text-align: center; margin-bottom: 20px;">Transfer Request Report</h1>
+                    
+                    <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="text-align: center; padding: 8px;">Name</th>
+                                <th style="text-align: center; padding: 8px;">Iqama No</th>
+                                <th style="text-align: center; padding: 8px;">Border No</th>
+                                <th style="text-align: center; padding: 8px;">Sponsor No</th>
+                                <th style="text-align: center; padding: 8px;">Passport No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="report_data['employees']">
+                                <t t-foreach="report_data['employees']" t-as="emp">
+                                    <tr>
+                                        <td style="padding: 8px;"><t t-esc="emp.name"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-if="not report_data['employees']">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 10px;">No employees found for the selected criteria.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
