@@ -1,0 +1,23 @@
+<odoo>
+    <record id="seq_insurance_reimbursement" model="ir.sequence">
+        <field name="name">Insurance Reimbursement</field>
+        <field name="code">insurance.reimbursement</field>
+        <field name="prefix">REIMB</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+    </record>
+    <record id="seq_medical_insurance_deletion" model="ir.sequence">
+      <field name="name">Medical Insurance Deletion</field>
+      <field name="code">medical.insurance.deletion</field>
+      <field name="prefix">MID/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+    </record>
+    <record id="seq_life_insurance_deletion" model="ir.sequence">
+      <field name="name">Life Insurance Deletion</field>
+      <field name="code">life.insurance.deletion</field>
+      <field name="prefix">LID/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+    </record>
+</odoo>

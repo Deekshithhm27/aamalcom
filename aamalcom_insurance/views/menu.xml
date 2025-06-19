@@ -1,0 +1,11 @@
+<odoo>
+    <menuitem id="menu_insurance_root" name="Insurance" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager,visa_process.group_service_request_employee">
+      <menuitem id="menu_medical_insurance" name="Medical Insurance">
+        <menuitem id="menu_insurance_reimbursement" name="Reimbursements" action="action_insurance_reimbursement" groups="visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee"/>
+          <menuitem id="menu_medical_insurance_deletion" name="Deletion" action="action_medical_insurance_deletion" sequence="10"/>
+      </menuitem>
+      <menuitem id="menu_life_insurance" name="Life Insurance">
+        <menuitem id="menu_life_insurance_deletion" name="Deletion" action="action_life_insurance_deletion" sequence="10"/>
+      </menuitem>
+    </menuitem>
+</odoo>
