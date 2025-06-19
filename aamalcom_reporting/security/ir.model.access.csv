@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_onboarding_report_wizard,onboarding.report.wizard,model_onboarding_report_wizard,,1,0,0,0
+
+access_onboarding_report_wizard,access.onboarding.report.wizard,model_onboarding_report_wizard,visa_process.group_service_request_administrator,1,1,1,0
+access_onboarding_report_wizard,access.onboarding.report.wizard,model_onboarding_report_wizard,visa_process.group_service_request_employee,1,1,1,0
+
+access_muqeem_report_wizard,muqeem.report.wizard,model_muqeem_report_wizard,,1,0,0,0
+access_muqeem_report_wizard_admin,muqeem.report.wizard,model_muqeem_report_wizard,visa_process.group_service_request_administrator,1,1,1,0
+access_muqeem_report_wizard_employee,muqeem.report.wizard,model_muqeem_report_wizard,visa_process.group_service_request_employee,1,1,1,0
+
+access_transfer_req_report_wizard,transfer.report.wizard,model_transfer_report_wizard,,1,0,0,0
+access_transfer_req_report_wizard_admin,transfer.report.wizard,model_transfer_report_wizard,visa_process.group_service_request_administrator,1,1,1,0
+access_transfer_req_report_wizard_employee,transfer.report.wizard,model_transfer_report_wizard,visa_process.group_service_request_employee,1,1,1,0

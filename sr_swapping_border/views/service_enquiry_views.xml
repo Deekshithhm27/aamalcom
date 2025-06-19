@@ -1,0 +1,95 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Header Buttons -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'swapping_border_to_iqama')]}"/>
+
+                <!-- Submit Swapping (Employee) -->
+                <button name="action_submit_swapping" string="Submit for Review to PM" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_insurance'),
+                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                          '|', ('swapping_type', '!=', 'employee'),
+                                               ('upload_cchi_doc', '=', False),'|',('upload_digital_doc', '=', False)]}" groups="visa_process.group_service_request_insurance_employee"/>
+                <!-- Complete Swapping -->
+                <button name="action_process_complete_swapping" string="Process Complete" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'),
+                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                          '|', ('swapping_type', '!=', 'employee'),
+                                               ('upload_cchi_doc', '=', False)]}"
+                    groups="visa_process.group_service_request_manager"/>
+                <button name="action_submit_swapping_dependents" string="Submit for Review to PM" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_insurance'),
+                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                          '|', ('swapping_type', '!=', 'employee_dependent'),
+                                               ('upload_cchi_doc', '=', False)]}" groups="visa_process.group_service_request_insurance_employee"/>
+                <!-- Complete Swapping -->
+                <button name="action_process_complete_swapping_dependents" string="Process Complete" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'),
+                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                          '|', ('swapping_type', '!=', 'employee_dependent'),
+                                               ('upload_cchi_doc', '=', False)]}"
+                    groups="visa_process.group_service_request_manager"/>
+
+                <button name="action_process_complete_swapping" string="Process Complete" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'),
+                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                          '|', ('swapping_type', '!=', 'employee'),
+                                               ('upload_cchi_doc', '=', False)]}"
+                    groups="visa_process.group_service_request_manager"/>
+            </xpath>
+
+            <!-- Swapping Type Field -->
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="swapping_type_group"
+                       attrs="{'invisible': [('service_request', '!=', 'swapping_border_to_iqama')]}">
+                       <group>
+                    <field name="swapping_type" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+                </group>
+            </xpath>
+
+            <!-- Document Upload Section -->
+            <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+
+                <!-- For Employee -->
+                <group name="cchi_employee_group"
+                       attrs="{'invisible': ['|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                             '|', ('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),
+                                                  ('swapping_type', '!=', 'employee')]}">
+                    <group string="CCHI Document">
+                        <field name="upload_cchi_doc" filename="upload_cchi_doc_file_name"
+                               attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        <field name="upload_cchi_doc_file_name" invisible="1"/>
+                        <field name="cchi_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                    </group>
+                </group>
+
+                <!-- For Employee Dependent -->
+                <group name="cchi_dependent_group"
+                       attrs="{'invisible': ['|', ('service_request', '!=', 'swapping_border_to_iqama'),
+                                             '|',('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),
+                                                  ('swapping_type', '!=', 'employee_dependent')]}">
+                    <group string="CCHI Document">
+                        <field name="upload_cchi_doc" filename="upload_cchi_doc_file_name"
+                               attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        <field name="upload_cchi_doc_file_name" invisible="1"/>
+                        <field name="cchi_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                    </group>
+                    <group string="Digital Iqama Document">
+                        <field name="upload_digital_doc" filename="upload_digital_doc_file_name"
+                               attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        <field name="upload_digital_doc_file_name" invisible="1"/>
+                        <field name="digital_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

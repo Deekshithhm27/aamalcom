@@ -1,0 +1,141 @@
+<odoo>
+    <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
+        <field name="name">service.enquiry.form.request</field>
+        <field name="model">service.enquiry</field>
+        <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', 'not in', ('health_insurance','enrollment_for_work_visa'))]}"/>
+
+                <button name="action_submit_enrollment" type="object" class="oe_highlight" string="Submit for Review to PM" attrs="{'invisible': [ '|', ('state', '!=', 'submitted_to_insurance'),'|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'employment_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}"/>
+                <button name="action_process_complete_enrollment" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'), '|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'employment_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+
+                <button name="action_submit_enrollment" type="object" class="oe_highlight" string="Submit for Review to PM" attrs="{'invisible': [ '|', ('state', '!=', 'submitted_to_insurance'),'|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'dependent_visa'),'|',('upload_passport_doc', '=', False),('upload_birth_doc', '=', False)]}"/>
+                <button name="action_process_complete_enrollment" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': [ '|', ('state', '!=', 'submit_to_pm'),'|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'dependent_visa'),'|',('upload_passport_doc', '=', False),('upload_birth_doc', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+
+                <button name="action_submit_enrollment" type="object" class="oe_highlight" string="Submit for Review to PM" attrs="{'invisible': [ '|', ('state', '!=', 'submitted_to_insurance'),'|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'dependent_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}"/>
+                <button name="action_process_complete_enrollment" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'), '|',('service_request', '!=', 'health_insurance'),'|',('enrollment_health', '!=', 'dependent_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+
+
+
+                <button name="action_submit_enrollment" type="object" string="Submit for Review to PM" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_insurance'), '|',('service_request', '!=', 'enrollment_for_work_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}"/> 
+                 <button name="action_process_complete_enrollment" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'), '|',('service_request', '!=', 'enrollment_for_work_visa'),'|',('upload_hdf_doc', '=', False),'|',('upload_passport_doc', '=', False),'|',('upload_issued_visa_doc', '=', False),('upload_cchi_doc', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']" position="before">
+                    <group name="health_insurance" attrs="{'invisible': [('service_request', '!=', 'health_insurance')]}">
+                        <group>
+                        <field name="enrollment_health" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                    </group>
+                </xpath>
+                <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                    <group  name="health_insurance" attrs="{'invisible': ['|','|',('service_request', '!=', 'health_insurance'),('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),('enrollment_health', '!=', 'employment_visa')]}">
+                        <!--Start of Employment visa-->
+                        <group>
+                            <field name="insurance_class" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                            <field name="membership_no" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="HDF Document">
+                            <field name="upload_hdf_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_hdf_doc_file_name"/>
+                            <field name="upload_hdf_doc_file_name" invisible="1"/>
+                            <field name="hdf_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Passport Document">
+                            <field name="upload_passport_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_passport_doc_file_name"/>
+                            <field name="upload_passport_doc_file_name" invisible="1"/>
+                            <field name="passport_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Issued Visa Document">
+                            <field name="upload_issued_visa_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_issued_visa_doc_file_name"/>
+                            <field name="upload_issued_visa_doc_file_name" invisible="1"/>
+                            <field name="issued_visa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="CCHI Document">
+                            <field name="upload_cchi_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                            <field name="upload_cchi_doc_file_name" invisible="1"/>
+                            <field name="cchi_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                    </group>
+                    <!--Stop of employment visa-->
+                    <group  name="health_insurance" attrs="{'invisible': ['|','|',('service_request', '!=', 'health_insurance'),('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),('enrollment_health', '!=', 'dependent_visa')]}">
+                        <group>
+                            <field name="is_inside_ksa"/>
+                            <field name="is_outside_ksa"/>
+                        </group>
+                    </group>
+                    <group  name="health_insurance" attrs="{'invisible': ['|','|',('service_request', '!=', 'health_insurance'),('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),('enrollment_health', '!=', 'dependent_visa')]}">
+                        <!--Start of Inside KSA-->
+                        <group name="health_insurance" attrs="{'invisible': ['|','|',('service_request', '!=', 'health_insurance'),('enrollment_health', '!=', 'dependent_visa'),('is_inside_ksa','!=',True)]}">
+                            <group string="Passport Document">
+                                <field name="upload_passport_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_passport_doc_file_name"/>
+                                <field name="upload_passport_doc_file_name" invisible="1"/>
+                                <field name="passport_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                            </group>
+                            <group string="Birth Certificate Document">
+                                <field name="upload_birth_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_birth_doc_file_name"/>
+                                <field name="upload_birth_doc_file_name" invisible="1"/>
+                                <field name="birth_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                            </group>
+                        </group>
+                        <!--Stop of Inside KSA-->
+
+                        <!--Start of Outside KSa-->
+                        <group  name="health_insurance" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'health_insurance'),('state', 'not in', ('submitted_to_insurance','submit_to_pm','done')),('enrollment_health', '!=', 'dependent_visa'),('is_outside_ksa','!=',True)]}">
+                            <group string="HDF Document">
+                            <field name="upload_hdf_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_hdf_doc_file_name"/>
+                            <field name="upload_hdf_doc_file_name" invisible="1"/>
+                            <field name="hdf_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Passport Document">
+                            <field name="upload_passport_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_passport_doc_file_name"/>
+                            <field name="upload_passport_doc_file_name" invisible="1"/>
+                            <field name="passport_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Issued Visa Document">
+                            <field name="upload_issued_visa_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_issued_visa_doc_file_name"/>
+                            <field name="upload_issued_visa_doc_file_name" invisible="1"/>
+                            <field name="issued_visa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="CCHI Document">
+                            <field name="upload_cchi_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_cchi_doc_file_name"/>
+                            <field name="upload_cchi_doc_file_name" invisible="1"/>
+                            <field name="cchi_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        </group>
+                        <!--Stop of Outside KSA-->
+                    </group>
+                    <!--End of Health Insurance-->
+
+
+                    <!--Start of Enrolmment Work visa-->
+                    <group  name="health_insurance" attrs="{'invisible': ['|',('service_request', '!=', 'enrollment_for_work_visa'),('state', 'not in', ('submit_to_pm','submitted_to_insurance','done'))]}">
+                        <group string="HDF Document">
+                            <field name="upload_hdf_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_hdf_doc_file_name"/>
+                            <field name="upload_hdf_doc_file_name" invisible="1"/>
+                            <field name="hdf_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Passport Document">
+                            <field name="upload_passport_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_passport_doc_file_name"/>
+                            <field name="upload_passport_doc_file_name" invisible="1"/>
+                            <field name="passport_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="Issued Visa Document">
+                            <field name="upload_issued_visa_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_issued_visa_doc_file_name"/>
+                            <field name="upload_issued_visa_doc_file_name" invisible="1"/>
+                            <field name="issued_visa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                        <group string="CCHI Document">
+                            <field name="upload_cchi_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}" filename="upload_cchi_doc_file_name"/>
+                            <field name="upload_cchi_doc_file_name" invisible="1"/>
+                            <field name="cchi_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_insurance'),('is_service_request_client_spoc','=',True)]}"/>
+                        </group>
+                    </group>
+                    <!--End of Enrolmment Work visa-->
+
+                </xpath>
+
+
+        </field>
+    </record>
+</odoo>
