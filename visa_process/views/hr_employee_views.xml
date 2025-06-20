@@ -97,6 +97,8 @@
                             <group>
                                 <field name="passport_copy"/>
                                 <field name="degree_certificate"/>
+                                <field name="qiwa_contract_doc" filename="qiwa_contract_doc_name" readonly="1"/>
+                                <field name="qiwa_contract_doc_name" invisible="1"/>
                             </group>
                         </div>
                     </div>
