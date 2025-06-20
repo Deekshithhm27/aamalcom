@@ -12,7 +12,7 @@
 
                  <button name="action_first_govt_emp_submit_salary" string="Submit to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), '|', ('upload_qiwa_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
                  <button name="action_second_govt_emp_submit_salary" string="Submit to Payroll Manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'doc_uploaded_by_first_govt_employee'), '|', ('upload_gosi_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
-                 <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'final_clearance'),('upload_stating_doc', '=', False)]}"/>
+                 <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=', False)]}"/>
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                 <group name="final_exit" attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">

@@ -72,6 +72,10 @@
 
 
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+
+                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','done'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
+
+                    <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|',('state','!=','submit_for_review'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
                     <!-- LT Medical Health Insurance Upload end-->
 
 
@@ -82,7 +86,7 @@
 
                     
 
-                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),('assign_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
@@ -682,6 +686,16 @@
                             <field name="any_credit_note" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
+
+                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed'))]}">
+                        <group>
+                            <field name="is_inside_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="is_outside_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="remarks_for_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                        </group>
+                    </group>
                     <!-- Final exit issuance stop-->
 
 
@@ -1024,7 +1038,7 @@
                                 <group attrs="{'invisible': [('self_pay', '!=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" readonly="1" force_save="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
                                 </group>
                                 <group attrs="{'invisible': [('self_pay', '=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
@@ -1035,7 +1049,7 @@
                         </page>
                     </notebook>
                     <notebook id="notebook_seven" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('service_request', '!=', 'new_ev')]}">
-                        <page id="page_seven" string="Documents" attrs="{'invisible': [('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev')]}">
+                        <page id="page_seven" string="Documents" attrs="{'invisible': ['|','|',('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev'),('aamalcom_pay_string', '=',True)]}">
                             <group>
                                 <group attrs="{'invisible': [('state', '!=', 'submitted'), ('service_request', '!=', 'new_ev')]}">
                                     <field name="upload_proof_of_request_doc" attrs="{'readonly': [('state', 'not in',('submitted'))]}" filename="upload_proof_of_request_file_name"/>

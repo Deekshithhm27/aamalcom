@@ -39,6 +39,9 @@ class ServiceEnquiry(models.Model):
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     action_user_id = fields.Many2one('res.users', string="Action Pending With")
     is_marked = fields.Boolean(default=False)
+    is_inside_ksa = fields.Boolean(string="Inside KSA")
+    is_outside_ksa = fields.Boolean(string="Outside KSA")
+    remarks_for_ksa = fields.Text(string="Remarks")
     
     
     state = fields.Selection([
@@ -48,6 +51,8 @@ class ServiceEnquiry(models.Model):
         ('submitted_to_insurance','Submitted to Insurance'),
         ('submit_to_pm','Submitted to PM'),
         ('doc_uploaded_by_first_govt_employee','Documents uploaded By First Govt Employee'),
+        ('submit_for_review','Submit for Review'),
+        ('final_exit_confirmed','Final exit Conirmed'),
         ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
@@ -502,6 +507,16 @@ class ServiceEnquiry(models.Model):
         for record in self:
             # Check if the user is in gov employee groups
             record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee')
+
+    @api.onchange('is_inside_ksa')
+    def _onchange_is_inside_ksa(self):
+        if self.is_inside_ksa:
+            self.is_outside_ksa = False
+
+    @api.onchange('is_outside_ksa')
+    def _onchange_is_outside_ksa(self):
+        if self.is_outside_ksa:
+            self.is_inside_ksa = False
 
 
 
@@ -998,6 +1013,20 @@ class ServiceEnquiry(models.Model):
             else:
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
+
+    def action_submit_for_review_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='submit_for_review'
+                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
+                line.action_user_id=line.first_govt_employee_id.user_id.id
+
+    def final_exit_submit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit is Completed"
+                line.action_user_id=False
             
 
     def action_require_payment_confirmation(self):
