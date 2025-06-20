@@ -35,13 +35,6 @@
                                           '|', ('swapping_type', '!=', 'employee_dependent'),
                                                ('upload_cchi_doc', '=', False)]}"
                     groups="visa_process.group_service_request_manager"/>
-
-                <button name="action_process_complete_swapping" string="Process Complete" type="object" class="oe_highlight"
-                    attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'),
-                                          '|', ('service_request', '!=', 'swapping_border_to_iqama'),
-                                          '|', ('swapping_type', '!=', 'employee'),
-                                               ('upload_cchi_doc', '=', False)]}"
-                    groups="visa_process.group_service_request_manager"/>
             </xpath>
 
             <!-- Swapping Type Field -->

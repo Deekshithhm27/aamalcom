@@ -38,6 +38,7 @@ class ServiceEnquiry(models.Model):
     approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     action_user_id = fields.Many2one('res.users', string="Action Pending With")
+    is_marked = fields.Boolean(default=False)
     
     
     state = fields.Selection([
@@ -46,10 +47,12 @@ class ServiceEnquiry(models.Model):
         ('waiting_client_approval', 'Waiting Client Spoc Approval'),
         ('submitted_to_insurance','Submitted to Insurance'),
         ('submit_to_pm','Submitted to PM'),
+        ('doc_uploaded_by_first_govt_employee','Documents uploaded By First Govt Employee'),
         ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
+        ('waiting_payroll_approval','Waiting Payroll Approval'),
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
@@ -79,7 +82,6 @@ class ServiceEnquiry(models.Model):
                         line.latest_existing_request_name = latest_existing_request.display_name
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
-
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
