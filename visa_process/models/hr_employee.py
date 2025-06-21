@@ -42,6 +42,8 @@ class HrEmployee(models.Model):
 
     passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
+    qiwa_contract_doc = fields.Binary(string="Qiwa Contract")
+    qiwa_contract_doc_name = fields.Char(string="Qiwa Contract File Name")
     
     work_address = fields.Char(string="Work Address")
     personal_address = fields.Char(string="Persoanl Address")

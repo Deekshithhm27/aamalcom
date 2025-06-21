@@ -48,6 +48,30 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'salary_increase_process':
                 if not line.salary_increase:
                     raise ValidationError('Please add excepted salary amount.')
+    @api.model
+    def update_pricing(self):  
+        super(ServiceEnquiry, self).update_pricing()  
+        for record in self:
+            if record.service_request == 'salary_increase_process':
+                pricing_id = self.env['service.pricing'].search([
+                    ('service_request_type', '=', record.service_request_type),
+                    ('service_request', '=', record.service_request)], limit=1)
+                for p_line in pricing_id.pricing_line_ids:
+                    if p_line.duration_id == record.employment_duration:
+                        record.service_enquiry_pricing_ids.create({
+                            'name': pricing_id.name,
+                            'service_enquiry_id': record.id,
+                            'service_pricing_id': pricing_id.id,
+                            'service_pricing_line_id': p_line.id,
+                            'amount': p_line.amount,
+                            'remarks': p_line.remarks
+                        })
+                if record.salary_increase > 0:
+                    record.service_enquiry_pricing_ids.create({
+                        'name': 'Salary Increased Amount',
+                        'amount': record.salary_increase,
+                        'service_enquiry_id': record.id,
+                    })
     
     def action_salary_increase_submit_for_approval(self):
         for record in self:
@@ -74,10 +98,10 @@ class ServiceEnquiry(models.Model):
     def action_second_govt_emp_submit_salary(self):
         for record in self:
             if record.service_request == 'salary_increase_process':
-                if record.upload_gosi_doc and not record.qiwa_gosi_ref:
+                if record.upload_gosi_doc and not record.gosi_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for GOSI Doc")
                 record.state = 'waiting_payroll_approval'
-                # record.dynamic_action_status = "Documents Uploaded by first govt employee. Second govt employee need to be assigned by PM"
+                record.dynamic_action_status = "Documents Uploaded by second govt employee.Payroll Dept needs to close the ticket"
                 # record.action_user_id=record.approver_id.user_id.id
     
     def open_assign_employee_wizard(self):
@@ -115,8 +139,7 @@ class ServiceEnquiry(models.Model):
             }
         return super(ServiceEnquiry, self).open_assign_employee_wizard()
 
-    def action_process_complete(self):
-        result = super(ServiceEnquiry, self).action_process_complete()
+    def action_process_complete_salary_increase(self):
         for record in self:
             if record.service_request == 'salary_increase_process':
                 if record.upload_stating_doc and not record.stating_doc_ref:
@@ -124,7 +147,6 @@ class ServiceEnquiry(models.Model):
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id= False
-        return result
 
 
     

@@ -10,10 +10,7 @@ class ServiceRequestTreasuryInherit(models.Model):
     )
     clinic_name = fields.Char(string="Clinic Name")
 
-    def action_upload_confirmation(self):
-        # Call the super method to keep the existing functionality
-        super(ServiceRequestTreasuryInherit, self).action_upload_confirmation()
-        # Add custom logic for 'medical_blood_test'
+    def action_upload_confirmation_medical(self):       
         for line in self:
             if line.service_request_id.service_request == 'medical_blood_test':
                 # Upload confirmation_doc to the service.request model
@@ -24,6 +21,8 @@ class ServiceRequestTreasuryInherit(models.Model):
                     # Set the specific dynamic action status for 'medical_blood_test'
                     line.service_request_id.dynamic_action_status = "Service request approved by Finance Team.1st govt employee Needs to be assigned by PM"
                     line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
+                line.state='done'
+
          
     #This function is used to submit ticket directly to treasury dept skipping, Fm submit button
     @api.model_create_multi
@@ -37,7 +36,9 @@ class ServiceRequestTreasuryInherit(models.Model):
     def action_details_updated(self):
         for record in self:
             if record.service_request_id.service_request == 'medical_blood_test':
+                record.service_request_id.dynamic_action_status = "Waiting for approval by OM"
                 record.state = 'updated_by_treasury'
+                
 
     #It helps to set state to waiting OH approval after treasury state is set to Updated by treasury
     ## since in between no other dept is involved

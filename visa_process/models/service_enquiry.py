@@ -38,6 +38,10 @@ class ServiceEnquiry(models.Model):
     approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     action_user_id = fields.Many2one('res.users', string="Action Pending With")
+    is_marked = fields.Boolean(default=False)
+    is_inside_ksa = fields.Boolean(string="Inside KSA")
+    is_outside_ksa = fields.Boolean(string="Outside KSA")
+    remarks_for_ksa = fields.Text(string="Remarks")
     
     
     state = fields.Selection([
@@ -46,10 +50,16 @@ class ServiceEnquiry(models.Model):
         ('waiting_client_approval', 'Waiting Client Spoc Approval'),
         ('submitted_to_insurance','Submitted to Insurance'),
         ('submit_to_pm','Submitted to PM'),
+        ('doc_uploaded_by_first_govt_employee','Documents uploaded By First Govt Employee'),
+        ('submit_for_review','Submit for Review'),
+        ('final_exit_confirmed','Final exit Conirmed'),
         ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
+        ('submitted_to_treasury','Submitted to Treasury'),
+        ('waiting_payroll_approval','Waiting Payroll Approval'),
+        ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
@@ -79,7 +89,6 @@ class ServiceEnquiry(models.Model):
                         line.latest_existing_request_name = latest_existing_request.display_name
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
-
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
@@ -499,6 +508,16 @@ class ServiceEnquiry(models.Model):
         for record in self:
             # Check if the user is in gov employee groups
             record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee')
+
+    @api.onchange('is_inside_ksa')
+    def _onchange_is_inside_ksa(self):
+        if self.is_inside_ksa:
+            self.is_outside_ksa = False
+
+    @api.onchange('is_outside_ksa')
+    def _onchange_is_outside_ksa(self):
+        if self.is_outside_ksa:
+            self.is_inside_ksa = False
 
 
 
@@ -995,6 +1014,20 @@ class ServiceEnquiry(models.Model):
             else:
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
+
+    def action_submit_for_review_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='submit_for_review'
+                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
+                line.action_user_id=line.first_govt_employee_id.user_id.id
+
+    def final_exit_submit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit is Completed"
+                line.action_user_id=False
             
 
     def action_require_payment_confirmation(self):
@@ -1244,6 +1277,13 @@ class ServiceEnquiry(models.Model):
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for line in self:
+            # Check if a treasury record already exists for this service request
+            existing_doc = self.env['service.request.treasury'].sudo().search([
+            ('service_request_id', '=', line.id)
+            ], limit=1)
+
+            if existing_doc:
+                continue 
             vals = {
             'service_request_id': self.id,
             'client_id': self.client_id.id,
@@ -1363,6 +1403,11 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+            if line.service_request == 'qiwa':
+                if line.upload_qiwa_doc and not line.qiwa_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
+                if line.employee_id:
+                    line.employee_id.qiwa_contract_doc = line.upload_qiwa_doc
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:
@@ -1381,13 +1426,11 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
-                if line.upload_qiwa_doc and not line.qiwa_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
                 if line.upload_salary_certificate_doc and not line.salary_certificate_ref:
                     raise ValidationError("Kindly Update Reference Number for Salary Certificate Document")
                 if line.upload_sec_doc and not line.sec_doc_ref:
@@ -1546,7 +1589,7 @@ class ServiceEnquiry(models.Model):
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_employment_contract_doc',
-        'upload_cultural_letter_doc',
+        'upload_cultural_letter_doc','fee_receipt_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
