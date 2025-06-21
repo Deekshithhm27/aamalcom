@@ -19,4 +19,81 @@
           </p>
         </field>
     </record>
+    <record id="view_account_move_form_inherit_insurance_lines" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.insurance.lines</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Medical Insurance Invoice Details" invisible="1">
+                  <field name="medical_insurance_invoice_ids">
+                      <tree edit="0" create="0">
+                          <field name="client_emp_sequence"/>
+                          <field name="employee_id"/>
+                          <field name="iqama_no"/>
+                          <field name="sponsor_id" option="hide"/>
+                          <field name="insurance_activation_date" option="show"/>
+                          <field name="insurance_expiration_date" option="show"/>
+                          <field name="medical_class" option="hide"/>
+                          <field name="total_amount"/>
+                          <field name="insurance_type" option="hide"/>
+                          <field name="medical_insurance_invoice_id"/>
+                      </tree>
+                      <form>
+                        <group>
+                          <group>
+                            <field name="client_emp_sequence" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                          </group>
+                          <group>
+                            <field name="insurance_activation_date" readonly="1"/>
+                            <field name="insurance_expiration_date" readonly="1"/>
+                            <field name="medical_class" readonly="1"/>
+                            <field name="total_amount" readonly="1"/>
+                            <field name="insurance_type" readonly="1"/>
+                            <field name="medical_insurance_invoice_id" invisible="1"/>
+                          </group>
+                        </group>
+                      </form>
+                  </field>
+              </page>
+              <page string="Life Insurance Invoice Details" invisible="1">
+                <field name="life_insurance_invoice_ids">
+                      <tree edit="0" create="0">
+                          <field name="client_emp_sequence"/>
+                          <field name="employee_id"/>
+                          <field name="iqama_no"/>
+                          <field name="sponsor_id" option="hide"/>
+                          <field name="insurance_activation_date" option="show"/>
+                          <field name="insurance_expiration_date" option="show"/>
+                          <field name="medical_class" option="hide"/>
+                          <field name="total_amount"/>
+                          <field name="insurance_type" option="hide"/>
+                          <field name="life_insurance_invoice_id"/>
+                      </tree>
+                      <form>
+                        <group>
+                          <group>
+                            <field name="client_emp_sequence" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                          </group>
+                          <group>
+                            <field name="insurance_activation_date" readonly="1"/>
+                            <field name="insurance_expiration_date" readonly="1"/>
+                            <field name="medical_class" readonly="1"/>
+                            <field name="total_amount" readonly="1"/>
+                            <field name="insurance_type" readonly="1"/>
+                            <field name="life_insurance_invoice_id" invisible="1"/>
+                          </group>
+                        </group>
+                      </form>
+                  </field>
+              </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

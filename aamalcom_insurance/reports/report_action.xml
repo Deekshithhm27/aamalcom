@@ -1,0 +1,21 @@
+<odoo>
+    <report
+        id="action_report_medical_insurance_summary"
+        string="Insurance Summary Report"
+        model="medical.insurance.invoice.report.wizard"
+        report_type="qweb-pdf"
+        name="aamalcom_insurance.med_ins_inv_summary"
+        file="aamalcom_insurance.med_ins_inv_summary"
+        print_report_name="'Insurance Summary - %s' % (object.client_id.name)"
+    />
+
+    <report
+        id="action_report_life_insurance_summary"
+        string="Insurance Summary Report"
+        model="life.insurance.invoice.report.wizard"
+        report_type="qweb-pdf"
+        name="aamalcom_insurance.life_ins_inv_summary"
+        file="aamalcom_insurance.life_ins_inv_summary"
+        print_report_name="'Insurance Summary - %s' % (object.client_id.name)"
+    />
+</odoo>

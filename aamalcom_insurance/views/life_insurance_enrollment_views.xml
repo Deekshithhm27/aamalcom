@@ -1,0 +1,74 @@
+<odoo>
+    <record id="view_form_life_insurance_enrollment" model="ir.ui.view">
+        <field name="name">life.insurance.enrollment.form</field>
+        <field name="model">life.insurance.enrollment</field>
+        <field name="arch" type="xml">
+            <form string="Life Insurance Enrollment">
+                <header>
+                	<field name="state" widget="statusbar"/>
+                	<button name="action_submit" type="object" string="Submit" groups="visa_process.group_service_request_client_spoc" attrs="{'invisible': [('state','!=','draft')]}"/>
+                	<button name="action_confirm_activation" type="object" string="Confirm Activation" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
+                	<button name="action_done" type="object" string="Process Done" groups="visa_process.group_service_request_manager" attrs="{'invisible': [('state','!=','activated')]}"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <div class="oe_title mb24">
+                        <h1>
+                           <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+	                    <group>
+	                    	<field name="employee_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+	                    	<field name="iqama_no" attrs="{'readonly': [('state','!=','draft')]}"/>
+	                    	<field name="insurance_class" attrs="{'readonly': [('state','!=','draft')]}"/>
+	                    </group>
+	                    <group>
+	                        <field name="user_id" invisible="1"/>
+	                        <field name="active" invisible="1"/>
+	                        <field name="company_id" invisible="1"/>
+	                        <field name="client_id" invisible="1"/>
+	                        <field name="client_parent_id" invisible="1"/>
+	                        <field name="is_insurance_user" invisible="1"/>
+	                        <field name="project_manager_id" invisible="1"/>
+	                    </group>
+	                </group>
+                    <notebook>
+                    	<page string="Documents">
+                    		<group>
+                    			<group>
+	                    			<field name="passport_copy" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                    			<field name="other_document" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                    		</group>
+	                    		<group attrs="{'invisible': [('state', '=','draft')]}">
+	                    			<field name="confirmation_of_activation_doc" attrs="{'invisible':[('state','=','draft')],'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
+	                    		</group>
+                    		</group>
+                    	</page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tree_life_insurance_enrollment" model="ir.ui.view">
+        <field name="name">life.insurance.enrollment.tree</field>
+        <field name="model">life.insurance.enrollment</field>
+        <field name="arch" type="xml">
+            <tree string="Life Insurance Enrollment">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="iqama_no"/>
+                <field name='insurance_class'/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_life_insurance_enrollment" model="ir.actions.act_window">
+        <field name="name">Life Insurance Enrollment</field>
+        <field name="res_model">life.insurance.enrollment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

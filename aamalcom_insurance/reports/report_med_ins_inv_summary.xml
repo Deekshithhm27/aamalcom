@@ -1,0 +1,93 @@
+<odoo>
+    <template id="med_ins_inv_summary">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Insurance Summary Report</h2>
+                    <p><strong>Client:</strong> <t t-esc="data.get('client_name')"/></p>
+                    <p><strong>Period:</strong> <t t-esc="data.get('start_date')"/> to <t t-esc="data.get('end_date')"/></p>
+
+                    <h3>Enrollment</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee Number</th>
+                                <th>Name</th>
+                                <th>Iqama</th>
+                                <th>Medical Class</th>
+                                <th>Activation Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="enroll_total" t-value="0"/>
+                            <t t-foreach="env['medical.insurance.invoice.details'].search([
+                                ('insurance_type','=','enrollment'),
+                                ('client_parent_id','=',data.get('client_parent_id')),
+                                ('insurance_activation_date','&gt;=',data.get('start_date')),
+                                ('insurance_activation_date','&lt;=',data.get('end_date')),
+                                ('state','=','invoiced')
+                            ])" t-as="line">
+                                <tr>
+                                    <td><t t-esc="line.client_emp_sequence"/></td>
+                                    <td><t t-esc="line.employee_id.name"/></td>
+                                    <td><t t-esc="line.iqama_no"/></td>
+                                    <td><t t-esc="line.medical_class"/></td>
+                                    <td><t t-esc="line.insurance_activation_date"/></td>
+                                    <td><t t-esc="line.total_amount"/></td>
+                                </tr>
+                                <t t-set="enroll_total" t-value="enroll_total + (line.total_amount or 0)"/>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5"><strong>Total</strong></td>
+                                <td><strong><t t-esc="enroll_total"/></strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <h3>Deletion</h3>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee Number</th>
+                                <th>Name</th>
+                                <th>Iqama</th>
+                                <th>Medical Class</th>
+                                <th>Expiration Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="delete_total" t-value="0"/>
+                            <t t-foreach="env['medical.insurance.invoice.details'].search([
+                                ('insurance_type','=','deletion'),
+                                ('client_parent_id','=',data.get('client_parent_id')),
+                                ('insurance_expiration_date','&gt;=',data.get('start_date')),
+                                ('insurance_expiration_date','&lt;=',data.get('end_date')),
+                                ('state','=','invoiced')
+                            ])" t-as="line">
+                                <tr>
+                                    <td><t t-esc="line.client_emp_sequence"/></td>
+                                    <td><t t-esc="line.employee_id.name"/></td>
+                                    <td><t t-esc="line.iqama_no"/></td>
+                                    <td><t t-esc="line.medical_class"/></td>
+                                    <td><t t-esc="line.insurance_expiration_date"/></td>
+                                    <td><t t-esc="line.total_amount"/></td>
+                                </tr>
+                                <t t-set="delete_total" t-value="delete_total + (line.total_amount or 0)"/>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5"><strong>Total</strong></td>
+                                <td><strong><t t-esc="delete_total"/></strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

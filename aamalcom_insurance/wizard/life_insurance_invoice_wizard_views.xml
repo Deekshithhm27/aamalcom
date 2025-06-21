@@ -1,0 +1,57 @@
+<odoo>
+	<!-- medical insurance invoice creation wizard start-->
+    <record id="view_life_insurance_invoice_wizard_form" model="ir.ui.view">
+        <field name="name">life.insurance.invoice.wizard.form</field>
+        <field name="model">life.insurance.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Life Insurance Invoice">
+                <group>
+                    <field name="start_date" required="1"/>
+                    <field name="end_date" required="1"/>
+                    <field name="client_parent_id" required="1" options="{'no_create': True, 'no_edit': True}"/>
+                </group>
+                <footer>
+                    <button string="Generate Invoice" type="object" name="action_generate_invoice" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_life_insurance_invoice_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Life Insurance Invoice</field>
+        <field name="res_model">life.insurance.invoice.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <!-- medical insurance invoice creation wizard end-->
+	<!-- medical insurance report wizard start-->
+    <record id="view_life_insurance_report_wizard_form" model="ir.ui.view">
+        <field name="name">life.insurance.invoice.report.wizard.form</field>
+        <field name="model">life.insurance.invoice.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Life Insurance Report Wizard">
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="client_parent_id" options="{'no_create': True, 'no_edit': True}"/>
+                </group>
+                <footer>
+                    <button string="Print Report" type="object" name="action_print_report" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_life_insurance_report_wizard" model="ir.actions.act_window">
+        <field name="name">Print Life Insurance Report</field>
+        <field name="res_model">life.insurance.invoice.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <!-- medical insurance report wizard end-->
+
+
+    
+</odoo>

@@ -14,9 +14,11 @@ class LifeInsuranceDeletion(models.Model):
         group_pm = self.env.ref('visa_process.group_service_request_manager')
         if group_pm:
             res['is_pm_user'] = True
+            res['project_manager_id'] = self.env.user.partner_id.company_spoc_id.id
         if group_client in self.env.user.groups_id:
             res['client_id'] = self.env.user.partner_id.id
             res['client_parent_id'] = self.env.user.partner_id.parent_id.id
+            res['project_manager_id'] = self.env.user.partner_id.company_spoc_id.id
         return res
 
     name = fields.Char(string='Request Reference', copy=False)
@@ -28,6 +30,7 @@ class LifeInsuranceDeletion(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True,domain="[('client_parent_id','=',client_parent_id)]")
     service_enquiry_id = fields.Many2one('service.enquiry', string='Service Enquiry')
     is_pm_user = fields.Boolean(string="Is PM User")
+    project_manager_id = fields.Many2one('hr.employee',string="Project Manager")
     govt_user_id = fields.Many2one('res.users',string="Govt Employee")
 
     deletion_type = fields.Selection([
