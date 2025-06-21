@@ -5,6 +5,10 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     insurance_reimbursement_id = fields.Many2one('insurance.reimbursement',string="Reimbursement Ref")
+    invoice_type = fields.Selection(
+        selection_add=[('insurance', 'Insurance')],
+        ondelete={'insurance': 'cascade'}
+    )
 
 
     medical_insurance_invoice_ids = fields.One2many(

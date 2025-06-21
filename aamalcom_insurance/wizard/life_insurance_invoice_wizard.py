@@ -67,6 +67,7 @@ class LifeInsuranceInvoiceWizard(models.TransientModel):
         invoice_vals = {
             'move_type': 'out_invoice',
             'partner_id': self.client_parent_id.id,
+            'invoice_type':'insurance',
             'invoice_date': fields.Date.context_today(self),
             'invoice_line_ids': move_lines,
             'life_insurance_invoice_ids': insurance_line_vals,
