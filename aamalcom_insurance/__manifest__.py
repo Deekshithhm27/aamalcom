@@ -3,7 +3,7 @@
     'version': '15.0.1.0.0',
     'category': 'Human Resources',
     'summary': 'Reimbursement, Deletion, Upgrade/Downgrade, Insurance Invoice and Reports',
-    'depends': ['base', 'account', 'hr','visa_process'],
+    'depends': ['base', 'account', 'hr','visa_process','aamalcom_accounting'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
