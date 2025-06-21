@@ -57,6 +57,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
+        ('submitted_to_treasury','Submitted to Treasury'),
         ('waiting_payroll_approval','Waiting Payroll Approval'),
         ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
@@ -1276,6 +1277,13 @@ class ServiceEnquiry(models.Model):
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for line in self:
+            # Check if a treasury record already exists for this service request
+            existing_doc = self.env['service.request.treasury'].sudo().search([
+            ('service_request_id', '=', line.id)
+            ], limit=1)
+
+            if existing_doc:
+                continue 
             vals = {
             'service_request_id': self.id,
             'client_id': self.client_id.id,

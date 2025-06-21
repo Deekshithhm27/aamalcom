@@ -7,11 +7,8 @@
             <xpath expr="//header" position="inside">
                 <button name="action_details_updated" type="object" string="Details Updated"
                 class="btn-primary" attrs="{'invisible': ['|', '|',('service_request_type', '!=', 'medical_blood_test'), ('state', '!=', 'submitted'), ('total_amount', '=', 0)]}"  groups="visa_process.group_service_request_finance_manager"/>
-            </xpath>
-            <xpath expr="//button[@name='action_upload_confirmation']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|','|',('state', '=', 'submitted'),('confirmation_doc','=',False),
-                ('service_request_type', '=', 'medical_blood_test')]}
-                </attribute>
+                <button name="action_upload_confirmation_medical" type="object" string="Upload Confirmation"
+                class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'updated_by_treasury'), ('confirmation_doc','=',False)]}"  groups="visa_process.group_service_request_finance_manager"/>
             </xpath>
             <xpath expr="//field[@name='total_amount']" position="before">
                 <field name="service_request_type" invisible="1"/>
