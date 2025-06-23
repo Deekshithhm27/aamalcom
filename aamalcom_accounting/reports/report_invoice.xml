@@ -94,7 +94,12 @@
                     <table style="border:1pt solid grey;width:100%;
     height: 23px;color:black; margin-top:10pt;" class="table-condensed table-sm">
                             <tr>
-                                <td style="padding:1pt;margin:0pt;font-weight: bold;text-align:center;background-color:#DCDCDC;"><span class="text-right arabic">Tax Invoice / فاتورة ضريبية </span></td> 
+                                <t t-if="o.move_type == 'out_invoice'">
+                                    <td style="padding:1pt;margin:0pt;font-weight: bold;text-align:center;background-color:#DCDCDC;"><span class="text-right arabic">Tax Invoice / فاتورة ضريبية </span></td> 
+                                </t>
+                                <t t-if="o.move_type == 'out_refund'">
+                                    <td style="padding:1pt;margin:0pt;font-weight: bold;text-align:center;background-color:#DCDCDC;"><span class="text-right arabic">Credit Note / إشعار دائن </span></td> 
+                                </t>
                             </tr>
                     </table>
                     <div class="row" style="border:1pt solid grey;width:100%;margin-left:0px">
