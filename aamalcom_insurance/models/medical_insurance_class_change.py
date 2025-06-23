@@ -22,7 +22,7 @@ class MedicalInsuranceClassChange(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Submitted'),
-        ('submitted_to_bupa', 'Submitted to Bupa'),
+        ('submitted_to_service_provider', 'Submitted to Service Provider'),
         ('submitted_to_pm','Submitted to PM'),
         ('done', 'Completed')
     ], string='Status', default='draft', tracking=True)
@@ -37,7 +37,7 @@ class MedicalInsuranceClassChange(models.Model):
     ], string='Change Type', required=True)
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True)
 
-    muqeem_iqama_document = fields.Binary(string="Upload Muqeem/Iqama Document")
+    muqeem_iqama_document = fields.Binary(string="Muqeem/Iqama Document")
     cchi_confirmation_document = fields.Binary(string="CCHI Confirmation Document")
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
@@ -59,11 +59,11 @@ class MedicalInsuranceClassChange(models.Model):
         for line in self:
             line.state = 'submitted'
 
-    def action_submit_bupa(self):
+    def action_submit_to_provider(self):
         for line in self:
             if not self.muqeem_iqama_document:
-                raise UserError('Upload Muqeem/Iqama Document before submitting to Bupa.')
-            line.state = 'submitted_to_bupa'
+                raise UserError('Upload Muqeem/Iqama Document before submitting to Service Provider.')
+            line.state = 'submitted_to_service_provider'
 
     def action_submit_to_pm(self):
         for line in self:
