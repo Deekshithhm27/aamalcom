@@ -16,6 +16,7 @@ class LifeInsuranceDeletion(models.Model):
             res['is_pm_user'] = True
             res['project_manager_id'] = self.env.user.partner_id.company_spoc_id.id
         if group_client in self.env.user.groups_id:
+            res['is_pm_user'] = False
             res['client_id'] = self.env.user.partner_id.id
             res['client_parent_id'] = self.env.user.partner_id.parent_id.id
             res['project_manager_id'] = self.env.user.partner_id.company_spoc_id.id
@@ -29,7 +30,6 @@ class LifeInsuranceDeletion(models.Model):
     client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True,domain="[('client_parent_id','=',client_parent_id)]")
     service_enquiry_id = fields.Many2one('service.enquiry', string='Service Enquiry')
-    is_pm_user = fields.Boolean(string="Is PM User")
     project_manager_id = fields.Many2one('hr.employee',string="Project Manager")
     govt_user_id = fields.Many2one('res.users',string="Govt Employee")
 
@@ -62,12 +62,19 @@ class LifeInsuranceDeletion(models.Model):
     insurance_document = fields.Binary(string="Insurance Deletion Document")
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
+    is_pm_user = fields.Boolean(string="Is PM User",compute="_is_project_manager")
 
     def _compute_is_insurance_user(self):
         group = self.env.ref('visa_process.group_service_request_insurance_employee')
         is_user = group in self.env.user.groups_id
         for rec in self:
             rec.is_insurance_user = is_user
+
+    def _is_project_manager(self):
+        group = self.env.ref('visa_process.group_service_request_manager')
+        is_user = group in self.env.user.groups_id
+        for rec in self:
+            rec.is_pm_user = is_user
 
 
 
@@ -144,3 +151,4 @@ class LifeInsuranceDeletion(models.Model):
         if not self.insurance_document and self.deletion_type in ('iqama_transfer'):
             raise UserError('Upload Insurance Deletion document before confirmation.')
         self.state = 'insurance_upload'
+
