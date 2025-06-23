@@ -37,7 +37,7 @@ class LifeInsuranceClassChange(models.Model):
     ], string='Change Type', required=True)
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True)
 
-    muqeem_iqama_document = fields.Binary(string="Upload Muqeem/Iqama Document")
+    muqeem_iqama_document = fields.Binary(string="Muqeem/Iqama Document")
     cchi_confirmation_document = fields.Binary(string="CCHI Confirmation Document")
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
