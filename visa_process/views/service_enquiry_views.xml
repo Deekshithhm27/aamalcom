@@ -320,6 +320,13 @@
                                      <field name="profession_change_doc_file_name"  invisible="1"/>
                                     <field name="profession_change_doc_ref" attrs="{'readonly': [('state', '!=', 'submitted')]}" force_save="1"/>
                                 </group>
+                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('service_request', '!=','prof_change_qiwa'),('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','='
+
+                                    ,True)]}">
+                                    <field name="upload_payment_doc" readonly="1" force_save="1" filename="upload_payment_doc_file_name"/>
+                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
+                                    <field name="payment_doc_ref" readonly="1"/>
+                                </group>
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False)]}">
                                 <group>
