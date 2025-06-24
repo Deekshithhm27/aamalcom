@@ -1408,6 +1408,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
                 if line.employee_id:
                     line.employee_id.qiwa_contract_doc = line.upload_qiwa_doc
+                    line.employee_id.qiwa_contract_sr_no = line.name
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:
