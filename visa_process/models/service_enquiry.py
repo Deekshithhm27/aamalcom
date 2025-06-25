@@ -1284,6 +1284,7 @@ class ServiceEnquiry(models.Model):
             existing_doc = self.env['service.request.treasury'].sudo().search([
             ('service_request_id', '=', line.id)
             ], limit=1)
+            line.state='approved'
 
             if existing_doc:
                 continue 

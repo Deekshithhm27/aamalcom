@@ -15,12 +15,14 @@ class ServiceEnquiry(models.Model):
 
     )
 
-    upload_stamped_visa_doc=fields.Binary(string="Upload Stamped Visa Document")
+    upload_stamped_visa_doc=fields.Binary(string="Stamped Visa Document")
     stamped_visa_doc_ref=fields.Char(string="Ref No.*")
     upload_stamped_visa_doc_file_name=fields.Char(string="Stamped Visa Document")
-    upload_medical_test_doc=fields.Binary(string="Upload Medical Test Document")
+    upload_medical_test_doc=fields.Binary(string="Medical Test Document")
     medical_test_doc_ref=fields.Char(string="Ref No.*")
     upload_medical_test_doc_file_name=fields.Char(string="Medical Test Document")
+    clinic_name = fields.Char(string="Clinic Name")
+    total_price = fields.Monetary(string="Price")
 
     def action_submit(self):
         """Validation checks before submitting the service request."""
@@ -31,13 +33,18 @@ class ServiceEnquiry(models.Model):
                 line.action_user_id=line.approver_id.user_id.id
 
 
+   
+
+
     def action_submit_to_treasury(self):
+        current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for line in self:
         # Check if a treasury record already exists for this service request
             existing_doc = self.env['service.request.treasury'].sudo().search([
             ('service_request_id', '=', line.id)
             ], limit=1)
-            current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
+            if existing_doc:
+                continue 
             for line in self:
                 vals = {
                 'service_request_id': self.id,
@@ -51,7 +58,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Stamped Visa Document")
                 if service_request_treasury_id :
                     line.state="submitted_to_treasury"
-                    line.dynamic_action_status = "Submitted to the Treasury Department by PM. Document upload confirmation is pending by Treasury"
+                    line.dynamic_action_status = "Submitted to the Treasury Department by PM,Review is pending by Treasury"
                     finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
                     line.action_user_id = finance_manager.user_id
 

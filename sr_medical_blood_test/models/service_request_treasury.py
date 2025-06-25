@@ -10,6 +10,7 @@ class ServiceRequestTreasuryInherit(models.Model):
     )
     clinic_name = fields.Char(string="Clinic Name")
 
+    
     def action_upload_confirmation_medical(self):       
         for line in self:
             if line.service_request_id.service_request == 'medical_blood_test':
@@ -36,8 +37,24 @@ class ServiceRequestTreasuryInherit(models.Model):
     def action_details_updated(self):
         for record in self:
             if record.service_request_id.service_request == 'medical_blood_test':
-                record.service_request_id.dynamic_action_status = "Waiting for approval by OM"
+                record.service_request_id.write({'clinic_name': record.clinic_name})
+                record.service_request_id.write({'total_price':record.total_amount})
+                record.service_request_id.dynamic_action_status = "Waiting for approval by OH"
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.service_request_id.action_user_id = employee.user_id
                 record.state = 'updated_by_treasury'
+
+    @api.onchange('service_request_id')
+    def _onchange_service_request_id_state(self):
+        # This will only trigger when service_request_id is changed on the form
+        # It's better to use a computed field or override write method for state sync
+        if self.service_request_id and self.service_request_id.state == 'approved':
+            self.state = 'approved'
+        
                 
 
     #It helps to set state to waiting OH approval after treasury state is set to Updated by treasury

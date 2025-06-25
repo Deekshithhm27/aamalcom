@@ -6,15 +6,9 @@
             <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" 
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'medical_blood_test')]}"/>
-                <button name="action_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'not in', ('submitted')),('upload_stamped_visa_doc', '=', False),('service_request', '!=', 'medical_blood_test')]}"/>
-                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'medical_blood_test'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
-                    </xpath>
-                    <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
-                    <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.action_service_request_treasury_active)d" icon="fa-bars" attrs="{'invisible':['|',('total_treasury_requests','=',0),('service_request', '!=', 'medical_blood_test')]}" groups="visa_process.group_service_request_manager">
-                            <field name="total_treasury_requests" widget="statinfo"/>
-                        </button>
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'medical_blood_test')]}"/>
+                    <button name="action_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'not in', ('submitted')),('upload_stamped_visa_doc', '=', False),('service_request', '!=', 'medical_blood_test')]}"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'medical_blood_test'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     </xpath>
 
                 <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
@@ -25,18 +19,24 @@
                         <field name="stamped_visa_doc_ref" attrs="{'readonly': [('is_project_manager', '!=', True)]}"/>
                     </group>
                     </group>
-                    <!-- <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
+                    <group  name="medical_blood_test" attrs="{'invisible': ['|',('service_request', '!=', 'medical_blood_test'),('state', 'not in', ('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','done'))]}">
+                        <group>
+                        <field name="total_price"  readonly="1"/>
+                        <field name="clinic_name"  readonly="1"/>
+                    </group>
+                    </group>
+                    <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
                         <group >
                             <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                             <field name="upload_payment_doc_file_name"  invisible="1"/>
                             <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                         </group>
-                    </group> -->
+                    </group>
                     <group attrs="{'invisible': ['|', 
                           ('service_request', '!=', 'medical_blood_test'), 
                           ('state', 'not in', ('payment_done', 'done', 'approved')), 
                           ]}"> 
-                    <group>
+                    <group string="Medical Blood Test Document">
                         <field name="upload_medical_test_doc" 
                        
                         filename="upload_medical_test_doc_file_name"
