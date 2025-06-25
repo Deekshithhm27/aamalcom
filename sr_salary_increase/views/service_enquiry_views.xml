@@ -6,81 +6,71 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'salary_increase_process')]}"/>
-                 <button name="action_salary_increase_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_manager"/>
-                 <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ('payment_done', 'approved')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_one', '=', True)]}" groups="visa_process.group_service_request_manager"/>
-                 <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ('payment_done', 'doc_uploaded_by_first_govt_employee')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+                
+                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|','|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '=', True),('assigned_govt_emp_two', '=', False)]}" groups="visa_process.group_service_request_manager"/>
 
-                 <button name="action_first_govt_emp_submit_salary" string="Submit to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), '|', ('upload_qiwa_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
-                 <button name="action_second_govt_emp_submit_salary" string="Submit to Payroll Manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'doc_uploaded_by_first_govt_employee'), '|', ('upload_gosi_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
-                 <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=', False)]}"/>
+                <button name="action_first_govt_emp_submit_salary" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_qiwa_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_second_govt_emp_submit_salary" string="Submit to Payroll Manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'doc_uploaded_by_first_govt_employee'), '|', ('upload_gosi_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_process_complete_salary_increase" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=', False)]}"/>
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                 <group name="final_exit" attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">
                     <group>
-                        <field name="doj" readonly="1"/>
+                        <field name="doj" readonly="1" force_save="1"/>
                         <field name="year_of_service" readonly="1"/>
                         <field name="salary_increase" attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
                 </group>
-    
             </xpath>
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
+                <!-- This group's visibility depends on 'medical_blood_test' and state -->
                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
-                        <group >
-                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
-                            <field name="upload_payment_doc_file_name"  invisible="1"/>
-                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                        </group>
+                    <group >
+                        <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                        <field name="upload_payment_doc_file_name"  invisible="1"/>
+                        <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                     </group>
-                <group attrs="{'invisible': ['|', 
-                          ('service_request', '!=', 'salary_increase_process'), 
-                          ('state', 'not in', ('payment_done', 'done', 'approved','waiting_payroll_approval','doc_uploaded_by_first_govt_employee'
-                        )), 
-                          ]}"> 
-                <group>
-                        <field name="upload_qiwa_doc" 
-                        filename="upload_qiwa_doc_file_name"
-                            force_save="1"  attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc', '=', True)]}"/>
-                            <field name="upload_qiwa_doc_file_name" invisible="1"/>
-                            <field name="qiwa_doc_ref" string="Ref No.*"
-                                force_save="1" attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc', '=', True)]}"/>
-                        </group>
+                </group>
+                <!-- Qiwa Doc Upload Group -->
+                <group attrs="{'invisible': ['|',
+                            ('service_request', '!=', 'salary_increase_process'),
+                            ('state', '=', 'draft'),
+                            ]}">
+                    <group>
+                        <field name="upload_qiwa_doc"
+                            filename="upload_qiwa_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
+                        <field name="upload_qiwa_doc_file_name" invisible="1"/>
+                        <field name="qiwa_doc_ref" string="Ref No.*"
+                            force_save="1" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                     </group>
-                <group attrs="{'invisible': ['|', 
-                          ('service_request', '!=', 'salary_increase_process'), 
-                          ('state', 'not in', ('payment_done', 'done', 'approved','waiting_payroll_approval','doc_uploaded_by_first_govt_employee'
-                        )), 
-                          ]}"> 
-                <group>
-                        <field name="upload_gosi_doc" 
-                        filename="upload_gosi_doc_file_name"
-                            force_save="1"  attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
-                            <field name="upload_gosi_doc_file_name" invisible="1"/>
-                            <field name="gosi_doc_ref" string="Ref No.*"
-                                force_save="1" attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
-                        </group>
+                </group>
+                <!-- Gosi Doc Upload Group -->
+                <group attrs="{'invisible': ['|',
+                            ('service_request', '!=', 'salary_increase_process'),
+                            ('state', 'not in', ('payment_done', 'done', 'approved','waiting_payroll_approval','doc_uploaded_by_first_govt_employee'
+                                )),
+                            ]}">
+                    <group>
+                        <field name="upload_gosi_doc"
+                            filename="upload_gosi_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
+                        <field name="upload_gosi_doc_file_name" invisible="1"/>
+                        <field name="gosi_doc_ref" string="Ref No.*"
+                            force_save="1" attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
                     </group>
-                <group attrs="{'invisible': ['|', 
-                          ('service_request', '!=', 'salary_increase_process'), 
-                          ('state', 'not in', ('done', 'waiting_payroll_approval')), 
-                          ]}"> 
-                <group>
-                        <field name="upload_stating_doc" 
-                        filename="upload_stating_doc_file_name"
-                            force_save="1"  attrs="{'readonly': [('state', '!=','waiting_payroll_approval')]}"/>
-                            <field name="upload_stating_doc_file_name" invisible="1"/>
-                            <field name="stating_doc_ref" string="Ref No.*"
-                                force_save="1" attrs="{'readonly': [('state', '!=','waiting_payroll_approval')]}"/>
-                        </group>
+                </group>
+                <!-- Stating Doc Upload Group -->
+                <group attrs="{'invisible': ['|',
+                            ('service_request', '!=', 'salary_increase_process'),
+                            ('state', 'not in', ('done', 'waiting_payroll_approval')),
+                            ]}">
+                    <group>
+                        <field name="upload_stating_doc"
+                            filename="upload_stating_doc_file_name" force_save="1"  attrs="{'readonly': [('state', '!=','waiting_payroll_approval')]}"/>
+                        <field name="upload_stating_doc_file_name" invisible="1"/>
+                        <field name="stating_doc_ref" string="Ref No.*"
+                            force_save="1" attrs="{'readonly': [('state', '!=','waiting_payroll_approval')]}"/>
                     </group>
-            </xpath>
-            <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_increase_process'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','exit_reentry_issuance_ext','dependents_ere','medical_blood_test','salary_increase_process'))]}</attribute>
-                </xpath>
-                <xpath expr="//widget[@name='web_ribbon']" position="attributes">
-                <attribute name="attrs">
-                {'invisible': ['|', ('service_request', '=', 'salary_increase_process'), '|',('state','!=','submitted'), '|',('assign_govt_emp_one','=',False), ('assigned_govt_emp_one','=',True)]}
-                </attribute>
+                </group>
             </xpath>
         </field>
     </record>
