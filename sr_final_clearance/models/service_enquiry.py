@@ -83,7 +83,21 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'final_clearance':
                 record.state = 'waiting_hr_approval'
                 record.dynamic_action_status = "Waiting for Approval by HR"
+                group = self.env.ref('visa_process.group_service_request_hr_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.action_user_id = employee.user_id
                 # record.action_user_id=record.approver_id.user_id.id
+    
+    def action_approve_by_hr(self):
+        for record in self:
+            if record.service_request == 'final_clearance':
+                record.state = 'approved'
+                record.dynamic_action_status='Documents Uploaded Pending by second govt employee'
+                record.action_user_id=second_govt_employee_id.user_id.id
+
 
     def action_process_complete_final_clearance(self):
         for record in self:
