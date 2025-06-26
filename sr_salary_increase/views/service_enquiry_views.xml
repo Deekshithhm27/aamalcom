@@ -7,11 +7,11 @@
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'salary_increase_process')]}"/>
                 
-                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|','|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '=', True),('assigned_govt_emp_two', '=', False)]}" groups="visa_process.group_service_request_manager"/>
+                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '=', True)]}" groups="visa_process.group_service_request_manager"/>
 
                 <button name="action_first_govt_emp_submit_salary" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_qiwa_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
                 <button name="action_second_govt_emp_submit_salary" string="Submit to Payroll Manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'doc_uploaded_by_first_govt_employee'), '|', ('upload_gosi_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
-                <button name="action_process_complete_salary_increase" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=', False)]}"/>
+                <button name="action_process_complete_salary_increase" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=',False)]}" groups="visa_process.group_service_request_payroll_manager"/>
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                 <group name="final_exit" attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">
