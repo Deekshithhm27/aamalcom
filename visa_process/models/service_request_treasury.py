@@ -30,7 +30,7 @@ class ServiceRequestTreasury(models.Model):
     total_amount = fields.Monetary(string="Price")
     issue_date = fields.Date(string='Issue Date')
 
-    state = fields.Selection([('draft','Draft'),('updated_by_treasury','Waiting for Approval'),('approved','Approved'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
+    state = fields.Selection([('draft','Draft'),('updated_by_treasury','Waiting for Approval'),('passed_to_treasury','Passed to Treasury'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
     confirmation_doc = fields.Binary(string="Confirmation Doc*")
     confirmation_doc_ref = fields.Char(string="Ref No.*")

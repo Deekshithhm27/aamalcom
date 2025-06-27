@@ -32,22 +32,22 @@
                            <field name="client_parent_id" readonly="1"/>
                            <field name="client_id" readonly="1"/>
                            <field name="employment_duration" readonly="1"/>
-                           <field name="total_amount" readonly="1"/>
+                           <field name="total_amount" attrs="{'readonly':[('state','!=','passed_to_treasury')]}"/>
                         </group>
                     </group>
-                    <notebook attrs="{'invisible':[('state','=','draft')]}">
+                    <notebook id="notebook_treasury" attrs="{'invisible':[('state','=','draft')]}">
                     	<page string="Documents">
                     		<group>
                     			<group string="Confirmation Document">
-                    				<field name="confirmation_doc" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="confirmation_doc_ref" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="issue_date" attrs="{'readonly': [('state', '=','done')],'invisible': [('state','=','draft')]}"/>
+                    				<field name="confirmation_doc" attrs="{'readonly':[('state','!=','submitted')]}"/>
+                                    <field name="confirmation_doc_ref" attrs="{'readonly':[('state','!=','submitted')]}"/>
+                                    <field name="issue_date" attrs="{'readonly': [('state','!=','submitted')],'invisible': [('state','=','draft')]}"/>
                     			</group>
                                 <group string="Bank Receipts">
-                                    <field name="bank_receipt_one" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="bank_receipt_two" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="bank_receipt_three" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="other_doc" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="bank_receipt_one" attrs="{'readonly':[('state','!=','submitted')]}"/>
+                                    <field name="bank_receipt_two" attrs="{'readonly':[('state','!=','submitted')]}"/>
+                                    <field name="bank_receipt_three" attrs="{'readonly':[('state','!=','submitted')]}"/>
+                                    <field name="other_doc" attrs="{'readonly':[('state','!=','submitted')]}"/>
                                 </group>
                     		</group>
                     	</page>

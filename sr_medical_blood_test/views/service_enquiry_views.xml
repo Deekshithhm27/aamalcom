@@ -8,15 +8,16 @@
                 <xpath expr="//header" position="inside">
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'medical_blood_test')]}"/>
                     <button name="action_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'not in', ('submitted')),('upload_stamped_visa_doc', '=', False),('service_request', '!=', 'medical_blood_test')]}"/>
+                    <button name="action_finance_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','waiting_fin_approval')]}" groups="visa_process.group_service_request_finance_manager"/>
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'medical_blood_test'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     </xpath>
 
                 <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
                     <group string="Stamped Visa Documents" name="medical_blood_test" attrs="{'invisible': ['|',('service_request', '!=', 'medical_blood_test'),('state', '=', 'draft')]}">
                         <group>
-                        <field name="upload_stamped_visa_doc"  attrs="{'readonly': [('is_project_manager', '!=', True)]}" filename="upload_stamped_visa_doc_file_name"/>
+                        <field name="upload_stamped_visa_doc"  attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}" filename="upload_stamped_visa_doc_file_name"/>
                         <field name="upload_stamped_visa_doc_file_name" invisible="1"/>
-                        <field name="stamped_visa_doc_ref" attrs="{'readonly': [('is_project_manager', '!=', True)]}"/>
+                        <field name="stamped_visa_doc_ref" attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}"/>
                     </group>
                     </group>
                     <group  name="medical_blood_test" attrs="{'invisible': ['|',('service_request', '!=', 'medical_blood_test'),('state', 'not in', ('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','done'))]}">
@@ -25,13 +26,15 @@
                         <field name="clinic_name"  readonly="1"/>
                     </group>
                     </group>
-                    <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
+                     <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
                         <group >
-                            <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc" readonly="1" filename="upload_payment_doc_file_name"/>
                             <field name="upload_payment_doc_file_name"  invisible="1"/>
-                            <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
+                            <field name="payment_doc_ref" readonly="1"/>
                         </group>
-                    </group>
+                    </group> 
+                   
+
                     <group attrs="{'invisible': ['|', 
                           ('service_request', '!=', 'medical_blood_test'), 
                           ('state', 'not in', ('payment_done', 'done', 'approved')), 
@@ -54,6 +57,11 @@
                 <xpath expr="//widget[@name='web_ribbon']" position="attributes">
                 <attribute name="attrs">
                 {'invisible': ['|', ('service_request', '=', 'medical_blood_test'), '|',('state','!=','submitted'), '|',('assign_govt_emp_one','=',False), ('assigned_govt_emp_one','=',True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_finance_approved']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('state','!=','waiting_fin_approval'), ('service_request', '=', 'medical_blood_test')]}
                 </attribute>
             </xpath>
                 </field>

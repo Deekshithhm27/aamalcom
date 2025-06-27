@@ -29,12 +29,8 @@ class ServiceEnquiry(models.Model):
         super(ServiceEnquiry, self).action_submit()
         for line in self:
             if line.service_request == 'medical_blood_test':
-                line.dynamic_action_status = "Waiting for approval by PM"
+                line.dynamic_action_status = "PM needs to upload document"
                 line.action_user_id=line.approver_id.user_id.id
-
-
-   
-
 
     def action_submit_to_treasury(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
@@ -57,7 +53,7 @@ class ServiceEnquiry(models.Model):
                     if line.upload_stamped_visa_doc and not line.stamped_visa_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Stamped Visa Document")
                 if service_request_treasury_id :
-                    line.state="submitted_to_treasury"
+                    line.state="passed_to_treasury"
                     line.dynamic_action_status = "Submitted to the Treasury Department by PM,Review is pending by Treasury"
                     finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
                     line.action_user_id = finance_manager.user_id
@@ -92,6 +88,36 @@ class ServiceEnquiry(models.Model):
                 },
             }
         return super(ServiceEnquiry, self).open_assign_employee_wizard()
+
+    def action_finance_submit_to_treasury(self):
+        current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
+        for record in self:
+            if record.service_request == 'medical_blood_test':
+                record.state = 'submitted_to_treasury'
+                record.dynamic_action_status = "Review to be done by Treasury Department"
+                record.gm_approver_id = current_employee
+                finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
+                record.action_user_id = finance_manager.user_id
+                treasury_record = self.env['service.request.treasury'].sudo().search([
+                    ('service_request_id', '=', record.id)
+                ], limit=1) # Use limit=1 as there should be only one treasury record per service request
+                if treasury_record:
+                    treasury_record.write({'state': 'submitted'})
+                else:
+                    # Handle the case where a treasury record might not exist yet.
+                    # This might happen if 'action_submit_to_treasury' wasn't called first.
+                    # You might want to create it here or raise a warning.
+                    # For now, let's create it if it doesn't exist, mirroring action_submit_to_treasury's creation logic.
+                    vals = {
+                        'service_request_id': record.id,
+                        'client_id': record.client_id.id,
+                        'client_parent_id': record.client_id.parent_id.id,
+                        'employee_id': record.employee_id.id,
+                        'state': 'submitted_to_treasury', # Set state directly upon creation
+                    }
+                    self.env['service.request.treasury'].sudo().create(vals)
+
+
 
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
