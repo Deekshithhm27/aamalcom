@@ -122,7 +122,7 @@ class ServiceEnquiry(models.Model):
                 return {
                     'name': 'Select Employee',
                     'type': 'ir.actions.act_window',
-                    'res_model': 'employee.selection.wizard',Add commentMore actions
+                    'res_model': 'employee.selection.wizard',
                     'view_mode': 'form',
                     'target': 'new',
                     'context': {
