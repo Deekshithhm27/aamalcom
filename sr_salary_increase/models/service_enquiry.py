@@ -100,52 +100,38 @@ class ServiceEnquiry(models.Model):
                 record.send_email_to_op()
 
     def open_assign_employee_wizard(self):
-        self.ensure_one()
-
-        if self.service_request != 'salary_increase_process':
-            return super(ServiceEnquiry, self).open_assign_employee_wizard()
-
-        department_ids = []
-        level = ''
-
-        if self.state == 'submitted':
-            level = 'level1'
-        elif self.state == 'doc_uploaded_by_first_govt_employee':
-            if not self.assigned_govt_emp_two:
-                level = 'level2'
-            else:
-                raise UserError(_("Second government employee is already assigned."))
-
-        if not level:
-            raise UserError(_("No employee assignment is required for the current state or configuration."))
-
-        req_lines = self.service_request_config_id.service_department_lines
-        sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
-        
-        found_department = False
-        for lines in sorted_lines:
-            if (level == 'level1' and lines.sequence == 1) or \
-               (level == 'level2' and lines.sequence == 2):
-                department_ids.append((4, lines.department_id.id))
-                found_department = True
-                break
-
-        if not found_department:
-              raise UserError(_("No department configuration found for the current assignment level."))
-
-        return {
-            'name': 'Select Employee',
-            'type': 'ir.actions.act_window',
-            'res_model': 'employee.selection.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_department_ids': department_ids,
-                'default_assign_type': 'assign',
-                'default_levels': level,
-                'current_service_enquiry_id': self.id,
-            },
-        }
+        for line in self:
+            if line.service_request == 'salary_increase_process':
+                department_ids = []
+                level = ''
+                if line.state == 'submitted':
+                    level = 'level1'
+                if line.state == 'doc_uploaded_by_first_govt_employee' and not line.assigned_govt_emp_two:
+                    level = 'level2'
+                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assigned_govt_emp_two:
+                    level = 'level2'
+                req_lines = line.service_request_config_id.service_department_lines
+                sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
+                for lines in sorted_lines:
+                    if level == 'level1':
+                        department_ids.append((4, lines.department_id.id))
+                        break
+                    elif level == 'level2' and lines.sequence == 2:
+                        department_ids.append((4, lines.department_id.id))
+                        break
+                return {
+                    'name': 'Select Employee',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'employee.selection.wizard',Add commentMore actions
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_department_ids': department_ids,
+                        'default_assign_type': 'assign',
+                        'default_levels': level,
+                    },
+                }
+        return super(ServiceEnquiry, self).open_assign_employee_wizard()
 
     def action_first_govt_emp_submit_salary(self):
         for record in self:
