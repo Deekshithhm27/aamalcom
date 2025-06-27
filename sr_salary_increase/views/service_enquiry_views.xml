@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="service_enquiry_form_inherit_for_service" model="ir.ui.view">
         <field name="name">service.enquiry.form.request</field>
@@ -7,19 +8,47 @@
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'salary_increase_process')]}"/>
                 
-                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '=', True)]}" groups="visa_process.group_service_request_manager"/>
+                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ('doc_uploaded_by_first_govt_employee')), ('service_request', '!=', 'salary_increase_process'), ('assigned_govt_emp_two', '!=', False)]}" groups="visa_process.group_service_request_manager"/>
 
                 <button name="action_first_govt_emp_submit_salary" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_qiwa_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
                 <button name="action_second_govt_emp_submit_salary" string="Submit to Payroll Manager" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'doc_uploaded_by_first_govt_employee'), '|', ('upload_gosi_doc', '=', False),  ('service_request', '!=', 'salary_increase_process')]}" groups="visa_process.group_service_request_employee"/>
                 <button name="action_process_complete_salary_increase" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'salary_increase_process'),('upload_stating_doc', '=',False)]}" groups="visa_process.group_service_request_payroll_manager"/>
             </xpath>
+            
+            
+
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                 <group name="final_exit" attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">
                     <group>
                         <field name="doj" readonly="1" force_save="1"/>
                         <field name="year_of_service" readonly="1"/>
-                        <field name="salary_increase" attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
+                </group>
+            </xpath>
+                    <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="final_exit" attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">
+                    <!-- NEW: Proposed Salary Breakup section -->
+                    <group>
+                        <notebook attrs="{'invisible': [('service_request', '!=', 'salary_increase_process')]}">
+                            <page string="Proposed Salary Breakup" name="proposed_salary_breakup_page">
+                                <field name="client_salary_rule_ids">
+                                    <tree string="Salary Breakup" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name" required="1"/>
+                                        <field name="amount" required="1" sum="Total Proposed"/>
+                                    </tree>
+                                    <form string="Salary Breakup Line">
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="amount"/>
+                                        </group>
+                                    </form>
+                                </field>
+                                
+                            </page>
+                        </notebook>
+                    </group>
+                    <!-- End of NEW Proposed Salary Breakup section -->
                 </group>
             </xpath>
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
@@ -27,15 +56,15 @@
                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
                     <group >
                         <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
-                        <field name="upload_payment_doc_file_name"  invisible="1"/>
+                        <field name="upload_payment_doc_file_name" invisible="1"/>
                         <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
                     </group>
                 </group>
                 <!-- Qiwa Doc Upload Group -->
                 <group attrs="{'invisible': ['|',
-                            ('service_request', '!=', 'salary_increase_process'),
-                            ('state', '=', 'draft'),
-                            ]}">
+                                ('service_request', '!=', 'salary_increase_process'),
+                                ('state', '=', 'draft'),
+                                ]}">
                     <group>
                         <field name="upload_qiwa_doc"
                             filename="upload_qiwa_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
@@ -46,10 +75,10 @@
                 </group>
                 <!-- Gosi Doc Upload Group -->
                 <group attrs="{'invisible': ['|',
-                            ('service_request', '!=', 'salary_increase_process'),
-                            ('state', 'not in', ('payment_done', 'done', 'approved','waiting_payroll_approval','doc_uploaded_by_first_govt_employee'
-                                )),
-                            ]}">
+                                ('service_request', '!=', 'salary_increase_process'),
+                                ('state', 'not in', ('payment_done', 'done', 'approved','waiting_payroll_approval','doc_uploaded_by_first_govt_employee'
+                                    )),
+                                ]}">
                     <group>
                         <field name="upload_gosi_doc"
                             filename="upload_gosi_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
@@ -60,9 +89,9 @@
                 </group>
                 <!-- Stating Doc Upload Group -->
                 <group attrs="{'invisible': ['|',
-                            ('service_request', '!=', 'salary_increase_process'),
-                            ('state', 'not in', ('done', 'waiting_payroll_approval')),
-                            ]}">
+                                ('service_request', '!=', 'salary_increase_process'),
+                                ('state', 'not in', ('done', 'waiting_payroll_approval')),
+                                ]}">
                     <group>
                         <field name="upload_stating_doc"
                             filename="upload_stating_doc_file_name" force_save="1"  attrs="{'readonly': [('state', '!=','waiting_payroll_approval')]}"/>

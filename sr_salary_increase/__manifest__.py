@@ -15,9 +15,9 @@ This module provides a centralized platform to manage and configure service requ
     'website': 'http://www.lucidspire.com',
     'depends': ['base', 'mail', 'visa_process','account','aamalcom_payroll'],
     'data': [
+    'security/ir.model.access.csv',
     'views/service_enquiry_views.xml', 
-    'views/emp_salary_views.xml' 
-    # 'views/service_request_treasury.xml'  
+    'views/emp_salary_views.xml'  
     ],
     "price": 0.0,
     "currency": "EUR",

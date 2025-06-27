@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError, UserError
-from datetime import date
-from dateutil.relativedelta import relativedelta
+from datetime import date, datetime # Import datetime for contract dates
+from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU # Import weekdays for relativedelta
 
 class ServiceEnquiry(models.Model):
     _inherit = "service.enquiry"
+
+    employee_id = fields.Many2one('hr.employee', string='Employee')
 
     service_request = fields.Selection(
         selection_add=[('salary_increase_process', 'Salary Increase Process')],
@@ -13,21 +18,29 @@ class ServiceEnquiry(models.Model):
         copy=False,
         ondelete={'salary_increase_process': 'cascade'}
     )
-    employee_id = fields.Many2one('hr.employee', string='Employee')
-    client_salary_rule_ids = fields.One2many('se.emp.salary.line', 'service_enquiry_id', string="Salary Structure")
+    # This field already exists to hold the proposed salary breakup for the service request
+    client_salary_rule_ids = fields.One2many('se.emp.salary.line', 'service_enquiry_id', string="Proposed Salary Breakup")
+    
     year_of_service = fields.Char(string="Service Period", readonly=True, compute="_compute_service_period")
-    salary_increase = fields.Monetary(string="Salary Increase", currency_field='currency_id')
     upload_stating_doc = fields.Binary(string="Upload Stating Document")
     upload_stating_doc_file_name = fields.Char(string="Stating Document")
     stating_doc_ref = fields.Char(string="Ref No.*")
 
     @api.onchange('employee_id')
     def onchange_employee_update_data(self):
+        """
+        Original onchange method, now also calls the new method
+        to populate salary lines on service request.
+        """
         for line in self:
-            if line.employee_id: 
+            if line.employee_id:
                 line.doj = line.employee_id.doj
+                # Call the new method to populate the salary lines
+                line._onchange_employee_populate_salary_lines()
             else:
-                line.doj = False 
+                line.doj = False
+                # Clear existing salary lines if employee is unselected
+                line.client_salary_rule_ids = [(5, 0, 0)] # Command to clear all existing lines
 
     @api.depends('employee_id', 'employee_id.doj')
     def _compute_service_period(self):
@@ -40,12 +53,38 @@ class ServiceEnquiry(models.Model):
             else:
                 record.year_of_service = "N/A"
 
+    def _onchange_employee_populate_salary_lines(self):
+        """
+        Populates the client_salary_rule_ids (se.emp.salary.line)
+        with the employee's current salary structure (emp.salary.line).
+        This provides a starting point for the client to modify the breakup.
+        """
+        self.ensure_one()
+        if not self.employee_id:
+            self.client_salary_rule_ids = [(5, 0, 0)] # Clear lines if no employee
+            return
+
+        # Clear existing lines on the service request first to avoid duplicates
+        self.client_salary_rule_ids = [(5, 0, 0)]
+
+        # Iterate over the employee's current salary lines and create copies for the service request
+        new_lines = []
+        for emp_salary_line in self.employee_id.client_salary_rule_ids:
+            new_lines.append((0, 0, {
+                'name': emp_salary_line.name.id, # Link to hr.client.salary.rule
+                'sequence': emp_salary_line.sequence,
+                'amount': emp_salary_line.amount,
+                # 'last_update_date': emp_salary_line.last_update_date, # Optional: copy this if you want it editable on SR
+            }))
+        self.client_salary_rule_ids = new_lines
+
     def action_submit(self):
         super(ServiceEnquiry, self).action_submit()
         for line in self:
             if line.service_request == 'salary_increase_process':
-                if not line.salary_increase:
-                    raise ValidationError('Please add salary amount.')
+                if not line.client_salary_rule_ids: # Changed validation from salary_increase to client_salary_rule_ids
+                    raise ValidationError('Please provide the salary breakup details.')
+                
 
     def action_salary_increase_submit_for_approval(self):
         for record in self:
@@ -61,38 +100,52 @@ class ServiceEnquiry(models.Model):
                 record.send_email_to_op()
 
     def open_assign_employee_wizard(self):
-        for line in self:
-            if line.service_request == 'salary_increase_process':
-                department_ids = []
-                level = ''
-                if line.state == 'submitted':
-                    level = 'level1'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and not line.assigned_govt_emp_two:
-                    level = 'level2'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assigned_govt_emp_two:
-                    level = 'level2'
-                req_lines = line.service_request_config_id.service_department_lines
-                sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
-                for lines in sorted_lines:
-                    if level == 'level1':
-                        department_ids.append((4, lines.department_id.id))
-                        break
-                    elif level == 'level2' and lines.sequence == 2:
-                        department_ids.append((4, lines.department_id.id))
-                        break
-                return {
-                    'name': 'Select Employee',
-                    'type': 'ir.actions.act_window',
-                    'res_model': 'employee.selection.wizard',
-                    'view_mode': 'form',
-                    'target': 'new',
-                    'context': {
-                        'default_department_ids': department_ids,
-                        'default_assign_type': 'assign',
-                        'default_levels': level,
-                    },
-                }
-        return super(ServiceEnquiry, self).open_assign_employee_wizard()
+        self.ensure_one()
+
+        if self.service_request != 'salary_increase_process':
+            return super(ServiceEnquiry, self).open_assign_employee_wizard()
+
+        department_ids = []
+        level = ''
+
+        if self.state == 'submitted':
+            level = 'level1'
+        elif self.state == 'doc_uploaded_by_first_govt_employee':
+            if not self.assigned_govt_emp_two:
+                level = 'level2'
+            else:
+                raise UserError(_("Second government employee is already assigned."))
+
+        if not level:
+            raise UserError(_("No employee assignment is required for the current state or configuration."))
+
+        req_lines = self.service_request_config_id.service_department_lines
+        sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
+        
+        found_department = False
+        for lines in sorted_lines:
+            if (level == 'level1' and lines.sequence == 1) or \
+               (level == 'level2' and lines.sequence == 2):
+                department_ids.append((4, lines.department_id.id))
+                found_department = True
+                break
+
+        if not found_department:
+              raise UserError(_("No department configuration found for the current assignment level."))
+
+        return {
+            'name': 'Select Employee',
+            'type': 'ir.actions.act_window',
+            'res_model': 'employee.selection.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_department_ids': department_ids,
+                'default_assign_type': 'assign',
+                'default_levels': level,
+                'current_service_enquiry_id': self.id,
+            },
+        }
 
     def action_first_govt_emp_submit_salary(self):
         for record in self:
@@ -110,6 +163,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for GOSI Doc")
                 record.state = 'waiting_payroll_approval'
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
+                record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
                 group = self.env.ref('visa_process.group_service_request_payroll_manager')
                 users = group.users
                 employee = self.env['hr.employee'].search([
@@ -117,59 +171,48 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.action_user_id = employee.user_id
 
+
     def action_process_complete_salary_increase(self):
         for record in self:
             if record.service_request == 'salary_increase_process':
                 if record.upload_stating_doc and not record.stating_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Stating Doc")
-                # Validate if an employee is linked to the service request
-                if not record.employee_id:
-                    raise ValidationError("No employee linked to this service request. Cannot update salary.")
-                # Validate if the salary increase amount is provided and positive
-                if not record.salary_increase or record.salary_increase <= 0:
-                    raise ValidationError("Salary Increase amount must be a positive value to apply an increase.")
-                # ---Custom Salary Update Logic ---
+                
                 employee = record.employee_id
-                basic_salary_rule = self.env['hr.client.salary.rule'].search([('code', '=', 'Basic')], limit=1)
-                if not basic_salary_rule:
-                    basic_salary_rule = self.env['hr.client.salary.rule'].search([('name', '=', 'Basic')], limit=1)
-                if not basic_salary_rule:
-                    raise ValidationError(
-                        "The 'Basic' salary structure type (hr.client.salary.rule) was not found. "
-                        "Please ensure a salary rule with 'Code' or 'Name' as 'Basic' exists in your system."
-                    )
-                existing_basic_salary_line = employee.client_salary_rule_ids.filtered(
-                    lambda line: line.name.id == basic_salary_rule.id
-                )
-                if existing_basic_salary_line:
-                    # Get the current basic salary
-                    current_basic_salary = existing_basic_salary_line.amount
-                    # Calculate the new basic salary by ADDING the increase
-                    new_basic_salary = current_basic_salary + record.salary_increase
+                
+                # --- NEW LOGIC: Update employee's main salary structure ---
+                # 1. Clear existing salary lines on the employee record
+                employee.client_salary_rule_ids = [(5, 0, 0)]
+                
+                # 2. Create new salary lines on the employee record based on the service enquiry's proposed lines
+                new_employee_salary_lines = []
+                for se_salary_line in record.client_salary_rule_ids:
+                    new_employee_salary_lines.append((0, 0, {
+                        'name': se_salary_line.name.id,
+                        'sequence': se_salary_line.sequence,
+                        'amount': se_salary_line.amount,
+                        'employee_id': employee.id, # Ensure the link to the employee is set
+                    }))
+                employee.client_salary_rule_ids = new_employee_salary_lines
+                # --- END NEW LOGIC ---
 
-                    # Update the existing 'Basic' salary line with the new calculated amount
-                    existing_basic_salary_line.write({'amount': new_basic_salary})
-                    # Log the update in the chatter of the service request
-                    record.message_post(body=f"Updated Basic Salary for employee "
-                                           f"<b>{employee.name}</b> from {current_basic_salary} {record.currency_id.symbol} "
-                                           f"to <b>{new_basic_salary} {record.currency_id.symbol}</b> "
-                                           f"(+{record.salary_increase} {record.currency_id.symbol} increase) "
-                                           f"from Service Request <b>{record.name}</b>.")
+                # Now, call confirm_salary_details which will use the newly updated employee salary lines
+                employee.confirm_salary_details()
+                
                 record.state = 'done'
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id = False
-
-
+                
 
 class EmpSalaryLines(models.Model):
-    _name = "se.emp.salary.line" 
+    _name = "se.emp.salary.line"
     _order = 'sequence asc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
     _description = "Employee Salary Line for Service Enquiry"
 
-    name = fields.Many2one('hr.client.salary.rule',string="Structure Type")
+    name = fields.Many2one('hr.client.salary.rule',string="Structure Type", required=True)
     sequence = fields.Integer(string="Sequence",related="name.sequence",store=True)
 
-    service_enquiry_id = fields.Many2one('service.enquiry',string="Service Enquiry") # Corrected model name
-    amount = fields.Float(string="Amount")
+    service_enquiry_id = fields.Many2one('service.enquiry',string="Service Enquiry")
+    amount = fields.Float(string="Amount", required=True)
