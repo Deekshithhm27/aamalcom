@@ -36,11 +36,11 @@
                         groups="visa_process.group_service_request_manager"/>
             </xpath>
             <!--            Hides the first button of open_assign_employee_wizard from the Visa Process module, showing it here.-->
-            <xpath expr="//form/header/button[@name='open_assign_employee_wizard']" position="attributes">
+            <!-- <xpath expr="//form/header/button[@name='open_assign_employee_wizard']" position="attributes">
                 <attribute name="attrs">{'invisible':
                     ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev','exit_reentry_issuance_ext'))]}
                 </attribute>
-            </xpath>
+            </xpath> -->
             <!--            Hides the widget from the Visa Process module, showing it here (submit approval flow).-->
             <xpath expr="//sheet/widget[1]" position="attributes">
                 <attribute name="attrs">{'invisible':

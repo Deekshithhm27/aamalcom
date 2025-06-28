@@ -71,16 +71,7 @@
                             </field>
                         </page>
                     </notebook>
-                </xpath>
-                <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','exit_reentry_issuance_ext','dependents_ere'))]}</attribute>
-                </xpath>
-                <xpath expr="//button[@id='open_assign_employee_wizard_five']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'salary_advance'), '|', ('state', 'not in', ('payment_done', 'approved')), '|', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)]}</attribute>
-                </xpath>
-                <!-- <xpath expr="//notebook[@id='service_pricing_notebook']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['&',('service_request', '=', 'salary_advance'),('invoiced','!=','True')]}</attribute>
-                </xpath>  -->   
+                </xpath>  
             </field>
         </record>
     </data>

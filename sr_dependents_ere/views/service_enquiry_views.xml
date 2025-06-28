@@ -34,9 +34,6 @@
                     </group>
                 </xpath>
 
-                <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('service_request', '=', 'dependents_ere'), '|', ('state', '!=', 'submitted'), '|', ('assign_govt_emp_one', '=', False), '|', ('assigned_govt_emp_one', '=', True), ('service_request', 'in', ('iqama_card_req', 'new_ev','salary_advance'))]}</attribute>
-                </xpath>
             </field>
         </record>
     </data>
