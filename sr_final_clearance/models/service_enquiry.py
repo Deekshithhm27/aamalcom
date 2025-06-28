@@ -95,7 +95,7 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'final_clearance':
                 record.state = 'approved'
                 record.dynamic_action_status='Documents Uploaded Pending by second govt employee'
-                record.action_user_id=record.fsecond_govt_employee_id.user_id.id
+                record.action_user_id=record.second_govt_employee_id.user_id.id
 
 
     def action_process_complete_final_clearance(self):
