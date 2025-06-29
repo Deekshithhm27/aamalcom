@@ -110,11 +110,10 @@ class LifeInsuranceDeletion(models.Model):
 
     
 
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('life.insurance.deletion')
-        res = super(LifeInsuranceDeletion,self).create(vals_list)
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('life.insurance.deletion')
+        res = super(LifeInsuranceDeletion,self).create(vals)
         return res
 
     def action_submit(self):

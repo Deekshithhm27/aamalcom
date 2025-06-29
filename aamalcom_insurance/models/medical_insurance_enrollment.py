@@ -91,12 +91,10 @@ class MedicalInsuranceEnrollment(models.Model):
                 line.absher_with_border_doc = False
                 line.dependent_visa_doc = False
 
-
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.enrollment')
-        res = super(MedicalInsuranceEnrollment,self).create(vals_list)
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.enrollment')
+        res = super(MedicalInsuranceEnrollment,self).create(vals)
         return res
 
     def _compute_is_insurance_user(self):

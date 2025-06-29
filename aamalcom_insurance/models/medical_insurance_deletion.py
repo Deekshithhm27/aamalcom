@@ -113,12 +113,10 @@ class MedicalInsuranceDeletion(models.Model):
             self.service_enquiry_id = False
             return {'domain': {'service_enquiry_id': [('id', '=', 0)]}}
 
-
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.deletion')
-        res = super(MedicalInsuranceDeletion,self).create(vals_list)
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.deletion')
+        res = super(MedicalInsuranceDeletion,self).create(vals)
         return res
 
     def action_submit(self):
