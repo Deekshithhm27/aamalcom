@@ -75,6 +75,8 @@ class HrEmployee(models.Model):
     country_of_birth = fields.Many2one('res.country', string="Issuance of Passport - Country", groups="hr.group_hr_user", tracking=True)
     passport_issuance_city = fields.Char(string="Issuance of Passport - City")
 
+    member_no = fields.Char(string="Member No")
+
 
     @api.model
     def update_iqama_number(self):

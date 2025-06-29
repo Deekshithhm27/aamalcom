@@ -63,6 +63,7 @@
                 <field name="surname"/>
                 <field name="given_name"/>
                 <field name="client_emp_sequence" attrs="{'invisible':[('service_request_type','=',False)]}"/>
+                <field name="member_no" attrs="{'invisible':[('service_request_type','=',False)]}"/>
                 <field name="hr_employee_company_id" groups="visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator" attrs="{'invisible':[('service_request_type','!=',False)]}"/>
                 <field name="custom_employee_type" invisible="0"/>
                 <field name="client_parent_id" invisible="1"/>
