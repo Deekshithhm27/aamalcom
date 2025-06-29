@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 class MedicalInsuranceClassChange(models.Model):
     _name = 'medical.insurance.class.change'
     _description = 'Medical Insurance Upgrade/Downgrade'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     @api.model
     def default_get(self, fields_list):

@@ -37,8 +37,9 @@ class LifeInsuranceEnrollment(models.Model):
 
 
     passport_copy = fields.Binary(string="Passport")
+    iqama_doc = fields.Binary(string="Iqama Document")
     other_document = fields.Binary(string="Other Document")
-    confirmation_of_activation_doc = fields.Binary(string="Confirmation of Activation Document")
+    confirmation_of_activation_doc = fields.Binary(string="Document - Confirmation of Activation")
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 

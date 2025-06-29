@@ -13,6 +13,17 @@ class ServiceEnquiry(models.Model):
     
     def action_process_complete(self):
         for record in self:
+            if record.service_request == 'hr_card':
+                swapping_id = self.env['swapping.border.to.iqama'].create({
+                    'client_id': record.client_id.id,
+                    'client_parent_id':record.client_id.parent_id.id,
+                    'service_enquiry_id': record.id,
+                    'employee_id':record.employee_id.id,
+                    'swapping_type':'employee',
+                    'project_manager_id':record.client_id.company_spoc_id.id,
+                    'residance_doc':record.residance_doc,
+                    'muqeem_print_doc'record.muqeem_print_doc
+                })
             if record.service_request == 'final_exit_issuance':
                 medical_insurance_deletion = self.env['medical.insurance.deletion'].create({
                     'client_id': record.client_id.id,

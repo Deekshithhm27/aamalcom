@@ -61,7 +61,7 @@ class MedicalInsuranceInvoiceWizard(models.TransientModel):
             	'employee_id': line.employee_id.id,
                 'name': f"{line.employee_id.name or ''} - Deletion ({line.medical_class or ''})",
                 'quantity': 1,
-                'price_unit': line.total_amount or 0.0,
+                'price_unit': - line.total_amount or 0.0,
             }))
 
         invoice_vals = {

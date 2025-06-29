@@ -1,4 +1,3 @@
-# File: aamalcom_insurance/models/medical_insurance_deletion.py
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -47,8 +46,9 @@ class MedicalInsuranceDeletion(models.Model):
         ('submitted','Submitted'),
         ('sent_govt_confirmation', 'Sent for Govt Team Confirmation'),
         ('govt_confirmation_received', 'Govt Team Confirmation Received'),
-        ('pm_confirmation', 'PM Confirmed'),
-        ('insurance_upload', 'Insurance Upload'),
+        ('exit_confirmed', 'Exit Confirmed'),
+        ('documents_uploaded', 'Documents Uploaded'),
+        ('upload_document','Pending Document Upload - Insurance'),
         ('done', 'Completed')
     ], string='Status', default='draft', tracking=True)
 
@@ -66,6 +66,8 @@ class MedicalInsuranceDeletion(models.Model):
     confirmed_by_insurance = fields.Many2one('res.users', string='Confirmed by Insurance', readonly=True)
 
     insurance_document = fields.Binary(string="Insurance Deletion Document")
+    absconding_insurance_document = fields.Binary(string="Insurance Deletion Document")
+    not_returned_insurance_document = fields.Binary(string="Insurance Deletion Document")
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
     is_govt_user = fields.Boolean(string="Is Govt User", compute='_compute_is_govt_user')
     is_pm_user = fields.Boolean(string="Is PM User",compute="_is_project_manager")
@@ -124,7 +126,7 @@ class MedicalInsuranceDeletion(models.Model):
         if self.deletion_type in ('final_exit','absconding','not_returned'):
             self.state = 'submitted'
         if self.deletion_type == 'iqama_transfer':
-            self.state = 'insurance_upload'
+            self.state = 'upload_document'
 
     def action_get_confirmation(self):
         self.ensure_one()
@@ -135,6 +137,8 @@ class MedicalInsuranceDeletion(models.Model):
         # if not self.env.user.has_group('visa_process.group_service_request_employee'):
         #     raise UserError('You are not authorized to confirm as Govt team.')
         self.govt_user_id = self.env.user.id
+        if not self.is_inside_ksa and not self.is_outside_ksa:
+            raise UserError("Choose whether Employee is Inside or Outside KSA before Confirming")
         self.state = 'govt_confirmation_received'
 
     def action_pm_confirm_exit(self):
@@ -142,13 +146,19 @@ class MedicalInsuranceDeletion(models.Model):
         # if not self.env.user.has_group('visa_process.group_service_request_manager'):
         #     raise UserError('Only Project Manager can perform this action.')
         self.confirmed_by_pm = self.env.user.id
-        self.state = 'pm_confirmation'
+        self.is_outside_ksa = True
+        self.is_inside_ksa = False
+        self.state = 'exit_confirmed'
 
     def action_insurance_confirm(self):
         self.ensure_one()
         # if not self.env.user.has_group('visa_process.group_service_request_insurance_employee'):
         #     raise UserError('Only Insurance team can perform this action.')
-        if not self.insurance_document and self.deletion_type in ('iqama_transfer','absconding','not_returned'):
+        if not self.insurance_document and self.deletion_type == 'iqama_transfer':
+            raise UserError('Upload Insurance Deletion document before confirmation.')
+        if not self.absconding_insurance_document and self.deletion_type == 'absconding':
+            raise UserError('Upload Insurance Deletion document before confirmation.')
+        if not self.not_returned_insurance_document and self.deletion_type == 'not_returned':
             raise UserError('Upload Insurance Deletion document before confirmation.')
         self.confirmed_by_insurance = self.env.user.id
         self.state = 'done'
@@ -163,6 +173,9 @@ class MedicalInsuranceDeletion(models.Model):
             raise UserError('Upload Exit but not returned Muqeem Document before confirmation.')
         if self.env.user.has_group('visa_process.group_service_request_employee'):
             self.govt_user_id = self.env.user.id
-        self.state = 'insurance_upload'
+        if self.deletion_type == 'final_exit':
+            self.state = 'documents_uploaded'
+        else:
+            self.state = 'upload_document'
 
 

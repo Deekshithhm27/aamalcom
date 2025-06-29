@@ -43,8 +43,9 @@ class LifeInsuranceDeletion(models.Model):
         ('submitted','Submitted'),
         ('sent_govt_confirmation', 'Sent for Govt Team Confirmation'),
         ('govt_confirmation_received', 'Govt Team Confirmation Received'),
-        ('pm_confirmation', 'PM Confirmed'),
-        ('insurance_upload', 'Insurance Upload'),
+        ('exit_confirmed', 'Exit Confirmed'),
+        ('documents_uploaded', 'Documents Uploaded'),
+        ('upload_document','Pending Document Upload - Insurance'),
         ('done', 'Completed')
     ], string='Status', default='draft', tracking=True)
 
@@ -62,6 +63,7 @@ class LifeInsuranceDeletion(models.Model):
     insurance_document = fields.Binary(string="Insurance Deletion Document")
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
+    is_govt_user = fields.Boolean(string="Is Govt User", compute='_compute_is_govt_user')
     is_pm_user = fields.Boolean(string="Is PM User",compute="_is_project_manager")
 
     def _compute_is_insurance_user(self):
@@ -69,6 +71,12 @@ class LifeInsuranceDeletion(models.Model):
         is_user = group in self.env.user.groups_id
         for rec in self:
             rec.is_insurance_user = is_user
+
+    def _compute_is_govt_user(self):
+        group = self.env.ref('visa_process.group_service_request_employee')
+        is_user = group in self.env.user.groups_id
+        for rec in self:
+            rec.is_govt_user = is_user
 
     def _is_project_manager(self):
         group = self.env.ref('visa_process.group_service_request_manager')
@@ -114,7 +122,7 @@ class LifeInsuranceDeletion(models.Model):
         if self.deletion_type in ('final_exit'):
             self.state = 'submitted'
         if self.deletion_type == 'iqama_transfer':
-            self.state = 'insurance_upload'
+            self.state = 'upload_document'
 
     def action_get_confirmation(self):
         self.ensure_one()
@@ -125,6 +133,8 @@ class LifeInsuranceDeletion(models.Model):
         # if not self.env.user.has_group('visa_process.group_service_request_employee'):
         #     raise UserError('You are not authorized to confirm as Govt team.')
         self.govt_user_id = self.env.user.id
+        if not self.is_inside_ksa and not self.is_outside_ksa:
+            raise UserError("Choose whether Employee is Inside or Outside KSA before Confirming")
         self.state = 'govt_confirmation_received'
 
     def action_pm_confirm_exit(self):
@@ -132,7 +142,9 @@ class LifeInsuranceDeletion(models.Model):
         # if not self.env.user.has_group('visa_process.group_service_request_manager'):
         #     raise UserError('Only Project Manager can perform this action.')
         self.confirmed_by_pm = self.env.user.id
-        self.state = 'pm_confirmation'
+        self.is_outside_ksa = True
+        self.is_inside_ksa = False
+        self.state = 'exit_confirmed'
 
     def action_insurance_confirm(self):
         self.ensure_one()
@@ -145,10 +157,7 @@ class LifeInsuranceDeletion(models.Model):
 
     def action_docs_uploaded(self):
         self.ensure_one()
-
         if self.deletion_type == 'final_exit' and (not self.exit_stamp or not self.muqeem_report):
             raise UserError('Upload required documents before confirmation.')
-        if not self.insurance_document and self.deletion_type in ('iqama_transfer'):
-            raise UserError('Upload Insurance Deletion document before confirmation.')
-        self.state = 'insurance_upload'
+        self.state = 'documents_uploaded'
 

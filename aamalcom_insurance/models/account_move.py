@@ -19,6 +19,7 @@ class AccountMove(models.Model):
         'account.move.life.insurance.line', 'life_move_id',
         string='Life Insurance Invoice Details'
     )
+    insurance_inv_ref = fields.Char(string="Insurance Inv Ref")
 
     def action_post(self):
         res = super(AccountMove, self).action_post()

@@ -1,9 +1,11 @@
 <odoo>
     <menuitem id="menu_insurance_root" name="Insurance" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager,visa_process.group_service_request_employee">
       <menuitem id="menu_medical_insurance" name="Medical Insurance">
-        <menuitem id="menu_insurance_reimbursement" name="Reimbursements" action="action_insurance_reimbursement" groups="visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="1"/>
-        <menuitem id="menu_medical_insurance_class_change" name="Upgrade/Downgrade" action="action_medical_insurance_class_change" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="2"/>
-          <menuitem id="menu_medical_insurance_deletion" name="Deletion" action="action_medical_insurance_deletion" sequence="3"/>
+        <menuitem id="menu_medical_insurance_enrollment" name="Enrollment" action="action_medical_insurance_enrollment" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="1"/>
+        <menuitem id="menu_insurance_reimbursement" name="Reimbursements" action="action_insurance_reimbursement" groups="visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="2"/>
+        <menuitem id="menu_medical_insurance_class_change" name="Upgrade/Downgrade" action="action_medical_insurance_class_change" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="3"/>
+        <menuitem id="menu_medical_insurance_deletion" name="Deletion" action="action_medical_insurance_deletion" sequence="4"/>
+        <menuitem id="menu_swapping_border_to_iqama" name="Swapping Border to Iqama" action="action_swapping_border_to_iqama" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="5"/>
       </menuitem>
       <menuitem id="menu_life_insurance" name="Life Insurance">
         <menuitem id="menu_life_insurance_enrollment" name="Enrollment" action="action_life_insurance_enrollment" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="1"/>
