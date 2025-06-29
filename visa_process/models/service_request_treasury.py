@@ -30,7 +30,7 @@ class ServiceRequestTreasury(models.Model):
     total_amount = fields.Monetary(string="Price")
     issue_date = fields.Date(string='Issue Date')
 
-    state = fields.Selection([('draft','Draft'),('updated_by_treasury','Updated By Treasury'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
+    state = fields.Selection([('draft','Draft'),('updated_by_treasury','Waiting for Approval'),('passed_to_treasury','Passed to Treasury'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
     confirmation_doc = fields.Binary(string="Confirmation Doc*")
     confirmation_doc_ref = fields.Char(string="Ref No.*")
@@ -58,7 +58,7 @@ class ServiceRequestTreasury(models.Model):
             if not line.issue_date:
                 raise ValidationError("Kindly update issue date before upload confirmation")
             # Upload documents for specific services
-            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card']:
+            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card','prof_change_qiwa']:
                 line.service_request_id.write({
                     'upload_payment_doc': line.confirmation_doc,
                     'payment_doc_ref': line.confirmation_doc_ref

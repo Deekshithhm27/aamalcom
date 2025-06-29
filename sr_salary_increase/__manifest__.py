@@ -13,10 +13,11 @@ This module provides a centralized platform to manage and configure service requ
     'category': 'Visa Process',
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
-    'depends': ['base', 'mail', 'visa_process','account'],
+    'depends': ['base', 'mail', 'visa_process','account','aamalcom_payroll'],
     'data': [
-    'views/service_enquiry_views.xml',  
-    # 'views/service_request_treasury.xml'  
+    'security/ir.model.access.csv',
+    'views/service_enquiry_views.xml', 
+    'views/emp_salary_views.xml'  
     ],
     "price": 0.0,
     "currency": "EUR",

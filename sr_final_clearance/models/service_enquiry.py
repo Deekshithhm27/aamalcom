@@ -50,9 +50,9 @@ class ServiceEnquiry(models.Model):
                 department_ids = []
                 if line.state == 'submitted':
                     level = 'level1'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and not line.assigned_govt_emp_two:
-                    level = 'level1'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assigned_govt_emp_two:
+                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assign_govt_emp_two == False:
+                    level = 'level2'
+                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assign_govt_emp_two != False:
                     level = 'level2'
                 # Sorting and picking department line based on level
                 req_lines = line.service_request_config_id.service_department_lines
@@ -83,7 +83,20 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'final_clearance':
                 record.state = 'waiting_hr_approval'
                 record.dynamic_action_status = "Waiting for Approval by HR"
-                # record.action_user_id=record.approver_id.user_id.id
+                group = self.env.ref('visa_process.group_service_request_payroll_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.action_user_id = employee.user_id
+    
+    def action_approve_by_hr(self):
+        for record in self:
+            if record.service_request == 'final_clearance':
+                record.state = 'approved'
+                record.dynamic_action_status='Documents Uploaded Pending by second govt employee'
+                record.action_user_id=record.second_govt_employee_id.user_id.id
+
 
     def action_process_complete_final_clearance(self):
         for record in self:

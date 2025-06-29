@@ -58,6 +58,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
+        ('passed_to_treasury','Passed to Treasury'),
         ('waiting_payroll_approval','Waiting Payroll Approval'),
         ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
@@ -206,10 +207,10 @@ class ServiceEnquiry(models.Model):
     upload_gosi_doc = fields.Binary(string="Upload GOSI Update")
     upload_gosi_doc_file_name=fields.Char(string="GOSI Update")
     gosi_doc_ref = fields.Char(string="Ref No.*")
-    profession_change_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_doc = fields.Binary(string="Profession Change Request Doc")
     profession_change_doc_file_name = fields.Char(string="Profession Change Doc")
     profession_change_doc_ref = fields.Char(string="Ref No.*")
-    profession_change_final_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_final_doc = fields.Binary(string="Profession Change Final  Request Doc")
     profession_change_final_doc_file_name = fields.Char(string="Profession Change Req. Doc")
     prof_change_final_ref = fields.Char(string="Ref No.*")
     upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
@@ -992,7 +993,10 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req':
+            if line.service_request == 'prof_change_qiwa':
+                if not line.profession_change:
+                    raise ValidationError('Please add Profession change to')
+            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'prof_change_qiwa':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
@@ -1281,6 +1285,7 @@ class ServiceEnquiry(models.Model):
             existing_doc = self.env['service.request.treasury'].sudo().search([
             ('service_request_id', '=', line.id)
             ], limit=1)
+            line.state='approved'
 
             if existing_doc:
                 continue 
@@ -1408,6 +1413,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
                 if line.employee_id:
                     line.employee_id.qiwa_contract_doc = line.upload_qiwa_doc
+                    line.employee_id.qiwa_contract_sr_no = line.name
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:
@@ -1472,9 +1478,9 @@ class ServiceEnquiry(models.Model):
                 if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Final exit issuance document")
             if line.service_request == 'prof_change_qiwa':
-                if not line.prof_change_final_ref:
+                if line.profession_change_final_doc and not line.prof_change_final_ref:
                     raise ValidationError("Kindly Update Reference Number for Profession Change Document")
-                if not line.muqeem_print_doc_ref:
+                if line.muqeem_print_doc and not line.muqeem_print_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
                 treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
                 if treasury_id:
@@ -1597,7 +1603,7 @@ class ServiceEnquiry(models.Model):
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
-            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or \
             line.upload_salary_certificate_doc or \
             line.upload_employment_contract_doc or \
             line.upload_bilingual_salary_certificate_doc or  \
@@ -1605,6 +1611,8 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
+            elif line.profession_change_final_doc and line.muqeem_print_doc:
+                line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
                 line.doc_uploaded = True
             elif line.upload_bank_letter_doc and line.fee_receipt_doc:

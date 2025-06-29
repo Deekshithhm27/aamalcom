@@ -11,7 +11,7 @@
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','iqama_card_req','new_ev','transfer_req'))]}" groups="visa_process.group_service_request_client_spoc"/>
 
 
-                    <button id="open_assign_employee_wizard_one" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev'))]}" groups="visa_process.group_service_request_manager"/>            
+                    <button id="open_assign_employee_wizard_one" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','in',('iqama_card_req','new_ev','medical_blood_test','salary_advance','exit_reentry_issuance_ext','dependents_ere'))]}" groups="visa_process.group_service_request_manager"/>            
 
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
@@ -86,7 +86,7 @@
 
                     
 
-                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('assign_govt_emp_one','=',False),('assigned_govt_emp_one','=',True),'|',('service_request','not in',('salary_advance'))]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="action_iqama_payment_received_confirmation" string="Payment Received" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_card_req'),('assigned_govt_emp_one','=',True)]}" groups="visa_process.group_service_request_manager"/>
 
@@ -319,6 +319,13 @@
                                     <field name="profession_change_doc" attrs="{'readonly': [('state', '!=', 'submitted')]}" force_save="1" filename="profession_change_doc_file_name"/>
                                      <field name="profession_change_doc_file_name"  invisible="1"/>
                                     <field name="profession_change_doc_ref" attrs="{'readonly': [('state', '!=', 'submitted')]}" force_save="1"/>
+                                </group>
+                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('service_request', '!=','prof_change_qiwa'),('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','='
+
+                                    ,True)]}">
+                                    <field name="upload_payment_doc" readonly="1" force_save="1" filename="upload_payment_doc_file_name"/>
+                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
+                                    <field name="payment_doc_ref" readonly="1"/>
                                 </group>
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False)]}">
@@ -1134,7 +1141,7 @@
                 <filter string="Operations Manager Approval" name="op_requests" domain="[('state', '=','waiting_op_approval')]"/>
                 <filter string="General Manager Approval" name="gm_requests" domain="[('state', '=','waiting_gm_approval')]"/>
                 <filter string="Insurance Department Approval" name="insurance_requests" domain="[('state', '=','submitted_to_insurance')]"/>
-                <filter string="Payroll Department Approval" name="payroll_requests" domain="[('state', '=','waiting_payroll_approval')]"/>
+                <filter string="Payroll/HR Department Approval" name="payroll_requests" domain="[('state', 'in',('waiting_payroll_approval','waiting_hr_approval'))]"/>
                 <filter string="Finance Manager Approval" name="fin_requests" domain="[('state', '=','waiting_fin_approval')]"/>
                 <filter string="Approved Requests" name="approved_requests" domain="[('state', '=','approved')]"/>
                 <filter string="Confirmed Requests" name="done_requests" domain="[('state', '=','done')]"/>
@@ -1226,8 +1233,8 @@
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
-        <field name="context">{'search_default_payroll_requests': 1}</field>
-        <field name="domain">[('state','in',('waiting_payroll_approval','done'))]</field>
+        <field name="context">{'search_default_payroll_requests': 1}</field> 
+        <field name="domain">[('state','in',('waiting_payroll_approval','done','waiting_hr_approval','approved'))]</field>
         <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 No requests found
