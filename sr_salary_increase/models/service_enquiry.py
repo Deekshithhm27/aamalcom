@@ -26,6 +26,28 @@ class ServiceEnquiry(models.Model):
     upload_stating_doc_file_name = fields.Char(string="Stating Document")
     stating_doc_ref = fields.Char(string="Ref No.*")
 
+    @api.model
+    def create(self, vals):
+        """Handles file naming conventions while creating a record."""
+        employee_id = vals.get('employee_id')
+        iqama_no = vals.get('iqama_no', 'UnknownIqama')
+        service_request_config_id = vals.get('service_request_config_id')
+        employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
+        service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
+        if 'upload_stating_doc' in vals:
+            vals['upload_stating_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_StatingDoc.pdf"
+        return super(ServiceEnquiry, self).create(vals)
+
+    def write(self, vals):
+        """Ensures correct file naming conventions when updating records."""
+        for record in self:
+            employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
+            iqama_no = record.iqama_no or 'UnknownIqama'
+            service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
+            if 'upload_stating_doc' in vals:
+                vals['upload_stating_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_StatingDoc.pdf"
+        return super(ServiceEnquiry, self).write(vals)    
+
     @api.onchange('employee_id')
     def onchange_employee_update_data(self):
         """
@@ -100,26 +122,19 @@ class ServiceEnquiry(models.Model):
                 record.send_email_to_op()
 
     def open_assign_employee_wizard(self):
-        for line in self:
-            if line.service_request == 'salary_increase_process':
+        """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
+        result = super(ServiceEnquiry, self).open_assign_employee_wizard()
+        for record in self:
+            if record.service_request == 'salary_increase_process' and record.state == 'doc_uploaded_by_first_govt_employee':
+                # level = 'level1'
                 department_ids = []
-                level = ''
-                if line.state == 'submitted':
-                    level = 'level1'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and not line.assigned_govt_emp_two:
-                    level = 'level2'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assigned_govt_emp_two:
-                    level = 'level2'
-                req_lines = line.service_request_config_id.service_department_lines
-                sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
+                req_lines = record.service_request_config_id.service_department_lines
+                sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
                 for lines in sorted_lines:
-                    if level == 'level1':
-                        department_ids.append((4, lines.department_id.id))
-                        break
-                    elif level == 'level2' and lines.sequence == 2:
-                        department_ids.append((4, lines.department_id.id))
-                        break
-                return {
+                    # if level == 'level1':
+                    department_ids.append((4, lines.department_id.id))
+
+                result.update({
                     'name': 'Select Employee',
                     'type': 'ir.actions.act_window',
                     'res_model': 'employee.selection.wizard',
@@ -128,10 +143,12 @@ class ServiceEnquiry(models.Model):
                     'context': {
                         'default_department_ids': department_ids,
                         'default_assign_type': 'assign',
-                        'default_levels': level,
+                        'default_levels': 'level2',
                     },
-                }
-        return super(ServiceEnquiry, self).open_assign_employee_wizard()
+                })
+        return result
+
+
 
     def action_first_govt_emp_submit_salary(self):
         for record in self:
