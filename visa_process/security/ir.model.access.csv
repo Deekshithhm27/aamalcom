@@ -116,6 +116,8 @@ access_res_company_finance_manager,access_res_company_finance_manager,base.model
 access_group_account_user,access_group_account_user,model_service_request_treasury,account.group_account_user,1,1,1,0
 
 access_refuse_reason_wizard,access_refuse_reason_wizard,model_refuse_reason_wizard,base.group_user,1,1,1,0
+access_refuse_reason_wizard,access_refuse_reason_wizard,model_refuse_reason_wizard,visa_process.group_service_request_hr_manager,1,1,1,0
+access_refuse_reason_wizard,access_refuse_reason_wizard,model_refuse_reason_wizard,visa_process.group_service_request_payroll_manager,1,1,1,0
 
 
 
