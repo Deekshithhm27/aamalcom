@@ -52,14 +52,7 @@
                 </group>
             </xpath>
             <xpath expr="//notebook[@id='service_pricing_notebook']" position="before">
-                <!-- This group's visibility depends on 'medical_blood_test' and state -->
-                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
-                    <group >
-                        <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
-                        <field name="upload_payment_doc_file_name" invisible="1"/>
-                        <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                    </group>
-                </group>
+        
                 <!-- Qiwa Doc Upload Group -->
                 <group attrs="{'invisible': ['|','|',
                                 ('service_request', '!=', 'salary_increase_process'),

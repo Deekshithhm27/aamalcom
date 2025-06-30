@@ -12,7 +12,8 @@ class ServiceRequestTreasuryInherit(models.Model):
 
     
     
-    def action_upload_confirmation_medical(self):
+    def action_upload_confirmation(self):
+        super(ServiceRequestTreasuryInherit, self).action_upload_confirmation()
         for line in self:
             if line.service_request_id.service_request == 'medical_blood_test':
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
