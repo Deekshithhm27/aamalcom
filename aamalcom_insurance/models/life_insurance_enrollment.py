@@ -37,23 +37,24 @@ class LifeInsuranceEnrollment(models.Model):
 
 
     passport_copy = fields.Binary(string="Passport")
+    iqama_doc = fields.Binary(string="Iqama Document")
     other_document = fields.Binary(string="Other Document")
-    confirmation_of_activation_doc = fields.Binary(string="Confirmation of Activation Document")
+    confirmation_of_activation_doc = fields.Binary(string="Document - Confirmation of Activation")
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
     @api.onchange('employee_id')
     def onchange_employee_details(self):
-    	for line in self:
-    		line.iqama_no = line.employee_id.iqama_no
-    		line.passport_copy = line.employee_id.passport_copy
+        for line in self:
+            line.iqama_no = line.employee_id.iqama_no
+            line.passport_copy = line.employee_id.passport_copy
 
 
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('life.insurance.enrollment')
-        res = super(LifeInsuranceEnrollment,self).create(vals_list)
+
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('life.insurance.enrollment')
+        res = super(LifeInsuranceEnrollment,self).create(vals)
         return res
 
     def _compute_is_insurance_user(self):

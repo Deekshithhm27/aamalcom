@@ -1,0 +1,81 @@
+<odoo>
+    <record id="view_form_swapping_border_to_iqama" model="ir.ui.view">
+        <field name="name">swapping.border.to.iqama.form</field>
+        <field name="model">swapping.border.to.iqama</field>
+        <field name="arch" type="xml">
+            <form string="Swapping Border to Iqama">
+                <header>
+                	<field name="state" widget="statusbar"/>
+                	<button name="action_submit" type="object" string="Submit" groups="visa_process.group_service_request_client_spoc" attrs="{'invisible': [('state','!=','draft')]}"/>
+                	<button name="action_submit_to_review" type="object" string="Submit for Review" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
+                	<button name="action_done" type="object" string="Process Done" groups="visa_process.group_service_request_manager" attrs="{'invisible': [('state','!=','review_to_be_done')]}"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <div class="oe_title mb24">
+                        <h1>
+                           <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+	                    <group>
+	                    	<field name="swapping_type" widget="selection" attrs="{'readonly': [('state','!=','draft')]}" />
+	                    	<field name="employee_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+	                    	<field name="service_enquiry_id" attrs="{'readonly': [('state','!=','draft')],'invisible':[('swapping_type','!=','employee')]}"/>
+	                    </group>
+	                    <group>
+	                        <field name="user_id" invisible="1"/>
+	                        <field name="active" invisible="1"/>
+	                        <field name="company_id" invisible="1"/>
+	                        <field name="client_id" invisible="1"/>
+	                        <field name="client_parent_id" invisible="1"/>
+	                        <field name="is_insurance_user" invisible="1"/>
+	                        <field name="project_manager_id" invisible="1"/>
+	                    </group>
+	                </group>
+	                <group>
+	                	<group string="Residance Document" attrs="{'invisible':[('swapping_type','!=','employee')]}">
+            				<field name="residance_doc" attrs="{'readonly': [('state','!=','draft')]}" />
+            			</group>
+            			<group string="Muqeem Print Document" attrs="{'invisible':[('swapping_type','!=','employee')]}">
+            				<field name="muqeem_print_doc" attrs="{'readonly': [('state','!=','draft')]}" />
+            			</group>
+            			<group string="Digital Iqama Copy" attrs="{'invisible':[('swapping_type','!=','dependents')]}">
+            				<field name="digital_iqama_copy" attrs="{'readonly': [('state','!=','draft')]}" />
+            			</group>
+            		</group>
+            		
+                    <notebook>
+                    	<page string="Documents" attrs="{'invisible':[('state','=','draft')]}">
+                    		<group>
+			                    <group>
+	                    			<field name="cchi_confirmation_document" attrs="{'invisible':[('state','=','draft')],'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
+	                    		</group>
+                    		</group>
+                    	</page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tree_swapping_border_to_iqama" model="ir.ui.view">
+        <field name="name">swapping.border.to.iqama.tree</field>
+        <field name="model">swapping.border.to.iqama</field>
+        <field name="arch" type="xml">
+            <tree string="Swapping Border to Iqama">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name='service_enquiry_id'/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_swapping_border_to_iqama" model="ir.actions.act_window">
+        <field name="name">Swapping Border to Iqama</field>
+        <field name="res_model">swapping.border.to.iqama</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 class MedicalInsuranceClassChange(models.Model):
     _name = 'medical.insurance.class.change'
     _description = 'Medical Insurance Upgrade/Downgrade'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     @api.model
     def default_get(self, fields_list):
@@ -42,12 +43,12 @@ class MedicalInsuranceClassChange(models.Model):
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
 
-    @api.model_create_multi
-    def create(self,vals_list):
-        for vals in vals_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.class.change')
-        res = super(MedicalInsuranceClassChange,self).create(vals_list)
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.class.change')
+        res = super(MedicalInsuranceClassChange,self).create(vals)
         return res
+    
 
     def _compute_is_insurance_user(self):
         group = self.env.ref('visa_process.group_service_request_insurance_employee')

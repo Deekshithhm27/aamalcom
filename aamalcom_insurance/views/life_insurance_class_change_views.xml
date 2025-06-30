@@ -34,13 +34,13 @@
 	                        <field name="is_insurance_user" invisible="1"/>
 	                        <field name="project_manager_id" invisible="1"/>
 	                    </group>
+	                    <group string="Muqeem/Iqama Document">
+                			<field name="muqeem_iqama_document" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                		</group>
 	                </group>
                     <notebook>
-                    	<page string="Documents" attrs="{'invisible': [('state','=','draft')]}">
+                    	<page string="Documents" attrs="{'invisible': [('state','in',('draft','submitted'))]}">
                     		<group>
-                    			<group>
-	                    			<field name="muqeem_iqama_document" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
-	                    		</group>
 	                    		<group>
 	                    			<field name="cchi_confirmation_document" attrs="{'invisible':[('state','in',('draft','submitted'))],'readonly': ['|',('state', '!=','submitted_to_service_provider'),('is_insurance_user','=',False)]}"/>
 	                    		</group>
@@ -48,6 +48,11 @@
                     	</page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
+                </div>
             </form>
         </field>
     </record>

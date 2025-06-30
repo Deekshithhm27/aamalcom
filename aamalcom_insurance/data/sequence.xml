@@ -1,8 +1,24 @@
 <odoo>
+    <record id="seq_medical_insurance_enrollment" model="ir.sequence">
+      <field name="name">Medical Insurance Enrollment</field>
+      <field name="code">medical.insurance.enrollment</field>
+      <field name="prefix">MENROLL-</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_swapping_border_to_iqama" model="ir.sequence">
+      <field name="name">Swapping Border to Iqama</field>
+      <field name="code">swapping.border.to.iqama</field>
+      <field name="prefix">SBI/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
     <record id="seq_insurance_reimbursement" model="ir.sequence">
         <field name="name">Insurance Reimbursement</field>
         <field name="code">insurance.reimbursement</field>
-        <field name="prefix">REIMB</field>
+        <field name="prefix">REIMBURSE-</field>
         <field name="padding">4</field>
         <field name="number_next">1</field>
         <field name="number_increment">1</field>
@@ -10,7 +26,7 @@
     <record id="seq_medical_insurance_deletion" model="ir.sequence">
       <field name="name">Medical Insurance Deletion</field>
       <field name="code">medical.insurance.deletion</field>
-      <field name="prefix">MID/</field>
+      <field name="prefix">MDELT-</field>
       <field name="padding">5</field>
       <field name="number_next">1</field>
       <field name="number_increment">1</field>
@@ -34,7 +50,7 @@
     <record id="seq_life_insurance_enrollment" model="ir.sequence">
       <field name="name">Life Insurance Enrollment</field>
       <field name="code">life.insurance.enrollment</field>
-      <field name="prefix">LE/</field>
+      <field name="prefix">LENROLL-</field>
       <field name="padding">5</field>
       <field name="number_next">1</field>
       <field name="number_increment">1</field>
@@ -42,7 +58,7 @@
     <record id="seq_life_insurance_deletion" model="ir.sequence">
       <field name="name">Life Insurance Deletion</field>
       <field name="code">life.insurance.deletion</field>
-      <field name="prefix">LID/</field>
+      <field name="prefix">LDEL-/</field>
       <field name="padding">5</field>
       <field name="number_next">1</field>
       <field name="number_increment">1</field>

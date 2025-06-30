@@ -39,6 +39,7 @@
                     		<group>
                     			<group>
 	                    			<field name="passport_copy" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                    			<field name="iqama_doc" attrs="{'readonly': [('state', '!=','draft')]}"/>
 	                    			<field name="other_document" attrs="{'readonly': [('state', '!=','draft')]}"/>
 	                    		</group>
 	                    		<group attrs="{'invisible': [('state', '=','draft')]}">

@@ -18,13 +18,13 @@
     <field name="arch" type="xml">
       <form string="Life Insurance Deletion">
       	<header>
-            <field name="state" widget="statusbar"/>
+            <field name="state" widget="statusbar" statusbar_visible="draft,submitted,done"/>
             <button name="action_submit" type="object" string="Submit" attrs="{'invisible': [('state','!=','draft')]}" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc"/>
             <button name="action_get_confirmation" type="object" string="Get Govt Confirmation" attrs="{'invisible': ['|',('state','!=','submitted'),('deletion_type','!=','final_exit')]}" groups="visa_process.group_service_request_insurance_employee"/>
             <button name="action_govt_confirm" type="object" string="Confirm" attrs="{'invisible': [('state','!=','sent_govt_confirmation')]}" groups="visa_process.group_service_request_employee"/>
             <button name="action_pm_confirm_exit" type="object" string="Confirm Exit" attrs="{'invisible': [('state','!=','govt_confirmation_received')]}" groups="visa_process.group_service_request_manager"/>
-            <button name="action_docs_uploaded" type="object" string="Documents Uploaded" attrs="{'invisible': ['|',('state','!=','pm_confirmation'),('deletion_type','!=','final_exit')]}" groups="visa_process.group_service_request_insurance_employee"/>
-            <button name="action_insurance_confirm" type="object" string="Confirm Deletion" attrs="{'invisible': [('state','!=','insurance_upload')]}" groups="visa_process.group_service_request_insurance_employee"/>
+            <button name="action_docs_uploaded" type="object" string="Documents Uploaded" attrs="{'invisible': ['|',('state','!=','exit_confirmed'),('deletion_type','!=','final_exit')]}" groups="visa_process.group_service_request_manager"/>
+            <button name="action_insurance_confirm" type="object" string="Confirm Deletion" attrs="{'invisible': [('state','not in',('documents_uploaded','upload_document'))]}" groups="visa_process.group_service_request_insurance_employee"/>
         </header>
         <sheet>
         	<widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
@@ -36,7 +36,7 @@
           <group>
           	<group>
 	            <field name="deletion_type" attrs="{'readonly': [('state', '!=','draft')]}"/>
-	            <field name="client_parent_id" attrs="{'invisible': [('is_pm_user', '=',False)],'required':[('is_pm_user','=',True)]}" options="{'no_create': True, 'no_edit': True}"/>
+	            <field name="client_parent_id" attrs="{'invisible': [('is_pm_user', '=',False)],'required':[('is_pm_user','=',True)],'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
 	            <field name="employee_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
 	            <field name="service_enquiry_id" attrs="{'invisible': [('deletion_type', 'in', ['absconding', 'not_returned'])],'required':[('deletion_type','=','iqama_transfer')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
 	        </group>
@@ -47,6 +47,8 @@
                 <field name="active" invisible="1"/>
                 <field name="company_id" invisible="1"/>
                 <field name="govt_user_id" invisible="1"/>
+                <field name="is_govt_user" invisible="1"/>
+                <field name="is_pm_user" invisible="1"/>
                 <field name="is_insurance_user" invisible="1"/>
                 <field name="project_manager_id" invisible="1"/>
 	        </group>
@@ -54,30 +56,35 @@
 
           <group attrs="{'invisible': [('state', 'in',['draft','submitted'])]}">
           	<group attrs="{'invisible': [('deletion_type', '!=','final_exit')]}">          	
-          		<field name="is_inside_ksa" attrs="{'readonly': [('state', '!=','sent_govt_confirmation')]}"/>
-          		<field name="is_outside_ksa" attrs="{'readonly': [('state', '!=','sent_govt_confirmation')]}"/>
+          		<field name="is_inside_ksa" attrs="{'readonly': ['|',('state', '!=','sent_govt_confirmation'),('is_govt_user','=',False)]}"/>
+              <field name="is_outside_ksa" attrs="{'readonly': ['|',('state', '!=','sent_govt_confirmation'),('is_govt_user','=',False)]}"/>
           	</group>
           </group>
         <notebook>
-        	<page string="Documents" name="documents" attrs="{'invisible': ['|',('deletion_type', '!=','final_exit'),('state', 'in',['sent_govt_confirmation','govt_confirmation_received','draft','submitted'])]}">
+        	<page string="Documents" name="documents" attrs="{'invisible': ['|',('deletion_type', '!=','final_exit'),('state', 'in',['sent_govt_confirmation','draft','submitted'])]}">
         		<group>
 	        		<group>
-			          	<field name="exit_stamp" filename="exit_stamp" attrs="{'readonly': ['|',('state', '!=','pm_confirmation'),('is_insurance_user','=',False)]}"/>
-				        <field name="muqeem_report" filename="muqeem_report" attrs="{'readonly': ['|',('state', '!=','pm_confirmation'),('is_insurance_user','=',False)]}"/>
+			          	<field name="exit_stamp" filename="exit_stamp" attrs="{'readonly': ['|',('state', '!=','exit_confirmed'),('is_pm_user','=',False)]}"/>
+				        <field name="muqeem_report" filename="muqeem_report" attrs="{'readonly': ['|',('state', '!=','exit_confirmed'),('is_pm_user','=',False)]}"/>
+				      </group>
 				    </group>
-				</group>
         	</page>
         	<page string="Documents" name="documents" attrs="{'invisible': ['|',('deletion_type', '!=','iqama_transfer'),('state', 'in',['draft'])]}">
         		<group>
 	        		<group>
-			          	<field name="insurance_document" filename="insurance_document" attrs="{'readonly': ['|',('state', '!=','insurance_upload'),('is_insurance_user','=',False)]}"/>
+			          	<field name="insurance_document" filename="insurance_document" attrs="{'readonly': ['|',('state', '!=','upload_document'),('is_insurance_user','=',False)]}"/>
+				      </group>
 				    </group>
-				</group>
-        	</page>
+          </page>
         	
 
-		</notebook>
-        </sheet>
+		    </notebook>
+      </sheet>
+      <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers"/>
+          <field name="message_ids" widget="mail_thread"/>
+          <field name="activity_ids"/>
+      </div>
       </form>
     </field>
   </record>

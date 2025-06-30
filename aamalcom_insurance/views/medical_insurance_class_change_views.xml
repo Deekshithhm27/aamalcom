@@ -7,7 +7,7 @@
                 <header>
                 	<field name="state" widget="statusbar"/>
                 	<button name="action_submit" type="object" string="Submit" groups="visa_process.group_service_request_client_spoc" attrs="{'invisible': [('state','!=','draft')]}"/>
-                	<button name="action_submit_to_provider" type="object" string="Submit to Bupa" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
+                	<button name="action_submit_to_provider" type="object" string="Submit to Service Provider" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
                 	<button name="action_submit_to_pm" type="object" string="Submit to PM" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted_to_service_provider')]}"/>
                 	<button name="action_done" type="object" string="Process Done" groups="visa_process.group_service_request_manager" attrs="{'invisible': [('state','!=','submitted_to_pm')]}"/>
                 </header>
@@ -34,13 +34,13 @@
 	                        <field name="is_insurance_user" invisible="1"/>
 	                        <field name="project_manager_id" invisible="1"/>
 	                    </group>
+	                    <group string="Muqeem/Iqama Document">
+                			<field name="muqeem_iqama_document" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                		</group>
 	                </group>
                     <notebook>
-                    	<page string="Documents" attrs="{'invisible': [('state','=','draft')]}">
+                    	<page string="Documents" attrs="{'invisible': [('state','in',('draft','submitted'))]}">
                     		<group>
-                    			<group>
-	                    			<field name="muqeem_iqama_document" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
-	                    		</group>
 	                    		<group>
 	                    			<field name="cchi_confirmation_document" attrs="{'invisible':[('state','in',('draft','submitted'))],'readonly': ['|',('state', '!=','submitted_to_service_provider'),('is_insurance_user','=',False)]}"/>
 	                    		</group>
@@ -48,6 +48,11 @@
                     	</page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
+                </div>
             </form>
         </field>
     </record>
