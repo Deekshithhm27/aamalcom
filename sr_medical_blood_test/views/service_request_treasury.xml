@@ -13,10 +13,6 @@
             <xpath expr="//field[@name='total_amount']" position="before">
                 <field name="service_request_type" invisible="1"/>
             </xpath>
-            <xpath expr="//field[@name='total_amount']" position="attributes">
-            <attribute name="readonly">0</attribute>
-            <attribute name="attrs">{'invisible': [('service_request_type', '!=', 'medical_blood_test')]}</attribute>
-            </xpath>
             <!-- Add Clinic Name field, only if service_request_type == medical_blood_test -->
             <xpath expr="//field[@name='total_amount']" position="after">
                 <field name="clinic_name" attrs="{'invisible': [('service_request_type', '!=', 'medical_blood_test')]}"/>
