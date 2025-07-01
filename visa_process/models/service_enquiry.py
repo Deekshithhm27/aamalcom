@@ -1346,7 +1346,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','hr_card','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
+            if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
                 if not line.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
 
@@ -1395,13 +1395,13 @@ class ServiceEnquiry(models.Model):
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
             if line.service_request =='hr_card':
-                if line.state in ('payment_done','approved'):
+                if line.state in ('approved'):
                     if not line.rehr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Updated HR Document")
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    if not line.muqeem_print_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    # if not line.muqeem_print_doc_ref:
+                    #     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
@@ -1655,7 +1655,7 @@ class ServiceEnquiry(models.Model):
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
-            elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
+            elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False
