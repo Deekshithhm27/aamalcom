@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_new_ev_report_wizard_form" model="ir.ui.view">
+        <field name="name">new.ev.report.wizard.form</field>
+        <field name="model">new.ev.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate New EV Report">
+                <group>
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <!-- service_request_type_fixed is readonly and force_save to ensure its value is sent -->
+                        <field name="service_request_type_fixed" readonly="1" force_save="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="print_new_ev_report" string="Print New EV Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_new_ev_report_wizard" model="ir.actions.act_window">
+        <field name="name">New EV Report</field>
+        <field name="res_model">new.ev.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Assuming 'menu_reporting_root' is defined in your module's views -->
+    <menuitem id="menu_new_ev_report_wizard"
+              name="New EV Report"
+              parent="menu_reporting_root"
+              action="action_new_ev_report_wizard"
+              sequence="4" /> <!-- Adjust sequence as needed -->
+
+</odoo>
