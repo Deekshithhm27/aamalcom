@@ -59,7 +59,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
         ('passed_to_treasury','Passed to Treasury'),
-        ('waiting_payroll_approval','Waiting Payroll Approval'),
+        ('waiting_payroll_approval','Waiting Payroll Confirmation'),
         ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),

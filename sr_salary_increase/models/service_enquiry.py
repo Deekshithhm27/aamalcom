@@ -12,7 +12,7 @@ class ServiceEnquiry(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee')
 
     service_request = fields.Selection(
-        selection_add=[('salary_increase_process', 'Salary Increase Process')],
+        selection_add=[('salary_increase_process', 'Salary Increase Update (Qiwa/Muqeem)')],
         string="Service Requests",
         store=True,
         copy=False,
@@ -167,7 +167,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'waiting_payroll_approval'
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
-                group = self.env.ref('visa_process.group_service_request_payroll_manager')
+                group = self.env.ref('visa_process.group_service_request_payroll_employee')
                 users = group.users
                 employee = self.env['hr.employee'].search([
                 ('user_id', 'in', users.ids)

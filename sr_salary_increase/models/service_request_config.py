@@ -5,7 +5,7 @@ class ServiceEnquiry(models.Model):
 
     service_request = fields.Selection(
         selection_add=[
-            ('salary_increase_process', 'Salary Increase Process')
+            ('salary_increase_process', 'Salary Increase Update (Qiwa/Muqeem)')
         ],
         string="Service Requests",
         store=True,
