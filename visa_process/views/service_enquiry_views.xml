@@ -1140,7 +1140,8 @@
                 <filter string="Operations Manager Approval" name="op_requests" domain="[('state', '=','waiting_op_approval')]"/>
                 <filter string="General Manager Approval" name="gm_requests" domain="[('state', '=','waiting_gm_approval')]"/>
                 <filter string="Insurance Department Approval" name="insurance_requests" domain="[('state', '=','submitted_to_insurance')]"/>
-                <filter string="Payroll/HR Department Approval" name="payroll_requests" domain="[('state', 'in',('waiting_payroll_approval','waiting_hr_approval'))]"/>
+                <filter string="HR Department Approval" name="hr_employee_requests" domain="[('state', 'in',('waiting_hr_approval'))]"/>
+                <filter string="Payroll Department Tickets" name="payroll_employee_requests" domain="[('state', '=','waiting_payroll_approval')]"/>
                 <filter string="Finance Manager Approval" name="fin_requests" domain="[('state', '=','waiting_fin_approval')]"/>
                 <filter string="Approved Requests" name="approved_requests" domain="[('state', '=','approved')]"/>
                 <filter string="Confirmed Requests" name="done_requests" domain="[('state', '=','done')]"/>
@@ -1232,8 +1233,23 @@
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
-        <field name="context">{'search_default_payroll_requests': 1}</field> 
-        <field name="domain">[('state','in',('waiting_payroll_approval','done','waiting_hr_approval','approved'))]</field>
+        <field name="context">{'search_default_hr_employee_requests': 1}</field> 
+        <field name="domain">[('state','in',('done','waiting_hr_approval','approved'))]</field>
+        <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No requests found
+              </p><p>
+                Try creating new one!!
+              </p>
+        </field>
+    </record>
+    <record id="action_service_enquiry_payroll_employee" model="ir.actions.act_window">
+        <field name="name">Service Tickets</field>
+        <field name="res_model">service.enquiry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="visa_enquiry_search_filter"/>
+        <field name="context">{'search_default_payroll_employee_requests': 1}</field> 
+        <field name="domain">[('state','in',('done','waiting_payroll_approval','approved'))]</field>
         <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 No requests found
