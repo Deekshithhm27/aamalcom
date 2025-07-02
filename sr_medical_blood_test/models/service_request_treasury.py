@@ -19,7 +19,7 @@ class ServiceRequestTreasuryInherit(models.Model):
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
                 line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
                 if line.service_request_id.state == 'submitted_to_treasury':
-                    line.service_request_id.dynamic_action_status = "Service request approved by Finance Team.1st govt employee Needs to be assigned by PM"
+                    line.service_request_id.dynamic_action_status = "Service request approved by Treasury Team.1st govt employee Needs to be assigned by PM"
                     line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
                 line.state = 'done'
                 # If the treasury record just became 'done' AND it's a 'medical_blood_test' service,
