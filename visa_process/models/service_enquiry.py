@@ -159,6 +159,7 @@ class ServiceEnquiry(models.Model):
     from_date = fields.Date(string="From Date")
     valid_reason = fields.Text(string="Valid reason to be stated")
     any_credit_note = fields.Text(string="Any credit note to be issued with reason")
+    expiry_of_ere = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
     
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
@@ -1019,9 +1020,20 @@ class ServiceEnquiry(models.Model):
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
 
+    def action_submit_for_check_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.expiry_of_ere:
+                    raise ValidationError("Kindly Update Last Working Day")
+                line.state='submit_to_pm'
+                line.dynamic_action_status=f"Review is Pending By PM"
+                line.action_user_id=line.approver_id.user_id.id
+
     def action_submit_for_review_final_exit(self):
         for line in self:
             if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.is_outside_ksa:
+                    raise ValidationError('Please select Either Inside KSA or Outside KSA.')
                 line.state='submit_for_review'
                 line.dynamic_action_status=f"Review is Pending By First Govt Employee"
                 line.action_user_id=line.first_govt_employee_id.user_id.id
@@ -1030,7 +1042,16 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request=='final_exit_issuance':
                 line.state='final_exit_confirmed'
-                line.dynamic_action_status=f"Final Exit is Completed"
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} is Outside KSA.")
+                line.action_user_id=False
+
+    def final_exit_submit_inside(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initated.")
                 line.action_user_id=False
             
 

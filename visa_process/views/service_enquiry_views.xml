@@ -75,9 +75,14 @@
 
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
-                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','done'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submit_to_pm'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|',('state','!=','submit_for_review'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_submit_for_check_final_exit" string="Submit for Review to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','done'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+
+                    <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_outside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+
+                    <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    
                     <!-- LT Medical Health Insurance Upload end-->
 
 
@@ -693,13 +698,16 @@
                         </group>
                     </group>
 
-                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed'))]}">
+                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm'))]}">
                         <group>
-                            <field name="is_inside_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="expiry_of_ere" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','done'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                         <group>
-                            <field name="is_outside_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
-                            <field name="remarks_for_ksa" attrs="{'readonly': ['|','|',('state', '!=','done'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="is_inside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="is_outside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="remarks_for_ksa" attrs="{'readonly': [('state', '!=','submit_to_pm')]}"/>
                         </group>
                     </group>
                     <!-- Final exit issuance stop-->
