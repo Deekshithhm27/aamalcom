@@ -23,6 +23,12 @@
         'views/transfer_report_wizard.xml',
         'reports/transfer_report_action.xml',
         'reports/transfer_report_template.xml',
+        'reports/new_ev_action.xml',
+        'reports/new_ev_template.xml',
+        'views/new_ev_reports.xml',
+        'reports/qiwa_action.xml',
+        'reports/qiwa_template.xml',
+        'views/qiwa_wizard.xml'
     ],
     'installable': True,
     'application': True,

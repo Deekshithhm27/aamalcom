@@ -9,8 +9,9 @@
                     <group>
                         <field name="from_date"/>
                         <field name="to_date"/>
-                        <field name="service_request"/> </group>
-                    </group>
+                        <field name="service_request"/>
+                        <field name="service_request_type"/> </group>
+                </group>
                 <footer>
                     <button name="print_muqeem_report" string="Print Muqeem Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
@@ -25,4 +26,8 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-</odoo>
+
+    <menuitem id="menu_muqeem_report_wizard"
+              name="Muqeem Report"
+              parent="menu_reporting_root" action="action_muqeem_report_wizard"
+              sequence="10" /> </odoo>
