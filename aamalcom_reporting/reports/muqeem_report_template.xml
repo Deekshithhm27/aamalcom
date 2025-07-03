@@ -9,13 +9,6 @@
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
                             <strong>Service Request:</strong> <t t-esc="docs[0].get('service_request_label') if docs else data.get('service_request_label') or ''"/> <br/>
-                            <t t-if="docs and docs[0].get('service_request_type_label')">
-                                <strong>Service Request Type:</strong> <t t-esc="docs[0].get('service_request_type_label')"/> <br/>
-                            </t>
-                            <t t-elif="data.get('service_request_type_label')">
-                                <strong>Service Request Type:</strong> <t t-esc="data.get('service_request_type_label')"/> <br/>
-                            </t>
-
                             <strong>From Date:</strong> <t t-esc="data.get('from_date') and data.get('from_date').strftime('%d-%m-%Y') or ''"/>
                             <t t-if="data.get('from_date') and data.get('to_date')">
                                 <span> - </span>
@@ -36,6 +29,7 @@
                                     <th style="text-align: center; padding: 8px;">Passport Number</th>
                                     <th style="text-align: center; padding: 8px;">Sponsor Name</th>
                                     <th style="text-align: center; padding: 8px;">Iqama Issue Date</th>
+                                    <th style="text-align: center; padding: 8px;">Iqama Expiry Date</th>
                                     <th style="text-align: center; padding: 8px;">DOJ</th>
                                     <th style="text-align: center; padding: 8px;">Birth Date</th>
                                     <th style="text-align: center; padding: 8px;">Client</th>
@@ -53,6 +47,7 @@
                                         <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or '' "/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.doj and emp.doj.strftime('%d-%m-%Y') or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.birthday and emp.birthday.strftime('%d-%m-%Y') or ''"/></td>

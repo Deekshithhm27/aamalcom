@@ -16,12 +16,7 @@ class MuqeemReportWizard(models.TransientModel):
         ('final_exit_issuance','Final exit Issuance'),
         ], string="Service Requests", required=True)
     
-    # NEW FIELD ADDED: service_request_type
-    service_request_type = fields.Selection([
-        ('lt_request','Local Transfer'),
-        ('ev_request','Employment Visa'),
-        ('twv_request','Temporary Work Visa')
-    ], string="Service Request Type", required=False) # Changed to required=False as it's an additional filter
+    # service_request_type field is removed
 
     def print_muqeem_report(self):
         """
@@ -31,6 +26,6 @@ class MuqeemReportWizard(models.TransientModel):
             'from_date': self.from_date,
             'to_date': self.to_date,
             'service_request': self.service_request,
-            'service_request_type': self.service_request_type, # Pass the new service_request_type
+            # 'service_request_type' is no longer passed
         }
         return self.env.ref('aamalcom_reporting.action_muqeem_report_pdf').report_action(self, data=data)

@@ -12,6 +12,7 @@ class TransferReport(models.AbstractModel):
         from_date = data.get('from_date')
         to_date = data.get('to_date')
         transfer_type = data.get('transfer_type')
+        service_request_type_fixed = data.get('service_request_type_fixed') # Get this from data
 
         # Convert string dates to date objects if they are strings (important for comparison)
         if isinstance(from_date, str):
@@ -30,9 +31,9 @@ class TransferReport(models.AbstractModel):
             'docs': [], # Initialize with empty docs
             'data': data,
             'transfer_type': transfer_type,
-            'service_request_type_fixed': 'transfer_req',
+            'service_request_type_fixed': service_request_type_fixed, # Pass this value
             'transfer_type_label': dict(self.env['service.enquiry']._fields['transfer_type'].selection).get(transfer_type, transfer_type),
-            'service_request_type_fixed_label': 'Transfer Request Initiation',
+            'service_request_type_fixed_label': 'Transfer Request Initiation', # This can be fetched dynamically too if needed
             'from_date': from_date, # Pass dates for display in the report
             'to_date': to_date,     # Pass dates for display in the report
         }
@@ -43,14 +44,22 @@ class TransferReport(models.AbstractModel):
 
         service_enquiry_model = self.env['service.enquiry']
 
-        # Construct the domain including date filtering
+        # Construct the domain including date filtering and the new 'state' condition
         enquiry_domain = [
             ('service_request_config_id', '=', service_request_config_id),
             ('transfer_type', '=', transfer_type),
             ('create_date', '>=', from_date),
             ('create_date', '<=', to_date),
         ]
-        
+
+        # Add the 'state' condition specifically for 'transfer_req'
+        if service_request_type_fixed == 'transfer_req':
+            enquiry_domain.append(('state', '=', 'done'))
+            _logger.info(f"Adding state='done' filter for transfer_req. Current domain: {enquiry_domain}")
+        else:
+            _logger.info(f"Service request type is not transfer_req. Not adding state filter. Current domain: {enquiry_domain}")
+
+
         relevant_enquiries = service_enquiry_model.sudo().search(enquiry_domain)
         
         if not relevant_enquiries:
@@ -62,7 +71,7 @@ class TransferReport(models.AbstractModel):
         employees = self.env['hr.employee'].browse(employee_ids)
 
         transfer_type_label = dict(service_enquiry_model._fields['transfer_type'].selection).get(transfer_type, transfer_type)
-        service_request_type_fixed_label = 'Transfer Request Initiation'
+        service_request_type_fixed_label = 'Transfer Request Initiation' # Still hardcoded, but can be dynamic if needed
         
         report_data = [{
             'employees': employees,

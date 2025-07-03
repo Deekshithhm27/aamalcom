@@ -28,6 +28,8 @@
                                     <th style="text-align: center; padding: 8px;">Date of Isuuance</th>
                                     <th style="text-align: center; padding: 8px;">Employee Name</th>
                                     <th style="text-align: center; padding: 8px;">Sponsor Number</th>
+                                    <th style="text-align: center; padding: 8px;">Border Number</th>
+                                    <th style="text-align: center; padding: 8px;">Passport Number</th>
                                     <th style="text-align: center; padding: 8px;">Nationality</th>
                                     <th style="text-align: center; padding: 8px;">Profession</th>
                                     <th style="text-align: center; padding: 8px;">Religion</th>
@@ -43,7 +45,9 @@
                                         <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.req_completion_date or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.country_id.name or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.religion or ''"/></td>

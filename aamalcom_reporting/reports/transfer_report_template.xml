@@ -28,6 +28,8 @@
                                     <th style="text-align: center; padding: 8px;">Client</th>
                                     <th style="text-align: center; padding: 8px;">Passport No</th>
                                     <th style="text-align: center; padding: 8px;">Border No</th>
+                                    <th style="text-align: center; padding: 8px;">Transfer Type</th>
+
                                     <th style="text-align: center; padding: 8px;">Date of Request Completion</th>
                                     
                                     
@@ -42,8 +44,9 @@
                                         <td style="padding: 8px;"><t t-esc="emp.client_id.name or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="transfer_type_label or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
+
                                         
                                     </tr>
                                 </t>

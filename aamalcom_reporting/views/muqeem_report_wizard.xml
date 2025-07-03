@@ -10,7 +10,7 @@
                         <field name="from_date"/>
                         <field name="to_date"/>
                         <field name="service_request"/>
-                        <field name="service_request_type"/> </group>
+                        </group>
                 </group>
                 <footer>
                     <button name="print_muqeem_report" string="Print Muqeem Report" type="object" class="btn-primary"/>
@@ -30,4 +30,5 @@
     <menuitem id="menu_muqeem_report_wizard"
               name="Muqeem Report"
               parent="menu_reporting_root" action="action_muqeem_report_wizard"
-              sequence="10" /> </odoo>
+              sequence="10" />
+</odoo>

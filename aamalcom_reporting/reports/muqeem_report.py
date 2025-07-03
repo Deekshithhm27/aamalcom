@@ -2,7 +2,7 @@
 
 import logging
 from odoo import models, api, fields
-from datetime import datetime, timedelta # Import datetime and timedelta
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -17,9 +17,9 @@ class MuqeemReport(models.AbstractModel):
         from_date_str = data.get('from_date')
         to_date_str = data.get('to_date')
         service_request_key = data.get('service_request')
-        service_request_type_key = data.get('service_request_type') # Get the new service_request_type
+        # service_request_type_key is no longer needed
 
-        _logger.info(f"Muqeem Report Parameters: From Date: {from_date_str}, To Date: {to_date_str}, Service Request Key: {service_request_key}, Service Request Type Key: {service_request_type_key}")
+        _logger.info(f"Muqeem Report Parameters: From Date: {from_date_str}, To Date: {to_date_str}, Service Request Key: {service_request_key}")
 
         # Convert string dates to datetime objects for accurate range filtering
         from_date_obj = fields.Date.from_string(from_date_str) if from_date_str else False
@@ -32,9 +32,8 @@ class MuqeemReport(models.AbstractModel):
 
         # Get human-readable labels for display and search
         service_request_label = dict(self.env['muqeem.report.wizard']._fields['service_request'].selection).get(service_request_key, service_request_key)
-        service_request_type_label = dict(self.env['muqeem.report.wizard']._fields['service_request_type'].selection).get(service_request_type_key, service_request_type_key) if service_request_type_key else False
         
-        _logger.info(f"Service Request Label: {service_request_label}, Service Request Type Label: {service_request_type_label}")
+        _logger.info(f"Service Request Label: {service_request_label}")
 
         # Search for service.request.config by its 'name'
         service_request_config_record = self.env['service.request.config'].search([
@@ -53,8 +52,7 @@ class MuqeemReport(models.AbstractModel):
             'to_date': to_date_obj,
             'service_request_selected': service_request_key,
             'service_request_label': service_request_label,
-            'service_request_type_selected': service_request_type_key, # Pass the key
-            'service_request_type_label': service_request_type_label, # Pass the label for display
+            # service_request_type_selected and service_request_type_label are removed
         }
 
         if not service_request_config_record:
@@ -68,13 +66,9 @@ class MuqeemReport(models.AbstractModel):
             ('service_request_config_id', '=', service_request_config_id),
             ('create_date', '>=', from_datetime),
             ('create_date', '<=', to_datetime),
+            ('state', '=', 'done'),  # ADDED: Filter by state = 'done'
         ]
         
-        # Add service_request_type to the domain IF it's selected in the wizard
-        if service_request_type_key:
-            enquiry_domain.append(('service_request_type', '=', service_request_type_key))
-            _logger.info(f"Adding service_request_type filter: {service_request_type_key}")
-
         _logger.info(f"Searching service.enquiry with domain: {enquiry_domain}")
         
         relevant_enquiries = service_enquiry_model.sudo().search(enquiry_domain)
@@ -94,7 +88,7 @@ class MuqeemReport(models.AbstractModel):
         report_data = [{
             'employees': employees,
             'service_request_label': service_request_label,
-            'service_request_type_label': service_request_type_label,
+            # service_request_type_label is removed
         }]
         
         base_return_data['docs'] = report_data

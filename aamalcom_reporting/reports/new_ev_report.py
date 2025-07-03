@@ -15,7 +15,7 @@ class NewEvReport(models.AbstractModel):
         
         from_date = data.get('from_date')
         to_date = data.get('to_date')
-        service_request_type_fixed = data.get('service_request_type_fixed') # Should be 'new_ev'
+        service_request_type_fixed = data.get('service_request_type_fixed') # Should be 'new_ev' based on your wizard
 
         _logger.info(f"New EV Report Parameters: From Date: {from_date}, To Date: {to_date}, Service Request Type: {service_request_type_fixed}")
 
@@ -58,7 +58,15 @@ class NewEvReport(models.AbstractModel):
             ('create_date', '>=', from_date),
             ('create_date', '<=', to_date),
         ]
-        _logger.info(f"Searching service.enquiry with domain: {enquiry_domain}")
+
+        # ADD THE NEW CONDITION HERE: if service_request_type is 'new_ev', also filter by state 'done'
+        if service_request_type_fixed == 'new_ev':
+            enquiry_domain.append(('state', '=', 'done'))
+            _logger.info(f"Adding state='done' filter for service_request_type_fixed='new_ev'.")
+        else:
+            _logger.info(f"No state='done' filter applied as service_request_type_fixed is not 'new_ev' or not provided.")
+        
+        _logger.info(f"Final service.enquiry search domain: {enquiry_domain}")
         
         relevant_enquiries = service_enquiry_model.sudo().search(enquiry_domain)
         _logger.info(f"Number of relevant enquiries found: {len(relevant_enquiries)}")
@@ -67,20 +75,28 @@ class NewEvReport(models.AbstractModel):
             _logger.warning("New EV Report: No relevant service enquiries found for the given criteria. Returning empty report.")
             return base_return_data
 
-        # Get unique employee IDs from the relevant enquiries
-        # Assuming 'employee_id' field exists on 'service.enquiry'
+        # It seems you want to fetch employees related to these enquiries
+        # and display details of those employees.
+        # Ensure that `service.enquiry` has an `employee_id` field.
+
+        # Fetch unique employees linked to these relevant enquiries
+        # You might want to consider what data you really need from `service.enquiry`
+        # and how it maps to the employee data for your report.
+        
+        # If 'employee_id' on 'service.enquiry' directly links to 'hr.employee'
         employee_ids = relevant_enquiries.mapped('employee_id').ids
         employees = self.env['hr.employee'].browse(employee_ids)
-        _logger.info(f"Number of employees found for New EV Report: {len(employees)}")
-        
-        # Log employee names for verification
-        for emp in employees:
-            _logger.info(f"New EV Employee: {emp.name}, IQAMA: {emp.iqama_no}") # Add more fields as needed for debugging
+        _logger.info(f"Number of unique employees found: {len(employees)}")
 
+        # For debugging purposes, log some details of fetched employees
+        for emp in employees:
+            _logger.info(f"  Employee: {emp.name}, IQAMA: {emp.iqama_no}, Sponsor: {emp.sponsor_id.name if emp.sponsor_id else 'N/A'}")
+            # Ensure these fields exist on hr.employee or its related models
+            
         report_data = [{
             'employees': employees,
             'service_request_type_fixed_label': 'Issuance of New EV',
-            # You can add other derived data here if needed
+            # Add other aggregated or summary data here if needed
         }]
 
         base_return_data['docs'] = report_data 
