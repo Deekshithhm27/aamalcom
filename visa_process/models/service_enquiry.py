@@ -59,7 +59,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
         ('passed_to_treasury','Passed to Treasury'),
-        ('waiting_payroll_approval','Waiting Payroll Approval'),
+        ('waiting_payroll_approval','Waiting Payroll Confirmation'),
         ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
@@ -159,6 +159,7 @@ class ServiceEnquiry(models.Model):
     from_date = fields.Date(string="From Date")
     valid_reason = fields.Text(string="Valid reason to be stated")
     any_credit_note = fields.Text(string="Any credit note to be issued with reason")
+    expiry_of_ere = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
     
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
@@ -166,7 +167,7 @@ class ServiceEnquiry(models.Model):
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
-    reupload_hr_card = fields.Binary(string="Updated HR Card Document")
+    reupload_hr_card = fields.Binary(string="Paid HR Card Document")
     reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
     # reupload hr card ref
     rehr_card_ref = fields.Char(string="Ref No.*")
@@ -540,10 +541,35 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'hr_card':
                 if record.reupload_hr_card and not record.rehr_card_ref:
-                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.upload_hr_card and not record.hr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for  HR Document")
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay_ev(self):
+        for record in self:
+            if record.service_request == 'new_ev':
+                if record.upload_issuance_doc and not record.issuance_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for  Issuance Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
             
@@ -817,8 +843,6 @@ class ServiceEnquiry(models.Model):
                 line.current_department_ids = False
 
     def open_assign_employee_wizard(self):
-        # this method opens a wizard and passes department based on the hierarchy set in service request
-
         for line in self:
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
@@ -826,45 +850,68 @@ class ServiceEnquiry(models.Model):
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
-            # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
+            level = ''
+
             if line.service_request == 'new_ev':
-                if line.state == 'submitted':
-                    level = 'level1'
-                if line.state == 'payment_done':
-                    level = 'level2'
-                if line.state == 'approved' and line.assign_govt_emp_two == False:
-                    level = 'level1'
-                if line.state == 'approved' and line.assign_govt_emp_two != False:
-                    level = 'level2'
+                if line.self_pay:
+                    if line.state == 'payment_done':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2'
+                else: # Not Self Pay
+                    if line.state == 'approved':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2'
+            elif line.service_request == 'hr_card':
+                if line.self_pay:
+                    if line.state == 'payment_done':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2'
+                else:
+                    if line.state == 'submitted' and not line.assigned_govt_emp_one:
+                        level = 'level1'
+                    elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                        level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
-
-            else:
+            else: # Default logic for other service requests (assuming 'hr_card' and others)
                 if line.state == 'submitted':
                     level = 'level1'
                 else:
                     level = 'level2'
-
+                    
             req_lines = line.service_request_config_id.service_department_lines
-            # Sort lines by sequence
-            sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
+            sorted_lines = sorted(req_lines, key=lambda line_conf: line_conf.sequence) # Renamed 'line' to 'line_conf' to avoid conflict
             for lines in sorted_lines:
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-                    break  # Exit the loop after adding the first department for level1
+                    break
                 else:
-                    if lines.sequence == 2:  # Only append the second department for level2
+                    if lines.sequence == 2:
                         department_ids.append((4, lines.department_id.id))
+                        break
+
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids,'default_assign_type':'assign','default_levels':level},
+                'context': {
+                    'default_department_ids': department_ids,
+                    'default_assign_type': 'assign',
+                    'default_levels': level,
+                    'active_id': line.id,
+                },
             }
+
 
     def open_reassign_employee_wizard(self):
         department_ids = []
@@ -1019,9 +1066,20 @@ class ServiceEnquiry(models.Model):
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
 
+    def action_submit_for_check_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.expiry_of_ere:
+                    raise ValidationError("Kindly Update Last Working Day")
+                line.state='submit_to_pm'
+                line.dynamic_action_status=f"Review is Pending By PM"
+                line.action_user_id=line.approver_id.user_id.id
+
     def action_submit_for_review_final_exit(self):
         for line in self:
             if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.is_outside_ksa:
+                    raise ValidationError('Please select Either Inside KSA or Outside KSA.')
                 line.state='submit_for_review'
                 line.dynamic_action_status=f"Review is Pending By First Govt Employee"
                 line.action_user_id=line.first_govt_employee_id.user_id.id
@@ -1030,7 +1088,16 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request=='final_exit_issuance':
                 line.state='final_exit_confirmed'
-                line.dynamic_action_status=f"Final Exit is Completed"
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} is Outside KSA.")
+                line.action_user_id=False
+
+    def final_exit_submit_inside(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initated.")
                 line.action_user_id=False
             
 
@@ -1039,11 +1106,11 @@ class ServiceEnquiry(models.Model):
             # passing error is ref no is not passed.
             if line.service_request =='new_ev':
                 if line.state=='submitted' and line.self_pay == True:
-                    if not line.issuance_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
+                    if not line.proof_of_request_ref:
+                        raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
 
             if line.service_request in ('hr_card','iqama_renewal'):
-                if line.state=='submitted' and line.self_pay == True:
+                if line.state=='submitted' and line.aamalcom_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
             if line.service_request == 'prof_change_qiwa':
@@ -1346,7 +1413,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','hr_card','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
+            if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
                 if not line.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
 
@@ -1395,13 +1462,13 @@ class ServiceEnquiry(models.Model):
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
             if line.service_request =='hr_card':
-                if line.state in ('payment_done','approved'):
+                if line.state in ('approved'):
                     if not line.rehr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Updated HR Document")
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    if not line.muqeem_print_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    # if not line.muqeem_print_doc_ref:
+                    #     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
@@ -1655,7 +1722,7 @@ class ServiceEnquiry(models.Model):
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
-            elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
+            elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False

@@ -2,40 +2,69 @@
 <odoo>
     <template id="muqeem_report_template">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="report_data">
+            <t t-call="web.external_layout">
                 <div class="page">
                     <h1 style="text-align: center; margin-bottom: 20px;">Muqeem Report</h1>
                     
-                    <p style="text-align: center; font-weight: bold;">
-                        Service Request: <t t-esc="report_data['service_request_label']"/>
-                    </p>
-                    <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
-                        <thead>
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="text-align: center; padding: 8px;">Name</th>
-                                <th style="text-align: center; padding: 8px;">Iqama No</th>
-                                <th style="text-align: center; padding: 8px;">Border No</th>
-                                <th style="text-align: center; padding: 8px;">Passport No</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-if="report_data['employees']">
-                                <t t-foreach="report_data['employees']" t-as="emp">
+                    <div style="margin-bottom: 20px; text-align: center;">
+                        <p>
+                            <strong>Service Request:</strong> <t t-esc="docs[0].get('service_request_label') if docs else data.get('service_request_label') or ''"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="data.get('from_date') and data.get('from_date').strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="data.get('from_date') and data.get('to_date')">
+                                <span> - </span>
+                            </t>
+                            <strong>To Date:</strong> <t t-esc="data.get('to_date') and data.get('to_date').strftime('%d-%m-%Y') or ''"/>
+                        </p>
+                    </div>
+
+                    <t t-if="docs and docs[0]['employees']">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="text-align: center; padding: 8px;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px;">Name</th>
+                                    <th style="text-align: center; padding: 8px;">Gender</th>
+                                    <th style="text-align: center; padding: 8px;">Nationality</th>
+                                    <th style="text-align: center; padding: 8px;">Occupation</th>
+                                    <th style="text-align: center; padding: 8px;">Passport Number</th>
+                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th>
+                                    <th style="text-align: center; padding: 8px;">Iqama Issue Date</th>
+                                    <th style="text-align: center; padding: 8px;">Iqama Expiry Date</th>
+                                    <th style="text-align: center; padding: 8px;">DOJ</th>
+                                    <th style="text-align: center; padding: 8px;">Birth Date</th>
+                                    <th style="text-align: center; padding: 8px;">Client</th>
+                                    <th style="text-align: center; padding: 8px;">Active</th>
+                                    <th style="text-align: center; padding: 8px;">Last Working Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs[0]['employees']" t-as="emp">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp.name"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td> 
+                                        <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.gender and dict(emp._fields['gender'].selection).get(emp.gender) or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.country_id.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or '' "/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.doj and emp.doj.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.birthday and emp.birthday.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.client_parent_id.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.active or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.date_end and emp.date_end.strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
-                            </t>
-                            <t t-if="not report_data['employees']">
-                                <tr>
-                                    <td colspan="4" style="text-align: center; padding: 10px;">No employees found for the selected criteria.</td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info text-center mt-5">
+                            <h3>No matching data found for the selected criteria.</h3>
+                            <p>Please adjust the date range or service request and try again.</p>
+                        </div>
+                    </t>
                 </div>
             </t>
         </t>

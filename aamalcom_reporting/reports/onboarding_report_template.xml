@@ -4,8 +4,11 @@
             <t t-foreach="docs" t-as="client_data">
                 <div class="page">
                     <h1 style="text-align: center; margin-bottom: 30px;">
-                        Client: <t t-esc="client_data['client'].name"/>
+                        Onboarding Report 
                     </h1>
+                    <h3 style="text-align: center; margin-bottom: 30px;">
+                        Client: <t t-esc="client_data['client'].name"/>
+                    </h3>
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
                             <strong>From Date:</strong> <t t-esc="data.get('from_date') and data.get('from_date').strftime('%d-%m-%Y') or ''"/>
@@ -16,34 +19,41 @@
                         </p>
                     </div>
                     
-
                     <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
                         <thead>
                             <tr style="background-color: #f2f2f2;">
+                                <th style="text-align: center; padding: 8px;">Iqama Number</th>
                                 <th style="text-align: center; padding: 8px;">Name</th>
-                                <th style="text-align: center; padding: 8px;">Iqama No</th>
+                                <th style="text-align: center; padding: 8px;">Gender</th>
+                                <th style="text-align: center; padding: 8px;">Nationality</th>
+                                <th style="text-align: center; padding: 8px;">Occupation</th>
+                                <th style="text-align: center; padding: 8px;">Passport Number</th>
+                                <th style="text-align: center; padding: 8px;">Sponsor Number</th>
                                 <th style="text-align: center; padding: 8px;">Date of Joining</th>
-                                <th style="text-align: center; padding: 8px;">Sponsor No</th>
-                                <th style="text-align: center; padding: 8px;">Border No</th>
-                                <th style="text-align: center; padding: 8px;">Passport No</th>
+                                <th style="text-align: center; padding: 8px;">Birth Date</th>
+                                <th style="text-align: center; padding: 8px;">Client</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-if="client_data['employees']">
                                 <t t-foreach="client_data['employees']" t-as="emp">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp.name"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.doj.strftime('%d-%m-%Y') if emp.doj else ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.name"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.gender and dict(emp._fields['gender'].selection).get(emp.gender) or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.country_id.name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
                                         <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id or '' "/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.doj and emp.doj.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.birthday and emp.birthday.strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp.client_parent_id.name or ''"/></td>
                                     </tr>
                                 </t>
                             </t>
                             <t t-if="not client_data['employees']">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 10px;">No employees found for this client in the selected date range.</td>
+                                    <td colspan="11" style="text-align: center; padding: 10px;">No employees found for this client in the selected date range.</td>
                                 </tr>
                             </t>
                         </tbody>

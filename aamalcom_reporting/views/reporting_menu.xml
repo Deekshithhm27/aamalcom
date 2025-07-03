@@ -28,12 +28,12 @@
     <field name="target">new</field>
     </record>
 
-    <menuitem id="menu_muqeem_report"
+   <!--  <menuitem id="menu_muqeem_report"
               name="Muqeem Report"
               parent="menu_reporting_root"
               action="action_muqeem_report_wizard"
               sequence="2"
-              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee"/>
+              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee"/> -->
               
     <record id="action_transfer_report_wizard" model="ir.actions.act_window">
         <field name="name">Transfer Request Report</field>

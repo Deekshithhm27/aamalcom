@@ -24,6 +24,9 @@ class ServiceEnquiry(models.Model):
     upload_final_acceptance = fields.Binary(string="Final Acceptance Document")
     final_acceptance_doc_ref = fields.Char(string="Ref No")
     final_acceptance_doc_file_name = fields.Char(string="Final Acceptance Document")
+    upload_signed_doc = fields.Binary(string="Clearance Signed Document")
+    upload_signed_doc_ref = fields.Char(string="Ref No")
+    upload_signed_doc_file_name = fields.Char(string="Clearance Signed Document")
 
 
     def action_submit(self):
@@ -44,39 +47,31 @@ class ServiceEnquiry(models.Model):
                 record.action_user_id=record.approver_id.user_id.id
                 
     def open_assign_employee_wizard(self):
-        for line in self:
-            if line.service_request == 'final_clearance':
-                # Dynamic level based on state and assigned_govt_emp_two
+        """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
+        result = super(ServiceEnquiry, self).open_assign_employee_wizard()
+        for record in self:
+            if record.service_request == 'salary_increase_process' and record.state == 'doc_uploaded_by_first_govt_employee':
+                # level = 'level1'
                 department_ids = []
-                if line.state == 'submitted':
-                    level = 'level1'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assign_govt_emp_two == False:
-                    level = 'level2'
-                if line.state == 'doc_uploaded_by_first_govt_employee' and line.assign_govt_emp_two != False:
-                    level = 'level2'
-                # Sorting and picking department line based on level
-                req_lines = line.service_request_config_id.service_department_lines
-                sorted_lines = sorted(req_lines, key=lambda l: l.sequence)
+                req_lines = record.service_request_config_id.service_department_lines
+                sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
                 for lines in sorted_lines:
-                    if level == 'level1':
-                        department_ids.append((4, lines.department_id.id))
-                        break
-                    elif level == 'level2' and lines.sequence == 2:
-                        department_ids.append((4, lines.department_id.id))
-                        break 
-                return {
-                'name': 'Select Employee',
-                'type': 'ir.actions.act_window',
-                'res_model': 'employee.selection.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {
-                    'default_department_ids': department_ids,
-                    'default_assign_type': 'assign',
-                    'default_levels': level,
-                },
-            }
-        return super(ServiceEnquiry, self).open_assign_employee_wizard()
+                    # if level == 'level1':
+                    department_ids.append((4, lines.department_id.id))
+
+                result.update({
+                    'name': 'Select Employee',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'employee.selection.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_department_ids': department_ids,
+                        'default_assign_type': 'assign',
+                        'default_levels': 'level2',
+                    },
+                })
+        return result
 
     def action_submit_to_hr(self):
         for record in self:

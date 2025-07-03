@@ -12,13 +12,14 @@ class ServiceRequestTreasuryInherit(models.Model):
 
     
     
-    def action_upload_confirmation_medical(self):
+    def action_upload_confirmation(self):
+        super(ServiceRequestTreasuryInherit, self).action_upload_confirmation()
         for line in self:
             if line.service_request_id.service_request == 'medical_blood_test':
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
                 line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
                 if line.service_request_id.state == 'submitted_to_treasury':
-                    line.service_request_id.dynamic_action_status = "Service request approved by Finance Team.1st govt employee Needs to be assigned by PM"
+                    line.service_request_id.dynamic_action_status = "Service request approved by Treasury Team.1st govt employee Needs to be assigned by PM"
                     line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
                 line.state = 'done'
                 # If the treasury record just became 'done' AND it's a 'medical_blood_test' service,

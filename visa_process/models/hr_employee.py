@@ -18,7 +18,7 @@ class HrEmployee(models.Model):
     hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
     identification_id = fields.Char(string='Border No.', groups="hr.group_hr_user", tracking=True)
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True,copy=False)
-
+    req_completion_date = fields.Datetime(string="Request Completion Date",copy=False)
     
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -58,6 +58,7 @@ class HrEmployee(models.Model):
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
+    
 
     work_location = fields.Char(string="Work Location")
     

@@ -6,14 +6,13 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'final_clearance')]}" groups="visa_process.group_service_request_client_spoc"/>
-                <button name="action_first_govt_emp_submit" string="Submit to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_clearance_doc', '=', False),  ('service_request', '!=', 'final_clearance')]}" groups="visa_process.group_service_request_employee"/>
-                <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee" type="object" 
-                class="btn-primary" attrs="{'invisible': ['|', '|',('muqeem_print_doc','=',False),
-            ('state', 'not in', ('doc_uploaded_by_first_govt_employee')),
-            ('service_request', '!=', 'final_clearance'),'|',('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_first_govt_emp_submit" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_clearance_doc', '=', False),  ('service_request', '!=', 'final_clearance')]}" groups="visa_process.group_service_request_employee"/>
+                <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary"
+                        attrs="{'invisible': ['|',('state','!=','doc_uploaded_by_first_govt_employee'),'|',('upload_signed_doc','=',False),'|',('assign_govt_emp_two','!=',False),'|',('assigned_govt_emp_two','=',True),('service_request','!=','final_clearance')]}"
+                        groups="visa_process.group_service_request_manager"/>
             <button name="action_submit_to_hr" string="Submit to HR" type="object" 
                 class="btn-primary" attrs="{'invisible': ['|','|',
-            ('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('muqeem_print_doc', '=', False),
+            ('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('upload_signed_doc', '=', False),
             ('service_request', '!=', 'final_clearance'), 
             ]}" groups="visa_process.group_service_request_employee"/>
             <button name="action_approve_by_hr" string="Approve" type="object" class="btn-primary" attrs="{'invisible': ['|',
@@ -28,6 +27,12 @@
                             class="btn-danger"
                             attrs="{'invisible': ['|',('state','!=','waiting_hr_approval'),('service_request', '!=', 'final_clearance')]}"
                             groups="visa_process.group_service_request_hr_manager"/>
+            <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': ['|',('state','!=','doc_uploaded_by_first_govt_employee'),('service_request', '!=', 'final_clearance')]}"
+                            groups="visa_process.group_service_request_employee"/>
 
 
             </xpath>
@@ -42,43 +47,43 @@
                 <group string="Clearance Document" attrs="{'invisible': ['|',('service_request', '!=', 'final_clearance'),('first_govt_employee_id','=',False)]}">
                     <group>
                         <field name="upload_clearance_doc" 
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
                                filename="upload_clearance_doc_file_name"/>
                         <field name="upload_clearance_doc_file_name" invisible="1"/>
                         <field name="clearance_doc_ref"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                     </group>    
                 </group>   
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                 <group string="Signed Clearance Document" attrs="{'invisible': ['|',('service_request', '!=', 'final_clearance'),('state','in',('draft','submitted'))]}">
                     <group>
-                        <field name="muqeem_print_doc" string="Upload Signed Clearance Doc" 
+                        <field name="upload_signed_doc"  
                                attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_project_manager', '!=', True)]}"
-                               filename="signed_clearance_doc_file_name"/>
+                               filename="signed_clearance_doc_file_name" force_save="1"/>
                         <field name="signed_clearance_doc_file_name" invisible="1"/>
-                        <field name="muqeem_print_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_project_manager', '!=', True)]}"/>
+                        <field name="upload_signed_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_project_manager', '!=', True)]}" force_save="1"/>
                     </group>    
                 </group>  
-                <group string="Final Acceptance Document" attrs="{'invisible': ['|','|',('state','not in',('approved','done')),('service_request', '!=', 'final_clearance'),('final_clearance_type','!=','final_clearance_local_transfer')]}">
+                <group string="Final Acceptance Document" attrs="{'invisible': ['|','|','|',('state','not in',('approved','done')),('service_request', '!=', 'final_clearance'),('final_clearance_type','!=','final_clearance_local_transfer'),('second_govt_employee_id','=',False)]}">
                     <group>
                         <field name="signed_clearance_doc" string="Upload Local exit acceptance doc"
-                               attrs="{'readonly': ['|','|',('state', '!=','approved'),('is_project_manager', '=', True),('is_service_request_client_spoc','=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('second_govt_employee_id','=',False)]}"
                                filename="signed_clearance_doc_file_name"/>
                         <field name="signed_clearance_doc_file_name" invisible="1"/>
                         <field name="signed_clearance_doc_ref"
-                              attrs="{'readonly': ['|','|',('state', '!=','approved'),('is_project_manager', '=', True),('is_service_request_client_spoc','=',True)]}"/>
+                              attrs="{'readonly': ['|',('state', '!=','approved'),('second_govt_employee_id','=',False)]}"/>
                     </group>    
                 </group>  
-                <group string="Final Acceptance Document" attrs="{'invisible': ['|','|',('service_request', '!=', 'final_clearance'),('state','not in',('approved','done')),('final_clearance_type','!=','final_clearance_final_exit')]}">
+                <group string="Final Acceptance Document" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'final_clearance'),('state','not in',('approved','done')),('final_clearance_type','!=','final_clearance_final_exit'),('second_govt_employee_id','=',False)]}">
                     <group>
                         <field name="upload_final_acceptance" string="Upload Final exit acceptance doc"
-                               attrs="{'readonly': ['|','|',('state', '!=','approved'),('is_project_manager', '=', True),('is_service_request_client_spoc','=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('second_govt_employee_id','=',False)]}"
                                filename="final_acceptance_doc_file_name"/>
                         <field name="final_acceptance_doc_file_name" invisible="1"/>
                         <field name="final_acceptance_doc_ref"
-                               attrs="{'readonly': ['|','|',('state', '!=','approved'),('is_project_manager', '=', True),('is_service_request_client_spoc','=',True)]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('second_govt_employee_id','=',False)]}"/>
                     </group>    
                 </group>  
             </xpath>
