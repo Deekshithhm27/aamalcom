@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_account_move_form_inherit_insurance_report" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.insurance.lines</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="aamalcom_insurance.view_account_move_form_inherit_insurance_lines"/>
+        <field name="arch" type="xml">
+          <xpath expr="//page[@name='life_inv_details']" position="after">
+          	<page string="Insurance Invoices">
+          		<group>
+          			<group>
+	          			<field name="invoice_insurance_merged_pdf"/>
+	          			<field name="merged_pdf_filename" invisible="1"/>
+	          		</group>
+	          		<group>
+          				<button name="action_save_merged_insurance_pdf"
+			        string="Generate Insurance Report"
+			        type="object"
+			        class="oe_highlight" invisible="1"
+						/>
+          			</group>
+          			
+          		</group>
+          	</page>
+          </xpath>
+      </field>
+  	</record>
+	
+</odoo>

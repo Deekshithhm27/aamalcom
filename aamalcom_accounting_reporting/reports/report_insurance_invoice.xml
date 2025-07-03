@@ -1,0 +1,177 @@
+<odoo>
+  <!-- QWeb Template -->
+  <template id="report_med_insurance_invoice_document">
+    <t t-call="web.external_layout">
+        <t t-foreach="doc" t-as="o">
+            <div class="page" style="font-size:12px;">
+                <!-- HEADER -->
+                <div style="text-align:center;font-weight:bold;margin-bottom:5px;">
+                    TO:- FINANCE DEPARTMENT<br/>
+                    SUBJECT:- INVOICE<br/>
+                    INVOICE DATE: <t t-esc="o.invoice_date or ''"/><br/>
+                    CUSTOMER NAME: <t t-esc="o.partner_id.name or ''"/>
+                </div>
+                <div style="text-align:center; font-weight:bold; margin-bottom:10px;">
+                    BUPA MEDICAL HEALTH INSURANCE ENROLLMENT &amp; DELETIONS FOR EMPLOYEES
+                </div>
+
+                <!-- LIFE INSURANCE SECTION -->
+                <t t-if="o.life_insurance_invoice_ids">
+                    <t t-set="lines" t-value="o.life_insurance_invoice_ids"/>
+                </t>
+
+                <!-- MEDICAL INSURANCE SECTION -->
+                <t t-if="o.medical_insurance_invoice_ids and not o.life_insurance_invoice_ids">
+                    <t t-set="lines" t-value="o.medical_insurance_invoice_ids"/>
+                </t>
+
+                <!-- ENROLLMENT TABLE -->
+                <div style="margin-top:10px;">
+                    <div style="background-color:#c9d6e8; font-weight:bold; text-align:center; border:1px solid black;">
+                        BUPA MEDICAL HEALTH INSURANCE ENROLLMENT FOR EMPLOYEES
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;border:1px solid black;">
+                        <thead style="background-color:#d9edf7;">
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>IQAMA</th>
+                                <th>SPONSOR ID</th>
+                                <th>EMPLOYEE NAME</th>
+                                <th>MEMBER</th>
+                                <th>MEMBER ID</th>
+                                <th>INSURANCE ACTIVATION DATE</th>
+                                <th>INSURANCE EXPIRATION DATE</th>
+                                <th>MEDICAL INSURANCE CLASS</th>
+                                <th>TOTAL AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines.filtered(lambda l: l.insurance_type == 'enrollment')" t-as="line">
+                                <td><t t-esc="line.client_emp_sequence or ''"/></td>
+                                <td><t t-esc="line.iqama_no or ''"/></td>
+                                <td><t t-esc="line.sponsor_id.name or ''"/></td>
+                                <td><t t-esc="line.employee_id.name or ''"/></td>
+                                <td><t t-esc="line.member or ''"/></td>
+                                <td><t t-esc="line.member_id or ''"/></td>
+                                <td><t t-esc="line.insurance_activation_date or ''"/></td>
+                                <td><t t-esc="line.insurance_expiration_date or ''"/></td>
+                                <td><t t-esc="line.medical_class or ''"/></td>
+                                <td><t t-esc="line.total_amount" t-options='{"widget":"monetary", "display_currency":o.currency_id}'/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align:right;font-weight:bold;border-top:1px solid black;">
+                        ENROLLMENT TOTAL AMOUNT SAR
+                        <t t-esc="sum(lines.filtered(lambda l: l.insurance_type == 'enrollment').mapped('total_amount'))"
+                           t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                    </div>
+                </div>
+
+                <!-- DELETION TABLE -->
+                <div style="margin-top:20px;">
+                    <div style="background-color:#f4cccc; font-weight:bold; text-align:center; border:1px solid black;">
+                        DELETIONS FOR EMPLOYEES
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;border:1px solid black;">
+                        <thead style="background-color:#f2dede;">
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>IQAMA</th>
+                                <th>SPONSOR ID</th>
+                                <th>EMPLOYEE NAME</th>
+                                <th>MEMBER</th>
+                                <th>MEMBER ID</th>
+                                <th>INSURANCE DE-ACTIVATION DATE</th>
+                                <th>INSURANCE EXPIRATION DATE</th>
+                                <th>MEDICAL INSURANCE CLASS</th>
+                                <th>TOTAL AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines.filtered(lambda l: l.insurance_type == 'deletion')" t-as="line">
+                                <td><t t-esc="line.client_emp_sequence or ''"/></td>
+                                <td><t t-esc="line.iqama_no or ''"/></td>
+                                <td><t t-esc="line.sponsor_id.name or ''"/></td>
+                                <td><t t-esc="line.employee_id.name or ''"/></td>
+                                <td><t t-esc="line.member or ''"/></td>
+                                <td><t t-esc="line.member_id or ''"/></td>
+                                <td><t t-esc="line.insurance_deactivation_date or ''"/></td>
+                                <td><t t-esc="line.insurance_expiration_date or ''"/></td>
+                                <td><t t-esc="line.medical_class or ''"/></td>
+                                <td><t t-esc="line.total_amount" t-options='{"widget":"monetary", "display_currency":o.currency_id}'/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align:right;font-weight:bold;border-top:1px solid black;">
+                        DELETION TOTAL AMOUNT SAR
+                        <t t-esc="sum(lines.filtered(lambda l: l.insurance_type == 'deletion').mapped('total_amount'))"
+                           t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                    </div>
+                </div>
+
+                <!-- TOTALS -->
+                <div style="margin-top:20px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr>
+                            <td style="text-align:right;font-weight:bold;">ENROLLMENT TOTAL AMOUNT SAR:</td>
+                            <td style="text-align:right;">
+                                <t t-esc="sum(lines.filtered(lambda l: l.insurance_type == 'enrollment').mapped('total_amount'))"
+                                   t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right;font-weight:bold;">Less (-) DELETION TOTAL AMOUNT SAR:</td>
+                            <td style="text-align:right;">
+                                <t t-esc="sum(lines.filtered(lambda l: l.insurance_type == 'deletion').mapped('total_amount'))"
+                                   t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right;font-weight:bold;">NET AMOUNT PAYABLE SAR:</td>
+                            <td style="text-align:right;">
+                                <t t-set="net" t-value="sum(lines.filtered(lambda l: l.insurance_type == 'enrollment').mapped('total_amount')) -
+                                                    sum(lines.filtered(lambda l: l.insurance_type == 'deletion').mapped('total_amount'))"/>
+                                <t t-esc="net" t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right;font-weight:bold;">VAT 15%:</td>
+                            <td style="text-align:right;">
+                                <t t-esc="net * 0.15" t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right;font-weight:bold;">GRAND TOTAL PAYABLE SAR:</td>
+                            <td style="text-align:right;">
+                                <t t-esc="net * 1.15" t-options='{"widget":"monetary", "display_currency":o.currency_id}'/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- SIGNATURES -->
+                <div style="margin-top:30px;">
+                    <table style="width:100%; font-size:10px;">
+                        <tr>
+                            <td style="width:25%;">PREPARED BY<br/>Mohammed Rasheed Jamal<br/>Business Support Specialist</td>
+                            <td style="width:25%;">CHECKED BY<br/>Zunaria Zia<br/>Project Manager</td>
+                            <td style="width:25%;">REVIEWED BY<br/>Dominic Stewart<br/>Head - Operations</td>
+                            <td style="width:25%;">APPROVED BY<br/>Haifa Tamal Al-Otaibi<br/>General Manager</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </t>
+</template>
+
+  <template id="report_insurance_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="aamalcom_accounting_reporting.report_med_insurance_invoice_document"/>
+            </t>
+        </t>
+    </template>
+
+  
+</odoo>

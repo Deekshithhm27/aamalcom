@@ -50,42 +50,6 @@ class AccountMove(models.Model):
             vals['draft_invoice_sequence'] = self.env['ir.sequence'].next_by_code('account.move.draft.invoice') or '/'
         return super(AccountMove, self).create(vals)
 
-    # reports
-    def action_invoice_tax_report(self, type):
-        self.ensure_one()
-        if type == 'tax_invoice':
-            template = self.env.ref('aamalcom_accounting.email_template_edi_invoice_tax_etir', raise_if_not_found=False)
-        lang = False
-        if template:
-            lang = template._render_lang(self.ids)[self.id]
-        if not lang:
-            lang = get_lang(self.env).code
-        compose_form = self.env.ref('account.account_invoice_send_wizard_form', raise_if_not_found=False)
-        ctx = dict(
-            default_model='account.move',
-            default_res_id=self.id,
-            active_ids=[self.id],
-            default_res_model='account.move',
-            default_use_template=bool(template),
-            default_template_id=template and template.id or False,
-            default_composition_mode='comment',
-            mark_invoice_as_sent=True,
-            custom_layout="mail.mail_notification_paynow",
-            model_description=self.with_context(lang=lang).type_name,
-            force_email=True
-        )
-        return {
-            'name': _('Send Invoice'),
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'account.invoice.send',
-            'views': [(compose_form.id, 'form')],
-            'view_id': compose_form.id,
-            'target': 'new',
-            'context': ctx,
-        }
-
 
     @api.depends('amount_total', 'currency_id', 'partner_id.lang')
     def _compute_amount_total_in_words(self):

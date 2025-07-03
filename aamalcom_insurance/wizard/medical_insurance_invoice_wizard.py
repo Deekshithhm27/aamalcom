@@ -9,6 +9,7 @@ class MedicalInsuranceInvoiceWizard(models.TransientModel):
     start_date = fields.Date(string='Start Date', required=True)
     end_date = fields.Date(string='End Date', required=True)
     client_parent_id = fields.Many2one('res.partner', string='Client', required=True,domain="[('is_company','=',True),('parent_id','=',False)]")
+    proof_of_document = fields.Binary(string="Proof of Document")
 
     def action_generate_invoice(self):
         self.ensure_one()
@@ -32,7 +33,10 @@ class MedicalInsuranceInvoiceWizard(models.TransientModel):
                 'client_emp_sequence': line.client_emp_sequence,
                 'iqama_no': line.iqama_no,
                 'sponsor_id': line.sponsor_id,
+                'member':line.member,
+                'member_id':line.member_id,
                 'insurance_activation_date': line.insurance_activation_date,
+                'insurance_expiration_date': line.insurance_expiration_date,
                 'medical_class': line.medical_class,
                 'total_amount': line.total_amount,
                 'insurance_type': 'enrollment',
@@ -51,6 +55,9 @@ class MedicalInsuranceInvoiceWizard(models.TransientModel):
                 'client_emp_sequence': line.client_emp_sequence,
                 'iqama_no': line.iqama_no,
                 'sponsor_id': line.sponsor_id,
+                'member':line.member,
+                'member_id':line.member_id,
+                'insurance_deactivation_date': line.insurance_deactivation_date,
                 'insurance_expiration_date': line.insurance_expiration_date,
                 'medical_class': line.medical_class,
                 'total_amount': line.total_amount,
@@ -70,6 +77,7 @@ class MedicalInsuranceInvoiceWizard(models.TransientModel):
             'invoice_type':'insurance',
             'invoice_date': fields.Date.context_today(self),
             'invoice_line_ids': move_lines,
+            'proof_of_document':self.proof_of_document,
             'medical_insurance_invoice_ids': insurance_line_vals,
         }
 

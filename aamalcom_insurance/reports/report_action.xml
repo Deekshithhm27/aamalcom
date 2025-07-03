@@ -1,21 +1,34 @@
 <odoo>
-    <report
-        id="action_report_medical_insurance_summary"
-        string="Insurance Summary Report"
-        model="medical.insurance.invoice.report.wizard"
-        report_type="qweb-pdf"
-        name="aamalcom_insurance.med_ins_inv_summary"
-        file="aamalcom_insurance.med_ins_inv_summary"
-        print_report_name="'Insurance Summary - %s' % (object.client_id.name)"
-    />
+	<record id="paperformat_landscape_insurance_invoices" model="report.paperformat">
+		<field name="name">Insurance Landscape</field>
+		<field name="format">custom</field>
+		<field name="page_width">0</field>   <!-- A4 landscape in mm -->
+		<field name="page_height">0</field>
+		<field name="orientation">Landscape</field>
+		<field name="margin_top">10</field>
+		<field name="margin_bottom">10</field>
+		<field name="margin_left">10</field>
+		<field name="margin_right">10</field>
+		<field name="header_line" eval="False"/>
+		<field name="dpi">90</field>
+	</record>
 
-    <report
-        id="action_report_life_insurance_summary"
-        string="Insurance Summary Report"
-        model="life.insurance.invoice.report.wizard"
-        report_type="qweb-pdf"
-        name="aamalcom_insurance.life_ins_inv_summary"
-        file="aamalcom_insurance.life_ins_inv_summary"
-        print_report_name="'Insurance Summary - %s' % (object.client_id.name)"
-    />
+    <record id="action_report_life_insurance_summary" model="ir.actions.report">
+	    <field name="name">Insurance Summary Report</field>
+	    <field name="model">life.insurance.invoice.report.wizard</field>
+	    <field name="report_type">qweb-pdf</field>
+	    <field name="report_name">aamalcom_insurance.life_ins_inv_summary</field>
+	    <field name="report_file">aamalcom_insurance.life_ins_inv_summary</field>
+	    <field name="paperformat_id" ref="aamalcom_insurance.paperformat_landscape_insurance_invoices"/>
+	    <field name="print_report_name">'Insurance Summary - %s' % (object.client_id.name)</field>
+	</record>
+	<record id="action_report_medical_insurance_summary" model="ir.actions.report">
+	    <field name="name">Insurance Summary Report</field>
+	    <field name="model">medical.insurance.invoice.report.wizard</field>
+	    <field name="report_type">qweb-pdf</field>
+	    <field name="report_name">aamalcom_insurance.med_ins_inv_summary</field>
+	    <field name="report_file">aamalcom_insurance.med_ins_inv_summary</field>
+	    <field name="paperformat_id" ref="aamalcom_insurance.paperformat_landscape_insurance_invoices"/>
+	    <field name="print_report_name">'Insurance Summary - %s' % (object.client_id.name)</field>
+	</record>
 </odoo>

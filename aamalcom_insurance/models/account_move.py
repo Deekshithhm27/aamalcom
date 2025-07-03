@@ -1,5 +1,8 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from io import BytesIO
+from PyPDF2 import PdfFileMerger
+from ..utils.pdf_merge import merge_invoice_and_insurance
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -20,6 +23,7 @@ class AccountMove(models.Model):
         string='Life Insurance Invoice Details'
     )
     insurance_inv_ref = fields.Char(string="Insurance Inv Ref")
+    proof_of_document = fields.Binary(string="Proof of Document")
 
     def action_post(self):
         res = super(AccountMove, self).action_post()
@@ -32,6 +36,7 @@ class AccountMove(models.Model):
 
 
 
+
 class AccountMoveInsuranceLine(models.Model):
     _name = 'account.move.insurance.line'
     _description = 'Insurance Line in Invoice'
@@ -40,8 +45,11 @@ class AccountMoveInsuranceLine(models.Model):
     employee_id = fields.Many2one('hr.employee')
     client_emp_sequence = fields.Char(string="Employee Number")
     iqama_no = fields.Char(string="Iqama Number")
+    member = fields.Char(string='Member')
+    member_id = fields.Char(string='Member ID (Bupa)')
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Id")
     insurance_activation_date = fields.Date(string='Insurance Activation Date')
+    insurance_deactivation_date = fields.Date(string='Insurance De-Activation Date')
     insurance_expiration_date = fields.Date(string='Insurance Expiration Date')
     medical_class = fields.Char(string='Medical Class')
     total_amount = fields.Float(string='Total Amount')
@@ -59,8 +67,11 @@ class AccountMoveLifeInsuranceLine(models.Model):
     employee_id = fields.Many2one('hr.employee')
     client_emp_sequence = fields.Char(string="Employee Number")
     iqama_no = fields.Char(string="Iqama Number")
+    member = fields.Char(string='Member')
+    member_id = fields.Char(string='Member ID (Bupa)')
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Id")
     insurance_activation_date = fields.Date(string='Insurance Activation Date')
+    insurance_deactivation_date = fields.Date(string='Insurance De-Activation Date')
     insurance_expiration_date = fields.Date(string='Insurance Expiration Date')
     medical_class = fields.Char(string='Medical Class')
     total_amount = fields.Float(string='Total Amount')

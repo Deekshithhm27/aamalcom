@@ -9,7 +9,7 @@
         </t>
         <div class="header">
             <table style="border:1pt solid grey;width:100%;font-size:12px;" width="100%">
-                <link rel="stylesheet" href="/aamalcom_accounting/static/src/css/style.css"/>
+                <link rel="stylesheet" href="/aamalcom_accounting_reporting/static/src/css/style.css"/>
                 <tr>
                     <td colspan="2" width="35%">
                         <strong><span style="padding-left:5px;" t-field="company.name"/></strong><br/>
@@ -84,10 +84,10 @@
     </template>
 
     <template id="report_tax_invoice_document">
-        <t t-call="aamalcom_accounting.external_layout_seti">
+        <t t-call="aamalcom_accounting_reporting.external_layout_seti">
             <t t-foreach="doc" t-as="o">
                 <div class="page" style="">
-                    <link rel="stylesheet" href="/aamalcom_accounting/static/src/css/style.css"/>
+                    <link rel="stylesheet" href="/aamalcom_accounting_reporting/static/src/css/style.css"/>
                     <t t-set="company" t-value="res_company"/>
                     <div class="font">
 
@@ -388,71 +388,77 @@
                         </table>
                     </t>
                     <p style="page-break-before:always;"/>
-                    <div style="text-align:center:align-items:center;display:block">
-                        <p> Documents</p>
-                        <t t-foreach="o.invoice_line_ids" t-as="doc_lists">
-                            <!-- New Visa Issuance -->
-                            <t t-if="doc_lists.service_enquiry_id.service_request == 'new_ev'">
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.upload_issuance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_issuance_doc)" style="max-height:100%;max-width:100%"/>
-                                        <t t-esc="doc_lists.service_enquiry_id.issuance_doc_ref"/>
+                    <t t-if="o.invoice_type == 'operation'">
+                        <div style="text-align:center:align-items:center;display:block">
+                            <p> Documents</p>
+                            <t t-foreach="o.invoice_line_ids" t-as="doc_lists">
+                                <!-- New Visa Issuance -->
+                                <t t-if="doc_lists.service_enquiry_id.service_request == 'new_ev'">
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <img t-if="doc_lists.service_enquiry_id.upload_issuance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_issuance_doc)" style="max-height:100%;max-width:100%"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.issuance_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.upload_enjaz_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_enjaz_doc)" style="max-height:100%;max-width:100%"/>
-                                        <t t-esc="doc_lists.service_enquiry_id.enjaz_doc_ref"/>
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <img t-if="doc_lists.service_enquiry_id.upload_enjaz_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_enjaz_doc)" style="max-height:100%;max-width:100%"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.enjaz_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                            </t>
-                            <t t-if="doc_lists.service_enquiry_id.service_request == 'prof_change_qiwa'">
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.profession_change_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.profession_change_doc)" style="max-height:100%;max-width:100%"/>
-                                        <t t-esc="doc_lists.service_enquiry_id.profession_change_doc_ref"/>
+                                </t>
+                                <t t-if="doc_lists.service_enquiry_id.service_request == 'prof_change_qiwa'">
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <img t-if="doc_lists.service_enquiry_id.profession_change_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.profession_change_doc)" style="max-height:100%;max-width:100%"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.profession_change_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.upload_enjaz_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_enjaz_doc)" style="max-height:100%;max-width:100%"/>
-                                        <t t-esc="doc_lists.service_enquiry_id.enjaz_doc_ref"/>
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <img t-if="doc_lists.service_enquiry_id.upload_enjaz_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_enjaz_doc)" style="max-height:100%;max-width:100%"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.enjaz_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                            </t>
-                            <!-- Issuance of HR Card -->
-                            <t t-if="doc_lists.service_enquiry_id.service_request in ('hr_card','iqama_renewal')">
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <img t-if="doc_lists.service_enquiry_id.upload_hr_card" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_hr_card)" style="max-height:100%;max-width:100%"/>
-                                        <t t-esc="doc_lists.service_enquiry_id.hr_card_ref"/>
+                                </t>
+                                <!-- Issuance of HR Card -->
+                                <t t-if="doc_lists.service_enquiry_id.service_request in ('hr_card','iqama_renewal')">
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <img t-if="doc_lists.service_enquiry_id.upload_hr_card" t-att-src="image_data_uri(doc_lists.service_enquiry_id.upload_hr_card)" style="max-height:100%;max-width:100%"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.hr_card_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <!-- <img t-if="doc_lists.service_enquiry_id.residance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.residance_doc)" style="max-height:100%;max-width:100%"/> -->
-                                        <t t-if="doc_lists.service_enquiry_id.residance_doc">
-                                            <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.residance_doc.decode('utf-8') if doc_lists.service_enquiry_id.residance_doc else ''))"/>
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <!-- <img t-if="doc_lists.service_enquiry_id.residance_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.residance_doc)" style="max-height:100%;max-width:100%"/> -->
+                                            <t t-if="doc_lists.service_enquiry_id.residance_doc">
+                                                <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.residance_doc.decode('utf-8') if doc_lists.service_enquiry_id.residance_doc else ''))"/>
 
-                                        </t>
-                                        <t t-esc="doc_lists.service_enquiry_id.residance_doc_ref"/>
+                                            </t>
+                                            <t t-esc="doc_lists.service_enquiry_id.residance_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
-                                    <div class="col-12">
-                                        <!-- <img t-if="doc_lists.service_enquiry_id.muqeem_print_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.muqeem_print_doc)" style="max-height:100%;max-width:100%"/> -->
-                                        <t t-if="doc_lists.service_enquiry_id.muqeem_print_doc">
-                                            <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.muqeem_print_doc or ''))" style="width:100%; height:600px;"/>
-                                        </t>
+                                    <div class="row" style="height:500px;width:500px;page-break-inside:avoid;">
+                                        <div class="col-12">
+                                            <!-- <img t-if="doc_lists.service_enquiry_id.muqeem_print_doc" t-att-src="image_data_uri(doc_lists.service_enquiry_id.muqeem_print_doc)" style="max-height:100%;max-width:100%"/> -->
+                                            <t t-if="doc_lists.service_enquiry_id.muqeem_print_doc">
+                                                <embed type="application/pdf" t-att-src="('data:application/pdf;base64,' + (doc_lists.service_enquiry_id.muqeem_print_doc or ''))" style="width:100%; height:600px;"/>
+                                            </t>
 
 
-                                        <t t-esc="doc_lists.service_enquiry_id.muqeem_print_doc_ref"/>
+                                            <t t-esc="doc_lists.service_enquiry_id.muqeem_print_doc_ref"/>
+                                        </div>
                                     </div>
-                                </div>
+                                </t>
                             </t>
-                        </t>
-                    </div>
-                    <br/><br/><br/><br/>
+                        </div>
+                    </t>
+                    <!-- <t t-if="o.invoice_type == 'insurance'">
+                        <p style="page-break-before: always;"/>
+                        <t t-call="aamalcom_accounting_reporting.report_med_insurance_invoice_document"/>
+                    </t> -->
+                    <!-- <br/><br/><br/><br/> -->
                     </div>
                 </div>
             </t>
@@ -462,7 +468,7 @@
     <template id="report_tax_invoice">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="aamalcom_accounting.report_tax_invoice_document"/>
+                <t t-call="aamalcom_accounting_reporting.report_tax_invoice_document"/>
             </t>
         </t>
     </template>

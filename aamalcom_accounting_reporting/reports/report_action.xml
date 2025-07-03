@@ -4,29 +4,27 @@
         <field name="name">Saudi VAT Invoice</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">aamalcom_accounting.report_tax_invoice</field>
-        <field name="report_file">aamalcom_accounting.report_tax_invoice</field>
+        <field name="report_name">aamalcom_accounting_reporting.report_tax_invoice</field>
+        <field name="report_file">aamalcom_accounting_reporting.report_tax_invoice</field>
         <field name="print_report_name">'VAT Invoice -%s' %(object.partner_id.name)</field>
+        <field name="paperformat_id" ref="aamalcom_accounting_reporting.paperformat_action_report_tax_invoice"/>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
-    <record id="paperformat_action_report_tax_invoice" model="report.paperformat">
-        <field name="name">Saudi VAT Invoice</field>
-        <field name="default" eval="True" />
-        <field name="format">custom</field>
-        <field name="page_height">0</field>
-        <field name="page_width">0</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">60</field>
-        <field name="margin_bottom">15</field>
-        <field name="margin_left">10</field>
-        <field name="margin_right">10</field>
-        <field name="header_line" eval="False" />
-        <field name="header_spacing">55</field>
-        <field name="dpi">90</field>
-        <field name="report_ids" eval="[(6,0,[ref('aamalcom_accounting.action_report_tax_invoice')])]"/>
-    </record>
+
+    <record id="action_report_insurance_invoice" model="ir.actions.report">
+        <field name="name">Medical Insurance Invoice Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aamalcom_accounting_reporting.report_insurance_invoice</field>
+        <field name="report_file">aamalcom_accounting_reporting.report_insurance_invoice</field>
+        <field name="paperformat_id" ref="aamalcom_accounting_reporting.paperformat_landscape_insurance"/>
+        <field name="print_report_name">'Insurance Report - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+      </record>
+
     <record model="ir.actions.server" id="action_account_move_report_tax">
             <field name="name">Saudi VAT Invoice</field>
             <field name="model_id" ref="account.model_account_move"/>

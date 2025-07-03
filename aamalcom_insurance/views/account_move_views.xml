@@ -25,10 +25,11 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
           <xpath expr="//field[@name='payment_reference']" position="after">
-            <field name="insurance_inv_ref" attrs="{'invisible': ['|',('move_type', '!=','out_refund'),('invoice_type','!=','insurance')]}" />
+            <field name="insurance_inv_ref" attrs="{'invisible': [('move_type', '!=','out_refund'),('invoice_type','!=','insurance')]}" />
+            <field name="proof_of_document" attrs="{'invisible': [('move_type', '!=','out_refund'),('invoice_type','!=','insurance')]}" />
           </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="Medical Insurance Invoice Details" invisible="1">
+                <page string="Medical Insurance Invoice Details" name="med_inv_details" invisible="1">
                   <field name="medical_insurance_invoice_ids">
                       <tree edit="0" create="0">
                           <field name="client_emp_sequence"/>
@@ -62,7 +63,7 @@
                       </form>
                   </field>
               </page>
-              <page string="Life Insurance Invoice Details" invisible="1">
+              <page string="Life Insurance Invoice Details" name="life_inv_details" invisible="1">
                 <field name="life_insurance_invoice_ids">
                       <tree edit="0" create="0">
                           <field name="client_emp_sequence"/>

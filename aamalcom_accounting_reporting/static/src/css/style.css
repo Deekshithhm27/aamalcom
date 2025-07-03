@@ -4,14 +4,14 @@ font-family:'traditional_arabic';;font-weight:100;font-size: 13px;
 
 @font-face {
 	font-family: 'DroidArabicKufiBold';
-	src: url('/aamalcom_accounting/static/src/fonts/DroidKufi-Bold.ttf') format('truetype');
+	src: url('/aamalcom_accounting_reporting/static/src/fonts/DroidKufi-Bold.ttf') format('truetype');
 	font-weight: bold;
 	font-style: normal;
 	  }
 
 @font-face {
 	font-family: 'DroidArabicKufiRegular';
-	src: url('/aamalcom_accounting/static/src/fonts/DroidKufi-Regular.ttf') format('truetype');
+	src: url('/aamalcom_accounting_reporting/static/src/fonts/DroidKufi-Regular.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }

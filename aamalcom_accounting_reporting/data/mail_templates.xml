@@ -40,7 +40,7 @@
                 </p>
             </div>
             </field>
-            <field name="report_template" ref="aamalcom_accounting.action_report_tax_invoice"/>
+            <field name="report_template" ref="aamalcom_accounting_reporting.action_report_tax_invoice"/>
             <field name="report_name">Invoice_Tax_${(object.name or '').replace('/','_')}${object.state == 'draft' or ''}</field>
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>

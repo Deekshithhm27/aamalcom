@@ -10,6 +10,8 @@ class LifeInsuranceInvoiceDetails(models.Model):
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
+        related="company_id.currency_id",help="The payment's currency.")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('invoice_created','Invoice Created'),
@@ -25,6 +27,7 @@ class LifeInsuranceInvoiceDetails(models.Model):
     member = fields.Char(string='Member')
     member_id = fields.Char(string='Member ID (Bupa)')
     insurance_activation_date = fields.Date(string='Insurance Activation Date')
+    insurance_deactivation_date = fields.Date(string='Insurance De-Activation Date')
     insurance_expiration_date = fields.Date(string='Insurance Expiration Date')
     medical_class = fields.Char(string='Medical Class')
     total_amount = fields.Float(string='Total Amount')
@@ -38,8 +41,8 @@ class LifeInsuranceInvoiceDetails(models.Model):
     def create(self,vals_list):
         for vals in vals_list:
             vals['name'] = self.env['ir.sequence'].next_by_code('life.insurance.invoice.details')
-            if vals.get('client_emp_sequence'):
-                emp = self.env['hr.employee'].search([('client_emp_sequence', '=', vals['client_emp_sequence'])], limit=1)
+            if vals.get('member_id'):
+                emp = self.env['hr.employee'].search([('member_no', '=', vals['member_id'])], limit=1)
                 if emp:
                     vals['iqama_no'] = emp.iqama_no
                     vals['sponsor_id'] = emp.sponsor_id.id
@@ -48,10 +51,10 @@ class LifeInsuranceInvoiceDetails(models.Model):
         res = super(LifeInsuranceInvoiceDetails,self).create(vals_list)
         return res
 
-    @api.onchange('client_emp_sequence')
-    def _onchange_client_emp_sequence(self):
-        if self.client_emp_sequence:
-            emp = self.env['hr.employee'].search([('client_emp_sequence', '=', self.client_emp_sequence)], limit=1)
+    @api.onchange('member_id')
+    def _onchange_member_id(self):
+        if self.member_id:
+            emp = self.env['hr.employee'].search([('member_no', '=', self.member_id)], limit=1)
             if emp:
                 self.iqama_no = emp.iqama_no
                 self.sponsor_id = emp.sponsor_id.id

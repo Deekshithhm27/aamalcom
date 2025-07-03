@@ -9,6 +9,7 @@
                     <field name="start_date" required="1"/>
                     <field name="end_date" required="1"/>
                     <field name="client_parent_id" required="1" options="{'no_create': True, 'no_edit': True}"/>
+                    <field name="proof_of_document"/>
                 </group>
                 <footer>
                     <button string="Generate Invoice" type="object" name="action_generate_invoice" class="btn-primary"/>
