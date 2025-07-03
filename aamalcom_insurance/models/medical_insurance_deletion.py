@@ -72,6 +72,19 @@ class MedicalInsuranceDeletion(models.Model):
     is_govt_user = fields.Boolean(string="Is Govt User", compute='_compute_is_govt_user')
     is_pm_user = fields.Boolean(string="Is PM User",compute="_is_project_manager")
 
+    iqama_no = fields.Char(string="Iqama No.",tracking=True)
+    identification_id = fields.Char(string="Border No.",tracking=True)
+    passport_no = fields.Char(string='Passport no',tracking=True)
+    sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True)
+
+    @api.onchange('employee_id')
+    def onchange_employee_details(self):
+        for line in self:
+            line.iqama_no = line.employee_id.iqama_no
+            line.identification_id = line.employee_id.identification_id
+            line.passport_no = line.employee_id.passport_id
+            line.sponsor_id = line.employee_id.sponsor_id.id
+
     def _compute_is_insurance_user(self):
         group = self.env.ref('visa_process.group_service_request_insurance_employee')
         is_user = group in self.env.user.groups_id
@@ -113,10 +126,12 @@ class MedicalInsuranceDeletion(models.Model):
             self.service_enquiry_id = False
             return {'domain': {'service_enquiry_id': [('id', '=', 0)]}}
 
-    @api.model
-    def create(self, vals):
-        vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.deletion')
-        res = super(MedicalInsuranceDeletion,self).create(vals)
+
+    @api.model_create_multi
+    def create(self,vals_list):
+        for vals in vals_list:
+            vals['name'] = self.env['ir.sequence'].next_by_code('medical.insurance.deletion')
+        res = super(MedicalInsuranceDeletion,self).create(vals_list)
         return res
 
     def action_submit(self):

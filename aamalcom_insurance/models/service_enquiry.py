@@ -34,6 +34,10 @@ class ServiceEnquiry(models.Model):
                     'service_enquiry_id': record.id,
                     'employee_id':record.employee_id.id,
                     'deletion_type':'final_exit',
+                    'iqama_no':record.employee_id.iqama_no,
+                    'identification_id':record.employee_id.identification_id,
+                    'passport_no':record.employee_id.passport_id,
+                    'sponsor_id':record.employee_id.sponsor_id.id
                 })
                 life_insurance_deletion = self.env['life.insurance.deletion'].create({
                     'client_id': record.client_id.id,
@@ -41,6 +45,10 @@ class ServiceEnquiry(models.Model):
                     'service_enquiry_id': record.id,
                     'employee_id':record.employee_id.id,
                     'deletion_type':'final_exit',
+                    'iqama_no':record.employee_id.iqama_no,
+                    'identification_id':record.employee_id.identification_id,
+                    'passport_no':record.employee_id.passport_id,
+                    'sponsor_id':record.employee_id.sponsor_id.id
                 })
             if record.service_request == 'transfer_req' and record.transfer_type == 'to_another_establishment':
                 life_insurance_deletion = self.env['life.insurance.deletion'].create({
@@ -49,6 +57,10 @@ class ServiceEnquiry(models.Model):
                     'service_enquiry_id': record.id,
                     'employee_id':record.employee_id.id,
                     'deletion_type':'iqama_transfer',
+                    'iqama_no':record.employee_id.iqama_no,
+                    'identification_id':record.employee_id.identification_id,
+                    'passport_no':record.employee_id.passport_id,
+                    'sponsor_id':record.employee_id.sponsor_id.id
                 })
                 medical_insurance_deletion = self.env['medical.insurance.deletion'].create({
                     'client_id': record.client_id.id,
@@ -56,6 +68,10 @@ class ServiceEnquiry(models.Model):
                     'service_enquiry_id': record.id,
                     'employee_id':record.employee_id.id,
                     'deletion_type':'iqama_transfer',
+                    'iqama_no':record.employee_id.iqama_no,
+                    'identification_id':record.employee_id.identification_id,
+                    'passport_no':record.employee_id.passport_id,
+                    'sponsor_id':record.employee_id.sponsor_id.id
                 })
         return super(ServiceEnquiry, self).action_process_complete()
 

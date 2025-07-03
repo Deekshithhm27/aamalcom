@@ -51,6 +51,10 @@
                 <field name="is_govt_user" invisible="1"/>
                 <field name="is_pm_user" invisible="1"/>
                 <field name="project_manager_id" invisible="1"/>
+                <field name="iqama_no" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="identification_id" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="passport_no" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="sponsor_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': [('state','!=','draft')]}" />
   	        </group>
           </group>
 
@@ -112,4 +116,18 @@
     <field name="res_model">medical.insurance.deletion</field>
     <field name="view_mode">tree,form</field>
   </record>
+
+  <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+    <record id="medical_insurance_deletion_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Medical insurance Deletion - Hide oe_chatter</field>
+        <field name="model">medical.insurance.deletion</field>
+        <field name="inherit_id" ref="view_medical_insurance_deletion_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>
