@@ -85,7 +85,7 @@ class MedicalInsuranceEnrollment(models.Model):
 
     cchi_confirmation_document = fields.Binary(string="CCHI Confirmation Document")
     cchi_filename = fields.Char(string="CCHI Filename")
-    cchi_ref = fields.Char(string="Ref *")
+    cchi_ref = fields.Char(string="Ref No*")
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
@@ -104,6 +104,12 @@ class MedicalInsuranceEnrollment(models.Model):
             line.identification_id = line.employee_id.identification_id
             line.passport_no = line.employee_id.passport_id
             line.sponsor_id = line.employee_id.sponsor_id.id
+
+    @api.onchange('enrollment_type')
+    def employee_filter_work_visa(self):
+        for line in self:
+            if line.enrollment_type =='work_visit_visa':
+                return {'domain': {'service_enquiry_id': [('service_request', '=', 'final_exit_issuance'),('employee_id','=',self.employee_id.id)]}}
 
 
     @api.onchange('is_outside_ksa')
