@@ -167,7 +167,7 @@ class ServiceEnquiry(models.Model):
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
-    reupload_hr_card = fields.Binary(string="Updated HR Card Document")
+    reupload_hr_card = fields.Binary(string="Paid HR Card Document")
     reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
     # reupload hr card ref
     rehr_card_ref = fields.Char(string="Ref No.*")
@@ -541,10 +541,26 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'hr_card':
                 if record.reupload_hr_card and not record.rehr_card_ref:
-                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.upload_hr_card and not record.hr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for  HR Document")
+
+
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
             
@@ -821,36 +837,67 @@ class ServiceEnquiry(models.Model):
         # this method opens a wizard and passes department based on the hierarchy set in service request
 
         for line in self:
+            # Treasury document check (remains as is)
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
                 for srt in treasury_id:
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
-            # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
+            level = '' # Initialize level
+
             if line.service_request == 'new_ev':
                 if line.state == 'submitted':
                     level = 'level1'
                 if line.state == 'payment_done':
                     level = 'level2'
                 if line.state == 'approved' and line.assign_govt_emp_two == False:
-                    level = 'level1'
+                    level = 'level1' # This condition seems to assign level1 if not assigned emp2, maybe check if emp1 is assigned already
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
-            elif line.service_request =='iqama_card_req':
+            elif line.service_request == 'iqama_card_req':
                 if line.state == 'payment_done':
-                    level = 'level1'
+                    level = 'level1' # This assigns first employee
+                # if you need a second employee for iqama_card_req, you'd add a condition here
+                # elif line.state == 'another_state_for_second_iqama_emp':
+                #     level = 'level2'
+
+            elif line.service_request == 'hr_card':
+                if line.self_pay:
+                    # Self Pay Logic for HR Card
+                    if line.state == 'payment_done':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1' # Assign 1st Govt Employee
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2' # Assign 2nd Govt Employee
+                        else:
+                            # If both are already assigned, maybe no action or a message
+                            raise ValidationError(_("Both government employees for self-pay HR card are already assigned."))
+                    # No other states for self_pay assignment for HR Card based on requirements
+                else:
+                    # Not Self Pay Logic for HR Card
+                    if line.state == 'submitted' and not line.assigned_govt_emp_one:
+                        level = 'level1' # Assign 1st Govt Employee
+                    elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                        level = 'level2' # Assign 2nd Govt Employee
+                    else:
+                        # If both are already assigned or state not matching, maybe no action
+                        # or a message, or current level is not applicable for assignment.
+                        pass # Let the system proceed without setting a level if no action needed
 
             else:
+                # Default logic for other service requests
                 if line.state == 'submitted':
                     level = 'level1'
-                else:
+                else: # Assuming 'payment_done' or 'approved' might lead to level2
                     level = 'level2'
 
+            if not level:
+                raise ValidationError(_("No employee assignment level defined for the current state and service request type."))
+
             req_lines = line.service_request_config_id.service_department_lines
-            # Sort lines by sequence
-            sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
+            sorted_lines = sorted(req_lines, key=lambda line_conf: line_conf.sequence) # Renamed 'line' to 'line_conf' to avoid conflict
             for lines in sorted_lines:
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
@@ -858,14 +905,25 @@ class ServiceEnquiry(models.Model):
                 else:
                     if lines.sequence == 2:  # Only append the second department for level2
                         department_ids.append((4, lines.department_id.id))
+                        break # Exit after finding the second department for level2
+
+            if not department_ids:
+                 raise ValidationError(_("No departments configured for the current level and service request configuration."))
+
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_department_ids': department_ids,'default_assign_type':'assign','default_levels':level},
+                'context': {
+                    'default_department_ids': department_ids,
+                    'default_assign_type': 'assign',
+                    'default_levels': level,
+                    'active_id': line.id, # Ensure active_id is passed to the wizard
+                },
             }
+
 
     def open_reassign_employee_wizard(self):
         department_ids = []
@@ -1064,7 +1122,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
 
             if line.service_request in ('hr_card','iqama_renewal'):
-                if line.state=='submitted' and line.self_pay == True:
+                if line.state=='submitted' and line.aamalcom_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
             if line.service_request == 'prof_change_qiwa':
