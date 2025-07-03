@@ -16,7 +16,7 @@
     </menuitem> -->
 
 
-    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_insurance_employee,,visa_process.group_service_request_payroll_manager,group_service_request_payroll_employee,visa_process.group_service_request_administrator">
+    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_insurance_employee,,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_administrator">
         <!-- This menu is visible for clients only -->
         
 
