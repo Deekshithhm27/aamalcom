@@ -24,6 +24,9 @@ class ServiceEnquiry(models.Model):
     upload_final_acceptance = fields.Binary(string="Final Acceptance Document")
     final_acceptance_doc_ref = fields.Char(string="Ref No")
     final_acceptance_doc_file_name = fields.Char(string="Final Acceptance Document")
+    upload_signed_doc = fields.Binary(string="Clearance Signed Document")
+    upload_signed_doc_ref = fields.Char(string="Ref No")
+    upload_signed_doc_file_name = fields.Char(string="Clearance Signed Document")
 
 
     def action_submit(self):
