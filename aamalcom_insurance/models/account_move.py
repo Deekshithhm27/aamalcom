@@ -1,8 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
-from io import BytesIO
-from PyPDF2 import PdfFileMerger
-from ..utils.pdf_merge import merge_invoice_and_insurance
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
