@@ -553,10 +553,19 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'hr_card':
                 if record.upload_hr_card and not record.hr_card_ref:
                     raise ValidationError("Kindly Update Reference Number for  HR Document")
-
-
                 if record.reupload_hr_card and not record.rehr_card_ref:
                     raise ValidationError("Kindly Update Reference Number for Paid HR Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay_ev(self):
+        for record in self:
+            if record.service_request == 'new_ev':
+                if record.upload_issuance_doc and not record.issuance_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for  Issuance Document")
                 record.state = 'payment_done'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
@@ -848,20 +857,18 @@ class ServiceEnquiry(models.Model):
             level = '' # Initialize level
 
             if line.service_request == 'new_ev':
-                if line.state == 'submitted':
-                    level = 'level1'
-                if line.state == 'payment_done':
-                    level = 'level2'
-                if line.state == 'approved' and line.assign_govt_emp_two == False:
-                    level = 'level1' # This condition seems to assign level1 if not assigned emp2, maybe check if emp1 is assigned already
-                if line.state == 'approved' and line.assign_govt_emp_two != False:
-                    level = 'level2'
-            elif line.service_request == 'iqama_card_req':
-                if line.state == 'payment_done':
-                    level = 'level1' # This assigns first employee
-                # if you need a second employee for iqama_card_req, you'd add a condition here
-                # elif line.state == 'another_state_for_second_iqama_emp':
-                #     level = 'level2'
+                if line.self_pay:
+                    # Self Pay Logic for HR Card
+                    if line.state == 'payment_done':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1' # Assign 1st Govt Employee
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2' 
+                else:
+                    if line.state == 'submitted' and not line.assigned_govt_emp_one:
+                        level = 'level1' # Assign 1st Govt Employee
+                    elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                        level = 'level2' # Assign 2nd Govt Employee
 
             elif line.service_request == 'hr_card':
                 if line.self_pay:
@@ -871,21 +878,13 @@ class ServiceEnquiry(models.Model):
                             level = 'level1' # Assign 1st Govt Employee
                         elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
                             level = 'level2' # Assign 2nd Govt Employee
-                        else:
-                            # If both are already assigned, maybe no action or a message
-                            raise ValidationError(_("Both government employees for self-pay HR card are already assigned."))
-                    # No other states for self_pay assignment for HR Card based on requirements
                 else:
                     # Not Self Pay Logic for HR Card
                     if line.state == 'submitted' and not line.assigned_govt_emp_one:
                         level = 'level1' # Assign 1st Govt Employee
                     elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
                         level = 'level2' # Assign 2nd Govt Employee
-                    else:
-                        # If both are already assigned or state not matching, maybe no action
-                        # or a message, or current level is not applicable for assignment.
-                        pass # Let the system proceed without setting a level if no action needed
-
+                    
             else:
                 # Default logic for other service requests
                 if line.state == 'submitted':
@@ -1117,7 +1116,7 @@ class ServiceEnquiry(models.Model):
         for line in self:
             # passing error is ref no is not passed.
             if line.service_request =='new_ev':
-                if line.state=='submitted' and line.self_pay == True:
+                if line.state=='payment_done' and line.self_pay == True:
                     if not line.issuance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
 

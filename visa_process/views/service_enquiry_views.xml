@@ -26,12 +26,17 @@
                     ('service_request', '!=', 'hr_card'),
                     ('reupload_hr_card', '=', False)]}" groups="visa_process.group_service_request_manager"/>
 
+                    <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee"
+                    type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|','|',('state', 'not in', ('payment_done')),('assign_govt_emp_two', '=', False),('upload_issuance_doc','=',False),('assigned_govt_emp_two', '=', True),('service_request', '!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+
                     <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('self_pay','!=',True),('service_request', '!=', 'hr_card')]}" groups="visa_process.group_service_request_manager"/>
 
 
-                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('employee_pay_string','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('iqama_renewal','prof_change_qiwa','transfer_req','new_ev'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('employee_pay_string','=',True),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <!-- Ev buttons -->
-                    <button id="open_assign_employee_wizard_three" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_three" name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),'|',('self_pay','!=',True),('service_request','!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
+
+                    <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('self_pay','!=',True),('service_request', '!=', 'new_ev')]}" groups="visa_process.group_service_request_manager"/>
 
                     <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee"
                     type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|','|',('state', 'not in', ('payment_done')),('self_pay','=',False),('assign_govt_emp_one', '=', False),('assigned_govt_emp_one', '=', True),('service_request', '!=', 'hr_card')]}" groups="visa_process.group_service_request_manager"/>
@@ -66,6 +71,8 @@
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('payment_done','approved')),'|',('final_doc_uploaded', '=',False),('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa','transfer_req'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     <button name="action_doc_uplaod_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'approved'), '|', ('reupload_hr_card', '=', False), '|', ('service_request', '!=', 'hr_card'), ('submit_clicked', '=', True)]}" groups="visa_process.group_service_request_employee"/>
                     <button name="action_doc_uplaod_submit_self_pay" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'payment_done'), '|', ('upload_hr_card', '=', False),'|', ('reupload_hr_card', '=', False), '|', ('service_request', '!=', 'hr_card'), ('submit_clicked', '=', True)]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_doc_uplaod_submit_self_pay_ev" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'payment_done'), '|', ('upload_issuance_doc', '=', False), '|', ('service_request', '!=', 'new_ev'), ('submit_clicked', '=', True)]}" groups="visa_process.group_service_request_employee"/>
+                    
                     
                     <!-- below button is for Issuance of new EV -->
                     <!-- <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','not in',('approved')),('service_request', 'not in', ('new_ev'))]}" groups="visa_process.group_service_request_manager"/> -->
@@ -101,9 +108,7 @@
 
                     
 
-                    <button id="open_assign_employee_wizard_five"
-        name="open_assign_employee_wizard"
-        string="Assign Employee"
+                    <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee"
         type="object"
         class="btn-primary"
         attrs="{'invisible': ['|',
@@ -1059,9 +1064,9 @@
                         <page id="page_six" string="Documents " attrs="{'invisible':['|',('state','=','draft'),('first_govt_employee_id','=',False)]}">
                             <group>
                                 <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
-                                    <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}" filename="upload_issuance_doc_file_name"/>
+                                    <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_issuance_doc_file_name"/>
                                      <field name="upload_issuance_doc_file_name"  invisible="1"/>
-                                    <field name="issuance_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="issuance_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
             
                                 </group>
                                 <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('new_ev')),('second_govt_employee_id','=',False)]}">
@@ -1076,11 +1081,11 @@
 
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': [('state', 'in', ( 'draft','submitted'))]}">
-                                <group attrs="{'invisible': [('self_pay', '!=',True)]}">
+                                <!-- <group attrs="{'invisible': [('self_pay', '!=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
                                     <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
-                                </group>
+                                </group> -->
                                 <group attrs="{'invisible': [('self_pay', '=',True)]}">
                                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
@@ -1105,6 +1110,12 @@
                         <page id="page_eight" string="Documents" attrs="{'invisible': ['|',('state', 'in', ('draft','submitted')),('self_pay', '!=',True)]}">
                             <group>
                                 <group attrs="{'invisible': ['|','|',('state', 'in', ('draft','submitted')), ('service_request', 'not in', ('hr_card')),('self_pay', '!=',True)]}">
+                                        <field name="upload_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_payment_doc_file_name"/>
+                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    </group>
+                            </group>
+                            <group><group attrs="{'invisible': ['|','|',('state', 'in', ('draft','submitted')), ('service_request', 'not in', ('new_ev')),('self_pay', '!=',True)]}">
                                         <field name="upload_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
                                     <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
