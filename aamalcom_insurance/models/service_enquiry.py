@@ -22,7 +22,10 @@ class ServiceEnquiry(models.Model):
                     'swapping_type':'employee',
                     'project_manager_id':record.client_id.company_spoc_id.id,
                     'residance_doc':record.residance_doc,
-                    'muqeem_print_doc'record.muqeem_print_doc
+                    'residance_doc_ref':record.residance_doc_ref,
+                    'muqeem_print_doc':record.muqeem_print_doc,
+                    'muqeem_print_doc_ref':record.muqeem_print_doc_ref,
+                    'state':'submitted'
                 })
             if record.service_request == 'final_exit_issuance':
                 medical_insurance_deletion = self.env['medical.insurance.deletion'].create({
@@ -40,7 +43,7 @@ class ServiceEnquiry(models.Model):
                     'deletion_type':'final_exit',
                 })
             if record.service_request == 'transfer_req' and record.transfer_type == 'to_another_establishment':
-            	life_insurance_deletion = self.env['life.insurance.deletion'].create({
+                life_insurance_deletion = self.env['life.insurance.deletion'].create({
                     'client_id': record.client_id.id,
                     'client_parent_id':record.client_id.parent_id.id,
                     'service_enquiry_id': record.id,

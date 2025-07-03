@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form string="Swapping Border to Iqama">
                 <header>
-                	<field name="state" widget="statusbar"/>
+                	<field name="state" widget="statusbar" statusbar_visible="draft,submitted,done"/>
                 	<button name="action_submit" type="object" string="Submit" groups="visa_process.group_service_request_client_spoc" attrs="{'invisible': [('state','!=','draft')]}"/>
                 	<button name="action_submit_to_review" type="object" string="Submit for Review" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
                 	<button name="action_done" type="object" string="Process Done" groups="visa_process.group_service_request_manager" attrs="{'invisible': [('state','!=','review_to_be_done')]}"/>
@@ -36,13 +36,16 @@
 	                </group>
 	                <group>
 	                	<group string="Residance Document" attrs="{'invisible':[('swapping_type','!=','employee')]}">
-            				<field name="residance_doc" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="residance_doc" filename="residance_doc_filename" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="residance_doc_ref" attrs="{'readonly': [('state','!=','draft')]}" />
             			</group>
             			<group string="Muqeem Print Document" attrs="{'invisible':[('swapping_type','!=','employee')]}">
-            				<field name="muqeem_print_doc" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="muqeem_print_doc" filename="muqeem_print_doc_filename" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="muqeem_print_doc_ref" attrs="{'readonly': [('state','!=','draft')]}" />
             			</group>
             			<group string="Digital Iqama Copy" attrs="{'invisible':[('swapping_type','!=','dependents')]}">
-            				<field name="digital_iqama_copy" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="digital_iqama_copy" filename="digital_iqama_copy_filename" attrs="{'readonly': [('state','!=','draft')]}" />
+            				<field name="digital_iqama_copy_ref" attrs="{'readonly': [('state','!=','draft')]}" />
             			</group>
             		</group>
             		
@@ -50,12 +53,18 @@
                     	<page string="Documents" attrs="{'invisible':[('state','=','draft')]}">
                     		<group>
 			                    <group>
-	                    			<field name="cchi_confirmation_document" attrs="{'invisible':[('state','=','draft')],'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
+	                    			<field name="cchi_confirmation_document" filename="cchi_confirmation_document_filename" attrs="{'invisible':[('state','=','draft')],'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
+	                    			<field name="cchi_confirmation_document_ref" attrs="{'invisible':[('state','=','draft')],'readonly': ['|',('state', '!=','submitted'),('is_insurance_user','=',False)]}"/>
 	                    		</group>
                     		</group>
                     	</page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -77,5 +86,18 @@
         <field name="name">Swapping Border to Iqama</field>
         <field name="res_model">swapping.border.to.iqama</field>
         <field name="view_mode">tree,form</field>
+    </record>
+    <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+    <record id="swapping_border_iqama_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Swapping Border to Iqama - Hide oe_chatter</field>
+        <field name="model">swapping.border.to.iqama</field>
+        <field name="inherit_id" ref="view_form_swapping_border_to_iqama"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
+        </field>
     </record>
 </odoo>
