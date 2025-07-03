@@ -13,7 +13,7 @@
         <field name="header_line" eval="False" />
         <field name="header_spacing">55</field>
         <field name="dpi">90</field>
-        <field name="report_ids" eval="[(6,0,[ref('aamalcom_accounting_reporting.action_report_tax_invoice')])]"/>
+        <!-- <field name="report_ids" eval="[(6,0,[ref('aamalcom_accounting_reporting.action_report_tax_invoice')])]"/> -->
     </record>
 	<record id="paperformat_landscape_insurance" model="report.paperformat">
 		<field name="name">Insurance Landscape</field>

@@ -11,11 +11,11 @@
     'category': 'Accounting',
     'depends': ['account', 'accounting_pdf_reports','aamalcom_accounting','aamalcom_insurance'],
     'data': [
+        'reports/paperformat.xml',
         'reports/report_templates.xml',
         'reports/report_insurance_invoice.xml',
         'reports/report_invoice.xml',
         'reports/report_action.xml',
-        'reports/paperformat.xml',
         'reports/report_journal_entries.xml',
         'data/mail_templates.xml',
         'views/account_move_views.xml'
