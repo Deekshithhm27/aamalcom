@@ -43,19 +43,19 @@ class LifeInsuranceEnrollment(models.Model):
 
     passport_copy = fields.Binary(string="Passport")
     passport_copy_filename = fields.Char(string="Passport Filename")
-    passport_copy_ref = fields.Char(string="Passport Ref No", tracking=True)
+    passport_copy_ref = fields.Char(string="Ref No *", tracking=True)
 
     iqama_doc = fields.Binary(string="Iqama Document")
     iqama_doc_filename = fields.Char(string="Iqama Filename")
-    iqama_doc_ref = fields.Char(string="Iqama Ref No", tracking=True)
+    iqama_doc_ref = fields.Char(string="Ref No*", tracking=True)
 
     other_document = fields.Binary(string="Other Document")
     other_document_filename = fields.Char(string="Other Document Filename")
-    other_document_ref = fields.Char(string="Other Document Ref No", tracking=True)
+    other_document_ref = fields.Char(string="Ref No", tracking=True)
 
     confirmation_of_activation_doc = fields.Binary(string="Document - Confirmation of Activation")
     confirmation_of_activation_doc_filename = fields.Char(string="Confirmation Doc Filename")
-    confirmation_of_activation_doc_ref = fields.Char(string="Confirmation Ref No", tracking=True)
+    confirmation_of_activation_doc_ref = fields.Char(string="Ref No *", tracking=True)
 
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
 
