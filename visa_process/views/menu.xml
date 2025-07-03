@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="base_menu_employees" name="My Profile" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_manager,visa_process.group_service_request_insurance_employee,visa_process.group_service_request_payroll_manager,group_service_request_payroll_employee" sequence="1">
+    <menuitem id="base_menu_employees" name="My Profile" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee" sequence="1">
         <menuitem id="menu_hr_employee_self" name="Profile" action="action_self_employee" sequence="1"/>
     </menuitem>
 
@@ -16,7 +16,7 @@
     </menuitem> -->
 
 
-    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_insurance_employee,,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_administrator">
+    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_administrator">
         <!-- This menu is visible for clients only -->
         
 
@@ -47,9 +47,8 @@
             <menuitem id="menu_service_enquiry_op" name="Tickets for Approval" sequence="5" action="action_service_enquiry_op_approval" groups="visa_process.group_service_request_operations_manager"/>
             <menuitem id="menu_service_enquiry_fin" name="Tickets for Approval" sequence="6" action="action_service_enquiry_finance_approval" groups="visa_process.group_service_request_finance_manager"/>
             <menuitem id="menu_service_enquiry_admin" name="Service Tickets" sequence="7" action="action_service_enquiry_administrator" groups="visa_process.group_service_request_administrator"/>
-            <!-- <menuitem id="menu_service_enquiry_insurance_employee" name="Service Tickets" sequence="8" action="action_service_enquiry_insurance_approval" groups="visa_process.group_service_request_insurance_employee"/> -->
-            <menuitem id="menu_service_enquiry_payroll_manager" name="Tickets for Approval" sequence="9" action="action_service_enquiry_payroll_employee_approval" groups="visa_process.group_service_request_payroll_manager"/>
-            <menuitem id="menu_service_enquiry_payroll_manager" name="Service Tickets" sequence="10" action="action_service_enquiry_payroll_employee" groups="visa_process.group_service_request_payroll_employee"/>
+            <menuitem id="menu_service_enquiry_payroll_employee" name="Service Tickets" sequence="8" action="action_service_enquiry_payroll_employee" groups="visa_process.group_service_request_payroll_employee"/>
+
             
         </menuitem>
         <menuitem id="menu_base_services" name="Services" sequence="4">
@@ -83,10 +82,10 @@
             <menuitem id="menu_base_pricing" name="Pricing" sequence="4">
                 <menuitem id="menu_base_service_pricing" name="Service Pricing" action="action_service_pricing" sequence="1"/>
             </menuitem>
-			<menuitem id="menu_visa_ref_documents" name="Documents" sequence="5" action="action_visa_ref_documents"/>
+            <menuitem id="menu_visa_ref_documents" name="Documents" sequence="5" action="action_visa_ref_documents"/>
             <menuitem id="menu_employment_duration" name="Employment Duration" sequence="6" action="action_employment_duration"/>
             <menuitem id="menu_print_types" name="Letter Print Types" sequence="7" action="action_print_types"/>
-    	</menuitem>
+        </menuitem>
 
         <menuitem id="menu_employee_sponsor_master" name="Sponsor Numbers" sequence="9" groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator,visa_process.group_service_request_manager" action="action_employee_sponsor"/>
 
