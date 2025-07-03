@@ -843,10 +843,7 @@ class ServiceEnquiry(models.Model):
                 line.current_department_ids = False
 
     def open_assign_employee_wizard(self):
-        # this method opens a wizard and passes department based on the hierarchy set in service request
-
         for line in self:
-            # Treasury document check (remains as is)
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
                 for srt in treasury_id:
@@ -854,60 +851,52 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
             department_ids = []
-            level = '' # Initialize level
+            level = ''
 
             if line.service_request == 'new_ev':
                 if line.self_pay:
-                    # Self Pay Logic for HR Card
                     if line.state == 'payment_done':
                         if not line.assigned_govt_emp_one:
-                            level = 'level1' # Assign 1st Govt Employee
+                            level = 'level1'
                         elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                            level = 'level2' 
-                else:
-                    if line.state == 'submitted' and not line.assigned_govt_emp_one:
-                        level = 'level1' # Assign 1st Govt Employee
-                    elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                        level = 'level2' # Assign 2nd Govt Employee
-
+                            level = 'level2'
+                else: # Not Self Pay
+                    if line.state == 'approved':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                            level = 'level2'
             elif line.service_request == 'hr_card':
                 if line.self_pay:
-                    # Self Pay Logic for HR Card
                     if line.state == 'payment_done':
                         if not line.assigned_govt_emp_one:
-                            level = 'level1' # Assign 1st Govt Employee
+                            level = 'level1'
                         elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                            level = 'level2' # Assign 2nd Govt Employee
+                            level = 'level2'
                 else:
-                    # Not Self Pay Logic for HR Card
                     if line.state == 'submitted' and not line.assigned_govt_emp_one:
-                        level = 'level1' # Assign 1st Govt Employee
+                        level = 'level1'
                     elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                        level = 'level2' # Assign 2nd Govt Employee
-                    
-            else:
-                # Default logic for other service requests
+                        level = 'level2'
+            elif line.service_request =='iqama_card_req':
+                if line.state == 'payment_done':
+                    level = 'level1'
+            else: # Default logic for other service requests (assuming 'hr_card' and others)
                 if line.state == 'submitted':
                     level = 'level1'
-                else: # Assuming 'payment_done' or 'approved' might lead to level2
+                else:
                     level = 'level2'
-
-            if not level:
-                raise ValidationError(_("No employee assignment level defined for the current state and service request type."))
-
+                    
             req_lines = line.service_request_config_id.service_department_lines
             sorted_lines = sorted(req_lines, key=lambda line_conf: line_conf.sequence) # Renamed 'line' to 'line_conf' to avoid conflict
             for lines in sorted_lines:
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-                    break  # Exit the loop after adding the first department for level1
+                    break
                 else:
-                    if lines.sequence == 2:  # Only append the second department for level2
+                    if lines.sequence == 2:
                         department_ids.append((4, lines.department_id.id))
-                        break # Exit after finding the second department for level2
-
-            if not department_ids:
-                 raise ValidationError(_("No departments configured for the current level and service request configuration."))
+                        break
 
             return {
                 'name': 'Select Employee',
@@ -919,7 +908,7 @@ class ServiceEnquiry(models.Model):
                     'default_department_ids': department_ids,
                     'default_assign_type': 'assign',
                     'default_levels': level,
-                    'active_id': line.id, # Ensure active_id is passed to the wizard
+                    'active_id': line.id,
                 },
             }
 
@@ -1116,9 +1105,9 @@ class ServiceEnquiry(models.Model):
         for line in self:
             # passing error is ref no is not passed.
             if line.service_request =='new_ev':
-                if line.state=='payment_done' and line.self_pay == True:
-                    if not line.issuance_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
+                if line.state=='submitted' and line.self_pay == True:
+                    if not line.proof_of_request_ref:
+                        raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
 
             if line.service_request in ('hr_card','iqama_renewal'):
                 if line.state=='submitted' and line.aamalcom_pay == True:
