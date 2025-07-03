@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form string="Medical Insurance Enrollment">
                 <header>
-                	<field name="state" widget="statusbar"/>
+                	<field name="state" widget="statusbar" statusbar_visible="draft,submitted,done"/>
                 	<button name="action_submit" type="object" string="Submit" groups="visa_process.group_service_request_client_spoc" attrs="{'invisible': [('state','!=','draft')]}"/>
                 	<button name="action_submit_to_review" type="object" string="Submit for Review" groups="visa_process.group_service_request_insurance_employee" attrs="{'invisible': [('state','!=','submitted')]}"/>
                 	<button name="action_done" type="object" string="Process Done" groups="visa_process.group_service_request_manager" attrs="{'invisible': [('state','!=','review_to_be_done')]}"/>
