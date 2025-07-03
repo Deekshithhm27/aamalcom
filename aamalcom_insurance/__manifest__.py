@@ -11,7 +11,9 @@
         'reports/report_action.xml',
         'reports/report_life_ins_inv_summary.xml',
         'reports/report_med_ins_inv_summary.xml',
+
         'views/account_move_views.xml',
+        'views/hr_employee_views.xml',
         'views/medical_insurance_enrollment_views.xml',
         'views/swapping_border_to_iqama_views.xml',
         'views/insurance_reimbursement_view.xml',
