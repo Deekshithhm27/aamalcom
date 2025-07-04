@@ -177,8 +177,8 @@ class ServiceEnquiry(models.Model):
     upload_sponsorship_doc = fields.Binary(string="Confirmation of Sponsorship")
     upload_sponsorship_doc_file_name = fields.Char(string="Confirmation of Sponsorship")
     sponsorship_doc_ref = fields.Char(string="Ref No.*")
-    upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
-    upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True)
+    upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True,store=True)
+    upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True,store=True)
     payment_doc_ref = fields.Char(string="Ref No.*")
     residance_doc = fields.Binary(string="Residance Permit Document")
     residance_doc_file_name = fields.Char(string="Residance Permit Document")
@@ -843,6 +843,8 @@ class ServiceEnquiry(models.Model):
                 line.current_department_ids = False
 
     def open_assign_employee_wizard(self):
+        # this method opens a wizard and passes department based on the hierarchy set in service request
+
         for line in self:
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
@@ -850,68 +852,50 @@ class ServiceEnquiry(models.Model):
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
 
+            # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
-            level = ''
-
             if line.service_request == 'new_ev':
-                if line.self_pay:
+                # if line.state == 'submitted':
+                #     level = 'level1'
+                if line.self_pay == True:
                     if line.state == 'payment_done':
-                        if not line.assigned_govt_emp_one:
-                            level = 'level1'
-                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                            level = 'level2'
-                else: # Not Self Pay
-                    if line.state == 'approved':
-                        if not line.assigned_govt_emp_one:
-                            level = 'level1'
-                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                            level = 'level2'
-            elif line.service_request == 'hr_card':
-                if line.self_pay:
-                    if line.state == 'payment_done':
-                        if not line.assigned_govt_emp_one:
-                            level = 'level1'
-                        elif line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
-                            level = 'level2'
-                else:
-                    if line.state == 'submitted' and not line.assigned_govt_emp_one:
                         level = 'level1'
-                    elif line.state == 'approved' and line.assigned_govt_emp_one and not line.assigned_govt_emp_two:
+                    if line.state == 'payment_done' and line.assign_govt_emp_two == False:
+                        level = 'level1'
+                    if line.state == 'payment_done' and line.assign_govt_emp_two != False:
                         level = 'level2'
+                elif line.state == 'approved' and line.assign_govt_emp_two == False:
+                    level = 'level1'
+                if line.state == 'approved' and line.assign_govt_emp_two != False:
+                    level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
-            else: # Default logic for other service requests (assuming 'hr_card' and others)
+
+            else:
                 if line.state == 'submitted':
                     level = 'level1'
                 else:
                     level = 'level2'
-                    
+
             req_lines = line.service_request_config_id.service_department_lines
-            sorted_lines = sorted(req_lines, key=lambda line_conf: line_conf.sequence) # Renamed 'line' to 'line_conf' to avoid conflict
+            # Sort lines by sequence
+            sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
             for lines in sorted_lines:
                 if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-                    break
+                    break  # Exit the loop after adding the first department for level1
                 else:
-                    if lines.sequence == 2:
+                    if lines.sequence == 2:  # Only append the second department for level2
                         department_ids.append((4, lines.department_id.id))
-                        break
-
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
                 'res_model': 'employee.selection.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {
-                    'default_department_ids': department_ids,
-                    'default_assign_type': 'assign',
-                    'default_levels': level,
-                    'active_id': line.id,
-                },
+                'context': {'default_department_ids': department_ids,'default_assign_type':'assign','default_levels':level},
             }
-
 
     def open_reassign_employee_wizard(self):
         department_ids = []
@@ -1413,11 +1397,11 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
-                if not line.payment_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
+            # if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
+            #     if not line.payment_doc_ref:
+            #         raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
 
-            # if line.service_request =='prof_change_qiwa':
+            # # if line.service_request =='prof_change_qiwa':
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
             line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
