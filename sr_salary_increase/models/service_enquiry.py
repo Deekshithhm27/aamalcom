@@ -167,12 +167,12 @@ class ServiceEnquiry(models.Model):
                 record.state = 'waiting_payroll_approval'
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
-                group = self.env.ref('visa_process.group_service_request_payroll_employee')
-                users = group.users
-                employee = self.env['hr.employee'].search([
-                ('user_id', 'in', users.ids)
-                ], limit=1)
-                record.action_user_id = employee.user_id
+                # group = self.env.ref('visa_process.group_service_request_payroll_employee')
+                # users = group.users
+                # employee = self.env['hr.employee'].search([
+                # ('user_id', 'in', users.ids)
+                # ], limit=1)
+                record.action_user_id = False
 
 
     def action_process_complete_salary_increase(self):
