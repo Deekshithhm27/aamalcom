@@ -868,6 +868,23 @@ class ServiceEnquiry(models.Model):
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
+            elif line.service_request == 'hr_card':
+                # if line.state == 'submitted':
+                #     level = 'level1'
+                if line.self_pay == True:
+                    if line.state == 'payment_done':
+                        level = 'level1'
+                    if line.state == 'payment_done' and line.assign_govt_emp_two == False:
+                        level = 'level1'
+                    if line.state == 'payment_done' and line.assign_govt_emp_two != False:
+                        level = 'level2'
+                else:
+                    if line.state == 'submitted':
+                        level = 'level1'
+                    if line.state == 'approved' and line.assign_govt_emp_two == False:
+                        level = 'level1'
+                    if line.state == 'approved' and line.assign_govt_emp_two != False:
+                        level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'

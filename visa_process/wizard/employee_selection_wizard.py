@@ -37,6 +37,23 @@ class EmployeeSelectionWizard(models.TransientModel):
                         else:
                             active_enquiry.second_govt_employee_id = self.employee_id.id
                             active_enquiry.assigned_govt_emp_two = True
+                elif active_enquiry.service_request == 'hr_card':
+                    if active_enquiry.self_pay == True:
+                        if active_enquiry.state in ('payment_done') and active_enquiry.assigned_govt_emp_one == False:
+                            active_enquiry.first_govt_employee_id = self.employee_id.id
+                            active_enquiry.assigned_govt_emp_one = True
+                        else:
+                            if active_enquiry.state in ('payment_done') and active_enquiry.assigned_govt_emp_one == True and active_enquiry.assigned_govt_emp_two == False:
+                                active_enquiry.second_govt_employee_id = self.employee_id.id
+                                active_enquiry.assigned_govt_emp_two = True
+                    else:
+                        if active_enquiry.state in ('submitted') and active_enquiry.assigned_govt_emp_one == False:
+                            active_enquiry.first_govt_employee_id = self.employee_id.id
+                            active_enquiry.assigned_govt_emp_one = True
+                        else:
+                            if active_enquiry.state in ('approved') and active_enquiry.assigned_govt_emp_one == True and active_enquiry.assigned_govt_emp_two == False:
+                                active_enquiry.second_govt_employee_id = self.employee_id.id
+                                active_enquiry.assigned_govt_emp_two = True
                     
                 else:
                     if active_enquiry.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval'):
