@@ -145,7 +145,7 @@
                                     <field name="istiqdam_form_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
-                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
+                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam Letter">
                                 <group>
                                     <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
                                      <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
