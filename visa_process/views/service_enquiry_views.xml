@@ -1204,7 +1204,7 @@
                 <filter string="Operations Manager Approval" name="op_requests" domain="[('state', '=','waiting_op_approval')]"/>
                 <filter string="General Manager Approval" name="gm_requests" domain="[('state', '=','waiting_gm_approval')]"/>
                 <filter string="Insurance Department Approval" name="insurance_requests" domain="[('state', '=','submitted_to_insurance')]"/>
-                <filter string="HR Department Approval" name="hr_employee_requests" domain="[('state', 'in',('waiting_hr_approval'))]"/>
+                <filter string="HR Department Approval" name="hr_employee_requests" domain="[('state', '=','waiting_hr_approval')]"/>
                 <filter string="Payroll Department Tickets" name="payroll_employee_requests" domain="[('state', '=','waiting_payroll_approval')]"/>
                 <filter string="Finance Manager Approval" name="fin_requests" domain="[('state', '=','waiting_fin_approval')]"/>
                 <filter string="Approved Requests" name="approved_requests" domain="[('state', '=','approved')]"/>
