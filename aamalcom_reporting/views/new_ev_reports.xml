@@ -33,6 +33,6 @@
               name="New EV Report"
               parent="menu_reporting_root"
               action="action_new_ev_report_wizard"
-              sequence="4" /> <!-- Adjust sequence as needed -->
+              sequence="4" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_manager" /> <!-- Adjust sequence as needed -->
 
 </odoo>

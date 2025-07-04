@@ -48,8 +48,8 @@ class TransferReport(models.AbstractModel):
         enquiry_domain = [
             ('service_request_config_id', '=', service_request_config_id),
             ('transfer_type', '=', transfer_type),
-            ('create_date', '>=', from_date),
-            ('create_date', '<=', to_date),
+            ('processed_date', '>=', from_date),
+            ('processed_date', '<=', to_date),
         ]
 
         # Add the 'state' condition specifically for 'transfer_req'

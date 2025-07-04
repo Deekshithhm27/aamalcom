@@ -10,13 +10,12 @@ class MuqeemReportWizard(models.TransientModel):
     to_date = fields.Date(required=True)
     service_request = fields.Selection([
         ('hr_card','Issuance for HR card'),
-        ('iqama_no_generation','Iqama Card Generation'),
-        ('iqama_card_req','New Physical Iqama Card Request'),
-        ('iqama_renewal','Iqama Renewal'),
         ('final_exit_issuance','Final exit Issuance'),
-        ], string="Service Requests", required=True)
-    
-    # service_request_type field is removed
+        ('muqeem_dropout', 'Muqeem Dropout'),
+        ('iqama_card_req','New Physical Iqama Card Request'),
+        ('iqama_renewal','Iqama Renewal')
+        
+    ], string="Service Requests", required=True)
 
     def print_muqeem_report(self):
         """
@@ -25,7 +24,7 @@ class MuqeemReportWizard(models.TransientModel):
         data = {
             'from_date': self.from_date,
             'to_date': self.to_date,
-            'service_request': self.service_request,
-            # 'service_request_type' is no longer passed
+            'service_request': self.service_request, # Pass the new service_request field
         }
+        # The 'action_muqeem_report_pdf' will be defined in XML later
         return self.env.ref('aamalcom_reporting.action_muqeem_report_pdf').report_action(self, data=data)
