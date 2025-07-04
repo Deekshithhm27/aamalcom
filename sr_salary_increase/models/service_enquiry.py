@@ -119,6 +119,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.send_email_to_op()
 
     def open_assign_employee_wizard(self):
@@ -133,7 +134,7 @@ class ServiceEnquiry(models.Model):
                 for lines in sorted_lines:
                     # if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-
+                record.write({'processed_date': fields.Datetime.now()})
                 result.update({
                     'name': 'Select Employee',
                     'type': 'ir.actions.act_window',
@@ -158,6 +159,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'doc_uploaded_by_first_govt_employee'
                 record.dynamic_action_status = "Documents Uploaded by first govt employee. Second govt employee need to be assigned by PM"
                 record.action_user_id = record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
     def action_second_govt_emp_submit_salary(self):
         for record in self:
@@ -166,7 +168,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for GOSI Doc")
                 record.state = 'waiting_payroll_approval'
                 record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
-                record.dynamic_action_status = "Documents Uploaded by second govt employee. Payroll Dept needs to close the ticket"
+                record.write({'processed_date': fields.Datetime.now()})
                 # group = self.env.ref('visa_process.group_service_request_payroll_employee')
                 # users = group.users
                 # employee = self.env['hr.employee'].search([
@@ -205,6 +207,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'done'
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id = False
+                record.write({'processed_date': fields.Datetime.now()})
                 
 
 class EmpSalaryLines(models.Model):

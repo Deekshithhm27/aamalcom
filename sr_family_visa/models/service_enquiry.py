@@ -108,6 +108,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
                 record.action_user_id = record.first_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
         return result
 
     @api.depends('service_request')

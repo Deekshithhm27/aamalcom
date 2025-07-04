@@ -45,6 +45,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'doc_uploaded_by_first_govt_employee'
                 record.dynamic_action_status = "Documents Uploaded by first govt employee. Second govt employee need to be assigned by PM"
                 record.action_user_id=record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
                 
     def open_assign_employee_wizard(self):
         """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
@@ -84,6 +85,7 @@ class ServiceEnquiry(models.Model):
                 ('user_id', 'in', users.ids)
                 ], limit=1)
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
     
     def action_approve_by_hr(self):
         for record in self:
@@ -91,6 +93,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'approved'
                 record.dynamic_action_status='Documents Uploaded Pending by second govt employee'
                 record.action_user_id=record.second_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
 
     def action_process_complete_final_clearance(self):
@@ -101,6 +104,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id= False
+                record.write({'processed_date': fields.Datetime.now()})
         
 
            

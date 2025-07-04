@@ -94,6 +94,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.send_email_to_op()
 
     def action_op_refuse(self):
@@ -101,6 +102,7 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'salary_advance':
                 record.state = 'refuse'
+                record.write({'processed_date': fields.Datetime.now()})
                 record.dynamic_action_status = f"Refused by {current_employee.name if current_employee else 'OH'}"
 
     def action_gm_refuse(self):
@@ -108,6 +110,7 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'salary_advance':
                 record.state = 'refuse'
+                record.write({'processed_date': fields.Datetime.now()})
                 record.dynamic_action_status = f"Refused by {current_employee.name if current_employee else 'GM'}"
 
     def action_process_complete(self):
@@ -132,6 +135,7 @@ class ServiceEnquiry(models.Model):
                     'move_type': 'service_ticket',
                     'invoice_line_ids': invoice_line_ids,
                 })
+                
         return result
 
 class ServiceEnquiryPricingLine(models.Model):

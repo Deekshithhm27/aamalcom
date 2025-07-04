@@ -57,6 +57,7 @@ class ServiceEnquiry(models.Model):
                 if line.is_resubmission:
                     line.dynamic_action_status = 'Ticket resubmitted, Employee needs to be assigned by PM'
                     line.action_user_id = line.approver_id.user_id.id
+                    line.write({'processed_date': fields.Datetime.now()})
         return result
         
     @api.onchange('service_request')
@@ -71,6 +72,7 @@ class ServiceEnquiry(models.Model):
             if line.service_request in 'muqeem_dropout':
                 line.state = 'ere_valid'
                 line.dynamic_action_status = 'ERE is still valid,Please re initiate this process upon ERE expiry.'
+                line.write({'processed_date': fields.Datetime.now()})
                 line.assign_govt_emp_one = False
                 line.assigned_govt_emp_one = False
                 line.is_resubmission = True
