@@ -153,6 +153,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
         return result
 
     # Initial flow of exit_reentry_issuance
@@ -186,6 +187,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
                 record.action_user_id = record.first_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
         return result
 
     
@@ -202,7 +204,7 @@ class ServiceEnquiry(models.Model):
                 for lines in sorted_lines:
                     # if level == 'level1':
                     department_ids.append((4, lines.department_id.id))
-
+                record.write({'processed_date': fields.Datetime.now()})
                 result.update({
                     'name': 'Select Employee',
                     'type': 'ir.actions.act_window',
@@ -233,6 +235,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For ERE Extend Visa")
 
             record.state = 'done'  
-            record.dynamic_action_status = "Process Completed"  
+            record.dynamic_action_status = "Process Completed"
+            record.write({'processed_date': fields.Datetime.now()}) 
             record.action_user_id=False      
         return result

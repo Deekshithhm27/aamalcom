@@ -67,6 +67,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(_("Kindly Update Reference Number for Attached Courier Document"))
                 line.dynamic_action_status = _("Review is Pending by PM")  
                 line.action_user_id = line.approver_id.user_id.id 
+                line.write({'processed_date': fields.Datetime.now()})
                 line.state = 'submitted'
                 line.submit_clicked = True
     
@@ -78,6 +79,7 @@ class ServiceEnquiry(models.Model):
                     record.state = 'approved'
                     record.dynamic_action_status = "Documents Upload Pending by 1st Govt Employee"
                     record.action_user_id = record.first_govt_employee_id.user_id.id
+                    record.write({'processed_date': fields.Datetime.now()})
     
     
     def action_process_complete(self):

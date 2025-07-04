@@ -24,6 +24,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.send_email_to_op()
 
     def action_submit(self):
@@ -33,7 +34,8 @@ class ServiceEnquiry(models.Model):
                 if not record.employment_duration:
                     raise ValidationError('Please select Duration.')
                 record.dynamic_action_status = "Waiting for Review by PM"
-                record.action_user_id = record.approver_id.user_id.id 
+                record.action_user_id = record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()}) 
 
     @api.model
     def update_pricing(self):
