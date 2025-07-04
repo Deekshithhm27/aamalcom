@@ -35,19 +35,22 @@ class ServiceEnquiry(models.Model):
     istiqdam_form_doc_ref = fields.Char(string="Ref No.*")
     upload_visit_visa_app_doc = fields.Binary(string="Family application")
     upload_visit_visa_app_doc_file_name = fields.Char(string="Family application")
-    
+    upload_family_visa_doc = fields.Binary(string="Family Visit Visa Doc")
+    upload_family_visa_doc_file_name = fields.Char(string="Family Visit Visa Doc")
+    family_visa_doc_ref = fields.Char(string="Ref No.*")
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
     upload_family_visit_visa_doc_file_name = fields.Char(string="Family Visit Visa Doc")
     family_visit_visa_doc_ref = fields.Char(string="Ref No.*")
     family_visa_doc_uploaded = fields.Boolean(string="Document Uploaded", default=False, copy=False,store=True)
 
-    @api.depends('upload_family_visa_letter_doc', 'upload_attested_application_doc', 'fee_receipt_doc', 'upload_istiqdam_form_doc', 'upload_family_visit_visa_doc')
+    @api.depends('upload_family_visa_letter_doc', 'upload_attested_application_doc', 'fee_receipt_doc', 'upload_istiqdam_form_doc', 'upload_family_visit_visa_doc','upload_family_visa_doc')
     def _compute_family_visa_document_uploaded(self):
         for record in self:
             record.family_visa_doc_uploaded = bool(
             record.upload_attested_application_doc and record.fee_receipt_doc
+            or record.upload_family_visit_visa_doc
             or record.upload_istiqdam_form_doc
-            or record.upload_family_visit_visa_doc and record.fee_receipt_doc
+            or record.upload_family_visa_doc and record.fee_receipt_doc
             or record.upload_family_visa_letter_doc
         )
 
@@ -73,6 +76,8 @@ class ServiceEnquiry(models.Model):
             vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
         if 'upload_family_visit_visa_doc' in vals:
             vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
+        if 'upload_family_visa_doc' in vals:
+            vals['upload_family_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
         if 'upload_visit_visa_app_doc' in vals:
             vals['upload_visit_visa_app_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyApplicationDoc.pdf"        
         return super(ServiceEnquiry, self).create(vals)
@@ -93,6 +98,8 @@ class ServiceEnquiry(models.Model):
                 vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamForm.pdf"
             if 'upload_family_visit_visa_doc' in vals:
                 vals['upload_family_visit_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf" 
+            if 'upload_family_visa_doc' in vals:
+                vals['upload_family_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisitVisaDoc.pdf"
             if 'upload_visit_visa_app_doc' in vals:
                 vals['upload_visit_visa_app_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyApplicationDoc.pdf"       
         return super(ServiceEnquiry, self).write(vals)
