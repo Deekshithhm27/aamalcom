@@ -244,10 +244,6 @@
                                 <field name="second_govt_employee_id" invisible="1"/>
                                 <field name="current_department_ids" invisible="1" widget="many2many_tags"/>
                                 <field name="req_completion_date" invisible="1"/>
-
-
-
-
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
 
                             </group>
@@ -356,6 +352,7 @@
                                 <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
                                     <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_qiwa_doc_file_name"/>
                                      <field name="upload_qiwa_doc_file_name"  invisible="1"/>
+                                     <!-- <field name="is_qiwa_contract_present" readonly="1"/> -->
                                     <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
                                 </group>
@@ -1181,7 +1178,8 @@
                 <field name="service_request"/>
                 <field name="dynamic_action_status"/>
                 <field name="action_user_id"/>
-                <field name="create_date" string="Date and Time"/>
+                <field name="initiated_date"/>
+                <field name="processed_date"/>
             </tree>
         </field>
     </record>

@@ -72,6 +72,8 @@ class ServiceEnquiry(models.Model):
     submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
+    initiated_date = fields.Datetime(string='Initiated Date', default=fields.Datetime.now, readonly=True)
+    processed_date = fields.Datetime(string='Processed Date', readonly=True)
 
     @api.onchange('service_request_config_id')
     def update_process_type(self):
@@ -548,6 +550,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
@@ -561,6 +564,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'payment_done'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
@@ -572,6 +576,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'payment_done'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
@@ -912,6 +917,7 @@ class ServiceEnquiry(models.Model):
                 else:
                     if lines.sequence == 2:  # Only append the second department for level2
                         department_ids.append((4, lines.department_id.id))
+            line.write({'processed_date': fields.Datetime.now()})
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
@@ -1067,12 +1073,16 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'new_ev':
                 line.dynamic_action_status = f"Submit for approval by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
             elif line.service_request == 'iqama_card_req':
                 line.dynamic_action_status = f"Require confirmation on payment made by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
             else:
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
 
     def action_submit_for_check_final_exit(self):
         for line in self:
@@ -1082,6 +1092,7 @@ class ServiceEnquiry(models.Model):
                 line.state='submit_to_pm'
                 line.dynamic_action_status=f"Review is Pending By PM"
                 line.action_user_id=line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
 
     def action_submit_for_review_final_exit(self):
         for line in self:
@@ -1091,6 +1102,7 @@ class ServiceEnquiry(models.Model):
                 line.state='submit_for_review'
                 line.dynamic_action_status=f"Review is Pending By First Govt Employee"
                 line.action_user_id=line.first_govt_employee_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
 
     def final_exit_submit(self):
         for line in self:
@@ -1099,6 +1111,7 @@ class ServiceEnquiry(models.Model):
                 line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
                 line.message_post(body=f"The Employee: {self.employee_id.name} is Outside KSA.")
                 line.action_user_id=False
+                line.write({'processed_date': fields.Datetime.now()})
 
     def final_exit_submit_inside(self):
         for line in self:
@@ -1107,6 +1120,7 @@ class ServiceEnquiry(models.Model):
                 line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
                 line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initated.")
                 line.action_user_id=False
+                line.write({'processed_date': fields.Datetime.now()})
             
 
     def action_require_payment_confirmation(self):
@@ -1134,12 +1148,13 @@ class ServiceEnquiry(models.Model):
 
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            line.write({'processed_date': fields.Datetime.now()})
             partner_id = line.client_id.id
             user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
             if user:
                 line.action_user_id = user.id
             line.doc_uploaded = False
-
+            
             
 
     def action_new_ev_require_payment_confirmation(self):
@@ -1151,6 +1166,7 @@ class ServiceEnquiry(models.Model):
             if user:
                 line.action_user_id = user.id
             line.doc_uploaded = False
+            line.write({'processed_date': fields.Datetime.now()})
 
 
     def action_new_ev_submit_for_approval(self):
@@ -1174,6 +1190,7 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.send_email_to_op()
 
     def action_submit_for_approval(self):
@@ -1197,6 +1214,7 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
                 line.dynamic_action_status = f'Waiting for approval by client spoc'
+                line.write({'processed_date': fields.Datetime.now()})
                 partner_id = line.client_id.id
                 user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
                 if user:
@@ -1210,6 +1228,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 line.dynamic_action_status = f"Waiting for approval by OM"
                 line.action_user_id = employee.user_id
+                line.write({'processed_date': fields.Datetime.now()})
                 self.send_email_to_op()
 
     def action_client_spoc_approve(self):
@@ -1219,6 +1238,7 @@ class ServiceEnquiry(models.Model):
             # Approved by {self.env.user.name}.
             line.dynamic_action_status = f'Approved by client spoc. Second govt employee needs to be assigned by PM'
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
 
 
     @api.model
@@ -1319,6 +1339,7 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by GM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.send_email_to_gm()
 
     def action_gm_approved(self):
@@ -1329,6 +1350,7 @@ class ServiceEnquiry(models.Model):
             finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
             line.dynamic_action_status = "Waiting for approval by FM"
             line.action_user_id = finance_manager.user_id
+            line.write({'processed_date': fields.Datetime.now()})
 
 
 
@@ -1350,6 +1372,7 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.update_pricing()
             self.send_email_to_op()
 
@@ -1400,6 +1423,7 @@ class ServiceEnquiry(models.Model):
             line.assign_govt_emp_two = True
             line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
             # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
             if line.employee_id and line.service_request == 'new_ev':
                 if not line.employee_id.sponsor_id:
@@ -1430,6 +1454,7 @@ class ServiceEnquiry(models.Model):
             # else:
             line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
             line.state = 'payment_done'
             line.doc_uploaded = False
             if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
@@ -1450,8 +1475,10 @@ class ServiceEnquiry(models.Model):
             line.state = 'submitted'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
             if line.service_request:
                 line.assign_govt_emp_one = True
+            line.write({'processed_date': fields.Datetime.now()})
             self.update_pricing()
             self._add_followers()
 
@@ -1566,16 +1593,21 @@ class ServiceEnquiry(models.Model):
                             line.state = 'done'
                             line.req_completion_date = fields.Datetime.now()
                             line.dynamic_action_status = f"Process Completed"
+                            line.write({'processed_date': fields.Datetime.now()})
                             line.action_user_id= False
+                            line.write({'processed_date': fields.Datetime.now()})
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
                     line.dynamic_action_status = f"Process Completed"
+                    line.write({'processed_date': fields.Datetime.now()})
                     line.action_user_id= False
+                    line.write({'processed_date': fields.Datetime.now()})
             else:
                 line.state = 'done'
                 line.dynamic_action_status = f"Process Completed"
                 line.action_user_id= False
+                line.write({'processed_date': fields.Datetime.now()})
                 line.req_completion_date = fields.Datetime.now()
 
     # LT Medical Health Insurance Upload end
@@ -1634,6 +1666,7 @@ class ServiceEnquiry(models.Model):
             line.state = 'payment_done'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
 
     def action_iqama_process_complete(self):
         for line in self:
@@ -1642,6 +1675,7 @@ class ServiceEnquiry(models.Model):
                     if line.upload_iqama_card_doc and not line.iqama_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
             line.dynamic_action_status = f"Process Completed"
+            line.write({'processed_date': fields.Datetime.now()})
             line.action_user_id=False
             line.state = 'done'
 
@@ -1665,6 +1699,8 @@ class ServiceEnquiry(models.Model):
                 res.latest_existing_request_id = True
                 res.latest_existing_request_name = latest_existing_request.display_name
         return res
+
+  
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
