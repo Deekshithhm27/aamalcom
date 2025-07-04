@@ -87,6 +87,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.send_email_to_op()
 
     def update_pricing(self):
@@ -121,6 +122,7 @@ class ServiceEnquiry(models.Model):
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id= False
+                record.write({'processed_date': fields.Datetime.now()})
         return result
             
     
