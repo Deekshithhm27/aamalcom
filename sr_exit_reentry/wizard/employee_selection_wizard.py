@@ -18,8 +18,8 @@ class EmployeeSelectionWizard(models.TransientModel):
                     active_enquiry.first_govt_employee_id = self.employee_id.id
                     active_enquiry.assigned_govt_emp_one = True
                     active_enquiry.assign_govt_emp_two = False 
-        elif if active_enquiry.service_request == 'exit_reentry_issuance_ext':
-                        # if active_enquiry.state == 'submitted':
+        elif active_enquiry.service_request == 'exit_reentry_issuance_ext':
+             # if active_enquiry.state == 'submitted':
                         if not active_enquiry.aamalcom_pay:
                             active_enquiry.dynamic_action_status = (
                                 f"Review and request payment confirmation pending by employee from {department_names} department."
@@ -30,4 +30,4 @@ class EmployeeSelectionWizard(models.TransientModel):
                             active_enquiry.first_govt_employee_id = record.employee_id.id
                             active_enquiry.assigned_govt_emp_one = True
                        
-         return result
+        return result
