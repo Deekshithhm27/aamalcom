@@ -337,9 +337,9 @@
                                 
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', '|',('service_request', '!=', 'hr_card'),('aamalcom_pay', '!=',True), ('state', 'in', ('draft', 'submitted'))]}">
                                     <group attrs="{'invisible': [('aamalcom_pay', '!=',True)]}">
-                                        <field name="upload_payment_doc" readonly="1" filename="upload_payment_doc_file_name"/>
+                                        <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" filename="upload_payment_doc_file_name"/>
                                         <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                        <field name="payment_doc_ref" readonly="1"/>
+                                        <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                                     </group>
                                 </group>
                                 <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
@@ -364,23 +364,23 @@
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('service_request', '!=','prof_change_qiwa'),('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','='
 
                                     ,True)]}">
-                                    <field name="upload_payment_doc"  readonly="1" force_save="1" filename="upload_payment_doc_file_name"/>
+                                    <field name="upload_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" readonly="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                                 </group>
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False),('service_request','=','hr_card')]}">
                                 <group>
-                                    <field name="upload_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_payment_doc_file_name"/>
+                                    <field name="upload_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1"/>
                                 </group>
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('employee_pay','=',False)]}">
                                 <group>
-                                    <field name="upload_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_payment_doc_file_name"/>
+                                    <field name="upload_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('hr_card','iqama_renewal','prof_change_qiwa')),('second_govt_employee_id','=',False)]}">
@@ -425,9 +425,9 @@
                                     <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done')),('is_service_request_client_spoc','=',True)],'invisible':[('service_request', '=','prof_change_qiwa')]}" force_save="1"/>
                                 </group>
                                 <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted','client_approved','waiting_client_approval','waiting_fin_approval','payment_initiation')),('self_pay','=',True)]}">
-                                    <field name="upload_payment_doc" readonly="1" force_save="1" filename="upload_payment_doc_file_name"/>
+                                    <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" readonly="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                                 </group>
                             </group>
 
@@ -1100,9 +1100,9 @@
                             </group>
                             <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('aamalcom_pay','!=',True)]}">
                                 <group>
-                                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
+                                    <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" filename="upload_payment_doc_file_name"/>
                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
-                                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1"/>
                                 </group>
                             </group>
                         </page>
@@ -1112,15 +1112,18 @@
                         <page id="page_eight" string="Payment Documents" attrs="{'invisible': ['|',('state', 'in', ('draft','submitted')),('self_pay', '!=',True)]}">
                             <group>
                                 <group attrs="{'invisible': ['|','|',('state', 'in', ('draft','submitted')), ('service_request', 'not in', ('hr_card')),('self_pay', '!=',True)]}">
-                                        <field name="upload_client_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_client_payment_doc_doc_file_name"/>
+                                        <field name="upload_client_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"
+                                        force_save="1"
+                                        filename="upload_client_payment_doc_doc_file_name"/>
+
                                      <field name="upload_client_payment_doc_doc_file_name"  invisible="1"/>
-                                    <field name="upload_client_payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_service_request_client_spoc','!=',True)]}" force_save="1"/>
+                                    <field name="upload_client_payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1"/>
                                     </group>
                             </group>
                             <group><group attrs="{'invisible': ['|','|',('state', 'in', ('draft','submitted')), ('service_request', 'not in', ('new_ev')),('self_pay', '!=',True)]}">
-                                        <field name="upload_client_payment_doc"  attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1" filename="upload_client_payment_doc_doc_file_name"/>
+                                        <field name="upload_client_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_client_payment_doc_doc_file_name"/>
                                      <field name="upload_client_payment_doc_doc_file_name"  invisible="1"/>
-                                    <field name="upload_client_payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}" force_save="1"/>
+                                    <field name="upload_client_payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1"/>
                                     </group>
                             </group>
                         </page>
