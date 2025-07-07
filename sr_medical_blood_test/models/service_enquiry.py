@@ -90,7 +90,7 @@ class ServiceEnquiry(models.Model):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for record in self:
             if record.service_request == 'medical_blood_test':
-                record.state = 'submitted_to_treasury'
+                record.state = 'approved'
                 record.dynamic_action_status = "Review to be done by Treasury Department"
                 record.gm_approver_id = current_employee
                 finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
