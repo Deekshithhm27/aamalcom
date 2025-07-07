@@ -1057,7 +1057,13 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'prof_change_qiwa':
                 if not line.profession_change:
                     raise ValidationError('Please add Profession change to')
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'prof_change_qiwa':
+                if not (line.aamalcom_pay or line.self_pay or line.employee_pay):
+                    raise ValidationError('Please select who needs to pay fees.')
+                if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                    raise ValidationError(
+                        'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
+                    )
+            if line.service_request == 'new_ev' or line.service_request == 'transfer_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
