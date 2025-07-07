@@ -13,10 +13,6 @@ class EmployeeSelectionWizardInherit(models.TransientModel):
                 active_enquiry.first_govt_employee_id = self.employee_id.id
                 active_enquiry.assigned_govt_emp_one = True
                 active_enquiry.assign_govt_emp_two = False 
-            elif active_enquiry.state == 'approved' and self.levels == 'level2' and not active_enquiry.assigned_govt_emp_two:
-                active_enquiry.second_govt_employee_id = self.employee_id.id
-                active_enquiry.assigned_govt_emp_two = True 
-                active_enquiry.assign_govt_emp_two = True 
             
             
             
