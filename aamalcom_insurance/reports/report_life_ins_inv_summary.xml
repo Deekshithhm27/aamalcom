@@ -7,14 +7,14 @@
         ('client_parent_id','=',data.get('client_parent_id')),
         ('insurance_activation_date','&gt;=',data.get('start_date')),
         ('insurance_activation_date','&lt;=',data.get('end_date')),
-        ('state','=','invoiced')
+        ('state','=','invoice_created')
       ])"/>
       <t t-set="delete_lines" t-value="env['life.insurance.invoice.details'].search([
         ('insurance_type','=','deletion'),
         ('client_parent_id','=',data.get('client_parent_id')),
         ('insurance_expiration_date','&gt;=',data.get('start_date')),
         ('insurance_expiration_date','&lt;=',data.get('end_date')),
-        ('state','=','invoiced')
+        ('state','=','invoice_created')
       ])"/>
       <t t-set="enroll_total" t-value="sum(enroll_lines.mapped('total_amount'))"/>
       <t t-set="delete_total" t-value="sum(delete_lines.mapped('total_amount'))"/>
@@ -61,7 +61,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr t-foreach="enroll_lines" t-as="line" t-set="idx" t-value="0">
+            <tr t-foreach="enroll_lines" t-as="line">
               <td><t t-esc="line.client_emp_sequence or ''"/></td>
               <td><t t-esc="line.iqama_no or ''"/></td>
               <td><t t-esc="line.sponsor_id.name or ''"/></td>
@@ -146,7 +146,7 @@
         </div>
 
         <!-- Footer Signatures -->
-        <div style="margin-top:30px;">
+        <!-- <div style="margin-top:30px;">
           <table style="width:100%; font-size:10px;">
             <tr>
               <td style="width:25%;">PREPARED BY<br/>Mohammed Rasheed Jamal<br/>Business Support Specialist</td>
@@ -155,7 +155,7 @@
               <td style="width:25%;">APPROVED BY<br/>Haifa Tamal Al-Otaibi<br/>General Manager</td>
             </tr>
           </table>
-        </div>
+        </div> -->
       </div>
     </t>
   </t>
