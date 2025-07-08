@@ -1177,9 +1177,9 @@
                 <field name="is_marked" widget="boolean_toggle" nolabel="1" optional="show"/>
                 <field name="service_request"/>
                 <field name="dynamic_action_status"/>
-                <field name="action_user_id"/>
-                <field name="initiated_date"/>
-                <field name="processed_date"/>
+                <field name="action_user_id" />
+                <field name="initiated_date" string="Initiated Date/Time"/>
+                <field name="processed_date" string="Processed Date/Time"/>
             </tree>
         </field>
     </record>
