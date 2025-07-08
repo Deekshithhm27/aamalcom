@@ -349,7 +349,6 @@
                                 <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
                                     <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_qiwa_doc_file_name"/>
                                      <field name="upload_qiwa_doc_file_name"  invisible="1"/>
-                                     <!-- <field name="is_qiwa_contract_present" readonly="1"/> -->
                                     <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
                                 </group>
@@ -367,7 +366,7 @@
                                     <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                                 </group>
                             </group>
-                            <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False),('service_request','!=','hr_card')]}">
+                            <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('state', 'in', ( 'draft','submitted')),('self_pay','=',False),('service_request','=','hr_card')]}">
                                 <group>
                                     <field name="upload_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" force_save="1" filename="upload_payment_doc_file_name"/>
                                      <field name="upload_payment_doc_file_name"  invisible="1"/>
@@ -1096,7 +1095,7 @@
                                     <field name="proof_of_request_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted')),('is_project_manager','!=',True)]}"/>
                                 </group>
                             </group>
-                            <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('aamalcom_pay','!=',True)]}">
+                            <group string="Payment Confirmation Documents6" attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('aamalcom_pay','!=',True)]}">
                                 <group>
                                     <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" filename="upload_payment_doc_file_name"/>
                                     <field name="upload_payment_doc_file_name"  invisible="1"/>
@@ -1155,6 +1154,7 @@
                     <field name="note" readonly="1" attrs="{'invisible': [('service_request', 'not in',( 'iqama_card_req','prof_change_qiwa'))]}"/>
                     <group>
                     <field name="refuse_reason"/>
+                   
                     </group>
                 </sheet>
                 <!-- additional fields -->

@@ -41,7 +41,7 @@
                                             <t t-else=""><span>No</span></t>
                                         </td>
                                         <td style="padding: 8px;"><span t-esc="emp.qiwa_contract_sr_no or ''"/></td>-->
-                                        <td style="padding: 8px;"><span t-esc="emp.processed_date and emp.processed_date.strftime('%d-%m-%Y') or ''"/></td> 
+                                        <!-- <td style="padding: 8px;"><span t-esc="emp.processed_date and emp.processed_date.strftime('%d-%m-%Y') or ''"/></td>  -->
                                         
                                     </tr>
                                 </t>
