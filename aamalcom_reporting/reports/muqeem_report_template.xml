@@ -8,12 +8,16 @@
                     
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
-                            <strong>Service Request:</strong> <t t-esc="docs[0].get('service_request_label') if docs else data.get('service_request_label') or ''"/> <br/>
-            
+                            <strong>Service Request:</strong> <t t-esc="service_request_label or ''"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="from_date and from_date.strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="from_date and to_date">
+                                <span> - </span>
+                            </t>
+                            <strong>To Date:</strong> <t t-esc="to_date and to_date.strftime('%d-%m-%Y') or ''"/>
                         </p>
                     </div>
 
-                    <t t-if="docs and docs[0]['employees']">
+                    <t t-if="docs and docs[0] and docs[0]['employees']">
                         <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
@@ -34,22 +38,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="docs[0]['employees']" t-as="emp">
+                                <t t-foreach="docs[0]['employees']" t-as="emp_data">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.gender and dict(emp._fields['gender'].selection).get(emp.gender) or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.country_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or '' "/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date and emp.req_completion_date.strftime('%d-%m-%Y') or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.doj and emp.doj.strftime('%d-%m-%Y') or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.birthday and emp.birthday.strftime('%d-%m-%Y') or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.client_parent_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.active or ''"/></td>
-                                        <!-- <td style="padding: 8px;"><t t-esc="emp.date_end and emp.date_end.strftime('%d-%m-%Y') or ''"/></td> -->
+                                        <td style="padding: 8px;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['emp_record'].name or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['gender_label'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['country_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['job_title'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['passport_id'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['sponsor_name'] or '' "/></td>
+                                        
+                                        <td style="padding: 8px;"><t t-esc="emp_data['req_completion_date'] and emp_data['req_completion_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['req_completion_date'] and emp_data['req_completion_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        
+                                        <td style="padding: 8px;"><t t-esc="emp_data['doj'] and emp_data['doj'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['birthday'] and emp_data['birthday'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['client_parent_id_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="'Yes' if emp_data['active_status'] else 'No'"/></td>
+                                        <!-- <td style="padding: 8px;"><t t-esc="emp_data['last_working_date'] and emp_data['last_working_date'].strftime('%d-%m-%Y') or ''"/></td> -->
                                     </tr>
                                 </t>
                             </tbody>
