@@ -18,7 +18,7 @@ class ServiceRequestTreasuryInherit(models.Model):
             if line.service_request_id.service_request == 'medical_blood_test':
                 line.service_request_id.write({'upload_payment_doc': line.confirmation_doc})
                 line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
-                if line.service_request_id.state == 'submitted_to_treasury':
+                if line.service_request_id.state == 'approved':
                     line.service_request_id.dynamic_action_status = "Service request approved by Treasury Team.1st govt employee Needs to be assigned by PM"
                     line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
                 line.state = 'done'
@@ -55,7 +55,7 @@ class ServiceRequestTreasuryInherit(models.Model):
         # This onchange will trigger when service_request_id is set/changed on the form.
         # It's less reliable for syncing states that change on the linked record.
         # The direct write from service.enquiry is more robust.
-        if self.service_request_id and self.service_request_id.service_request == 'medical_blood_test' and self.service_request_id.state == 'submitted_to_treasury':
+        if self.service_request_id and self.service_request_id.service_request == 'medical_blood_test' and self.service_request_id.state == 'approved':
             self.state = 'submitted'
         
                 

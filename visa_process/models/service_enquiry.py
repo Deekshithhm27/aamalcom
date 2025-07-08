@@ -565,7 +565,7 @@ class ServiceEnquiry(models.Model):
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
-                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
     def action_doc_uplaod_submit_self_pay_ev(self):
@@ -880,23 +880,23 @@ class ServiceEnquiry(models.Model):
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
-            elif line.service_request == 'hr_card':
-                # if line.state == 'submitted':
-                #     level = 'level1'
-                if line.self_pay == True:
-                    if line.state == 'payment_done':
-                        level = 'level1'
-                    if line.state == 'payment_done' and line.assign_govt_emp_two == False:
-                        level = 'level1'
-                    if line.state == 'payment_done' and line.assign_govt_emp_two != False:
-                        level = 'level2'
-                else:
-                    if line.state == 'submitted':
-                        level = 'level1'
-                    if line.state == 'approved' and line.assign_govt_emp_two == False:
-                        level = 'level1'
-                    if line.state == 'approved' and line.assign_govt_emp_two != False:
-                        level = 'level2'
+            # elif line.service_request == 'hr_card':
+            #     # if line.state == 'submitted':
+            #     #     level = 'level1'
+            #     if line.self_pay == True:
+            #         if line.state == 'payment_done':
+            #             level = 'level1'
+            #         if line.state == 'payment_done' and line.assign_govt_emp_two == False:
+            #             level = 'level1'
+            #         if line.state == 'payment_done' and line.assign_govt_emp_two != False:
+            #             level = 'level2'
+            #     else:
+            #         if line.state == 'submitted':
+            #             level = 'level1'
+            #         if line.state == 'approved' and line.assign_govt_emp_two == False:
+            #             level = 'level1'
+            #         if line.state == 'approved' and line.assign_govt_emp_two != False:
+            #             level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
@@ -1057,7 +1057,13 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'prof_change_qiwa':
                 if not line.profession_change:
                     raise ValidationError('Please add Profession change to')
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'prof_change_qiwa':
+                if not (line.aamalcom_pay or line.self_pay or line.employee_pay):
+                    raise ValidationError('Please select who needs to pay fees.')
+                if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                    raise ValidationError(
+                        'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
+                    )
+            if line.service_request == 'new_ev' or line.service_request == 'transfer_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
@@ -1445,6 +1451,7 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
+
             # if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
             #     if not line.payment_doc_ref:
             #         raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
@@ -1452,13 +1459,21 @@ class ServiceEnquiry(models.Model):
             # # if line.service_request =='prof_change_qiwa':
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
-            line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
-            line.action_user_id = line.approver_id.user_id.id
-            line.write({'processed_date': fields.Datetime.now()})
-            line.state = 'payment_done'
-            line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
+            if line.service_request == 'hr_card':
+                line.dynamic_action_status=f'Payment documents uploaded by Client Spoc, Document upload pending by 1st Govt employee'
+                line.action_user_id = line.first_govt_employee_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+                line.state = 'payment_done'
+                line.doc_uploaded = False
                 line.assign_govt_emp_two = True
+            else:
+                line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
+                line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+                line.state = 'payment_done'
+                line.doc_uploaded = False
+                if  line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
+                    line.assign_govt_emp_two = True
             # if line.service_request == 'prof_change_qiwa':
             #     # line.doc_uploaded = True
 

@@ -59,7 +59,7 @@
                                 ('state', '=', 'draft'),('first_govt_employee_id','=',False)
                                 ]}">
                     <group>
-                        <field name="upload_qiwa_doc"
+                        <field name="upload_qiwa_doc" string="Updated-Qiwa Document"
                             filename="upload_qiwa_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                         <field name="upload_qiwa_doc_file_name" invisible="1"/>
                         <field name="qiwa_doc_ref" string="Ref No.*"
@@ -73,7 +73,7 @@
                                     )),('second_govt_employee_id','=',False)
                                 ]}">
                     <group>
-                        <field name="upload_gosi_doc"
+                        <field name="upload_gosi_doc" string="Upload-GOSI Document"
                             filename="upload_gosi_doc_file_name" force_save="1"  attrs="{'readonly': ['|',('state', '!=','doc_uploaded_by_first_govt_employee'),('is_service_request_client_spoc', '=', True)]}"/>
                         <field name="upload_gosi_doc_file_name" invisible="1"/>
                         <field name="gosi_doc_ref" string="Ref No.*"

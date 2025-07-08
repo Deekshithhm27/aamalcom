@@ -20,5 +20,5 @@ class InheritedServiceRequestTreasury(models.Model):
                 if line.service_request_id.state == 'approved':
                     # Set the specific dynamic action status for 'salary_advance'
                     line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. Process needs to be completed by PM."
-                    line.action_user_id = self.env.user.company_spoc_id.id
+                    line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
             

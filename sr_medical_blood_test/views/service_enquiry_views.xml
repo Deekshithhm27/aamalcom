@@ -8,7 +8,7 @@
                 <xpath expr="//header" position="inside">
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'medical_blood_test')]}"/>
                     <button name="action_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', 'not in', ('submitted')),('upload_stamped_visa_doc', '=', False),('service_request', '!=', 'medical_blood_test')]}"/>
-                    <button name="action_finance_submit_to_treasury" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_fin_approval'), ('service_request', '!=', 'medical_blood_test')]}" groups="visa_process.group_service_request_finance_manager"/>
+                    <button name="action_finance_submit_to_treasury" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','waiting_fin_approval'), ('service_request', '!=', 'medical_blood_test')]}" groups="visa_process.group_service_request_finance_manager"/>
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '=', 'done'), '|', ('service_request', '!=', 'medical_blood_test'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
                     </xpath>
 
@@ -28,9 +28,9 @@
                     </group>
                      <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'medical_blood_test'), ('state', 'in', ('draft', 'submitted'))]}">
                         <group >
-                            <field name="upload_payment_doc" readonly="1" filename="upload_payment_doc_file_name"/>
-                            <field name="upload_payment_doc_file_name"  invisible="1"/>
-                            <field name="payment_doc_ref" readonly="1"/>
+                            <field name="upload_payment_doc"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"  filename="upload_payment_doc_file_name"/>
+                            <field name="upload_payment_doc_file_name"  attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"  invisible="1"/>
+                            <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                         </group>
                     </group> 
                    

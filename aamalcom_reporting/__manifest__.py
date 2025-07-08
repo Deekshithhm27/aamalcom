@@ -28,7 +28,10 @@
         'views/new_ev_reports.xml',
         'reports/qiwa_action.xml',
         'reports/qiwa_template.xml',
-        'views/qiwa_wizard.xml'
+        'views/qiwa_wizard.xml',
+        'reports/final_action.xml',
+        'reports/final_clearance_template.xml',
+        'views/final_cleraance_views.xml'
     ],
     'installable': True,
     'application': True,
