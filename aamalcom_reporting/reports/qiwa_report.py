@@ -36,7 +36,7 @@ class QiwaReport(models.AbstractModel):
             'service_request_type_fixed': service_request_type_fixed,
             'service_request_type_fixed_label': 'Qiwa Contract', # This label is for display in the report
             'from_date': from_date_obj, # Pass original date objects for display in the report template
-            'to_date': to_date_obj,     # Pass original date objects for display in the report template
+            'to_date': to_date_obj,      # Pass original date objects for display in the report template
         }
 
         service_enquiry_model = self.env['service.enquiry']
@@ -48,8 +48,6 @@ class QiwaReport(models.AbstractModel):
         if service_request_type_fixed == 'qiwa':
             enquiry_domain.append(('service_request', '=', 'qiwa'))
         else:
-            # If the wizard allows other 'service_request_type_fixed' values,
-            # you'd handle them here or return empty if 'qiwa' is expected.
             print(f"WARNING: service_request_type_fixed is not 'qiwa' (it's '{service_request_type_fixed}'). Report will be empty for this reason.")
             return base_return_data
 
@@ -78,21 +76,27 @@ class QiwaReport(models.AbstractModel):
             print("No relevant enquiries found based on the domain. Returning empty report.")
             return base_return_data
 
-        # Extract unique employee IDs from the found enquiries and browse them
-        employee_ids = relevant_enquiries.mapped('employee_id').ids
-        employees = self.env['hr.employee'].browse(employee_ids)
-
-        # Prepare the report data to be passed to the template
-        report_data = [{
-            'employees': employees,
-            'service_request_type_fixed_label': 'Qiwa Contract', # Still hardcoded for the label
-        }]
+        # Prepare the report_lines, each containing combined employee and enquiry data
+        report_lines = []
+        for enquiry in relevant_enquiries:
+            employee = enquiry.employee_id
+            if employee:
+                report_lines.append({
+                    'iqama_no': enquiry.iqama_no, # Assuming iqama_no is on service.enquiry
+                    'name': employee.name,
+                    'passport_no': employee.passport_id, # Assuming passport_id is on hr.employee
+                    'sponsor_name': employee.sponsor_id.name if employee.sponsor_id else '', # Assuming sponsor_id is on hr.employee
+                    'qiwa_initiated': 'Yes' if enquiry.upload_qiwa_doc else 'No', # Assuming this field exists on service.enquiry
+                    'qiwa_contract_number': enquiry.qiwa_doc_ref, # Assuming this field exists on service.enquiry
+                    'date_of_initiation': enquiry.processed_date, # This is the requested field
+                })
 
         # Set the 'docs' key in base_return_data with the actual report data
-        base_return_data['docs'] = report_data
+        # The template expects 'docs[0]['employees']' to be the list of items
+        base_return_data['docs'] = [{'employees': report_lines}]
 
         # --- Debugging Prints ---
-        print(f"5. Report will attempt to display data for {len(employees)} employees.")
+        print(f"5. Report will attempt to display data for {len(report_lines)} employees.")
         print(f"--- Debugging Complete ---")
         # --- End Debugging Prints ---
 
