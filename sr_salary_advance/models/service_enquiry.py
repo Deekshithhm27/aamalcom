@@ -11,7 +11,16 @@ class ServiceEnquiry(models.Model):
         copy=False,ondelete={'salary_advance': 'cascade'}
     )
     
-    salary_advance_amount = fields.Float("Salary Advance Amount")
+    currency_id = fields.Many2one(
+            'res.currency',
+            string='Currency',
+            default=lambda self: self.env.company.currency_id,
+            
+        )
+        
+    salary_advance_amount = fields.Monetary("Salary Advance Amount",
+    currency_field='currency_id') 
+        
     nature_of_advance = fields.Text("Nature of Advance")
     invoiced = fields.Boolean(string="Invoiced")
     to_be_invoiced = fields.Boolean(string="To be Invoiced")
@@ -24,7 +33,6 @@ class ServiceEnquiry(models.Model):
     invoiced_ref = fields.Many2one(
     'account.move',
     string="Invoiced Ref No.*",
-    domain="[('partner_id', '=', client_id)]",
     store=True,
     tracking=True,
     copy=False
@@ -34,7 +42,7 @@ class ServiceEnquiry(models.Model):
     def update_pricing(self):  
         super(ServiceEnquiry, self).update_pricing()  
         for record in self:
-            if record.to_be_invoiced and record.service_request == 'salary_advance':
+            if  record.service_request == 'salary_advance':
                 pricing_id = self.env['service.pricing'].search([
                     ('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
