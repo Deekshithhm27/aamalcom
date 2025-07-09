@@ -161,7 +161,7 @@ class ServiceEnquiry(models.Model):
     from_date = fields.Date(string="From Date")
     valid_reason = fields.Text(string="Valid reason to be stated")
     any_credit_note = fields.Text(string="Any credit note to be issued with reason")
-    expiry_of_ere = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
+    ere_last_date = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
     
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
@@ -169,6 +169,8 @@ class ServiceEnquiry(models.Model):
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
+    iqama_issue_date = fields.Date(string="Iqama Issue Date")
+    iqama_expiry_date = fields.Date(string="Iqama Expiry Date")
     reupload_hr_card = fields.Binary(string="Paid HR Card Document")
     reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
     # reupload hr card ref
@@ -1531,6 +1533,7 @@ class ServiceEnquiry(models.Model):
                 if line.employee_id:
                     line.employee_id.qiwa_contract_doc = line.upload_qiwa_doc
                     line.employee_id.qiwa_contract_sr_no = line.name
+                    line.employee_id.qiwa_contract_ref_no = line.qiwa_doc_ref
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:

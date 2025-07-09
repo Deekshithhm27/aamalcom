@@ -388,9 +388,10 @@
                                 </group>
                         
                                 <group string="Residance Permit" attrs="{'invisible':[('service_request', 'in',('prof_change_qiwa','transfer_req'))]}">
-                                    <field name="residance_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="residance_doc_file_name"/>
+                                    <field name="residance_doc"  attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="residance_doc_file_name"/>
                                      <field name="residance_doc_file_name"  invisible="1"/>
                                     <field name="residance_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    
                                 </group>
                                 <group string="Profession Change Confirmation Document" attrs="{'invisible':['|',('service_request', '!=','prof_change_qiwa'),('second_govt_employee_id','=',False)]}">
                                     <field name="profession_change_final_doc" string="Profession Change Confirmation Document" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="profession_change_final_doc_file_name"/>
@@ -398,10 +399,19 @@
                                     <field name="prof_change_final_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=','True')]}" force_save="1"/>
                                 </group>
                                 <group string="Muqeem Print">
-                                    <field name="muqeem_print_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="muqeem_print_doc_file_name"/>
+                                    <field name="muqeem_print_doc"  attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="muqeem_print_doc_file_name"/>
                                      <field name="muqeem_print_doc_file_name"  invisible="1"/>
                                     <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    
                                 </group>
+                                <group attrs="{'invisible':['|',('service_request', '!=','hr_card'),('second_govt_employee_id','=',False)]}">
+                                    <field name="iqama_expiry_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}"/>
+                                    <field name="iqama_issue_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}" force_save="1"/>
+                                </group>
+                                <group attrs="{'invisible':['|',('service_request', '!=','iqama_renewal'),('second_govt_employee_id','=',False)]}">
+                                    <field name="iqama_expiry_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True),('service_request','!=','iqama_renewal')]}"/>
+                                </group>
+                                
                             </group>
                             <!-- below group is especially for Transfer request initiation -->
                             <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted')),'|',('service_request', 'not in', ('transfer_req')),('second_govt_employee_id','=',False)]}">
@@ -735,7 +745,7 @@
 
                     <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm'))]}">
                         <group>
-                            <field name="expiry_of_ere" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','done'),('is_service_request_client_spoc', '=', True)]}"/>
+                            <field name="ere_last_date" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','done'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                         <group>
                             <field name="is_inside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
