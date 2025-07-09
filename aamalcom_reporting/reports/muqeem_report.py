@@ -91,7 +91,9 @@ class MuqeemReport(models.AbstractModel):
                     'iqama_no': enquiry.iqama_no,       # Direct from enquiry or employee (consistent access)
                     'passport_id': enquiry.passport_no, # Use passport_no from enquiry if available/accurate
                     'sponsor_name': enquiry.sponsor_id.name, # From enquiry or employee
-                    'req_completion_date': enquiry.processed_date, # Use processed_date for Iqama Issue/Expiry
+                    'req_completion_date': enquiry.processed_date,
+                    'iqama_issue_date':enquiry.iqama_issue_date,
+                    'iqama_expiry_date':enquiry.iqama_expiry_date,
                     'doj': employee.doj,                # From employee
                     'birthday': employee.birthday,      # From employee
                     'client_parent_id_name': employee.client_parent_id.name, # From employee

@@ -10,10 +10,8 @@ class MuqeemReportWizard(models.TransientModel):
     to_date = fields.Date(required=True)
     service_request = fields.Selection([
         ('hr_card','Issuance for HR card'),
-        ('final_exit_issuance','Final exit Issuance'),
         ('muqeem_dropout', 'Muqeem Dropout'),
-        ('iqama_card_req','New Physical Iqama Card Request'),
-        ('iqama_renewal','Iqama Renewal')
+        
         
     ], string="Service Requests", required=True)
 
