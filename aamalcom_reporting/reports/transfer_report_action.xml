@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_transfer_report_pdf" model="ir.actions.report">
-        <field name="name">Transfer Request Report</field>
+        <field name="name">Service Request-Transfer Request Report</field>
         <field name="model">transfer.report.wizard</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">aamalcom_reporting.transfer_report_template</field>

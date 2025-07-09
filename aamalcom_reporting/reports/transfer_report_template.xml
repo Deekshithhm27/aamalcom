@@ -4,50 +4,42 @@
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h1 style="text-align: center; margin-bottom: 20px;">Transfer Request Report</h1>
+                    <h1 style="text-align: center; margin-bottom: 20px;">Service Request-Transfer Request Report</h1>
 
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
-                            <strong>Service Request Name:</strong> <t t-esc="docs[0].get('service_request_type_fixed_label') if docs else data.get('service_request_type_fixed_label') or 'Transfer Request Initiation'"/> <br/>
-                            <strong>Transfer Type:</strong> <t t-esc="docs[0].get('transfer_type_label') if docs else data.get('transfer_type_label') or ''"/> <br/>
-                            <strong>From Date:</strong> <t t-esc="data.get('from_date') and data.get('from_date').strftime('%d-%m-%Y') or ''"/>
-                            <t t-if="data.get('from_date') and data.get('to_date')">
+                            <strong>Service Request Name:</strong> <t t-esc="docs[0].get('service_request_type_fixed_label') or data.get('service_request_type_fixed_label') or 'Transfer Request Initiation'"/> <br/>
+                            <strong>Transfer Type:</strong> <t t-esc="docs[0].get('transfer_type_label') or data.get('transfer_type_label') or ''"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="from_date and from_date.strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="from_date and to_date">
                                 <span> - </span>
                             </t>
-                            <strong>To Date:</strong> <t t-esc="data.get('to_date') and data.get('to_date').strftime('%d-%m-%Y') or ''"/>
+                            <strong>To Date:</strong> <t t-esc="to_date and to_date.strftime('%d-%m-%Y') or ''"/>
                         </p>
                     </div>
 
-                    <t t-if="docs and docs[0]['employees']">
-                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                    <t t-if="docs and docs[0]['report_lines']"> <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
                                     <th style="text-align: center; padding: 8px;">Iqama Number</th>
                                     <th style="text-align: center; padding: 8px;">Name</th>
-                                    <th style="text-align: center; padding: 8px;">Sponsor No</th>
-                                    <th style="text-align: center; padding: 8px;">Client</th>
+                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th> <th style="text-align: center; padding: 8px;">Client</th>
                                     <th style="text-align: center; padding: 8px;">Passport No</th>
                                     <th style="text-align: center; padding: 8px;">Border No</th>
                                     <th style="text-align: center; padding: 8px;">Transfer Type</th>
-
-                                    <th style="text-align: center; padding: 8px;">Date of Request Completion</th>
-                                    
-                                    
-                                </tr>
+                                    <th style="text-align: center; padding: 8px;">Date of Initiation</th> </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="docs[0]['employees']" t-as="emp">
+                                <t t-foreach="docs[0]['report_lines']" t-as="data_line">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.client_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="transfer_type_label or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id.name or ''"/></td>
-
-                                        
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_iqama_no']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_name']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_sponsor_name']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_client_name']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_passport_id']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_identification_id']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_transfer_type_label']"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>
