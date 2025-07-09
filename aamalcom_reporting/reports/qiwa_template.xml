@@ -4,7 +4,7 @@
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h1 style="text-align: center; margin-bottom: 20px;">Qiwa Report</h1>
+                    <h1 style="text-align: center; margin-bottom: 20px;">Service Request-Qiwa Report</h1>
 
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
@@ -30,19 +30,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="docs[0]['employees']" t-as="emp">
+                                <t t-foreach="docs[0]['employees']" t-as="emp_data">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id or '' "/></td>
-                                        <!-- <td style="padding: 8px;">
-                                            <t t-if="emp.qiwa_contract_doc_uploaded"><span>Yes</span></t>
-                                            <t t-else=""><span>No</span></t>
-                                        </td>
-                                        <td style="padding: 8px;"><span t-esc="emp.qiwa_contract_sr_no or ''"/></td>-->
-                                        <!-- <td style="padding: 8px;"><span t-esc="emp.processed_date and emp.processed_date.strftime('%d-%m-%Y') or ''"/></td>  -->
-                                        
+                                        <td style="padding: 8px;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['passport_no'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['sponsor_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['qiwa_initiated'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['qiwa_contract_number'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="emp_data['date_of_initiation'] and emp_data['date_of_initiation'].strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>

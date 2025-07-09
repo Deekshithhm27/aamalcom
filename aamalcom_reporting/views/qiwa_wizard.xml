@@ -11,7 +11,7 @@
                     </group>
                 </group>
                 <footer>
-                    <button name="print_qiwa_report" string="Print QIWA Report" type="object" class="btn-primary"/>
+                    <button name="print_qiwa_report" string="Print Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -19,13 +19,13 @@
     </record>
 
     <record id="action_qiwa_report_wizard" model="ir.actions.act_window">
-        <field name="name">QIWA Reports</field>
+        <field name="name">Service Request-Qiwa Reports</field>
         <field name="res_model">qiwa.report.wizard</field> <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
     <menuitem id="menu_qiwa_report_wizard"
-              name="QIWA Report"
+              name="Service Request-Qiwa Report"
               parent="menu_reporting_root"
               action="action_qiwa_report_wizard"
               sequence="6" />

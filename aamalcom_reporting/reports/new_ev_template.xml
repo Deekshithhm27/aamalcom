@@ -8,52 +8,46 @@
 
                     <div style="margin-bottom: 20px; text-align: center;">
                         <p>
-                            <strong>Service Request Name:</strong> <t t-esc="docs[0].get('service_request_type_fixed_label') if docs else data.get('service_request_type_fixed_label') or 'Issuance of New EV'"/> <br/>
-                            <strong>From Date:</strong> <t t-esc="data.get('from_date') and data.get('from_date').strftime('%d-%m-%Y') or ''"/>
-                            <t t-if="data.get('from_date') and data.get('to_date')">
+                            <strong>Service Request Name:</strong> <t t-esc="service_request_type_fixed_label or 'Issuance of New EV'"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="from_date and from_date.strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="from_date and to_date">
                                 <span> - </span>
                             </t>
-                            <strong>To Date:</strong> <t t-esc="data.get('to_date') and data.get('to_date').strftime('%d-%m-%Y') or ''"/>
+                            <strong>To Date:</strong> <t t-esc="to_date and to_date.strftime('%d-%m-%Y') or ''"/>
                         </p>
                     </div>
 
-                    <!-- Conditional rendering for the table or "no data" message -->
                     <t t-if="docs and docs[0]['employees']">
                         <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
-                                    <!-- **** PLACEHOLDER FOR NEW EV REPORT COLUMNS **** -->
                                     <th style="text-align: center; padding: 8px;">Visa No</th>
                                     <th style="text-align: center; padding: 8px;">Iqama No</th>
-                                    <th style="text-align: center; padding: 8px;">Date of Isuuance</th>
+                                    <th style="text-align: center; padding: 8px;">Date of Issuance</th>
                                     <th style="text-align: center; padding: 8px;">Employee Name</th>
-                                    <th style="text-align: center; padding: 8px;">Sponsor Number</th>
+                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th>
                                     <th style="text-align: center; padding: 8px;">Border Number</th>
                                     <th style="text-align: center; padding: 8px;">Passport Number</th>
                                     <th style="text-align: center; padding: 8px;">Nationality</th>
                                     <th style="text-align: center; padding: 8px;">Profession</th>
                                     <th style="text-align: center; padding: 8px;">Religion</th>
                                     <th style="text-align: center; padding: 8px;">Client</th>
-                                    <!-- Add more <th> tags here based on your requirements -->
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="docs[0]['employees']" t-as="emp">
+                                <t t-foreach="docs[0]['employees']" t-as="data_line">
                                     <tr>
-                                        <!-- **** PLACEHOLDER FOR NEW EV REPORT DATA **** -->
-                                        <td style="padding: 8px;"><t t-esc="emp.sequence or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.iqama_no or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.req_completion_date or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.sponsor_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.identification_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.passport_id or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.country_id.name or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.job_title or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.religion or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp.client_parent_id.name or ''"/></td>
-                                        
-                                        <!-- Add more <td> tags here based on your requirements -->
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_visa_no'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_iqama_no'] or data_line['employee_iqama_no'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_sponsor_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_identification_id'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_passport_id'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_country_name'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_job_title'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_religion'] or ''"/></td>
+                                        <td style="padding: 8px;"><t t-esc="data_line['employee_client_name'] or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>

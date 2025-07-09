@@ -12,7 +12,7 @@
                         <field name="service_request"/> </group>
                     </group>
                 <footer>
-                    <button name="print_muqeem_report" string="Print Muqeem Report" type="object" class="btn-primary"/>
+                    <button name="print_muqeem_report" string="Print Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -20,7 +20,7 @@
     </record>
 
     <record id="action_muqeem_report_wizard" model="ir.actions.act_window">
-        <field name="name">Muqeem Reports</field>
+        <field name="name">Service Request- Reports</field>
         <field name="res_model">muqeem.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
