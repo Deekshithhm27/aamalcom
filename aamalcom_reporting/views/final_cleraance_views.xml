@@ -14,7 +14,7 @@
                     </group>
                 </group>
                 <footer>
-                    <button name="print_final_clearance_report" string="Print Final Clearance Report" type="object" class="btn-primary"/>
+                    <button name="print_final_clearance_report" string="Print Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -22,14 +22,14 @@
     </record>
 
     <record id="action_final_clearance_report_wizard" model="ir.actions.act_window">
-        <field name="name">Final Clearance Reports</field>
+        <field name="name">Service Request-Final Clearance Report</field>
         <field name="res_model">final.clearance.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
     <menuitem id="menu_final_clearance_report_wizard"
-              name="Final Clearance Report"
+              name="Service Request-Final Clearance Report"
               parent="menu_reporting_root" 
               action="action_final_clearance_report_wizard"
               sequence="7" /> <!-- Adjust sequence as needed -->

@@ -20,6 +20,7 @@ class FinalClearanceReport(models.AbstractModel):
         from_datetime = datetime.combine(from_date_obj, time.min) if from_date_obj else False
         to_datetime = datetime.combine(to_date_obj, time.max) if to_date_obj else False
 
+        # Get label for display in report header
         final_clearance_type_label = dict(self.env['final.clearance.report.wizard']._fields['final_clearance_type'].selection).get(final_clearance_type_selected, final_clearance_type_selected)
 
         # --- Debugging Prints ---
@@ -31,18 +32,18 @@ class FinalClearanceReport(models.AbstractModel):
         base_return_data = {
             'doc_ids': docids,
             'doc_model': 'final.clearance.report.wizard',
-            'docs': [],
-            'data': data,
+            'docs': [], # Will hold prepared report lines
+            'data': data, # Original data from wizard
             'service_request_type_fixed': service_request_type_fixed,
-            'service_request_type_fixed_label': 'Final Clearance',
+            'service_request_type_fixed_label': 'Final Clearance', # Label for report header
             'final_clearance_type_selected': final_clearance_type_selected,
-            'final_clearance_type_label': final_clearance_type_label,
+            'final_clearance_type_label': final_clearance_type_label, # Label for report header
             'from_date': from_date_obj,
             'to_date': to_date_obj,
         }
 
         service_request_config = self.env['service.request.config'].search([
-            ('service_request', '=', 'final_clearance')
+            ('service_request', '=', 'final_clearance') # Filter service.request.config by the new 'final_clearance' value
         ], limit=1)
 
         if not service_request_config:
@@ -55,22 +56,23 @@ class FinalClearanceReport(models.AbstractModel):
 
         enquiry_domain = [
             ('service_request_config_id', '=', service_request_config.id),
-            ('service_request', '=', 'final_clearance'),
+            ('service_request', '=', 'final_clearance'), # Ensure it's the correct service request type
         ]
 
+        # Add date range filters
         if from_datetime:
-            enquiry_domain.append(('create_date', '>=', from_datetime))
+            enquiry_domain.append(('create_date', '>=', from_datetime)) # Or 'processed_date' if more relevant for clearance
         if to_datetime:
-            enquiry_domain.append(('create_date', '<=', to_datetime))
+            enquiry_domain.append(('create_date', '<=', to_datetime))   # Or 'processed_date' if more relevant for clearance
 
-        # IMPORTANT: Adjust state filter based on your service.enquiry states
-        # The 'state' field values will vary depending on your 'visa_process' module's implementation.
-        # You need to confirm the actual states used for 'final_clearance_local_transfer' and 'final_clearance_final_exit'.
-        # For example, if 'final_exit_issuance' is a state for final exits and 'completed_transfer' for local transfers:
+        # Add state filter (e.g., only 'done' or 'final_exit_issuance' states)
+        # You'll need to confirm the exact internal state value for final clearance records
+        # For 'final_exit_issuance' from service.enquiry states:
         if final_clearance_type_selected == 'final_clearance_final_exit':
-            enquiry_domain.append(('state', '=', 'final_exit_issuance')) # Example state for final exit
+            enquiry_domain.append(('state', '=', 'final_exit_issuance')) # Assuming this state is used for final exit
         elif final_clearance_type_selected == 'final_clearance_local_transfer':
-            enquiry_domain.append(('state', '=', 'done')) # Example state for local transfer completion
+            enquiry_domain.append(('state', '=', 'done')) # Or whatever state indicates completion for local transfer
+        # If you need to include other states, adjust this logic.
 
         print(f"4. Final service.enquiry search domain: {enquiry_domain}")
         relevant_enquiries = service_enquiry_model.sudo().search(enquiry_domain)
@@ -81,6 +83,7 @@ class FinalClearanceReport(models.AbstractModel):
             print("No relevant enquiries found based on the domain. Returning empty report.")
             return base_return_data
 
+        # Prepare data for the template, similar to Muqeem/Qiwa
         report_lines = []
         for enquiry in relevant_enquiries:
             employee = enquiry.employee_id
@@ -89,29 +92,17 @@ class FinalClearanceReport(models.AbstractModel):
                     'emp_record': employee,
                     'enquiry_record': enquiry,
                     'iqama_no': enquiry.iqama_no,
-                    'name': employee.name,
+                    'name': employee.name, # Employee name
                     'sponsor_name': enquiry.sponsor_id.name,
-                    'client_name': employee.client_parent_id.name, # Assuming client is client_parent_id on employee
+                    'client_name': employee.client_parent_id.name,
                     'passport_no': enquiry.passport_no,
                     'border_no': enquiry.identification_id,
-                    'processed_date': enquiry.processed_date,
-                    'final_clearance_type_label': final_clearance_type_label,
-
-                    # --- ADDED FOR MUQEEM-LIKE COLUMNS ---
-                    'gender_label': dict(employee._fields['gender'].selection).get(employee.gender) if employee.gender else '',
-                    'country_name': employee.country_id.name,
-                    'job_title': employee.job_title,
-                    'iqama_issue_date': enquiry.processed_date, # Assuming processed_date is used for this
-                    'iqama_expiry_date': enquiry.processed_date, # Assuming processed_date is used for this, or find correct field
-                    'doj': employee.doj,
-                    'birthday': employee.birthday,
-                    'active_status': employee.active,
-                    'processed_date': enquiry.processed_date,
-                     # Assuming this is the field for last working date
-                    # --- END ADDED ---
+                    'processed_date': enquiry.processed_date, # For 'Date of Request Completion'
+                    'final_clearance_type_label': final_clearance_type_label, # Pass label for each row
+                    # Add any other fields from employee or enquiry needed for the report
                 })
 
-        base_return_data['docs'] = [{'employees': report_lines}]
+        base_return_data['docs'] = [{'employees': report_lines}] # Match existing template structure
 
         print(f"6. Report will attempt to display data for {len(report_lines)} report lines.")
         print(f"--- Debugging Complete ---")

@@ -3,7 +3,7 @@
     <menuitem id="menu_reporting_root"
               name="Reporting"
               parent="visa_process.menu_base_visa_process"
-              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"
+              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"
               sequence="10" />
 
       <record id="action_onboarding_report_wizard" model="ir.actions.act_window">
@@ -20,7 +20,7 @@
               parent="menu_reporting_root"
               action="action_onboarding_report_wizard"
               sequence="1"
-              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"/>
+              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"/>
     
     <record id="action_muqeem_report_wizard" model="ir.actions.act_window">
     <field name="name">Muqeem Reports</field>
@@ -30,11 +30,11 @@
     </record>
 
     <menuitem id="menu_muqeem_report"
-              name="Muqeem Report"
+              name="Service Request-Reports"
               parent="menu_reporting_root"
               action="action_muqeem_report_wizard"
               sequence="2"
-              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"/>
+              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager"/>
               
     <record id="action_transfer_report_wizard" model="ir.actions.act_window">
         <field name="name">Transfer Request Report</field>
@@ -45,9 +45,9 @@
 
     
     <menuitem id="menu_transfer_report_wizard"
-              name="Transfer Request Report"
+              name="Service Request-Transfer Request Report"
               parent="menu_reporting_root"
               action="action_transfer_report_wizard"
               sequence="3"
-              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager" /> 
+              groups="visa_process.group_service_request_administrator,visa_process.group_service_request_employee,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_operations_manager" /> 
 </odoo>
