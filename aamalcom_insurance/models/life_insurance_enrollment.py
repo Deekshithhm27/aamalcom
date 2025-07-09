@@ -38,7 +38,7 @@ class LifeInsuranceEnrollment(models.Model):
     passport_no = fields.Char(string='Passport no',tracking=True)
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True)
 
-    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True)
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True,tracking=True)
 
 
     passport_copy = fields.Binary(string="Passport")
