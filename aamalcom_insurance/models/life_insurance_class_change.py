@@ -36,7 +36,7 @@ class LifeInsuranceClassChange(models.Model):
         ('upgrade', 'Upgrade'),
         ('downgrade', 'Downgrade')
     ], string='Change Type', required=True)
-    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True)
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True,tracking=True)
 
     muqeem_iqama_document = fields.Binary(string="Muqeem/Iqama Document")
     cchi_confirmation_document = fields.Binary(string="CCHI Confirmation Document")

@@ -43,7 +43,7 @@ class MedicalInsuranceEnrollment(models.Model):
     gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Gender",tracking=True)
 
 
-    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True,tracking=True)
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True,tracking=True)
 
     membership_number = fields.Char(string="Membership Number",tracking=True)
 
