@@ -100,13 +100,13 @@
 
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','salary_certificate','bank_letter','vehicle_lease','apartment_lease','employment_contract','cultural_letter','emp_secondment_or_cub_contra_ltr','car_loan','rental_agreement','exception_letter','attestation_waiver_letter','embassy_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
-                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submit_to_pm'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
+                    <!-- <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submit_to_pm'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="action_submit_for_check_final_exit" string="Submit for Review to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','done'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_submit_for_check_final_exit" string="Submit for Review to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','done'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/> -->
 
-                    <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_outside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    <!-- <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_outside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/> -->
 
-                    <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    <!-- <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/> -->
                     
                     <!-- LT Medical Health Insurance Upload end-->
 
@@ -743,7 +743,7 @@
                         </group>
                     </group>
 
-                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm'))]}">
+                    <!-- <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm'))]}">
                         <group>
                             <field name="ere_last_date" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','done'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
@@ -754,7 +754,7 @@
                             <field name="is_outside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
                             <field name="remarks_for_ksa" attrs="{'readonly': [('state', '!=','submit_to_pm')]}"/>
                         </group>
-                    </group>
+                    </group> -->
                     <!-- Final exit issuance stop-->
 
 
@@ -790,9 +790,9 @@
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'qiwa')]}" string="Qiwa Contract">
                                 <group>
-                                    <field name="upload_qiwa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_qiwa_doc_file_name"/>
+                                    <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_qiwa_doc_file_name"/>
                                      <field name="upload_qiwa_doc_file_name"  invisible="1"/>
-                                    <field name="qiwa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
                             <!-- no header for gosi -->
@@ -850,54 +850,54 @@
 
                             <group attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}" string="Employment Contract">
                                 <group>
-                                    <field name="upload_employment_contract_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_employment_contract_doc_file_name"/>
+                                    <field name="upload_employment_contract_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_employment_contract_doc_file_name"/>
                                      <field name="upload_employment_contract_doc_file_name"  invisible="1"/>
-                                    <field name="employment_contract_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="employment_contract_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'cultural_letter')]}" string="Cultural letter/Bonofide letter">
                                 <group>
-                                    <field name="upload_cultural_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_cultural_letter_doc_file_name"/>
+                                    <field name="upload_cultural_letter_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_cultural_letter_doc_file_name"/>
                                      <field name="upload_cultural_letter_doc_file_name"  invisible="1"/>
-                                    <field name="cultural_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="cultural_letter_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group>
-                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                     <field name="fee_receipt_doc" aattrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="fee_receipt_doc_file_name"/>
                                       <field name="fee_receipt_doc_file_name"  invisible="1"/>
-                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                  </group>
                             </group>
 
                             <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee secondment / Subcontract Document">
                                 <group>
-                                    <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"/>
+                                    <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"/>
                                      <field name="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"  invisible="1"/>
-                                    <field name="emp_secondment_ltr_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="emp_secondment_ltr_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group>
-                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="fee_receipt_doc_file_name"/>
                                       <field name="fee_receipt_doc_file_name"  invisible="1"/>
-                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                  </group>
                             </group>
                             <group attrs="{'invisible': [('service_request', '!=', 'car_loan')]}" string="Car Loan">
                                 <group>
-                                    <field name="upload_car_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_car_loan_doc_file_name"/>
+                                    <field name="upload_car_loan_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_car_loan_doc_file_name"/>
                                      <field name="upload_car_loan_doc_file_name"  invisible="1"/>
-                                    <field name="car_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="car_loan_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group>
-                                     <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                                     <field name="fee_receipt_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="fee_receipt_doc_file_name"/>
                                       <field name="fee_receipt_doc_file_name"  invisible="1"/>
-                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                     <field name="fee_receipt_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                  </group>
                             </group>
                             <!--  -->
                              <group attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}" string="Rental Agreement">
                                 <group>
-                                    <field name="upload_rental_agreement_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_rental_agreement_doc_file_name"/>
+                                    <field name="upload_rental_agreement_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_rental_agreement_doc_file_name"/>
                                      <field name="upload_rental_agreement_doc_file_name"  invisible="1"/>
-                                    <field name="rental_agreement_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="rental_agreement_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group>
                                      <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
