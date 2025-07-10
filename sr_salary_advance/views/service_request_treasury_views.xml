@@ -11,6 +11,8 @@
                         <page string="Bank Details">
                             <group>
                                 <field name="employee_bank_account_number"/>
+                                <field name="employee_bank_id"/>
+                                <field name="employee_bic"/>
                        </group>
                    </page>
                </notebook>
