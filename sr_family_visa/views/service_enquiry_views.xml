@@ -10,10 +10,9 @@
                         class="oe_highlight"
                         attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),('service_request','!=','family_visit_visa')]}"
                         groups="visa_process.group_service_request_employee"/>
-                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request','!=','family_visit_visa')]}"
-                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request', '!=', 'family_visit_visa')]}" groups="visa_process.group_service_request_client_spoc"/>
+                
+                
                 <button name="action_process_complete" 
         string="Process Complete" 
         type="object" 
@@ -170,13 +169,13 @@
                 <group string="Payment Confirmation Documents"
                        attrs="{'invisible': ['|','|',('state', 'in', ( 'draft','submitted')),('aamalcom_pay','=',True),('service_request','!=','family_visit_visa')]}">
                     <group>
-                        <field name="upload_client_payment_doc" 
+                        <field name="upload_payment_doc" 
                                attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
                                force_save="1" filename="upload_payment_doc_file_name"/>
                         <field name="upload_payment_doc_file_name" invisible="1"/>
                         <field name="is_client_spoc" invisible="1"/>
-                        <field name="upload_client_payment_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
+                        <field name="payment_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
                                force_save="1"/>
                     </group>
                 </group>

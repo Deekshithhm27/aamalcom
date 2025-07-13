@@ -24,6 +24,32 @@ class ServiceEnquiry(models.Model):
     clinic_name = fields.Char(string="Clinic Name")
     total_price = fields.Monetary(string="Price")
 
+    @api.model
+    def create(self, vals):
+        """Handles file naming conventions while creating a record."""
+        employee_id = vals.get('employee_id')
+        iqama_no = vals.get('iqama_no', 'UnknownIqama')
+        service_request_config_id = vals.get('service_request_config_id')
+        employee_name = self.env['hr.employee'].browse(employee_id).name if employee_id else 'UnknownEmployee'
+        service_request_name = self.env['service.request.config'].browse(service_request_config_id).name if service_request_config_id else 'UnknownServiceRequest'
+        if 'upload_stamped_visa_doc' in vals:
+            vals['upload_stamped_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_StampedVisaDoc.pdf"
+        if 'upload_medical_test_doc' in vals:
+            vals['upload_medical_test_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MedicalTestDoc.pdf"
+        return super(ServiceEnquiry, self).create(vals)
+
+    def write(self, vals):
+        """Ensures correct file naming conventions when updating records."""
+        for record in self:
+            employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'
+            iqama_no = record.iqama_no or 'UnknownIqama'
+            service_request_name = record.service_request_config_id.name if record.service_request_config_id else 'UnknownServiceRequest'
+            if 'upload_stamped_visa_doc' in vals:
+                vals['upload_stamped_visa_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_StampedVisaDoc.pdf"
+            if 'upload_medical_test_doc' in vals:
+                vals['upload_medical_test_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_MedicalTestDoc.pdf"
+        return super(ServiceEnquiry, self).write(vals)  
+
     def action_submit(self):
         """Validation checks before submitting the service request."""
         super(ServiceEnquiry, self).action_submit()

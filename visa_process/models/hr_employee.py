@@ -45,6 +45,7 @@ class HrEmployee(models.Model):
     qiwa_contract_doc = fields.Binary(string="Qiwa Contract")
     qiwa_contract_doc_name = fields.Char(string="Qiwa Contract File Name")
     qiwa_contract_sr_no = fields.Char(string="Qiwa Contract Reference ID", readonly=True)
+    qiwa_contract_ref_no = fields.Char(string="Ref NO.*")
     
     work_address = fields.Char(string="Work Address")
     personal_address = fields.Char(string="Persoanl Address")

@@ -279,10 +279,7 @@ class ServiceEnquiry(models.Model):
     upload_bank_limit_upgrading_letter_doc = fields.Binary(string="Bank Limit upgrading Letter")
     upload_bank_limit_upgrading_letter_doc_file_name = fields.Char(string="Bank Limit upgrading Letter")
     bank_limit_upgrading_letter_doc_ref = fields.Char(string="Ref No.*")
-    upload_client_payment_doc = fields.Binary(string="Payment Confirmation Document")
-    upload_client_payment_doc_doc_file_name = fields.Char(string="Payment Confirmation Document")
-    upload_client_payment_doc_ref = fields.Char(string="Ref No.*")
-
+   
     
     reason_for_loss_of_iqama = fields.Text(string="Reason for loss of Iqama")
     letter_from_police_station = fields.Binary(string="Letter from the police station of the lost iqama")
@@ -720,8 +717,6 @@ class ServiceEnquiry(models.Model):
             vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
         if 'upload_sponsorship_doc' in vals:
             vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
-        if 'upload_client_payment_doc' in vals:
-            vals['upload_client_payment_doc_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDoc.pdf"
         return super(ServiceEnquiry, self).create(vals)
 
     def write(self, vals):
@@ -803,8 +798,7 @@ class ServiceEnquiry(models.Model):
                 vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
             if 'upload_sponsorship_doc' in vals:
                 vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
-            if 'upload_client_payment_doc' in vals:
-                vals['upload_client_payment_doc_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_PaymentConfirmationDoc.pdf"
+            
         return super(ServiceEnquiry, self).write(vals)
 
     @api.depends('state', 'service_request_config_id')
