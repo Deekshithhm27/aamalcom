@@ -69,7 +69,7 @@ class NewEvReport(models.AbstractModel):
                     'employee_religion': employee.religion,
                     'employee_sponsor_name': employee.sponsor_id.name if employee.sponsor_id else '',
                     'employee_client_name': employee.client_parent_id.name if employee.client_parent_id else '',
-
+                    'enquiry_name':enquiry.name,
                     'enquiry_visa_no': enquiry.emp_visa_id,
                     'enquiry_iqama_no': enquiry.iqama_no,
                     'enquiry_processed_date': enquiry.processed_date,
