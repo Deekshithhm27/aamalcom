@@ -19,30 +19,30 @@
                     </div>
 
                     <t t-if="docs and docs[0] and docs[0]['employees']">
-                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; border: 2px solid black;">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
-                                    <th style="text-align: center; padding: 8px;">Iqama Number</th>
-                                    <th style="text-align: center; padding: 8px;">Name</th>
-                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th>
-                                    <th style="text-align: center; padding: 8px;">Client</th>
-                                    <th style="text-align: center; padding: 8px;">Passport No</th>
-                                    <th style="text-align: center; padding: 8px;">Border No</th>
-                                    <th style="text-align: center; padding: 8px;">Final Clearance Type</th>
-                                    <th style="text-align: center; padding: 8px;">Date of Request Completion</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Client</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Passport No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Border No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Final Clearance Type</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Request Completion</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="docs[0]['employees']" t-as="emp_data">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['name'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['sponsor_name'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['client_name'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['passport_no'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['border_no'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['final_clearance_type_label'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['processed_date'] and emp_data['processed_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['name'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['sponsor_name'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['client_name'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['passport_no'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['border_no'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['final_clearance_type_label'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['processed_date'] and emp_data['processed_date'].strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>
