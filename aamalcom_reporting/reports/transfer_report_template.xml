@@ -19,30 +19,32 @@
                     </div>
 
                     <t t-if="docs and docs[0] and docs[0].get('report_lines')">
-                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; border: 2px solid black;">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
-                                    <th style="text-align: center; padding: 8px;">Iqama Number</th>
-                                    <th style="text-align: center; padding: 8px;">Name</th>
-                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th>
-                                    <th style="text-align: center; padding: 8px;">Client</th>
-                                    <th style="text-align: center; padding: 8px;">Passport No</th>
-                                    <th style="text-align: center; padding: 8px;">Border No</th>
-                                    <th style="text-align: center; padding: 8px;">Transfer Type</th>
-                                    <th style="text-align: center; padding: 8px;">Date of Initiation</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Client</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Passport No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Border No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Joining</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Transfer Type</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Initiation</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="docs[0]['report_lines']" t-as="data_line">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_iqama_no']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_name']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_sponsor_name']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_client_name']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_passport_id']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['employee_identification_id']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_transfer_type_label']"/></td>
-                                        <td style="padding: 8px;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_iqama_no']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_sponsor_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_client_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_passport_id']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_identification_id']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_doj']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_transfer_type_label']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>
