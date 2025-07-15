@@ -25,6 +25,7 @@
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Visa No</th>
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama No</th>
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Issuance</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Arrival Date</th>
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Employee Name</th>
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
                                     <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Border Number</th>
@@ -42,6 +43,7 @@
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_visa_no'] or ''"/></td>
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_iqama_no'] or data_line['employee_iqama_no'] or ''"/></td>
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_arrival_date'] and data_line['employee_arrival_date'].strftime('%d-%m-%Y') or ''"/></td>
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_name'] or ''"/></td>
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_sponsor_name'] or ''"/></td>
                                         <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_identification_id'] or ''"/></td>
