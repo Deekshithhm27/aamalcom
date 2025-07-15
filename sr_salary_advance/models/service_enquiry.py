@@ -15,8 +15,7 @@ class ServiceEnquiry(models.Model):
             'res.currency',
             string='Currency',
             default=lambda self: self.env.company.currency_id,
-            
-        )
+            )
         
     salary_advance_amount = fields.Monetary("Salary Advance Amount",
     currency_field='currency_id') 
@@ -37,7 +36,8 @@ class ServiceEnquiry(models.Model):
     tracking=True,
     copy=False
     )
- 
+
+   
     @api.model
     def update_pricing(self):  
         super(ServiceEnquiry, self).update_pricing()  
@@ -90,6 +90,9 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Select at least one Invoiced Reference Number")
                 if not record.invoiced and not record.to_be_invoiced:
                     raise ValidationError("Either 'Invoiced' or 'To be Invoiced' must be checked.")
+                record.dynamic_action_status = f"PM needs to submit for approval"
+                record.action_user_id = record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
     def action_salary_advance_submit_for_approval(self):
         for record in self:

@@ -57,9 +57,10 @@
 
                     <xpath expr="//widget[@name='web_ribbon']" position="attributes">
                     <attribute name="attrs">
-                    {'invisible': ['|', ('service_request', '=', 'salary_advance'), '|',('state','in',('submitted','approved')), '|',('assign_govt_emp_one','=',False), ('assigned_govt_emp_one','=',True)]}
+                    {'invisible': ['|', ('service_request', '=', 'salary_advance'), '|',('state','in',('submitted','approved','done')), '|',('assign_govt_emp_one','=',False), ('assigned_govt_emp_one','=',True)]}
                     </attribute>
                 </xpath> 
+
             </field>
         </record>
     </data>
