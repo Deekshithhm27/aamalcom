@@ -25,7 +25,7 @@ class InheritedServiceRequestTreasury(models.Model):
 
     iban = fields.Char(
     string="IBAN",
-    related='employee_id.bank_id.bic',
+    related='employee_bank_id.bic',
     readonly=True,
     store=True
     )
