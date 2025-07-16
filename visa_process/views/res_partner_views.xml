@@ -66,6 +66,10 @@
           </p>
         </field>
     </record>
+
+    <record id="contacts.action_contacts" model="ir.actions.act_window">
+        <field name="domain">[('custom_employee_type', '=', False)]</field>
+    </record>
     <record id="action_self_contact" model="ir.actions.act_window">
         <field name="name">My Details</field>
         <field name="type">ir.actions.act_window</field>

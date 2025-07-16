@@ -80,6 +80,8 @@ class HrEmployee(models.Model):
 
     member_no = fields.Char(string="Insurance Member Number")
 
+    bank_ids = fields.One2many('res.partner.bank','employee_id',string="Banks")
+
 
     @api.model
     def update_iqama_number(self):
