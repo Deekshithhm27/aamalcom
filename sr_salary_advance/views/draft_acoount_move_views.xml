@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_draft_account_move_form_inherit_nature_advance" model="ir.ui.view">
+        <field name="name">draft.account.move.form.nature.advance</field>
+        <field name="model">draft.account.move</field>
+        <field name="inherit_id" ref="aamalcom_accounting.draft_account_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='service_enquiry_id']" position="after">
+
+                <!-- Add this hidden field to support attrs -->
+                <field name="service_request_type" invisible="1"/>
+
+                <!-- This will only be visible when service_request is 'salary_advance' -->
+
+                <field name="nature_of_advance"
+                       attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
+                       readonly="1"/>
+                <field name="employee_bank_account_number"
+                       attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
+                       readonly="1"/>
+                <field name="employee_bank_id"
+                       attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
+                       readonly="1"/>
+                <field name="iban"
+                       attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
+                       readonly="1"/>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

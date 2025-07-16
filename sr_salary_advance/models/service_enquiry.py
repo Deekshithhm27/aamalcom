@@ -124,10 +124,23 @@ class ServiceEnquiry(models.Model):
                 record.write({'processed_date': fields.Datetime.now()})
                 record.dynamic_action_status = f"Refused by {current_employee.name if current_employee else 'GM'}"
 
+    def action_finance_approved(self):
+        res = super().action_finance_approved()
+        for record in self:
+            if record.service_request == 'salary_advance':
+                treasury = self.env['service.request.treasury'].sudo().search([
+                    ('service_request_id', '=', record.id)
+                ], limit=1)
+                if treasury:
+                    treasury.write({
+                        'nature_of_advance': record.nature_of_advance
+                    })
+        return res
+    
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
         for record in self:
-            if record.to_be_invoiced:
+            if record.service_request == 'salary_advance' and record.to_be_invoiced:
                 invoice_line_ids = []
                 for line in record.service_enquiry_pricing_ids:
                     invoice_line_ids.append((0, 0, {
@@ -138,16 +151,21 @@ class ServiceEnquiry(models.Model):
                         'service_enquiry_id': record.id
                     }))
 
-                account_move = self.env['draft.account.move'].create({
+                move_vals = {
                     'client_id': record.client_id.id,
                     'client_parent_id': record.client_id.parent_id.id,
                     'service_enquiry_id': record.id,
                     'employee_id': record.employee_id.id,
                     'move_type': 'service_ticket',
                     'invoice_line_ids': invoice_line_ids,
-                })
-                
+                }
+
+                if record.nature_of_advance:
+                    move_vals['nature_of_advance'] = record.nature_of_advance
+
+                self.env['draft.account.move'].create(move_vals)
         return result
+
 
 class ServiceEnquiryPricingLine(models.Model):
     _inherit = 'service.enquiry.pricing.line'
