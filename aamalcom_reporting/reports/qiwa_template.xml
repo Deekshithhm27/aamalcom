@@ -17,28 +17,28 @@
                     </div>
 
                     <t t-if="docs and docs[0]['employees']">
-                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; border: 2px solid black;">
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
-                                    <th style="text-align: center; padding: 8px;">Iqama Number</th>
-                                    <th style="text-align: center; padding: 8px;">Name</th>
-                                    <th style="text-align: center; padding: 8px;">Passport Number</th>
-                                    <th style="text-align: center; padding: 8px;">Sponsor Name</th>
-                                    <th style="text-align: center; padding: 8px;">Qiwa Initiated(YES/NO)</th>
-                                    <th style="text-align: center; padding: 8px;">Qiwa Contract Number</th>
-                                    <th style="text-align: center; padding: 8px;">Date of Initiation</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Passport Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Qiwa Initiated(YES/NO)</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Qiwa Contract Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Initiation</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="docs[0]['employees']" t-as="emp_data">
                                     <tr>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['name'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['passport_no'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['sponsor_name'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['qiwa_initiated'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['qiwa_contract_number'] or ''"/></td>
-                                        <td style="padding: 8px;"><t t-esc="emp_data['date_of_initiation'] and emp_data['date_of_initiation'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_no'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['name'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['passport_no'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['sponsor_name'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['qiwa_initiated'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['qiwa_contract_number'] or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['date_of_initiation'] and emp_data['date_of_initiation'].strftime('%d-%m-%Y') or ''"/></td>
                                     </tr>
                                 </t>
                             </tbody>

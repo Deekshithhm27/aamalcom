@@ -12,7 +12,7 @@ class ServiceEnquiry(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee')
 
     service_request = fields.Selection(
-        selection_add=[('salary_increase_process', 'Salary Increase Update (Qiwa/Muqeem)')],
+        selection_add=[('salary_increase_process', 'Salary Increase Update (Qiwa/GOSI)')],
         string="Service Requests",
         store=True,
         copy=False,

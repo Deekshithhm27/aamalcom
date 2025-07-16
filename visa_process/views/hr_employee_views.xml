@@ -121,6 +121,7 @@
                         <field name="iqama"/>
                         <field name="iqama_no"/>
                         <field name="doj"/>
+                        <field name="arrival_date"/>
                         <field name="employment_duration"/>
                         <field name="probation_term"/>
                     </group>

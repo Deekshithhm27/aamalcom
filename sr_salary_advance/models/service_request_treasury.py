@@ -7,48 +7,29 @@ class InheritedServiceRequestTreasury(models.Model):
         store=True,
         readonly=True,
     )
-
+    nature_of_advance = fields.Text("Nature of Advance")
     employee_bank_account_number = fields.Char(
-        string="Employee Bank Account",
-        related='employee_id.bank_account_id.acc_number', # This is the key part!
-        readonly=True, # It's a related field, so it should be readonly
-        store=False,  # Set to True if you want to store it in the DB (less common for related fields)
+        string="Employee Bank Account ID",
+        related='employee_id.bank_account_id.acc_number', 
+        readonly=True, 
+        store=False, 
         help="Bank Account Number of the Employee associated with this service request."
     )
     employee_bank_id = fields.Many2one(
             'res.bank',
             string="Employee Bank",
-            compute="_compute_employee_bank_details",
+            related='employee_id.bank_account_id.bank_id',
             store=False,
             readonly=True
-        )
-    employee_bic = fields.Char(
-        string="Employee IBAN",
-        compute="_compute_employee_bank_details",
-        store=False,
-        readonly=True
     )
 
-    @api.depends('employee_id')
-    def _compute_employee_bank_details(self):
-        for record in self:
-            # Removed: record.employee_bank_id = False
-            # Removed: record.employee_bic = False
-            
-            if record.employee_id:
-                visa_record = self.env['employment.visa'].search([
-                    ('employee_id', '=', record.employee_id.id)
-                ], limit=1)
-                
-                if visa_record:
-                    record.employee_bank_id = visa_record.bank_id.id
-                    record.employee_bic = visa_record.bic
-                else: # Add this else block to clear fields if no visa_record is found
-                    record.employee_bank_id = False
-                    record.employee_bic = False
-            else: # Add this else block to clear fields if employee_id is not set
-                record.employee_bank_id = False
-                record.employee_bic = False
+    iban = fields.Char(
+    string="IBAN",
+    related='employee_bank_id.bic',
+    readonly=True,
+    store=True
+    )
+
 
     def action_upload_confirmation(self):
         # Call the super method to keep the existing functionality

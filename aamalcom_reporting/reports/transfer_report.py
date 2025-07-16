@@ -65,6 +65,7 @@ class TransferReport(models.AbstractModel):
                     'employee_record': employee, # Keep employee record reference if needed
                     'employee_iqama_no': employee.iqama_no or '',
                     'employee_name': employee.name or '',
+                    'employee_doj':employee.doj or '',
                     'employee_sponsor_name': employee.sponsor_id.name if employee.sponsor_id else '',
                     'employee_client_name': employee.client_parent_id.name if employee.client_parent_id else '', # Assuming client_parent_id for client
                     'employee_passport_id': employee.passport_id or '',

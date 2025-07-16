@@ -29,6 +29,7 @@ class HrEmployee(models.Model):
     
     contact_no = fields.Char(string="Contact # in the country")
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    arrival_date = fields.Date(string='Arrival Date')
 
     current_contact = fields.Char(string="Current Contact # (if Outside the country)")
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")

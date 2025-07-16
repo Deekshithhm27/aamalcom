@@ -852,57 +852,32 @@ class ServiceEnquiry(models.Model):
 
     def open_assign_employee_wizard(self):
         # this method opens a wizard and passes department based on the hierarchy set in service request
-
         for line in self:
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
                 for srt in treasury_id:
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
-
             # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
             if line.service_request == 'new_ev':
-                # if line.state == 'submitted':
-                #     level = 'level1'
-                if line.self_pay == True:
-                    if line.state == 'payment_done':
+                if line.state == 'payment_done':
+                    if not line.assigned_govt_emp_one:
                         level = 'level1'
-                    if line.state == 'payment_done' and line.assign_govt_emp_two == False:
-                        level = 'level1'
-                    if line.state == 'payment_done' and line.assign_govt_emp_two != False:
+                    elif not line.assigned_govt_emp_two:
                         level = 'level2'
-                elif line.state == 'approved' and line.assign_govt_emp_two == False:
+                if line.state == 'approved' and line.assign_govt_emp_two == False:
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
-            # elif line.service_request == 'hr_card':
-            #     # if line.state == 'submitted':
-            #     #     level = 'level1'
-            #     if line.self_pay == True:
-            #         if line.state == 'payment_done':
-            #             level = 'level1'
-            #         if line.state == 'payment_done' and line.assign_govt_emp_two == False:
-            #             level = 'level1'
-            #         if line.state == 'payment_done' and line.assign_govt_emp_two != False:
-            #             level = 'level2'
-            #     else:
-            #         if line.state == 'submitted':
-            #             level = 'level1'
-            #         if line.state == 'approved' and line.assign_govt_emp_two == False:
-            #             level = 'level1'
-            #         if line.state == 'approved' and line.assign_govt_emp_two != False:
-            #             level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
-
             else:
                 if line.state == 'submitted':
                     level = 'level1'
                 else:
                     level = 'level2'
-
             req_lines = line.service_request_config_id.service_department_lines
             # Sort lines by sequence
             sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
