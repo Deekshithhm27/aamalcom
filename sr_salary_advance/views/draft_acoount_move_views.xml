@@ -21,9 +21,9 @@
                 <field name="employee_bank_id"
                        attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
                        readonly="1"/>
-                <field name="iban"
+                <!-- <field name="iban"
                        attrs="{'invisible': [('service_request_type', '!=', 'salary_advance')]}"
-                       readonly="1"/>
+                       readonly="1"/> -->
 
             </xpath>
         </field>
