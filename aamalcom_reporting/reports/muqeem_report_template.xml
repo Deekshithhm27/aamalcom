@@ -57,6 +57,9 @@
                                         <t t-if="service_request_selected == 'hr_card'">
                                             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_issue_date'] and emp_data['iqama_issue_date'].strftime('%d-%m-%Y') or ''"/></td>
                                         </t>
+                                        <t t-if="service_request_selected == 'iqama_renewal'">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_expiry_date'] and emp_data['iqama_expiry_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        </t>
 
                                         <t t-if="service_request_selected != 'muqeem_dropout'">
                                             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_expiry_date'] and emp_data['iqama_expiry_date'].strftime('%d-%m-%Y') or ''"/></td>

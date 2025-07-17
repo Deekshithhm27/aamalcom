@@ -13,6 +13,7 @@
     'depends': ['hr','visa_process'],
     'data': [
         'security/ir.model.access.csv',
+        'data/muqeem_email_template.xml',
         'views/reporting_menu.xml',
         'views/onboarding_report_wizard.xml',
         'reports/onboarding_report_template.xml',

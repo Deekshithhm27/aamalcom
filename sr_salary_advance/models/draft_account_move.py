@@ -18,26 +18,26 @@ class DraftAccountMove(models.Model):
 
     employee_bank_account_number = fields.Char(
         string="Employee Bank Account ID",
-        related='employee_id.bank_account_id.acc_number',
-        readonly=True,
-        store=False,
-        help="Bank Account Number of the Employee associated with this service request."
+        compute='_compute_employee_bank_details',
+        store=False
     )
 
     employee_bank_id = fields.Many2one(
         'res.bank',
         string="Employee Bank",
-        related='employee_id.bank_account_id.bank_id',
-        store=False,
-        readonly=True
+        compute='_compute_employee_bank_details',
+        store=False
     )
 
-    iban = fields.Char(
-    string="IBAN",
-    related='employee_bank_id.bic',
-    readonly=True,
-    store=True
-    )
+    
+
+    @api.depends('employee_id')
+    def _compute_employee_bank_details(self):
+        for rec in self:
+            bank_account = rec.employee_id.bank_ids[:1]  # take first bank account
+            rec.employee_bank_account_number = bank_account.acc_number if bank_account else False
+            rec.employee_bank_id = bank_account.bank_id if bank_account else False
+
 
     @api.depends('service_enquiry_id.nature_of_advance', 'service_request_type')
     def _compute_nature_of_advance(self):
