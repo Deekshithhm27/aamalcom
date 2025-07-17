@@ -5,6 +5,9 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='member_no']" position="after">
+                <field name="insurance_class"/>
+            </xpath>
             <xpath expr="//page[@name='hr_settings']" position="after">
                 <page name="dependents" string="Dependents Details">
                     <div class="row">

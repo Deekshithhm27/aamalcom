@@ -36,11 +36,17 @@ class LifeInsuranceClassChange(models.Model):
         ('upgrade', 'Upgrade'),
         ('downgrade', 'Downgrade')
     ], string='Change Type', required=True)
+    existing_insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Existing Insurance Class",related="employee_id.insurance_class",store=True)
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",required=True,tracking=True)
 
     muqeem_iqama_document = fields.Binary(string="Muqeem/Iqama Document")
     cchi_confirmation_document = fields.Binary(string="CCHI Confirmation Document")
     is_insurance_user = fields.Boolean(string="Is Insurance User", compute='_compute_is_insurance_user')
+
+    @api.onchange('employee_id')
+    def update_insurance_class(self):
+        for line in self:
+            line.existing_insurance_class = line.employee_id.insurance_class
 
 
     @api.model
@@ -73,5 +79,7 @@ class LifeInsuranceClassChange(models.Model):
 
     def action_done(self):
         for line in self:
+            if line.employee_id:
+                line.employee_id.insurance_class = line.insurance_class
             line.state = 'done'
 

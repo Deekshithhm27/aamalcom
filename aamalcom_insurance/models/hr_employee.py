@@ -6,6 +6,8 @@ class InsuranceReimbursement(models.Model):
 
     dependent_ids = fields.One2many('employee.dependents','employee_id',string="Dependents")
 
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_silver+','SILVER+'),('class_silver','SILVER'),('class_a+','A+'),('class_a','A'),('class_b+','B+'),('class_b','B'),('class_c','C'),('class_e','E')],string="Insurance Class",tracking=True)
+
 
 class EmployeeDependents(models.Model):
     _name = "employee.dependents"
