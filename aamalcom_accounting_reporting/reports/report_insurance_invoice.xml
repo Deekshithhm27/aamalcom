@@ -150,7 +150,7 @@
                 </div>
 
                 <!-- SIGNATURES -->
-                <div style="margin-top:30px;">
+                <div style="margin-top:30px;display:none;">
                     <table style="width:100%; font-size:10px;">
                         <tr>
                             <td style="width:25%;">PREPARED BY<br/>Mohammed Rasheed Jamal<br/>Business Support Specialist</td>
