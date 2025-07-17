@@ -198,6 +198,7 @@ class MedicalInsuranceEnrollment(models.Model):
             if line.employee_id:
                 if line.enrollment_type == 'employee':
                     line.employee_id.member_no = line.membership_number
+                    line.employee_id.insurance_class = line.insurance_class
                 if line.enrollment_type == 'dependents':
                     dependent_name = line.dependent_name.strip() if line.dependent_name else ''
                     if not dependent_name:
