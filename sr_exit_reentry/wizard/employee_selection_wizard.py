@@ -24,10 +24,10 @@ class EmployeeSelectionWizard(models.TransientModel):
                             active_enquiry.dynamic_action_status = (
                                 f"Review and request payment confirmation pending by employee from {department_names} department."
                             )
-                            active_enquiry.first_govt_employee_id = record.employee_id.id
+                            active_enquiry.first_govt_employee_id = self.employee_id.id
                             active_enquiry.assigned_govt_emp_one = True
                         else:
-                            active_enquiry.first_govt_employee_id = record.employee_id.id
+                            active_enquiry.first_govt_employee_id = self.employee_id.id
                             active_enquiry.assigned_govt_emp_one = True
                        
         return result
