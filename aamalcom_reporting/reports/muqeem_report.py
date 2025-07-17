@@ -14,8 +14,19 @@ class MuqeemReport(models.AbstractModel):
         service_request_selected = data.get('service_request')
 
         # Convert date strings to datetime objects for accurate filtering
-        from_date_obj = fields.Date.from_string(from_date_str) if isinstance(from_date_str, str) else from_date_str
-        to_date_obj = fields.Date.from_string(to_date_str) if isinstance(to_date_str, str) else to_date_obj
+        # Initialize to None or a default before conditional assignment
+        from_date_obj = None
+        to_date_obj = None
+
+        if isinstance(from_date_str, str):
+            from_date_obj = fields.Date.from_string(from_date_str)
+        else:
+            from_date_obj = from_date_str # It's already a date object
+
+        if isinstance(to_date_str, str):
+            to_date_obj = fields.Date.from_string(to_date_str)
+        else:
+            to_date_obj = to_date_str # It's already a date object
 
         from_datetime = datetime.combine(from_date_obj, time.min) if from_date_obj else False
         to_datetime = datetime.combine(to_date_obj, time.max) if to_date_obj else False
@@ -37,7 +48,7 @@ class MuqeemReport(models.AbstractModel):
             'service_request_selected': service_request_selected,
             'service_request_label': service_request_label,
             'from_date': from_date_obj, # Pass original date objects for display in the report template
-            'to_date': to_date_obj,     # Pass original date objects for display in the report template
+            'to_date': to_date_obj,      # Pass original date objects for display in the report template
         }
 
         # Search for the service.request.config record based on the selected service_request
@@ -62,7 +73,7 @@ class MuqeemReport(models.AbstractModel):
         if from_datetime:
             enquiry_domain.append(('create_date', '>=', from_datetime)) # Use create_date or processed_date
         if to_datetime:
-            enquiry_domain.append(('create_date', '<=', to_datetime))   # Use create_date or processed_date
+            enquiry_domain.append(('create_date', '<=', to_datetime))    # Use create_date or processed_date
 
         # Add a state filter if you want to limit to 'completed' or 'done' enquiries
         # enquiry_domain.append(('state', '=', 'done'))
@@ -86,16 +97,16 @@ class MuqeemReport(models.AbstractModel):
             employee = enquiry.employee_id
             if employee: # Ensure employee exists
                 report_data_list.append({
-                    'emp_record': employee,             # The hr.employee record (for standard fields)
-                    'enquiry_record': enquiry,          # The service.enquiry record (for fields like processed_date)
-                    'iqama_no': enquiry.iqama_no,       # Direct from enquiry or employee (consistent access)
-                    'passport_id': enquiry.passport_no, # Use passport_no from enquiry if available/accurate
+                    'emp_record': employee,               # The hr.employee record (for standard fields)
+                    'enquiry_record': enquiry,            # The service.enquiry record (for fields like processed_date)
+                    'iqama_no': enquiry.iqama_no,         # Direct from enquiry or employee (consistent access)
+                    'passport_id': enquiry.passport_no,   # Use passport_no from enquiry if available/accurate
                     'sponsor_name': enquiry.sponsor_id.name, # From enquiry or employee
                     'req_completion_date': enquiry.processed_date,
                     'iqama_issue_date':enquiry.iqama_issue_date,
                     'iqama_expiry_date':enquiry.iqama_expiry_date,
-                    'doj': employee.doj,                # From employee
-                    'birthday': employee.birthday,      # From employee
+                    'doj': employee.doj,                  # From employee
+                    'birthday': employee.birthday,        # From employee
                     'client_parent_id_name': employee.client_parent_id.name, # From employee
                     'active_status': employee.active, # From employee
                     'gender_label': dict(employee._fields['gender'].selection).get(employee.gender) if employee.gender else '',

@@ -9,10 +9,17 @@
                     <group>
                         <field name="from_date"/>
                         <field name="to_date"/>
-                        <field name="service_request"/> </group>
+                        <field name="service_request"/>
+                        <field name="share_report" widget="toggle"/>
+                        <field name="internal_employee_ids" widget="many2many_tags"
+                            attrs="{'invisible': [('share_report', '=', False)], 'required': [('share_report', '=', True)]}"/>
                     </group>
+                </group>
                 <footer>
-                    <button name="print_muqeem_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button name="print_muqeem_report" string="Print Report" type="object" class="btn-primary"
+                        attrs="{'invisible': [('share_report', '=', True)]}"/>
+                    <button name="print_muqeem_report" string="Print and Share Report" type="object" class="btn-primary"
+                        attrs="{'invisible': [('share_report', '=', False)]}"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
