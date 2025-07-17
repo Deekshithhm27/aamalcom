@@ -38,18 +38,18 @@
                        attrs="{'invisible': ['|',('service_request', '!=', 'visitor_report'),('first_govt_employee_id','=',False)]}">
                     <group>
                         <field name="fee_receipt_doc" string="Fee Receipt Document"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
                                filename="fee_receipt_doc_file_name"/>
                         <field name="fee_receipt_doc_file_name" invisible="1"/>
                         <field name="fee_receipt_doc_ref"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                         <field name="muqeem_points" 
                                        attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />       
                     </group>
                     <group>
-                        <field name="upload_visitor_report_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_visitor_report_doc_file_name"/>
+                        <field name="upload_visitor_report_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_visitor_report_doc_file_name"/>
                                     <field name="upload_visitor_report_doc_file_name" invisible="1"/>
-                                    <field name="visitor_report_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="visitor_report_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                         
                     </group>
                 </group>

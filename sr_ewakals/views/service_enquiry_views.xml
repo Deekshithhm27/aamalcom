@@ -54,7 +54,7 @@
                         <group >
                             <field name="ewakala_doc_uploaded" readonly="1" invisible="1"/>
                             <field name="block_visa_doc" attrs="{'readonly': [('state', '!=','draft')]}" filename="block_visa_doc_file_name"/>
-                            <field name="visa_gender"/>
+                            <field name="visa_gender" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="visa_country_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="visa_stamping_city_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="profession" attrs="{'readonly': [('state', '!=','draft')]}"/>
@@ -74,24 +74,24 @@
                 <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                 <group  attrs="{'invisible': ['|',('service_request', '!=', 'e_wakala'),('first_govt_employee_id','=',False)]}">
                         <group string="Enjaz Documents">
-                            <field name="enjaz_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="enjaz_doc_file_name"/>
+                            <field name="enjaz_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="enjaz_doc_file_name"/>
                             <field name="enjaz_doc_file_name" invisible="1"/>
-                            <field name="enjaz_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                            <field name="enjaz_payment_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="enjaz_payment_doc_file_name"/>
+                            <field name="enjaz_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
+                            <field name="enjaz_payment_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="enjaz_payment_doc_file_name"/>
                             <field name="enjaz_payment_doc_file_name" invisible="1"/>
-                            <field name="enjaz_payment_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                            <field name="enjaz_payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                     </group>
                 </xpath>
                 <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                         <group  attrs="{'invisible': ['|',('service_request', '!=', 'e_wakala'),('first_govt_employee_id','=',False)]}">
                         <group string="E-Wakala Documents">
-                            <field name="upload_ewakala_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="ewakala_doc_file_name"/>
+                            <field name="upload_ewakala_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="ewakala_doc_file_name"/>
                             <field name="ewakala_doc_file_name"  invisible="1"/>
-                            <field name="ewakala_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                            <field name="ewakala_payment_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="ewakala_payment_doc_file_name"/>
+                            <field name="ewakala_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
+                            <field name="ewakala_payment_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="ewakala_payment_doc_file_name"/>
                             <field name="ewakala_payment_doc_file_name"  invisible="1"/>
-                            <field name="ewakala_payment_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                            <field name="ewakala_payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                     </group>
                 </xpath>
@@ -107,12 +107,13 @@
                 <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                         <group  attrs="{'invisible': ['|',('service_request', '!=', 'cancelled_e_wakala'),('first_govt_employee_id','=',False)]}">
                         <group>
-                            <field name="cancelled_ewakala_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="cancelled_ewakala_doc_file_name"/>
+                            <field name="cancelled_ewakala_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="cancelled_ewakala_doc_file_name"/>
                             <field name="cancelled_ewakala_doc_file_name"  invisible="1"/>
                             <field name="cancelled_ewakala_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                            <field name="cancelled_coc_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="cancelled_coc_doc_file_name"/>
+
+                            <field name="cancelled_coc_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}" filename="cancelled_coc_doc_file_name"/>
                             <field name="cancelled_coc_doc_file_name"  invisible="1"/>
-                            <field name="cancelled_coc_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                            <field name="cancelled_coc_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                     </group>
                 </xpath>

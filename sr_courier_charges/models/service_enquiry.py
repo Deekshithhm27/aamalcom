@@ -57,6 +57,10 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'courier_charges':
                 if not line.upload_courier_doc:
                     raise ValidationError(_("Please upload the Courier document."))
+                if not line.aamalcom_pay and not line.self_pay:
+                    raise ValidationError('Please select who needs to pay fees.')
+                if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                    raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
         return True
         
 

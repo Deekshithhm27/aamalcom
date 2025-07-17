@@ -42,9 +42,9 @@
                         </group>
                          <!-- Location Headline Section -->
                         <group string="Details Required">
-                            <field name="mol_number" />
-                            <field name="cr_number" />
-                            <field name="location"/>
+                            <field name="mol_number" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="cr_number" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="location" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                 </xpath>
@@ -52,11 +52,11 @@
                 <group attrs="{'invisible': ['|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False)]}">
                     <group>
                         <field name="upload_screenshot_of_saddad" 
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
                                filename="upload_screenshot_of_saddad_file_name"/>
                         <field name="upload_screenshot_of_saddad_file_name" invisible="1"/>
                         <field name="saddad_number"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>    
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>    
                     </group>
                     <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', ('service_request', '!=', 'ajeer_permit'), ('state', 'in', ('draft', 'submitted'))]}">
                         <group attrs="{'invisible': [('self_pay', '!=',True)]}">
