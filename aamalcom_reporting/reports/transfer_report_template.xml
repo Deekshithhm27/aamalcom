@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="transfer_report_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h1 style="text-align: center; margin-bottom: 20px;">Service Request-Transfer Request Report</h1>
+
+                    <div style="margin-bottom: 20px; text-align: center;">
+                        <p>
+                            <strong>Service Request Name:</strong> <t t-esc="data.get('service_request_type_fixed_label') or 'Transfer Request Initiation'"/> <br/>
+                            <strong>Transfer Type:</strong> <t t-esc="docs and docs[0].get('transfer_type_label') or data.get('transfer_type_label') or ''"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="from_date and from_date.strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="from_date and to_date">
+                                <span> - </span>
+                            </t>
+                            <strong>To Date:</strong> <t t-esc="to_date and to_date.strftime('%d-%m-%Y') or ''"/>
+                        </p>
+                    </div>
+
+                    <t t-if="docs and docs[0] and docs[0].get('report_lines')">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; border: 2px solid black;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Client</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Passport No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Border No</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Joining</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Transfer Type</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date of Initiation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs[0]['report_lines']" t-as="data_line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_iqama_no']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_sponsor_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_client_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_passport_id']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_identification_id']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['employee_doj']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_transfer_type_label']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="data_line['enquiry_processed_date'] and data_line['enquiry_processed_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info text-center mt-5">
+                            <h3>No matching data found for the selected criteria.</h3>
+                            <p>Please adjust the date range, transfer type, or service request and try again.</p>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

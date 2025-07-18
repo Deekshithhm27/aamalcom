@@ -63,6 +63,7 @@
                 <field name="surname"/>
                 <field name="given_name"/>
                 <field name="client_emp_sequence" attrs="{'invisible':[('service_request_type','=',False)]}"/>
+                <field name="member_no" attrs="{'invisible':[('service_request_type','=',False)]}"/>
                 <field name="hr_employee_company_id" groups="visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator" attrs="{'invisible':[('service_request_type','!=',False)]}"/>
                 <field name="custom_employee_type" invisible="0"/>
                 <field name="client_parent_id" invisible="1"/>
@@ -91,12 +92,24 @@
 
             </xpath>
             <xpath expr="//page[@name='hr_settings']" position="after">
+                <group string="Bank Accounts" groups="visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator">
+                    <field name="bank_ids">
+                        <tree editable="bottom">
+                            <field name="bank_id"/>
+                            <field name="acc_number"/>
+                            <field name="acc_holder_name" invisible="1"/>
+                        </tree>
+                    </field>
+                </group>
                 <page name="public" string="Uploads">
                     <div class="row">
                         <div class="col-lg-7 d-flex">
                             <group>
                                 <field name="passport_copy"/>
                                 <field name="degree_certificate"/>
+                                <field name="qiwa_contract_doc" filename="qiwa_contract_doc_name" readonly="1"/>
+                                <field name="qiwa_contract_doc_name" invisible="1"/>
+                                <field name="qiwa_contract_sr_no"/>
                             </group>
                         </div>
                     </div>
@@ -108,6 +121,7 @@
                         <field name="iqama"/>
                         <field name="iqama_no"/>
                         <field name="doj"/>
+                        <field name="arrival_date"/>
                         <field name="employment_duration"/>
                         <field name="probation_term"/>
                     </group>

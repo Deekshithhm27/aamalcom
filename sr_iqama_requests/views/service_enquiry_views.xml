@@ -44,6 +44,7 @@
                            attrs="{'readonly': [('state', '!=','draft')],'invisible': [('iqama_for', '!=', 'family')]}">
                         <tree editable="bottom">
                             <field name="person_name"/>
+                            <field name="iqama_number"/>
                             <field name="dependent_iqama_id" widget="binary"/>
                         </tree>
                     </field>

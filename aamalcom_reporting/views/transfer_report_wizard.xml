@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_transfer_report_wizard_form" model="ir.ui.view">
+        <field name="name">transfer.report.wizard.form</field>
+        <field name="model">transfer.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Transfer Request Report">
+                <group>
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="service_request_type_fixed" readonly="1" force_save="1"/>
+                        <field name="transfer_type"/>
+                    </group>
+                    </group>
+                <footer>
+                    <button name="print_transfer_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_transfer_report_wizard" model="ir.actions.act_window">
+        <field name="name">Service Request-Transfer Request Report</field>
+        <field name="res_model">transfer.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_transfer_report_wizard"
+              name="Service Request-Transfer Request Report"
+              parent="menu_reporting_root"
+              action="action_transfer_report_wizard"
+              sequence="3" />
+
+</odoo>

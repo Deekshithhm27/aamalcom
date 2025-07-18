@@ -52,5 +52,6 @@ class ServiceEnquiry(models.Model):
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id= False
+                record.write({'processed_date': fields.Datetime.now()})
         return result
       

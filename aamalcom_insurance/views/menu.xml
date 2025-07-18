@@ -1,0 +1,41 @@
+<odoo>
+    <menuitem id="menu_insurance_root" name="Insurance" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager,visa_process.group_service_request_employee">
+      <menuitem id="menu_medical_insurance" name="Medical Insurance">
+        <menuitem id="menu_medical_insurance_enrollment" name="Enrollment" action="action_medical_insurance_enrollment" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="1"/>
+        <menuitem id="menu_insurance_reimbursement" name="Reimbursements" action="action_insurance_reimbursement" groups="visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="2"/>
+        <menuitem id="menu_medical_insurance_class_change" name="Upgrade/Downgrade" action="action_medical_insurance_class_change" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="3"/>
+        <menuitem id="menu_medical_insurance_deletion" name="Deletion" action="action_medical_insurance_deletion" sequence="4"/>
+        <menuitem id="menu_swapping_border_to_iqama" name="Swapping Border to Iqama" action="action_swapping_border_to_iqama" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="5"/>
+      </menuitem>
+      <menuitem id="menu_life_insurance" name="Life Insurance">
+        <menuitem id="menu_life_insurance_enrollment" name="Enrollment" action="action_life_insurance_enrollment" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="1"/>
+        <menuitem id="menu_life_insurance_class_change" name="Upgrade/Downgrade" action="action_life_insurance_class_change" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee" sequence="2"/>
+        <menuitem id="menu_life_insurance_deletion" name="Deletion" action="action_life_insurance_deletion" sequence="3"/>
+        
+      </menuitem>
+      <!-- Add menu entry under Medical Insurance -->
+      <menuitem id="menu_base_insurance_invoice" name="Invoices" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_employee">
+        <menuitem id="invoice_medical_menu" name="Medical">
+          <menuitem id="menu_medical_insurance_invoice" name="Employee Insurance Details" action="action_medical_insurance_invoice_details" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_manager" sequence="1"/>
+          <menuitem id="menu_generate_insurance_invoice" name="Generate Invoice" action="action_insurance_invoice_wizard" sequence="2"/>
+        </menuitem>
+        <menuitem id="invoice_life_menu" name="Life">
+          <menuitem id="menu_life_insurance_invoice" name="Employee Insurance Details" action="action_life_insurance_invoice_details" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_manager" sequence="1"/>
+          <menuitem id="menu_generate_life_insurance_invoice" name="Generate Invoice" action="action_life_insurance_invoice_wizard" sequence="2"/>
+        </menuitem>
+        
+      </menuitem>
+      <menuitem id="menu_insurance_reporting" name="Reporting" groups="visa_process.group_service_request_insurance_employee,visa_process.group_service_request_insurance_employee">
+        <menuitem id="menu_medical_insurance_report_wizard"
+              name="Medical Insurance Report"
+              action="action_medical_insurance_report_wizard"
+              sequence="1"/>
+        <menuitem id="menu_life_insurance_report_wizard"
+              name="Life Insurance Report"
+              action="action_life_insurance_report_wizard"
+              sequence="1"/>
+      </menuitem>
+
+      
+    </menuitem>
+</odoo>

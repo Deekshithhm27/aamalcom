@@ -10,10 +10,9 @@
                         class="oe_highlight"
                         attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),('service_request','!=','family_visit_visa')]}"
                         groups="visa_process.group_service_request_employee"/>
-                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request','!=','family_visit_visa')]}"
-                        groups="visa_process.group_service_request_client_spoc"/>
+                <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request', '!=', 'family_visit_visa')]}" groups="visa_process.group_service_request_client_spoc"/>
+                
+                
                 <button name="action_process_complete" 
         string="Process Complete" 
         type="object" 
@@ -115,17 +114,17 @@
                        attrs="{'invisible': ['|',('service_request', '!=', 'family_resident'),('first_govt_employee_id','=',False)]}">
                     <group>
                         <field name="fee_receipt_doc" string="Fee Receipt Document"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
                                filename="fee_receipt_doc_file_name"/>
                         <field name="fee_receipt_doc_file_name" invisible="1"/>
                         <field name="fee_receipt_doc_ref"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                               
                     </group>
                     <group>
-                        <field name="upload_attested_application_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_attested_application_file_name"/>
+                        <field name="upload_attested_application_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_attested_application_file_name"/>
                         <field name="upload_attested_application_file_name"  invisible="1"/>
-                        <field name="attested_application_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                        <field name="attested_application_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                         
                         
                     </group>
@@ -133,53 +132,59 @@
                 </group>
                 <group attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}" string="Family Visa Letter">
                                 <group>
-                                    <field name="upload_family_visa_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visa_letter_doc_file_name"/>
+                                    <field name="upload_family_visa_letter_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_family_visa_letter_doc_file_name"/>
                                      <field name="upload_family_visa_letter_doc_file_name"  invisible="1"/>
-                                    <field name="family_visa_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="family_visa_letter_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
                 <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam form (family visa letter)">
                                 <group>
-                                    <field name="upload_istiqdam_form_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
+                                    <field name="upload_istiqdam_form_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_istiqdam_form_doc_file_name"/>
                                      <field name="upload_istiqdam_form_doc_file_name"  invisible="1"/>
-                                    <field name="istiqdam_form_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="istiqdam_form_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
-                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
+                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam Letter">
                                 <group>
-                                    <field name="upload_istiqdam_letter_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_istiqdam_form_doc_file_name"/>
+                                    <field name="upload_istiqdam_letter_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_istiqdam_form_doc_file_name"/>
                                      <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
-                                    <field name="istiqdam_letter_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="istiqdam_letter_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>  
-                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'family_visit_visa'), ('aamalcom_pay', '!=', True),('state', 'not in', ('submitted'))]}">
-                                <group>
-                                    <field name="upload_family_visit_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
-                                     <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
-                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>       
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'family_visit_visa'), ('aamalcom_pay', '!=', True),('state', 'not in', ('submitted','done'))]}">
+                    <group>
+                        <field name="fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="fee_receipt_doc_file_name"/>
+                        <field name="fee_receipt_doc_file_name"  invisible="1"/>
+                        <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                    </group>
+                    <group>
+                        <field name="upload_family_visa_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_family_visit_visa_doc_file_name"/>
+                        <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
+                        <field name="family_visa_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                    </group>
+                </group>       
                 
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                 <group string="Payment Confirmation Documents"
-                       attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('service_request','!=','family_visit_visa')]}">
+                       attrs="{'invisible': ['|','|',('state', 'in', ( 'draft','submitted')),('aamalcom_pay','=',True),('service_request','!=','family_visit_visa')]}">
                     <group>
-                        <field name="upload_payment_doc"
+                        <field name="upload_payment_doc" 
                                attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
                                force_save="1" filename="upload_payment_doc_file_name"/>
                         <field name="upload_payment_doc_file_name" invisible="1"/>
                         <field name="is_client_spoc" invisible="1"/>
                         <field name="payment_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
                                force_save="1"/>
                     </group>
                 </group>
-                <group attrs="{'invisible': ['|',('service_request', '!=', 'family_visit_visa'),('state', 'not in', ('payment_done','done','approved'))]}">
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'family_visit_visa'),('aamalcom_pay','=',True),('state', 'not in', ('payment_done','done','approved'))]}">
                                 <group>
-                                    <field name="upload_family_visit_visa_doc" attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}" filename="upload_family_visit_visa_doc_file_name"/>
+                                    <field name="upload_family_visit_visa_doc" 
+                                        attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}" filename="upload_family_visit_visa_doc_file_name" force_save="1"/>
                                      <field name="upload_family_visit_visa_doc_file_name"  invisible="1"/>
-                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}"/>
+                                    <field name="family_visit_visa_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('payment_done','approved')),('is_gov_employee', '!=',True)]}" force_save="1"/>
                                 </group>
                             </group>       
             </xpath>

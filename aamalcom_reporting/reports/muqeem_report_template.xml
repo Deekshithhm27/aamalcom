@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="muqeem_report_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h1 style="text-align: center; margin-bottom: 20px;">Service Request Report</h1>
+
+                    <div style="margin-bottom: 20px; text-align: center;">
+                        <p>
+                            <strong>Service Request:</strong> <t t-esc="service_request_label or ''"/> <br/>
+                            <strong>From Date:</strong> <t t-esc="from_date and from_date.strftime('%d-%m-%Y') or ''"/>
+                            <t t-if="from_date and to_date">
+                                <span> - </span>
+                            </t>
+                            <strong>To Date:</strong> <t t-esc="to_date and to_date.strftime('%d-%m-%Y') or ''"/>
+                        </p>
+                    </div>
+
+                    <t t-if="docs and docs[0] and docs[0]['employees']">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; border: 2px solid black;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Name</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Gender</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Nationality</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Occupation</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Passport Number</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Sponsor Name</th>
+
+                                    <t t-if="service_request_selected == 'hr_card'">
+                                        <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Issue Date</th>
+                                    </t>
+
+                                    <t t-if="service_request_selected != 'muqeem_dropout'">
+                                        <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Iqama Expiry Date</th>
+                                    </t>
+
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">DOJ</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Birth Date</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Client</th>
+                                    <th style="text-align: center; padding: 8px; border: 1px solid #ddd; font-weight: bold;">Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs[0]['employees']" t-as="emp_data">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_no']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['emp_record'].name"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['gender_label']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['country_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['job_title']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['passport_id']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['sponsor_name']"/></td>
+
+                                        <t t-if="service_request_selected == 'hr_card'">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_issue_date'] and emp_data['iqama_issue_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        </t>
+                                        <t t-if="service_request_selected == 'iqama_renewal'">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_expiry_date'] and emp_data['iqama_expiry_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        </t>
+
+                                        <t t-if="service_request_selected != 'muqeem_dropout'">
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['iqama_expiry_date'] and emp_data['iqama_expiry_date'].strftime('%d-%m-%Y') or ''"/></td>
+                                        </t>
+
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['doj'] and emp_data['doj'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['birthday'] and emp_data['birthday'].strftime('%d-%m-%Y') or ''"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="emp_data['client_parent_id_name']"/></td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;"><t t-esc="'Yes' if emp_data['active_status'] else 'No'"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info text-center mt-5">
+                            <h3>No matching data found for the selected criteria.</h3>
+                            <p>Please adjust the date range or service request and try again.</p>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

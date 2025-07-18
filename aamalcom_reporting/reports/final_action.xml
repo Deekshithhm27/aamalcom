@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_final_clearance_report_pdf" model="ir.actions.report">
+        <field name="name">Final Clearance Report</field>
+        <field name="model">final.clearance.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aamalcom_reporting.final_clearance_report_template</field>
+        <field name="report_file">aamalcom_reporting.final_clearance_report_template</field>
+        <field name="print_report_name">
+            'Final Clearance Report - %s - %s' % (
+                object.final_clearance_type and dict(object._fields['final_clearance_type'].selection).get(object.final_clearance_type, object.final_clearance_type) or '',
+                object.to_date.strftime('%Y%m%d') if object.to_date else ''
+            )
+        </field>
+        <field name="binding_model_id" ref="model_final_clearance_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

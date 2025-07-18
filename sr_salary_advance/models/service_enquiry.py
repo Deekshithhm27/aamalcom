@@ -11,7 +11,15 @@ class ServiceEnquiry(models.Model):
         copy=False,ondelete={'salary_advance': 'cascade'}
     )
     
-    salary_advance_amount = fields.Float("Salary Advance Amount")
+    currency_id = fields.Many2one(
+            'res.currency',
+            string='Currency',
+            default=lambda self: self.env.company.currency_id,
+            )
+        
+    salary_advance_amount = fields.Monetary("Salary Advance Amount",
+    currency_field='currency_id') 
+        
     nature_of_advance = fields.Text("Nature of Advance")
     invoiced = fields.Boolean(string="Invoiced")
     to_be_invoiced = fields.Boolean(string="To be Invoiced")
@@ -24,17 +32,17 @@ class ServiceEnquiry(models.Model):
     invoiced_ref = fields.Many2one(
     'account.move',
     string="Invoiced Ref No.*",
-    domain="[('partner_id', '=', client_id)]",
     store=True,
     tracking=True,
     copy=False
     )
- 
+
+   
     @api.model
     def update_pricing(self):  
         super(ServiceEnquiry, self).update_pricing()  
         for record in self:
-            if record.to_be_invoiced and record.service_request == 'salary_advance':
+            if  record.service_request == 'salary_advance':
                 pricing_id = self.env['service.pricing'].search([
                     ('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
@@ -82,6 +90,9 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Select at least one Invoiced Reference Number")
                 if not record.invoiced and not record.to_be_invoiced:
                     raise ValidationError("Either 'Invoiced' or 'To be Invoiced' must be checked.")
+                record.dynamic_action_status = f"PM needs to submit for approval"
+                record.action_user_id = record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
     def action_salary_advance_submit_for_approval(self):
         for record in self:
@@ -94,6 +105,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
                 record.send_email_to_op()
 
     def action_op_refuse(self):
@@ -101,6 +113,7 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'salary_advance':
                 record.state = 'refuse'
+                record.write({'processed_date': fields.Datetime.now()})
                 record.dynamic_action_status = f"Refused by {current_employee.name if current_employee else 'OH'}"
 
     def action_gm_refuse(self):
@@ -108,12 +121,26 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'salary_advance':
                 record.state = 'refuse'
+                record.write({'processed_date': fields.Datetime.now()})
                 record.dynamic_action_status = f"Refused by {current_employee.name if current_employee else 'GM'}"
 
+    def action_finance_approved(self):
+        res = super().action_finance_approved()
+        for record in self:
+            if record.service_request == 'salary_advance':
+                treasury = self.env['service.request.treasury'].sudo().search([
+                    ('service_request_id', '=', record.id)
+                ], limit=1)
+                if treasury:
+                    treasury.write({
+                        'nature_of_advance': record.nature_of_advance
+                    })
+        return res
+    
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
         for record in self:
-            if record.to_be_invoiced:
+            if record.service_request == 'salary_advance' and record.to_be_invoiced:
                 invoice_line_ids = []
                 for line in record.service_enquiry_pricing_ids:
                     invoice_line_ids.append((0, 0, {
@@ -124,15 +151,21 @@ class ServiceEnquiry(models.Model):
                         'service_enquiry_id': record.id
                     }))
 
-                account_move = self.env['draft.account.move'].create({
+                move_vals = {
                     'client_id': record.client_id.id,
                     'client_parent_id': record.client_id.parent_id.id,
                     'service_enquiry_id': record.id,
                     'employee_id': record.employee_id.id,
                     'move_type': 'service_ticket',
                     'invoice_line_ids': invoice_line_ids,
-                })
+                }
+
+                if record.nature_of_advance:
+                    move_vals['nature_of_advance'] = record.nature_of_advance
+
+                self.env['draft.account.move'].create(move_vals)
         return result
+
 
 class ServiceEnquiryPricingLine(models.Model):
     _inherit = 'service.enquiry.pricing.line'

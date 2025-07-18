@@ -15,6 +15,7 @@ class ResPartner(models.Model):
         help="Check if the contact is a client",store=True,compute="_check_type_of_partner")
     total_employees = fields.Integer(compute='_compute_total_employees')
     employment_visa_count = fields.Integer(compute='_compute_employment_visa_count')
+    custom_employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access")
 
     company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_accounts_manager",store=True)
 

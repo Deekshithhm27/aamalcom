@@ -18,7 +18,7 @@ class HrEmployee(models.Model):
     hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
     identification_id = fields.Char(string='Border No.', groups="hr.group_hr_user", tracking=True)
     sponsor_id = fields.Many2one('employee.sponsor',string="Sponsor Number",tracking=True,copy=False)
-
+    req_completion_date = fields.Datetime(string="Request Completion Date",copy=False)
     
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -29,6 +29,7 @@ class HrEmployee(models.Model):
     
     contact_no = fields.Char(string="Contact # in the country")
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    arrival_date = fields.Date(string='Arrival Date')
 
     current_contact = fields.Char(string="Current Contact # (if Outside the country)")
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
@@ -42,6 +43,10 @@ class HrEmployee(models.Model):
 
     passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
+    qiwa_contract_doc = fields.Binary(string="Qiwa Contract")
+    qiwa_contract_doc_name = fields.Char(string="Qiwa Contract File Name")
+    qiwa_contract_sr_no = fields.Char(string="Qiwa Contract Reference ID", readonly=True)
+    qiwa_contract_ref_no = fields.Char(string="Ref NO.*")
     
     work_address = fields.Char(string="Work Address")
     personal_address = fields.Char(string="Persoanl Address")
@@ -55,6 +60,7 @@ class HrEmployee(models.Model):
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
+    
 
     work_location = fields.Char(string="Work Location")
     
@@ -72,6 +78,10 @@ class HrEmployee(models.Model):
     hr_agency_id = fields.Many2one('hr.agency',string="Agency")
     country_of_birth = fields.Many2one('res.country', string="Issuance of Passport - Country", groups="hr.group_hr_user", tracking=True)
     passport_issuance_city = fields.Char(string="Issuance of Passport - City")
+
+    member_no = fields.Char(string="Insurance Member Number")
+
+    bank_ids = fields.One2many('res.partner.bank','employee_id',string="Banks")
 
 
     @api.model

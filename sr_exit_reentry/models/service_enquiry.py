@@ -144,7 +144,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(
                         'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
                     )
-            if record.service_request == 'exit_reentry_issuance_ext' and record.aamalcom_pay:
+            if record.service_request in ['exit_reentry_issuance_ext'] and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
                 users = group.users
@@ -153,6 +153,17 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 record.dynamic_action_status = f"Waiting for approval by OM"
                 record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
+            if record.service_request in ['exit_reentry_issuance'] and record.aamalcom_pay:
+                record.state = 'waiting_op_approval'
+                group = self.env.ref('visa_process.group_service_request_operations_manager')
+                users = group.users
+                employee = self.env['hr.employee'].search([
+                ('user_id', 'in', users.ids)
+                ], limit=1)
+                record.dynamic_action_status = f"Waiting for approval by OM"
+                record.action_user_id = employee.user_id
+                record.write({'processed_date': fields.Datetime.now()})
         return result
 
     # Initial flow of exit_reentry_issuance
@@ -181,41 +192,89 @@ class ServiceEnquiry(models.Model):
     def action_submit_payment_confirmation(self):
         result = super(ServiceEnquiry, self).action_submit_payment_confirmation()
         for record in self:
-            if record.service_request == 'exit_reentry_issuance_ext':
+            if record.service_request == 'exit_reentry_issuance':
                 if record.upload_payment_doc and not record.payment_doc_ref:
                     raise ValidationError("Kindly Update Reference Number For Payment Confirmation Document")
                 record.dynamic_action_status = 'Payment done by client spoc. Documents upload pending by first employee'
                 record.action_user_id = record.first_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
         return result
 
     
 
     def open_assign_employee_wizard(self):
-        """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
         result = super(ServiceEnquiry, self).open_assign_employee_wizard()
-        for record in self:
-            if record.service_request == 'exit_reentry_issuance_ext' and record.state == 'approved' or record.state == 'payment_done':
-                # level = 'level1'
-                department_ids = []
-                req_lines = record.service_request_config_id.service_department_lines
-                sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
-                for lines in sorted_lines:
-                    # if level == 'level1':
-                    department_ids.append((4, lines.department_id.id))
 
-                result.update({
-                    'name': 'Select Employee',
-                    'type': 'ir.actions.act_window',
-                    'res_model': 'employee.selection.wizard',
-                    'view_mode': 'form',
-                    'target': 'new',
-                    'context': {
-                        'default_department_ids': department_ids,
+        for record in self:
+            level = '' 
+            department_ids = []
+
+            treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',record.id)])
+            if treasury_id:
+                for srt in treasury_id:
+                    if srt.state != 'done':
+                        raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
+
+            if record.service_request == 'exit_reentry_issuance':
+                if record.aamalcom_pay == True:
+                    if record.state == 'approved' and not record.assigned_govt_emp_one:
+                        level = 'level1'
+                    elif record.state == 'payment_done' and record.assigned_govt_emp_one and not record.assigned_govt_emp_two:
+                        level = 'level2'
+                else:
+                    if record.state == 'submitted' and not record.assigned_govt_emp_one:
+                        level = 'level1'
+                    elif record.state == 'payment_done' and record.assigned_govt_emp_one and not record.assigned_govt_emp_two:
+                        level = 'level2'
+            elif record.service_request == 'exit_reentry_issuance_ext':
+                if record.state in ('approved', 'payment_done') and not record.assigned_govt_emp_one:
+                    level = 'level1'
+                elif record.state in ('approved', 'payment_done') and record.assigned_govt_emp_one and not record.assigned_govt_emp_two:
+                    level = 'level2'
+            
+            if level:
+                req_lines = record.service_request_config_id.service_department_lines
+                sorted_lines = sorted(req_lines, key=lambda dept_line: dept_line.sequence)
+                
+                for dept_line in sorted_lines:
+                    if level == 'level1':
+                        if dept_line.sequence == 1:
+                            department_ids.append(dept_line.department_id.id)
+                            break
+                    elif level == 'level2':
+                        if dept_line.sequence == 2:
+                            department_ids.append(dept_line.department_id.id)
+                            break
+
+                if not department_ids:
+                    raise ValidationError(_("No departments configured for the determined level and service request configuration."))
+
+                if isinstance(result, dict) and result.get('type') == 'ir.actions.act_window' and result.get('res_model') == 'employee.selection.wizard':
+                    result_context = result.get('context', {})
+                    result_context.update({
+                        'default_department_ids': [(6, 0, department_ids)],
                         'default_assign_type': 'assign',
-                        'default_levels': 'level2',
-                    },
-                })
+                        'default_levels': level,
+                        'active_id': record.id,
+                    })
+                    result['context'] = result_context
+                else:
+                    result = {
+                        'name': 'Select Employee',
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'employee.selection.wizard',
+                        'view_mode': 'form',
+                        'target': 'new',
+                        'context': {
+                            'default_department_ids': [(6, 0, department_ids)],
+                            'default_assign_type': 'assign',
+                            'default_levels': level,
+                            'active_id': record.id,
+                        },
+                    }
+                
         return result
+
 
     def action_process_complete(self):
         result = super(ServiceEnquiry, self).action_process_complete()
@@ -233,6 +292,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number For ERE Extend Visa")
 
             record.state = 'done'  
-            record.dynamic_action_status = "Process Completed"  
+            record.dynamic_action_status = "Process Completed"
+            record.write({'processed_date': fields.Datetime.now()}) 
             record.action_user_id=False      
         return result

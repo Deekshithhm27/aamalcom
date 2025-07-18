@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_se_emp_salary_line_user,se.emp.salary.line.user,model_se_emp_salary_line,base.group_user,1,0,0,0
+
+access_se_emp_salary_line_manager,se.emp.salary.line.manager,model_se_emp_salary_line,base.group_system,1,1,1,1
+
+access_se_emp_salary_line_hr_manager,se.emp.salary.line.hr_manager,model_se_emp_salary_line,visa_process.group_service_request_client_spoc,1,1,1,0
+
+access_se_emp_salary_line_payroll_employee,se.emp.salary.line.payroll_employee,model_se_emp_salary_line,visa_process.group_service_request_payroll_employee,1,1,1,0

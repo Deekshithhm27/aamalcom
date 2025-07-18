@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_sr_salary_increase" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.sr.salary.increase</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='client_salary_rule_ids']/tree/field[@name='amount']" position="after">
+                <field name="last_update_date" string="Last Updated On"/>
+            </xpath>
+            <xpath expr="//field[@name='client_salary_rule_ids']/form/group/group/field[@name='amount']" position="after">
+                <field name="last_update_date"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

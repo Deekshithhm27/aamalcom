@@ -1,0 +1,2 @@
+from . import medical_insurance_invoice_wizard
+from . import life_insurance_invoice_wizard

@@ -1,0 +1,164 @@
+<odoo>
+    <template id="life_ins_inv_summary">
+  <t t-call="web.html_container">
+    <t t-call="web.external_layout">
+      <t t-set="enroll_lines" t-value="env['life.insurance.invoice.details'].search([
+        ('insurance_type','=','enrollment'),
+        ('client_parent_id','=',data.get('client_parent_id')),
+        ('insurance_activation_date','&gt;=',data.get('start_date')),
+        ('insurance_activation_date','&lt;=',data.get('end_date')),
+        ('state','=','invoice_created')
+      ])"/>
+      <t t-set="delete_lines" t-value="env['life.insurance.invoice.details'].search([
+        ('insurance_type','=','deletion'),
+        ('client_parent_id','=',data.get('client_parent_id')),
+        ('insurance_expiration_date','&gt;=',data.get('start_date')),
+        ('insurance_expiration_date','&lt;=',data.get('end_date')),
+        ('state','=','invoice_created')
+      ])"/>
+      <t t-set="enroll_total" t-value="sum(enroll_lines.mapped('total_amount'))"/>
+      <t t-set="delete_total" t-value="sum(delete_lines.mapped('total_amount'))"/>
+      <t t-set="net_total" t-value="enroll_total - delete_total"/>
+      <t t-set="vat_total" t-value="net_total * 0.15"/>
+      <t t-set="grand_total" t-value="net_total * 1.15"/>
+
+      <div class="page" style="font-size:12px; font-family:Arial;">
+        <!-- Header Section -->
+        <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin-bottom:10px;">
+          <tr>
+            <td style="text-align:left; font-weight:bold; padding:5px;">
+              TO:- FINANCE DEPARTMENT<br/>
+              SUBJECT:- INVOICE<br/>
+              INVOICE DATE: <t t-esc="data.get('invoice_date') or ''"/><br/>
+              CUSTOMER CODE: <t t-esc="data.get('client_code') or ''"/><br/>
+              CUSTOMER NAME: <t t-esc="data.get('client_name') or ''"/>
+            </td>
+            <td style="width:25%; text-align:right;">
+              <img t-att-src="'/aamalcom_insurance/static/src/img/aamalcom_logo.png'" style="width:140px; margin:10px 10px 0 0;" />
+            </td>
+          </tr>
+        </table>
+
+        <!-- Enrollment Title -->
+        <div style="background:#c9d6e8; font-weight:bold; text-align:center; border:1px solid black;">
+          BUPA MEDICAL HEALTH INSURANCE ENROLLMENT FOR EMPLOYEES
+        </div>
+
+        <!-- Enrollment Table -->
+        <table style="width:100%; border-collapse:collapse; border:1px solid black;">
+          <thead style="background-color:#d9edf7;">
+            <tr>
+              <th>SR.NO</th>
+              <th>IQAMA</th>
+              <th>SPONSOR ID</th>
+              <th>EMPLOYEE NAME</th>
+              <th>Member</th>
+              <th>MEMBER ID</th>
+              <th>INSURANCE ACTIVATION DATE</th>
+              <th>INSURANCE EXPIRATION DATE</th>
+              <th>MEDICAL INSURANCE CLASS</th>
+              <th>TOTAL AMOUNT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="enroll_lines" t-as="line">
+              <td><t t-esc="line.client_emp_sequence or ''"/></td>
+              <td><t t-esc="line.iqama_no or ''"/></td>
+              <td><t t-esc="line.sponsor_id.name or ''"/></td>
+              <td><t t-esc="line.employee_id.name or ''"/></td>
+              <td><t t-esc="line.member or ''"/></td>
+              <td><t t-esc="line.member_id or ''"/></td>
+              <td><t t-esc="line.insurance_activation_date or ''"/></td>
+              <td><t t-esc="line.insurance_expiration_date or ''"/></td>
+              <td><t t-esc="line.medical_class or ''"/></td>
+              <td><t t-esc="line.total_amount"/></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="text-align:right; font-weight:bold; border-top:1px solid black;">
+          ENROLLMENT TOTAL AMOUNT SAR: <t t-esc="enroll_total"/>
+        </div>
+
+        <!-- Deletion Section -->
+        <div style="margin-top:20px;">
+          <div style="background:#f4cccc; font-weight:bold; text-align:center; border:1px solid black;">
+            DELETIONS FOR EMPLOYEES
+          </div>
+          <table style="width:100%; border-collapse:collapse; border:1px solid black;">
+            <thead style="background-color:#f2dede;">
+              <tr>
+                <th>SR.NO</th>
+                <th>IQAMA</th>
+                <th>SPONSOR ID</th>
+                <th>EMPLOYEE NAME</th>
+                <th>Member</th>
+                <th>MEMBER ID</th>
+                <th>INSURANCE DE-ACTIVATION DATE</th>
+                <th>INSURANCE EXPIRATION DATE</th>
+                <th>MEDICAL INSURANCE CLASS</th>
+                <th>TOTAL AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="delete_lines" t-as="line">
+                <td><t t-esc="line.client_emp_sequence or ''"/></td>
+                <td><t t-esc="line.iqama_no or ''"/></td>
+                <td><t t-esc="line.sponsor_id.name or ''"/></td>
+                <td><t t-esc="line.employee_id.name or ''"/></td>
+                <td><t t-esc="line.member or ''"/></td>
+                <td><t t-esc="line.member_id or ''"/></td>
+                <td><t t-esc="line.insurance_deactivation_date or ''"/></td>
+                <td><t t-esc="line.insurance_expiration_date or ''"/></td>
+                <td><t t-esc="line.medical_class or ''"/></td>
+                <td><t t-esc="line.total_amount"/></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="text-align:right; font-weight:bold; border-top:1px solid black;">
+            DELETION TOTAL AMOUNT SAR: <t t-esc="delete_total"/>
+          </div>
+        </div>
+
+        <!-- Totals Summary -->
+        <div style="margin-top:20px;">
+          <table style="width:100%; border-collapse:collapse;">
+            <tr>
+              <td style="text-align:right; font-weight:bold;">ENROLLMENT TOTAL AMOUNT SAR:</td>
+              <td style="text-align:right;"><t t-esc="enroll_total"/></td>
+            </tr>
+            <tr>
+              <td style="text-align:right; font-weight:bold;">Less (-) DELETION TOTAL AMOUNT SAR:</td>
+              <td style="text-align:right;"><t t-esc="delete_total"/></td>
+            </tr>
+            <tr>
+              <td style="text-align:right; font-weight:bold;">NET AMOUNT PAYABLE SAR:</td>
+              <td style="text-align:right;"><t t-esc="net_total"/></td>
+            </tr>
+            <tr>
+              <td style="text-align:right; font-weight:bold;">VAT 15%:</td>
+              <td style="text-align:right;"><t t-esc="vat_total"/></td>
+            </tr>
+            <tr>
+              <td style="text-align:right; font-weight:bold;">GRAND TOTAL - PAYABLE SAR:</td>
+              <td style="text-align:right;"><t t-esc="grand_total"/></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Footer Signatures -->
+        <!-- <div style="margin-top:30px;">
+          <table style="width:100%; font-size:10px;">
+            <tr>
+              <td style="width:25%;">PREPARED BY<br/>Mohammed Rasheed Jamal<br/>Business Support Specialist</td>
+              <td style="width:25%;">CHECKED BY<br/>Zunaria Zia<br/>Project Manager</td>
+              <td style="width:25%;">REVIEWED BY<br/>Dominic Stewart<br/>Head - Operations</td>
+              <td style="width:25%;">APPROVED BY<br/>Haifa Tamal Al-Otaibi<br/>General Manager</td>
+            </tr>
+          </table>
+        </div> -->
+      </div>
+    </t>
+  </t>
+</template>
+
+</odoo>

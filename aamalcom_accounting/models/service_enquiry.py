@@ -44,8 +44,8 @@ class ServiceEnquiry(models.Model):
     def action_process_complete(self):
         existing_invoice = self.env['draft.account.move'].search([
             ('service_enquiry_id', '=', self.id)], limit=1)
-        if existing_invoice:
-            raise ValidationError(_('Invoice is already created for this Service Request'))
+        # if existing_invoice:
+        #     raise ValidationError(_('Invoice is already created for this Service Request'))
         for record in self:
             if record.billable_to_client == True: 
 

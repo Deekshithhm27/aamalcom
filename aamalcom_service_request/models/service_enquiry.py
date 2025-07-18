@@ -13,6 +13,7 @@ class ServiceEnquiry(models.Model):
         copy=False,ondelete={'passport_info_update': 'cascade'}
     )
     
+    process_kind = fields.Selection([('muqeem_online', 'Muqeem(Online Process)'),('jawazat_manual', 'Jawazat(Manual Process)')], string="Process Type", store=True)
     upload_new_passport_doc = fields.Binary(string="New Passport Document")
     upload_new_passport_doc_file_name = fields.Char(string="New Passport Doc")
     upload_old_passport_doc = fields.Binary(string="Old Passport Document")
@@ -31,15 +32,12 @@ class ServiceEnquiry(models.Model):
     def _update_muqeem_pricing_line(self):
         for line in self:
             if line.final_muqeem_cost:
-                existing_line = line.service_enquiry_pricing_ids[:1]
-                if existing_line:
-                    existing_line.amount = line.final_muqeem_cost
-                else:
-                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
                         'name': 'Muqeem Fee',
                         'amount':line.final_muqeem_cost,
                         'service_enquiry_id': line.id
                         })
+                
     @api.depends('muqeem_points')
     def _compute_final_muqeem_cost(self):
         for record in self:
@@ -51,9 +49,6 @@ class ServiceEnquiry(models.Model):
             else:
                 record.final_muqeem_cost = 0.0
 
-
-    
-    
     @api.model
     def create(self, vals):
         """Handles file naming conventions while creating a record."""
@@ -110,10 +105,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if record.upload_muqeem_doc and not record.muqeem_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Document")
-                if not record.muqeem_points:
-                    raise ValidationError("Kindly Update Muqeem Points")
-
-
         return result
 
     

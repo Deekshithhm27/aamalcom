@@ -1,0 +1,115 @@
+<odoo>
+  <record id="view_life_insurance_deletion_tree" model="ir.ui.view">
+    <field name="name">life.insurance.deletion.tree</field>
+    <field name="model">life.insurance.deletion</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="employee_id"/>
+        <field name="deletion_type"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_life_insurance_deletion_form" model="ir.ui.view">
+    <field name="name">life.insurance.deletion.form</field>
+    <field name="model">life.insurance.deletion</field>
+    <field name="arch" type="xml">
+      <form string="Life Insurance Deletion">
+      	<header>
+            <field name="state" widget="statusbar" statusbar_visible="draft,submitted,done"/>
+            <button name="action_submit" type="object" string="Submit" attrs="{'invisible': [('state','!=','draft')]}" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc"/>
+            <button name="action_get_confirmation" type="object" string="Get Govt Confirmation" attrs="{'invisible': ['|',('state','!=','submitted'),('deletion_type','!=','final_exit')]}" groups="visa_process.group_service_request_insurance_employee"/>
+            <button name="action_govt_confirm" type="object" string="Confirm" attrs="{'invisible': [('state','!=','sent_govt_confirmation')]}" groups="visa_process.group_service_request_employee"/>
+            <button name="action_pm_confirm_exit" type="object" string="Confirm Exit" attrs="{'invisible': [('state','!=','govt_confirmation_received')]}" groups="visa_process.group_service_request_manager"/>
+            <button name="action_docs_uploaded" type="object" string="Documents Uploaded" attrs="{'invisible': ['|',('state','!=','exit_confirmed'),('deletion_type','!=','final_exit')]}" groups="visa_process.group_service_request_manager"/>
+            <button name="action_insurance_confirm" type="object" string="Confirm Deletion" attrs="{'invisible': [('state','not in',('documents_uploaded','upload_document'))]}" groups="visa_process.group_service_request_insurance_employee"/>
+        </header>
+        <sheet>
+        	<widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+        	<div class="oe_title mb24">
+                <h1>
+                   <field name="name" readonly="1"/>
+                </h1>
+            </div>
+          <group>
+          	<group>
+	            <field name="deletion_type" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	            <field name="client_parent_id" attrs="{'invisible': [('is_pm_user', '=',False)],'required':[('is_pm_user','=',True)],'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+	            <field name="employee_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+	            <field name="service_enquiry_id" attrs="{'invisible': [('deletion_type', 'in', ['absconding', 'not_returned'])],'readonly': [('state', '!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+	        </group>
+	        <group>
+	        	<field name="client_id" invisible="1"/>
+	            <field name="is_pm_user" invisible="1"/>
+	            <field name="user_id" invisible="1"/>
+                <field name="active" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="govt_user_id" invisible="1"/>
+                <field name="is_govt_user" invisible="1"/>
+                <field name="is_pm_user" invisible="1"/>
+                <field name="is_insurance_user" invisible="1"/>
+                <field name="project_manager_id" invisible="1"/>
+                <field name="iqama_no" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="identification_id" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="passport_no" attrs="{'readonly': [('state','!=','draft')]}" />
+                <field name="sponsor_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': [('state','!=','draft')]}" />
+	        </group>
+          </group>
+
+          <group attrs="{'invisible': [('state', 'in',['draft','submitted'])]}">
+          	<group attrs="{'invisible': [('deletion_type', '!=','final_exit')]}">          	
+          		<field name="is_inside_ksa" attrs="{'readonly': ['|',('state', '!=','sent_govt_confirmation'),('is_govt_user','=',False)]}"/>
+              <field name="is_outside_ksa" attrs="{'readonly': ['|',('state', '!=','sent_govt_confirmation'),('is_govt_user','=',False)]}"/>
+          	</group>
+          </group>
+        <notebook>
+        	<page string="Documents" name="documents" attrs="{'invisible': ['|',('deletion_type', '!=','final_exit'),('state', 'in',['sent_govt_confirmation','draft','submitted'])]}">
+        		<group>
+	        		<group>
+			          	<field name="exit_stamp" filename="exit_stamp" attrs="{'readonly': ['|',('state', '!=','exit_confirmed'),('is_pm_user','=',False)]}"/>
+				        <field name="muqeem_report" filename="muqeem_report" attrs="{'readonly': ['|',('state', '!=','exit_confirmed'),('is_pm_user','=',False)]}"/>
+				      </group>
+				    </group>
+        	</page>
+        	<page string="Documents" name="documents" attrs="{'invisible': ['|',('deletion_type', '!=','iqama_transfer'),('state', 'in',['draft'])]}">
+        		<group>
+	        		<group>
+			          	<field name="insurance_document" filename="insurance_document" attrs="{'readonly': ['|',('state', '!=','upload_document'),('is_insurance_user','=',False)]}"/>
+				      </group>
+				    </group>
+          </page>
+        	
+
+		    </notebook>
+      </sheet>
+      <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers"/>
+          <field name="message_ids" widget="mail_thread"/>
+          <field name="activity_ids"/>
+      </div>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_life_insurance_deletion" model="ir.actions.act_window">
+    <field name="name">Life Insurance Deletion</field>
+    <field name="res_model">life.insurance.deletion</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+    
+    <!-- Restrict chat visibility in 'oe_chatter' for external users (group_service_request_client_spoc)-->
+    <record id="life_insurance_deletion_external_user_hide_oe_chatter" model="ir.ui.view">
+        <field name="name">Life insurance Deletion - Hide oe_chatter</field>
+        <field name="model">life.insurance.deletion</field>
+        <field name="inherit_id" ref="view_life_insurance_deletion_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('visa_process.group_service_request_client_spoc')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_chatter')]" position="replace">
+                <div class="oe_chatter">
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

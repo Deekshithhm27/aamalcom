@@ -18,6 +18,7 @@ from . import res_users
 from . import res_company
 from . import res_partner
 from . import hr_employee
+from . import res_bank
 from . import local_transfer
 from . import employment_visa
 from . import temporary_work_visa

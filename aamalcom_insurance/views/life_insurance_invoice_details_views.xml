@@ -1,0 +1,97 @@
+<odoo>
+
+
+    <!-- Form View -->
+    <record id="view_life_insurance_invoice_form" model="ir.ui.view">
+        <field name="name">life.insurance.invoice.details.form</field>
+        <field name="model">life.insurance.invoice.details</field>
+        <field name="arch" type="xml">
+            <form string="Employee Life Insurance Invoice Detail">
+            	<header>
+            		<field name="state" widget="statusbar"/>
+            	</header>
+                <sheet>
+                	<widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <div class="oe_title mb24">
+                        <h1>
+                           <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                	<group>
+	                    <group>
+	                        <field name="client_emp_sequence" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="employee_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="iqama_no" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="sponsor_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="client_parent_id" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="member" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="member_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="insurance_type" required="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                    </group>
+	                    <group>
+	                        <field name="insurance_activation_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="insurance_deactivation_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="insurance_expiration_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="medical_class" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="total_amount" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	                        <field name="user_id" invisible="1"/>
+	                        <field name="active" invisible="1" />
+	                        <field name="company_id" invisible="1"/>
+	                        <field name="currency_id" invisible="1"/>
+	                        <field name="invoice_id" invisible="1"/>
+	                    </group>
+	                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+     <record id="view_life_insurance_invoice_tree" model="ir.ui.view">
+        <field name="name">life.insurance.invoice.details.tree</field>
+        <field name="model">life.insurance.invoice.details</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Medical Insurance Invoice Details">
+            	<field name="name"/>
+                <field name="client_emp_sequence"/>
+                <field name="employee_id"/>
+                <field name="iqama_no"/>
+                <field name="sponsor_id"/>
+                <field name="client_parent_id"/>
+                <field name="insurance_type"/>
+                <field name="insurance_activation_date"/>
+                <field name="insurance_deactivation_date"/>
+                <field name="insurance_expiration_date"/>
+                <field name="medical_class"/>
+                <field name="total_amount"/>
+                <field name="invoice_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_life_insurance_invoice_search" model="ir.ui.view">
+        <field name="name">life.insurance.invoice.details.search</field>
+        <field name="model">life.insurance.invoice.details</field>
+        <field name="arch" type="xml">
+            <search string="Search">
+                <field name="client_emp_sequence"/>
+                <field name="employee_id"/>
+                <field name="client_parent_id"/>
+                <field name="insurance_type"/>
+                <field name="medical_class"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_life_insurance_invoice_details" model="ir.actions.act_window">
+        <field name="name">Employee Life Insurance Details</field>
+        <field name="res_model">life.insurance.invoice.details</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create employee insurance detail from Bupa invoice.</p>
+        </field>
+    </record>
+</odoo>

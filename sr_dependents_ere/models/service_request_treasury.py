@@ -16,7 +16,8 @@ class InheritedServiceRequestTreasury(models.Model):
                 line.service_request_id.write({'payment_doc_ref':line.confirmation_doc_ref})
                 if line.service_request_id.state == 'done':
                     line.service_request_id.dynamic_action_status = "Process completed"
-                    line.action_user_id= False
+                    line.service_request_id.action_user_id= False
+                    line.service_request_id.write({'processed_date': fields.Datetime.now()})
 
      ##this method use to close ticket after doc is uploaded from treasur dept in SR depenednet ere           
     def write(self, vals):

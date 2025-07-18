@@ -15,7 +15,9 @@ This module provides a centralized platform to manage and configure service requ
     'website': 'http://www.aamalcom.com',
     'depends': ['base', 'mail', 'visa_process','aamalcom_accounting','account','l10n_gcc_invoice','om_account_followup','om_recurring_payments','payment','om_account_budget','utm'],
     'data': [
-    'views/service_enquiry_views.xml',    
+    'views/service_enquiry_views.xml', 
+    'views/service_request_treasury_views.xml',
+    'views/draft_acoount_move_views.xml' 
     ],
     "price": 0.0,
     "currency": "EUR",

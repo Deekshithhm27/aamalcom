@@ -41,15 +41,29 @@ class ServiceEnquiry(models.Model):
     approver_id = fields.Many2one('hr.employee',string="Approver",copy=False)
     approver_user_id = fields.Many2one('res.users',string="Approver User Id",copy=False)
     action_user_id = fields.Many2one('res.users', string="Action Pending With")
+    is_marked = fields.Boolean(default=False)
+    is_inside_ksa = fields.Boolean(string="Inside KSA")
+    is_outside_ksa = fields.Boolean(string="Outside KSA")
+    remarks_for_ksa = fields.Text(string="Remarks")
+    
     
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
         ('waiting_client_approval', 'Waiting Client Spoc Approval'),
+        ('submitted_to_insurance','Submitted to Insurance'),
+        ('submit_to_pm','Submitted to PM'),
+        ('doc_uploaded_by_first_govt_employee','Documents uploaded By First Govt Employee'),
+        ('submit_for_review','Submit for Review'),
+        ('final_exit_confirmed','Final exit Conirmed'),
         ('client_approved','Approved by Client Spoc'),
         ('waiting_op_approval','Waiting OH Approval'),
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
+        ('submitted_to_treasury','Submitted to Treasury'),
+        ('passed_to_treasury','Passed to Treasury'),
+        ('waiting_payroll_approval','Waiting Payroll Confirmation'),
+        ('waiting_hr_approval','Waiting HR Manager Approval'),
         ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
@@ -61,6 +75,8 @@ class ServiceEnquiry(models.Model):
     submit_clicked = fields.Boolean(string="Submit Clicked", default=False)
     latest_existing_request_id = fields.Boolean(string='Latest Existing Request ID',default=False,copy=False)
     latest_existing_request_name = fields.Char(string='Latest Existing Request Name', readonly=True,copy=False)
+    initiated_date = fields.Datetime(string='Initiated Date', default=fields.Datetime.now, readonly=True)
+    processed_date = fields.Datetime(string='Processed Date', readonly=True)
 
     @api.onchange('service_request_config_id')
     def update_process_type(self):
@@ -79,7 +95,6 @@ class ServiceEnquiry(models.Model):
                         line.latest_existing_request_name = latest_existing_request.display_name
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
-
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
@@ -149,6 +164,7 @@ class ServiceEnquiry(models.Model):
     from_date = fields.Date(string="From Date")
     valid_reason = fields.Text(string="Valid reason to be stated")
     any_credit_note = fields.Text(string="Any credit note to be issued with reason")
+    ere_last_date = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
     
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
@@ -156,7 +172,9 @@ class ServiceEnquiry(models.Model):
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
-    reupload_hr_card = fields.Binary(string="Updated HR Card Document")
+    iqama_issue_date = fields.Date(string="Iqama Issue Date")
+    iqama_expiry_date = fields.Date(string="Iqama Expiry Date")
+    reupload_hr_card = fields.Binary(string="Paid HR Card Document")
     reupload_hr_card_file_name = fields.Char(string="Updated HR Card Document")
     # reupload hr card ref
     rehr_card_ref = fields.Char(string="Ref No.*")
@@ -166,8 +184,8 @@ class ServiceEnquiry(models.Model):
     upload_sponsorship_doc = fields.Binary(string="Confirmation of Sponsorship")
     upload_sponsorship_doc_file_name = fields.Char(string="Confirmation of Sponsorship")
     sponsorship_doc_ref = fields.Char(string="Ref No.*")
-    upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
-    upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True)
+    upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True,store=True)
+    upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True,store=True)
     payment_doc_ref = fields.Char(string="Ref No.*")
     residance_doc = fields.Binary(string="Residance Permit Document")
     residance_doc_file_name = fields.Char(string="Residance Permit Document")
@@ -197,10 +215,10 @@ class ServiceEnquiry(models.Model):
     upload_gosi_doc = fields.Binary(string="Upload GOSI Update")
     upload_gosi_doc_file_name=fields.Char(string="GOSI Update")
     gosi_doc_ref = fields.Char(string="Ref No.*")
-    profession_change_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_doc = fields.Binary(string="Profession Change Request Doc")
     profession_change_doc_file_name = fields.Char(string="Profession Change Doc")
     profession_change_doc_ref = fields.Char(string="Ref No.*")
-    profession_change_final_doc = fields.Binary(string="Profession Change Req. Doc")
+    profession_change_final_doc = fields.Binary(string="Profession Change Final  Request Doc")
     profession_change_final_doc_file_name = fields.Char(string="Profession Change Req. Doc")
     prof_change_final_ref = fields.Char(string="Ref No.*")
     upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
@@ -264,7 +282,7 @@ class ServiceEnquiry(models.Model):
     upload_bank_limit_upgrading_letter_doc = fields.Binary(string="Bank Limit upgrading Letter")
     upload_bank_limit_upgrading_letter_doc_file_name = fields.Char(string="Bank Limit upgrading Letter")
     bank_limit_upgrading_letter_doc_ref = fields.Char(string="Ref No.*")
-
+   
     
     reason_for_loss_of_iqama = fields.Text(string="Reason for loss of Iqama")
     letter_from_police_station = fields.Binary(string="Letter from the police station of the lost iqama")
@@ -477,6 +495,9 @@ class ServiceEnquiry(models.Model):
 
     is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
 
+    
+
+
     # @api.depends('is_client_spoc')
     def _compute_is_client_spoc(self):
         for record in self:
@@ -496,6 +517,16 @@ class ServiceEnquiry(models.Model):
         for record in self:
             # Check if the user is in gov employee groups
             record.is_gov_employee = self.env.user.has_group('visa_process.group_service_request_employee')
+
+    @api.onchange('is_inside_ksa')
+    def _onchange_is_inside_ksa(self):
+        if self.is_inside_ksa:
+            self.is_outside_ksa = False
+
+    @api.onchange('is_outside_ksa')
+    def _onchange_is_outside_ksa(self):
+        if self.is_outside_ksa:
+            self.is_inside_ksa = False
 
 
 
@@ -517,10 +548,38 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'hr_card':
                 if record.reupload_hr_card and not record.rehr_card_ref:
-                    raise ValidationError("Kindly Update Reference Number for Re-upload HR Document")
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
                 record.state = 'approved'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay(self):
+        for record in self:
+            if record.service_request == 'hr_card':
+                if record.upload_hr_card and not record.hr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for  HR Document")
+                if record.reupload_hr_card and not record.rehr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for Paid HR Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
+                record.submit_clicked = True
+
+    def action_doc_uplaod_submit_self_pay_ev(self):
+        for record in self:
+            if record.service_request == 'new_ev':
+                if record.upload_issuance_doc and not record.issuance_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for  Issuance Document")
+                record.state = 'payment_done'
+                record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+                record.action_user_id =record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
+                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
             
@@ -619,7 +678,7 @@ class ServiceEnquiry(models.Model):
             vals['upload_gosi_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_GOSIUpdate.pdf"
         if 'profession_change_doc' in vals:
             vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
-        if 'profession_change_final_doc_' in vals:
+        if 'profession_change_final_doc' in vals:
             vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
         if 'upload_salary_certificate_doc' in vals:
             vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
@@ -742,6 +801,7 @@ class ServiceEnquiry(models.Model):
                 vals['upload_jawazat_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_JawazatDoc.pdf"
             if 'upload_sponsorship_doc' in vals:
                 vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
+            
         return super(ServiceEnquiry, self).write(vals)
 
     @api.depends('state', 'service_request_config_id')
@@ -795,21 +855,20 @@ class ServiceEnquiry(models.Model):
 
     def open_assign_employee_wizard(self):
         # this method opens a wizard and passes department based on the hierarchy set in service request
-
         for line in self:
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
                 for srt in treasury_id:
                     if srt.state != 'done':
                         raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
-
             # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
             if line.service_request == 'new_ev':
-                if line.state == 'submitted':
-                    level = 'level1'
                 if line.state == 'payment_done':
-                    level = 'level2'
+                    if not line.assigned_govt_emp_one:
+                        level = 'level1'
+                    elif not line.assigned_govt_emp_two:
+                        level = 'level2'
                 if line.state == 'approved' and line.assign_govt_emp_two == False:
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
@@ -817,13 +876,11 @@ class ServiceEnquiry(models.Model):
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
-
             else:
                 if line.state == 'submitted':
                     level = 'level1'
                 else:
                     level = 'level2'
-
             req_lines = line.service_request_config_id.service_department_lines
             # Sort lines by sequence
             sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
@@ -834,6 +891,7 @@ class ServiceEnquiry(models.Model):
                 else:
                     if lines.sequence == 2:  # Only append the second department for level2
                         department_ids.append((4, lines.department_id.id))
+            line.write({'processed_date': fields.Datetime.now()})
             return {
                 'name': 'Select Employee',
                 'type': 'ir.actions.act_window',
@@ -970,7 +1028,19 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req':
+            if line.service_request == 'prof_change_qiwa':
+                if not line.profession_change:
+                    raise ValidationError('Please add Profession change to')
+                if not (line.aamalcom_pay or line.self_pay or line.employee_pay):
+                    raise ValidationError('Please select who needs to pay fees.')
+                if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                    raise ValidationError(
+                        'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
+                    )
+            if line.service_request=='hr_card':
+                if not line.employment_duration:
+                    raise ValidationError('Please select the Duration')
+            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'iqama_card_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
@@ -986,12 +1056,54 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'new_ev':
                 line.dynamic_action_status = f"Submit for approval by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
             elif line.service_request == 'iqama_card_req':
                 line.dynamic_action_status = f"Require confirmation on payment made by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
             else:
                 line.dynamic_action_status = f"Employee needs to be assigned by PM"
                 line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
+    def action_submit_for_check_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.expiry_of_ere:
+                    raise ValidationError("Kindly Update Last Working Day")
+                line.state='submit_to_pm'
+                line.dynamic_action_status=f"Review is Pending By PM"
+                line.action_user_id=line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
+    def action_submit_for_review_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if not line.is_inside_ksa and not line.is_outside_ksa:
+                    raise ValidationError('Please select Either Inside KSA or Outside KSA.')
+                line.state='submit_for_review'
+                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
+                line.action_user_id=line.first_govt_employee_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
+    def final_exit_submit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} is Outside KSA.")
+                line.action_user_id=False
+                line.write({'processed_date': fields.Datetime.now()})
+
+    def final_exit_submit_inside(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                line.state='final_exit_confirmed'
+                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
+                line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initated.")
+                line.action_user_id=False
+                line.write({'processed_date': fields.Datetime.now()})
             
 
     def action_require_payment_confirmation(self):
@@ -999,11 +1111,11 @@ class ServiceEnquiry(models.Model):
             # passing error is ref no is not passed.
             if line.service_request =='new_ev':
                 if line.state=='submitted' and line.self_pay == True:
-                    if not line.issuance_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Issuance of Visa Document")
+                    if not line.proof_of_request_ref:
+                        raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
 
             if line.service_request in ('hr_card','iqama_renewal'):
-                if line.state=='submitted' and line.self_pay == True:
+                if line.state=='submitted' and line.aamalcom_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
             if line.service_request == 'prof_change_qiwa':
@@ -1019,12 +1131,13 @@ class ServiceEnquiry(models.Model):
 
             line.state = 'payment_initiation'
             line.dynamic_action_status = f"Requesting Payment confirmation Document by client spoc"
+            line.write({'processed_date': fields.Datetime.now()})
             partner_id = line.client_id.id
             user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
             if user:
                 line.action_user_id = user.id
             line.doc_uploaded = False
-
+            
             
 
     def action_new_ev_require_payment_confirmation(self):
@@ -1036,6 +1149,7 @@ class ServiceEnquiry(models.Model):
             if user:
                 line.action_user_id = user.id
             line.doc_uploaded = False
+            line.write({'processed_date': fields.Datetime.now()})
 
 
     def action_new_ev_submit_for_approval(self):
@@ -1059,6 +1173,7 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.send_email_to_op()
 
     def action_submit_for_approval(self):
@@ -1082,6 +1197,7 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'transfer_req':
                 line.state = 'waiting_client_approval'
                 line.dynamic_action_status = f'Waiting for approval by client spoc'
+                line.write({'processed_date': fields.Datetime.now()})
                 partner_id = line.client_id.id
                 user = self.env['res.users'].search([('partner_id', '=', partner_id)], limit=1)
                 if user:
@@ -1095,6 +1211,7 @@ class ServiceEnquiry(models.Model):
                 ], limit=1)
                 line.dynamic_action_status = f"Waiting for approval by OM"
                 line.action_user_id = employee.user_id
+                line.write({'processed_date': fields.Datetime.now()})
                 self.send_email_to_op()
 
     def action_client_spoc_approve(self):
@@ -1104,6 +1221,7 @@ class ServiceEnquiry(models.Model):
             # Approved by {self.env.user.name}.
             line.dynamic_action_status = f'Approved by client spoc. Second govt employee needs to be assigned by PM'
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
 
 
     @api.model
@@ -1204,6 +1322,7 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by GM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.send_email_to_gm()
 
     def action_gm_approved(self):
@@ -1214,6 +1333,7 @@ class ServiceEnquiry(models.Model):
             finance_manager = self.env['hr.department'].search([('name', 'ilike', 'Finance')], limit=1).manager_id
             line.dynamic_action_status = "Waiting for approval by FM"
             line.action_user_id = finance_manager.user_id
+            line.write({'processed_date': fields.Datetime.now()})
 
 
 
@@ -1235,12 +1355,21 @@ class ServiceEnquiry(models.Model):
             ], limit=1)
             line.dynamic_action_status = f"Waiting for approval by OM"
             line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
             self.update_pricing()
             self.send_email_to_op()
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
         for line in self:
+            # Check if a treasury record already exists for this service request
+            existing_doc = self.env['service.request.treasury'].sudo().search([
+            ('service_request_id', '=', line.id)
+            ], limit=1)
+            line.state='approved'
+
+            if existing_doc:
+                continue 
             vals = {
             'service_request_id': self.id,
             'client_id': self.client_id.id,
@@ -1277,6 +1406,7 @@ class ServiceEnquiry(models.Model):
             line.assign_govt_emp_two = True
             line.dynamic_action_status = f"Second govt employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
             # If a government employee or pm updates the sponsor number when issuing a new EV, it should automatically update the sponsor ID in that particular employee's master record.
             if line.employee_id and line.service_request == 'new_ev':
                 if not line.employee_id.sponsor_id:
@@ -1298,19 +1428,29 @@ class ServiceEnquiry(models.Model):
 
     def action_submit_payment_confirmation(self):
         for line in self:
-            if line.service_request in ('new_ev','hr_card','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
-                if not line.payment_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
 
-            # if line.service_request =='prof_change_qiwa':
+            # if line.service_request in ('new_ev','iqama_renewal','prof_change_qiwa','transfer_req') and line.state == 'payment_initiation':
+            #     if not line.payment_doc_ref:
+            #         raise ValidationError("Kindly Update Reference Number for Payment Confirmation  Document")
+
+            # # if line.service_request =='prof_change_qiwa':
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
-            line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
-            line.action_user_id = line.approver_id.user_id.id
-            line.state = 'payment_done'
-            line.doc_uploaded = False
-            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
+            if line.service_request == 'hr_card':
+                line.dynamic_action_status=f'Payment documents uploaded by Client Spoc, Document upload pending by 1st Govt employee'
+                line.action_user_id = line.first_govt_employee_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+                line.state = 'payment_done'
+                line.doc_uploaded = False
                 line.assign_govt_emp_two = True
+            else:
+                line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
+                line.action_user_id = line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+                line.state = 'payment_done'
+                line.doc_uploaded = False
+                if  line.service_request == 'iqama_renewal' or line.service_request == 'new_ev' or line.service_request == 'transfer_req'  or line.service_request == 'prof_change_qiwa':
+                    line.assign_govt_emp_two = True
             # if line.service_request == 'prof_change_qiwa':
             #     # line.doc_uploaded = True
 
@@ -1327,8 +1467,10 @@ class ServiceEnquiry(models.Model):
             line.state = 'submitted'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
             if line.service_request:
                 line.assign_govt_emp_one = True
+            line.write({'processed_date': fields.Datetime.now()})
             self.update_pricing()
             self._add_followers()
 
@@ -1347,19 +1489,26 @@ class ServiceEnquiry(models.Model):
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
             if line.service_request =='hr_card':
-                if line.state in ('payment_done','approved'):
+                if line.state in ('approved'):
                     if not line.rehr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Updated HR Document")
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    if not line.muqeem_print_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    # if not line.muqeem_print_doc_ref:
+                    #     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+            if line.service_request == 'qiwa':
+                if line.upload_qiwa_doc and not line.qiwa_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
+                if line.employee_id:
+                    line.employee_id.qiwa_contract_doc = line.upload_qiwa_doc
+                    line.employee_id.qiwa_contract_sr_no = line.name
+                    line.employee_id.qiwa_contract_ref_no = line.qiwa_doc_ref
             if line.service_request == 'transfer_req':
                 if line.state =='payment_done' and line.self_pay == True:
                     if not line.jawazat_doc_ref:
@@ -1378,13 +1527,11 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','qiwa','salary_certificate'):
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
-                if line.upload_qiwa_doc and not line.qiwa_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Qiwa Contract Document")
                 if line.upload_salary_certificate_doc and not line.salary_certificate_ref:
                     raise ValidationError("Kindly Update Reference Number for Salary Certificate Document")
                 if line.upload_sec_doc and not line.sec_doc_ref:
@@ -1426,9 +1573,9 @@ class ServiceEnquiry(models.Model):
                 if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Final exit issuance document")
             if line.service_request == 'prof_change_qiwa':
-                if not line.prof_change_final_ref:
+                if line.profession_change_final_doc and not line.prof_change_final_ref:
                     raise ValidationError("Kindly Update Reference Number for Profession Change Document")
-                if not line.muqeem_print_doc_ref:
+                if line.muqeem_print_doc and not line.muqeem_print_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
                 treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
                 if treasury_id:
@@ -1439,16 +1586,21 @@ class ServiceEnquiry(models.Model):
                             line.state = 'done'
                             line.req_completion_date = fields.Datetime.now()
                             line.dynamic_action_status = f"Process Completed"
+                            line.write({'processed_date': fields.Datetime.now()})
                             line.action_user_id= False
+                            line.write({'processed_date': fields.Datetime.now()})
                 else:
                     line.state = 'done'
                     line.req_completion_date = fields.Datetime.now()
                     line.dynamic_action_status = f"Process Completed"
+                    line.write({'processed_date': fields.Datetime.now()})
                     line.action_user_id= False
+                    line.write({'processed_date': fields.Datetime.now()})
             else:
                 line.state = 'done'
                 line.dynamic_action_status = f"Process Completed"
                 line.action_user_id= False
+                line.write({'processed_date': fields.Datetime.now()})
                 line.req_completion_date = fields.Datetime.now()
 
     # LT Medical Health Insurance Upload end
@@ -1507,6 +1659,7 @@ class ServiceEnquiry(models.Model):
             line.state = 'payment_done'
             line.dynamic_action_status = f"Employee needs to be assigned by PM"
             line.action_user_id = line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
 
     def action_iqama_process_complete(self):
         for line in self:
@@ -1515,6 +1668,7 @@ class ServiceEnquiry(models.Model):
                     if line.upload_iqama_card_doc and not line.iqama_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
             line.dynamic_action_status = f"Process Completed"
+            line.write({'processed_date': fields.Datetime.now()})
             line.action_user_id=False
             line.state = 'done'
 
@@ -1538,6 +1692,8 @@ class ServiceEnquiry(models.Model):
                 res.latest_existing_request_id = True
                 res.latest_existing_request_name = latest_existing_request.display_name
         return res
+
+  
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
@@ -1551,7 +1707,7 @@ class ServiceEnquiry(models.Model):
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
-            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or \
             line.upload_salary_certificate_doc or \
             line.upload_employment_contract_doc or \
             line.upload_bilingual_salary_certificate_doc or  \
@@ -1559,6 +1715,8 @@ class ServiceEnquiry(models.Model):
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
+            elif line.profession_change_final_doc and line.muqeem_print_doc:
+                line.doc_uploaded = True
             elif line.transfer_confirmation_doc and line.upload_qiwa_doc:
                 line.doc_uploaded = True
             elif line.upload_bank_letter_doc and line.fee_receipt_doc:
@@ -1601,7 +1759,7 @@ class ServiceEnquiry(models.Model):
                 # above repeated multilpe times
             elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
-            elif line.reupload_hr_card and line.residance_doc and line.muqeem_print_doc:
+            elif line.residance_doc and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False

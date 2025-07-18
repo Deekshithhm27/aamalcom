@@ -1,0 +1,84 @@
+<odoo>
+  <data noupdate="1">
+    <record id="seq_medical_insurance_enrollment" model="ir.sequence">
+      <field name="name">Medical Insurance Enrollment</field>
+      <field name="code">medical.insurance.enrollment</field>
+      <field name="prefix">MENROLL-</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_swapping_border_to_iqama" model="ir.sequence">
+      <field name="name">Swapping Border to Iqama</field>
+      <field name="code">swapping.border.to.iqama</field>
+      <field name="prefix">SBI/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_insurance_reimbursement" model="ir.sequence">
+        <field name="name">Insurance Reimbursement</field>
+        <field name="code">insurance.reimbursement</field>
+        <field name="prefix">REIMBURSE-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+    <record id="seq_medical_insurance_deletion" model="ir.sequence">
+      <field name="name">Medical Insurance Deletion</field>
+      <field name="code">medical.insurance.deletion</field>
+      <field name="prefix">MDELT-</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_medical_insurance_invoice_details" model="ir.sequence">
+      <field name="name">Medical Insurance Invoice Details</field>
+      <field name="code">medical.insurance.invoice.details</field>
+      <field name="prefix">MIID/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_medical_insurance_class_change" model="ir.sequence">
+      <field name="name">Medical Insurance Upgrade/Downgrade</field>
+      <field name="code">medical.insurance.class.change</field>
+      <field name="prefix">MICC/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_life_insurance_enrollment" model="ir.sequence">
+      <field name="name">Life Insurance Enrollment</field>
+      <field name="code">life.insurance.enrollment</field>
+      <field name="prefix">LENROLL-</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_life_insurance_deletion" model="ir.sequence">
+      <field name="name">Life Insurance Deletion</field>
+      <field name="code">life.insurance.deletion</field>
+      <field name="prefix">LDEL-</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_life_insurance_invoice_details" model="ir.sequence">
+      <field name="name">Life Insurance Invoice Details</field>
+      <field name="code">life.insurance.invoice.details</field>
+      <field name="prefix">LIID/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+    <record id="seq_life_insurance_class_change" model="ir.sequence">
+      <field name="name">Life Insurance Upgrade/Downgrade</field>
+      <field name="code">life.insurance.class.change</field>
+      <field name="prefix">LICC/</field>
+      <field name="padding">5</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+  </data>
+</odoo>

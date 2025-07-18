@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_dependents_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='member_no']" position="after">
+                <field name="insurance_class"/>
+            </xpath>
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                <page name="dependents" string="Dependents Details">
+                    <div class="row">
+                        <div class="col-lg-7 d-flex">
+                            <group>
+                            	<field name="dependent_ids" >
+                            		<tree create="0" edit="0">
+                            			<field name="name"/>
+                            			<field name="member_id"/>
+                            			<field name="employee_id" invisible='1'/>
+                            		</tree>
+                            	</field>
+                            </group>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+</odoo>

@@ -18,6 +18,7 @@ class DependentDocuments(models.Model):
     ev_enq_dependent_document_id = fields.Many2one('service.enquiry',string="EV Enq Id")
 
     person_name = fields.Char(string="Document Belongs to ?",required=True)
+    iqama_number = fields.Char(string="Iqama Number")
     
     dependent_passport_id = fields.Binary(string="Dependent Passport")
     dependent_iqama_id = fields.Binary(string="Dependent Iqama")

@@ -33,14 +33,14 @@
                     <page string="Documents" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('first_govt_employee_id', '=', False)]}">
                         <group attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}" string="Bank Loan">
                                 <group>
-                                    <field name="upload_bank_loan_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_bank_loan_doc_file_name"/>
+                                    <field name="upload_bank_loan_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_bank_loan_doc_file_name"/>
                                      <field name="upload_bank_loan_doc_file_name"  invisible="1"/>
-                                    <field name="bank_loan_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="bank_loan_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                                 <group>
-                                    <field name="upload_fee_receipt_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_fee_receipt_doc_file_name"/>
+                                    <field name="upload_fee_receipt_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}" filename="upload_fee_receipt_doc_file_name"/>
                                      <field name="upload_fee_receipt_doc_file_name"  invisible="1"/>
-                                    <field name="fee_receipt_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="fee_receipt_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                             </group>
                         

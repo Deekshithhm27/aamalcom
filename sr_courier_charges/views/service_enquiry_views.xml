@@ -60,11 +60,11 @@
                 <group attrs="{'invisible': ['|', ('service_request', '!=', 'courier_charges'), ('first_govt_employee_id', '=', False)]}">
                     <group>
                         <field name="upload_courier_proof_doc" 
-                               attrs="{'readonly': [('state', '!=','submitted')]}"
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"
                                filename="upload_courier_proof_doc_file_name"/>
                         <field name="upload_courier_proof_doc_file_name" invisible="1"/>
                         <field name="courier_ref"
-                               attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc', '=', True)]}"/>
                         <field name="tracking_id" 
                                attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" /> 
                             
@@ -81,7 +81,7 @@
                             <field name="upload_payment_doc_file_name" invisible="1"/>
                             <field name="payment_doc_ref"
                                   attrs="{'readonly': [('state', '!=','approved')]}"/> 
-                            <field name="courier_amount" 
+                            <field name="courier_amount" attrs="{'readonly': [('state', '!=','approved')]}"
                                 />   
                         </group>
                     </group>

@@ -353,6 +353,29 @@ class ServiceEnquiry(models.Model):
                     summary='Action Required on Ticket',
                     note='Do review and take action (Documents upload) on this ticket.'
                 )
+            elif line.service_request in ['hr_card']:
+                # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+                activity_id = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('user_id', '=', self.env.user.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_id.action_feedback(feedback='Payment Confirmation')
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+                first_govt_employee_id = line.first_govt_employee_id.user_id.id
+                self._schedule_ticket_activity(
+                    user_id=first_govt_employee_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Documents upload) on this ticket.'
+                )
+            
             else:
                 # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
                 activity_id = self.env['mail.activity'].search([
@@ -399,6 +422,28 @@ class ServiceEnquiry(models.Model):
                 note='Do review and take action (send confirmation to the client and close) on this ticket.'
             )
         return result
+
+    def action_doc_uplaod_submit(self):
+        result = super(ServiceEnquiry, self).action_doc_uplaod_submit()
+
+        for line in self:
+            if line.service_request in ['hr_card']:
+                client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+                line._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Second govt employee need to be assigned) on this ticket.'
+                )
+    def action_doc_uplaod_submit_self_pay(self):
+        result = super(ServiceEnquiry, self).action_doc_uplaod_submit_self_pay()
+        for line in self:
+            if line.service_request in ['hr_card']:
+                client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+                line._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Second govt employee need to be assigned) on this ticket.'
+                )
 
     def action_valid_ere(self):
         result = super(ServiceEnquiry, self).action_valid_ere()

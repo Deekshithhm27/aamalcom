@@ -57,6 +57,10 @@ class ServiceEnquiry(models.Model):
             if line.service_request == 'courier_charges':
                 if not line.upload_courier_doc:
                     raise ValidationError(_("Please upload the Courier document."))
+                if not line.aamalcom_pay and not line.self_pay:
+                    raise ValidationError('Please select who needs to pay fees.')
+                if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+                    raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
         return True
         
 
@@ -67,6 +71,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError(_("Kindly Update Reference Number for Attached Courier Document"))
                 line.dynamic_action_status = _("Review is Pending by PM")  
                 line.action_user_id = line.approver_id.user_id.id 
+                line.write({'processed_date': fields.Datetime.now()})
                 line.state = 'submitted'
                 line.submit_clicked = True
     
@@ -78,6 +83,7 @@ class ServiceEnquiry(models.Model):
                     record.state = 'approved'
                     record.dynamic_action_status = "Documents Upload Pending by 1st Govt Employee"
                     record.action_user_id = record.first_govt_employee_id.user_id.id
+                    record.write({'processed_date': fields.Datetime.now()})
     
     
     def action_process_complete(self):
