@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
+
+
 class ServiceEnquiry(models.Model):
     _name = 'service.enquiry'
     _order = 'id desc'
@@ -26,6 +28,7 @@ class ServiceEnquiry(models.Model):
     
     client_id = fields.Many2one('res.partner',string="Client Spoc",default=lambda self: self.env.user.partner_id)
     client_parent_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id.parent_id)
+
     # priority = fields.Selection([
     #     ('clear','Clear'),
     #     ('urgent', 'Urgent'),
