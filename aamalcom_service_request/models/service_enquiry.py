@@ -32,15 +32,12 @@ class ServiceEnquiry(models.Model):
     def _update_muqeem_pricing_line(self):
         for line in self:
             if line.final_muqeem_cost:
-                existing_line = line.service_enquiry_pricing_ids[:1]
-                if existing_line:
-                    existing_line.amount = line.final_muqeem_cost
-                else:
-                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
                         'name': 'Muqeem Fee',
                         'amount':line.final_muqeem_cost,
                         'service_enquiry_id': line.id
                         })
+                
     @api.depends('muqeem_points')
     def _compute_final_muqeem_cost(self):
         for record in self:
@@ -52,9 +49,6 @@ class ServiceEnquiry(models.Model):
             else:
                 record.final_muqeem_cost = 0.0
 
-
-    
-    
     @api.model
     def create(self, vals):
         """Handles file naming conventions while creating a record."""
