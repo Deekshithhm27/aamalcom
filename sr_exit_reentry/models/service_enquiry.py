@@ -28,7 +28,7 @@ class ServiceEnquiry(models.Model):
     exit_reentry_visa_ref = fields.Char(string="Ref No.*")
 
     # Fields - Exit Re-entry (Extension)
-    service_request_id = fields.Many2one('service.enquiry',order='create_date DESC', )
+    service_request_id = fields.Many2one('service.enquiry',order='create_date DESC',domain="[('employee_id','=',employee_id),('service_request','=','exit_reentry_issuance'),('state','=','done')]")
     ere_extension_doc = fields.Binary()
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
@@ -40,9 +40,20 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
                 if line.exit_type == 'single':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',line.service_request_type)]}}  # Matches any duration containing 'SER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'SER'
                 elif line.exit_type == 'multiple':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',line.service_request_type)]}}  # Matches any duration containing 'MER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'MER'
+
+    # makes below fields empty when service request is changed
+    @api.onchange('service_request_config_id')
+    def update_employment_duration(self):
+        if self.employment_duration:
+            self.employment_duration = False
+        if self.service_request_id:
+            self.service_request_id = False
+        if self.exit_type:
+            self.exit_type = False
+
         
     @api.model
     def create(self, vals):
