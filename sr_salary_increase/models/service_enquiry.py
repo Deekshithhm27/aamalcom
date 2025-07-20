@@ -82,23 +82,24 @@ class ServiceEnquiry(models.Model):
         This provides a starting point for the client to modify the breakup.
         """
         self.ensure_one()
-        if not self.employee_id:
-            self.client_salary_rule_ids = [(5, 0, 0)] # Clear lines if no employee
-            return
+        if self.service_request != 'salary_increase_process':
+            if not self.employee_id:
+                self.client_salary_rule_ids = [(5, 0, 0)] # Clear lines if no employee
+                return
 
-        # Clear existing lines on the service request first to avoid duplicates
-        self.client_salary_rule_ids = [(5, 0, 0)]
+            # Clear existing lines on the service request first to avoid duplicates
+            self.client_salary_rule_ids = [(5, 0, 0)]
 
-        # Iterate over the employee's current salary lines and create copies for the service request
-        new_lines = []
-        for emp_salary_line in self.employee_id.client_salary_rule_ids:
-            new_lines.append((0, 0, {
-                'name': emp_salary_line.name.id, # Link to hr.client.salary.rule
-                'sequence': emp_salary_line.sequence,
-                'amount': emp_salary_line.amount,
-                # 'last_update_date': emp_salary_line.last_update_date, # Optional: copy this if you want it editable on SR
-            }))
-        self.client_salary_rule_ids = new_lines
+            # Iterate over the employee's current salary lines and create copies for the service request
+            new_lines = []
+            for emp_salary_line in self.employee_id.client_salary_rule_ids:
+                new_lines.append((0, 0, {
+                    'name': emp_salary_line.name.id, # Link to hr.client.salary.rule
+                    'sequence': emp_salary_line.sequence,
+                    'amount': emp_salary_line.amount,
+                    # 'last_update_date': emp_salary_line.last_update_date, # Optional: copy this if you want it editable on SR
+                }))
+            self.client_salary_rule_ids = new_lines
 
     def action_submit(self):
         super(ServiceEnquiry, self).action_submit()
