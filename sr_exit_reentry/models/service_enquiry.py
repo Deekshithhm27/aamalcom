@@ -98,7 +98,6 @@ class ServiceEnquiry(models.Model):
                 [('service_request_type', '=', record.service_request_type),
                  ('service_request', '=', record.service_request)], limit=1)
             if record.service_request == 'exit_reentry_issuance_ext' or record.service_request == 'exit_reentry_issuance':
-                print("-------pridinc id",pricing_id)
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -144,17 +143,19 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         result = super(ServiceEnquiry, self).action_submit()
         for record in self:
-            if record.service_request == 'exit_reentry_issuance_ext':
-                if not record.service_request_id:
-                    raise ValidationError('Please select Valid ERE.')
-                if not record.employment_duration:
-                    raise ValidationError('Please select Duration.')
+            if record.service_request in ('exit_reentry_issuance_ext','exit_reentry_issuance'):
                 if not (record.aamalcom_pay or record.self_pay or record.employee_pay):
                     raise ValidationError('Please select who needs to pay fees.')
                 if record.aamalcom_pay and not (record.billable_to_client or record.billable_to_aamalcom):
                     raise ValidationError(
                         'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
                     )
+
+            if record.service_request == 'exit_reentry_issuance_ext':
+                if not record.service_request_id:
+                    raise ValidationError('Please select Valid ERE.')
+                if not record.employment_duration:
+                    raise ValidationError('Please select Duration.')
             if record.service_request in ['exit_reentry_issuance_ext'] and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
