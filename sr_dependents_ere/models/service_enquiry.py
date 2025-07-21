@@ -37,6 +37,16 @@ class ServiceEnquiry(models.Model):
                 record.action_user_id = record.approver_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()}) 
 
+    @api.onchange('exit_type')
+    def _onchange_exit_type_dependents_ere(self):
+        for line in self:
+            if line.service_request == 'dependents_ere':
+                if line.exit_type == 'single':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'SER'
+                elif line.exit_type == 'multiple':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'MER'
+
+
     @api.model
     def update_pricing(self):
         result = super(ServiceEnquiry, self).update_pricing()
