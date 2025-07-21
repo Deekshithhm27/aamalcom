@@ -28,7 +28,7 @@ class ServiceEnquiry(models.Model):
     exit_reentry_visa_ref = fields.Char(string="Ref No.*")
 
     # Fields - Exit Re-entry (Extension)
-    service_request_id = fields.Many2one('service.enquiry',order='create_date DESC', )
+    service_request_id = fields.Many2one('service.enquiry',order='create_date DESC',domain="[('employee_id','=',employee_id),('service_request','=','exit_reentry_issuance'),('state','=','done')]")
     ere_extension_doc = fields.Binary()
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
@@ -40,9 +40,20 @@ class ServiceEnquiry(models.Model):
         for line in self:
             if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
                 if line.exit_type == 'single':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',line.service_request_type)]}}  # Matches any duration containing 'SER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'SER'
                 elif line.exit_type == 'multiple':
-                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',line.service_request_type)]}}  # Matches any duration containing 'MER'
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=',line.service_request_type),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'MER'
+
+    # makes below fields empty when service request is changed
+    @api.onchange('service_request_config_id')
+    def update_employment_duration(self):
+        if self.employment_duration:
+            self.employment_duration = False
+        if self.service_request_id:
+            self.service_request_id = False
+        if self.exit_type:
+            self.exit_type = False
+
         
     @api.model
     def create(self, vals):
@@ -87,7 +98,6 @@ class ServiceEnquiry(models.Model):
                 [('service_request_type', '=', record.service_request_type),
                  ('service_request', '=', record.service_request)], limit=1)
             if record.service_request == 'exit_reentry_issuance_ext' or record.service_request == 'exit_reentry_issuance':
-                print("-------pridinc id",pricing_id)
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -133,17 +143,19 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         result = super(ServiceEnquiry, self).action_submit()
         for record in self:
-            if record.service_request == 'exit_reentry_issuance_ext':
-                if not record.service_request_id:
-                    raise ValidationError('Please select Valid ERE.')
-                if not record.employment_duration:
-                    raise ValidationError('Please select Duration.')
+            if record.service_request in ('exit_reentry_issuance_ext','exit_reentry_issuance'):
                 if not (record.aamalcom_pay or record.self_pay or record.employee_pay):
                     raise ValidationError('Please select who needs to pay fees.')
                 if record.aamalcom_pay and not (record.billable_to_client or record.billable_to_aamalcom):
                     raise ValidationError(
                         'Please select at least one billing detail when Fees to be paid by Aamalcom is selected.'
                     )
+
+            if record.service_request == 'exit_reentry_issuance_ext':
+                if not record.service_request_id:
+                    raise ValidationError('Please select Valid ERE.')
+                if not record.employment_duration:
+                    raise ValidationError('Please select Duration.')
             if record.service_request in ['exit_reentry_issuance_ext'] and record.aamalcom_pay:
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
