@@ -130,4 +130,24 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_search_medical_insurance_deletion" model="ir.ui.view">
+        <field name="name">medical.insurance.deletion.tree</field>
+        <field name="model">medical.insurance.deletion</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="employee_id" string="Employee"/> 
+                <field name="iqama_no" string="Iqama Number"/>
+                <field name="passport_no" string="Passport Number"/>
+                <field name="identification_id" string="Border Number"/>
+                <field name="sponsor_id" string="Sponsor Number"/>   
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="employee" string="Employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Client" name="client_parent_id" domain="[]" context="{'group_by': 'client_parent_id'}"/>    
+                </group>
+            </search>
+        </field>
+    </record>
 </odoo>

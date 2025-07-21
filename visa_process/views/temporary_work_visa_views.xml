@@ -196,6 +196,7 @@
                 <field name="name" string="Sequence"/>
                 <field name="client_id" string="Client"/>
                 <field name="country_id" string="Nationality"/>
+                <field name="iqama_no" string="Iqama Number"/>
                 <separator/>
                 <filter string="To Approve" name="approval_requests" domain="[('state', '=','waiting')]"/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
