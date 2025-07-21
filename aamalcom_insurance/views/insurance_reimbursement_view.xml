@@ -59,4 +59,21 @@
         <field name="res_model">insurance.reimbursement</field>
         <field name="view_mode">tree,form</field>
     </record>
+
+    <record id="view_search_insurance_reimbursement" model="ir.ui.view">
+        <field name="name">insurance.reimbursement.tree</field>
+        <field name="model">insurance.reimbursement</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="employee_id" string="Employee"/> 
+                <field name="client_parent_id" string="Client"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="employee" string="Employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Client" name="client_parent_id" domain="[]" context="{'group_by': 'client_parent_id'}"/>    
+                </group>
+            </search>
+        </field>
+    </record>
 </odoo>
