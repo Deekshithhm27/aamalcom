@@ -48,7 +48,7 @@ class ServiceEnquiry(models.Model):
                 vals['upload_stating_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_StatingDoc.pdf"
         return super(ServiceEnquiry, self).write(vals)    
 
-    @api.onchange('employee_id')
+    @api.onchange('employee_id','service_request')
     def onchange_employee_update_data(self):
         """
         Original onchange method, now also calls the new method
@@ -60,11 +60,7 @@ class ServiceEnquiry(models.Model):
                 # Call the new method to populate the salary lines
                 if line.service_request == 'salary_increase_process':
                     line._onchange_employee_populate_salary_lines()
-            else:
-                line.doj = False
-                # Clear existing salary lines if employee is unselected
-                line.client_salary_rule_ids = [(5, 0, 0)] # Command to clear all existing lines
-
+            
     @api.depends('employee_id', 'employee_id.doj')
     def _compute_service_period(self):
         for record in self:
