@@ -53,9 +53,6 @@ class AccountMove(models.Model):
 
     def action_save_merged_insurance_pdf(self):
         for move in self:
-            if move.invoice_type != 'insurance':
-                raise UserError("This is not an insurance invoice.")
-
             # get both report actions
             invoice_report = self.env.ref("aamalcom_accounting_reporting.action_report_tax_invoice")
             insurance_report = self.env.ref("aamalcom_accounting_reporting.action_report_insurance_invoice")
@@ -109,5 +106,6 @@ class AccountMove(models.Model):
         return True
 
     def action_post(self):
-        self.action_save_merged_insurance_pdf()
+        if move.invoice_type == 'insurance':
+            self.action_save_merged_insurance_pdf()
         return super(AccountMove, self).action_post()
