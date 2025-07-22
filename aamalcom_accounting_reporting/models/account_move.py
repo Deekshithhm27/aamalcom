@@ -106,6 +106,6 @@ class AccountMove(models.Model):
         return True
 
     def action_post(self):
-        if move.invoice_type == 'insurance':
+        if self.invoice_type == 'insurance':
             self.action_save_merged_insurance_pdf()
         return super(AccountMove, self).action_post()
