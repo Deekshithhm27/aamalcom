@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_documents_section"
+        name="Documents"
+        parent="visa_process.menu_base_visa_process"
+        sequence="5"
+        groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator"
+    />
+
+    </odoo>
+
+    
