@@ -1083,7 +1083,12 @@ class ServiceEnquiry(models.Model):
             if line.service_request=='hr_card':
                 if not line.employment_duration:
                     raise ValidationError('Please select the Duration')
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'iqama_card_req':
+            # if line.service_request == 'transfer_req':
+            #     if not line.aamalcom_pay and not line.self_pay:
+            #         raise ValidationError('Please select who needs to pay fees.')
+            # if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+            #     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
+            if line.service_request == 'new_ev' or line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'iqama_card_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):

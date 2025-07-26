@@ -304,7 +304,23 @@
                         </group>
                     </group>
 
-                    <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal','new_ev','transfer_req'))]}">
+                    <group name="lt_hr_card" attrs="{'invisible': ['|',('service_request', 'not in', ('transfer_req')),('transfer_type','!=','to_aamalcom')]}">
+                        <group string="Fees to be paid by">
+                            <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                            <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                            <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
+                            <field name="aamalcom_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
+                        </group>
+                        <group string="Billing Details" attrs="{'invisible':[('aamalcom_pay','=',False)]}">
+                            <field name="billable_to_client_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
+                            <field name="billable_to_client" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="billable_to_aamalcom_string" readonly="1"  nolabel="1" style="color: black; font-weight: bold;"/>
+                            <field name="billable_to_aamalcom" nolabel="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+
+                        </group>
+                    </group>
+
+                    <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal','new_ev'))]}">
                         <group string="Fees to be paid by">
                             <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
                             <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
@@ -338,13 +354,13 @@
                                         <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
                                     </group>
                                 </group>
-                                <group string="Transfer Confirmation Document" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                <group string="Transfer Confirmation Document" attrs="{'invisible':['|',('service_request', '!=','transfer_req'),('transfer_type','!=','to_aamalcom')]}">
                                     <field name="transfer_confirmation_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="transfer_confirmation_doc_file_name"/>
                                      <field name="transfer_confirmation_doc_file_name"  invisible="1"/>
                                     <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
                                 </group>
-                                <group string="Qiwa Contract" attrs="{'invisible':[('service_request', '!=','transfer_req')]}">
+                                <group string="Qiwa Contract" attrs="{'invisible':['|',('service_request', '!=','transfer_req'),('transfer_type','!=','to_aamalcom')]}">
                                     <field name="upload_qiwa_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_qiwa_doc_file_name"/>
                                      <field name="upload_qiwa_doc_file_name"  invisible="1"/>
                                     <field name="qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
