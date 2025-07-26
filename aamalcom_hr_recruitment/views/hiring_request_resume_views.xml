@@ -1,0 +1,46 @@
+<odoo>
+    <record id="view_recruitment_hiring_request_resume_tree" model="ir.ui.view">
+        <field name="name">recruitment.hiring.request.resume.tree</field>
+        <field name="model">recruitment.hiring.request.resume</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="filename"/>
+                <field name="state"/>
+                <field name="uploaded_by"/>
+                <field name="upload_date"/>
+                <button name="action_shortlist" string="Shortlist" type="object" icon="fa-check"
+                    attrs="{'invisible': [('state', 'in', ['shortlisted', 'rejected'])]}"/>
+                <button name="action_reject" string="Reject" type="object" icon="fa-times"
+                    attrs="{'invisible': [('state', 'in', ['shortlisted', 'rejected'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_recruitment_hiring_request_resume_form" model="ir.ui.view">
+        <field name="name">recruitment.hiring.request.resume.form</field>
+        <field name="model">recruitment.hiring.request.resume</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="attachment" filename="filename" required="1"/>
+                        <field name="uploaded_by" readonly="1"/>
+                        <field name="upload_date" readonly="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+</odoo>

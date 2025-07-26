@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_recruitment_hiring_request_reject_wizard_form" model="ir.ui.view">
+        <field name="name">hiring.request.reject.wizard.form</field>
+        <field name="model">hiring.request.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Hiring Request">
+                <sheet>
+                    <group>
+                        <field name="reject_reason" widget="text" placeholder="Enter reason for rejection" required="1"/>
+                    </group>
+                    <footer>
+                        <button string="Reject" type="object" name="action_confirm_reject" class="btn-danger"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
