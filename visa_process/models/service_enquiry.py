@@ -61,6 +61,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
+        ('inside_or_outside_ksa','Inside/Outside KSA Confirmation Pending'),
         ('passed_to_treasury','Passed to Treasury'),
         ('waiting_payroll_approval','Waiting Payroll Confirmation'),
         ('waiting_hr_approval','Waiting HR Manager Approval'),
@@ -164,8 +165,7 @@ class ServiceEnquiry(models.Model):
     from_date = fields.Date(string="From Date")
     valid_reason = fields.Text(string="Valid reason to be stated")
     any_credit_note = fields.Text(string="Any credit note to be issued with reason")
-    ere_last_date = fields.Date(string="Expiry of ERE", help="Expiry date of the employee's ERE")
-    
+    ere_last_date = fields.Date(string="Last Working Day")    
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
 
@@ -1067,14 +1067,34 @@ class ServiceEnquiry(models.Model):
                 line.action_user_id = line.approver_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
 
+    def action_submit_doc_uploaded_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
+                    raise ValidationError('Please enter the Reference Number.')
+                line.state='inside_or_outside_ksa'
+                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
+                line.action_user_id=line.first_govt_employee_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
     def action_submit_for_check_final_exit(self):
         for line in self:
             if line.service_request=='final_exit_issuance':
-                if not line.is_inside_ksa and not line.expiry_of_ere:
+                if not line.ere_last_date:
                     raise ValidationError("Kindly Update Last Working Day")
                 line.state='submit_to_pm'
                 line.dynamic_action_status=f"Review is Pending By PM"
                 line.action_user_id=line.approver_id.user_id.id
+                line.write({'processed_date': fields.Datetime.now()})
+
+    def action_submit_doc_uploaded_final_exit(self):
+        for line in self:
+            if line.service_request=='final_exit_issuance':
+                if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
+                    raise ValidationError('Please enter the Reference Number.')
+                line.state='inside_or_outside_ksa'
+                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
+                line.action_user_id=line.first_govt_employee_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
 
     def action_submit_for_review_final_exit(self):
@@ -1090,21 +1110,50 @@ class ServiceEnquiry(models.Model):
     def final_exit_submit(self):
         for line in self:
             if line.service_request=='final_exit_issuance':
-                line.state='final_exit_confirmed'
+                line.state='done'
                 line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
                 line.message_post(body=f"The Employee: {self.employee_id.name} is Outside KSA.")
                 line.action_user_id=False
                 line.write({'processed_date': fields.Datetime.now()})
 
+    
+
     def final_exit_submit_inside(self):
         for line in self:
-            if line.service_request=='final_exit_issuance':
-                line.state='final_exit_confirmed'
-                line.dynamic_action_status=f"Final Exit Confirmed and Process is Completed"
-                line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initated.")
-                line.action_user_id=False
-                line.write({'processed_date': fields.Datetime.now()})
-            
+            if line.service_request == 'final_exit_issuance':
+                # Existing logic
+                line.state = 'done'
+                line.dynamic_action_status = f"Final Exit Confirmed and Process is Completed"
+                line.action_user_id = False
+                line.message_post(body=f"The Employee: {self.employee_id.name} with {self.name} is Inside KSA Muqeem Dropout to be initiated.")
+
+                # Only allow if user is in group_service_request_employee
+                if self.env.user.has_group('visa_process.group_service_request_employee'):
+                    # Find the service_request_config_id for muqeem_dropout
+                    muqeem_config = self.env['service.request.config'].search([('service_request', '=', 'muqeem_dropout')], limit=1)
+                    vals = {
+                        'employee_id': line.employee_id.id,
+                        'client_id': line.client_id.id,
+                        'client_parent_id': line.client_parent_id.id if line.client_parent_id else False,
+                        'service_request': 'muqeem_dropout',
+                        'service_request_config_id': muqeem_config.id if muqeem_config else False,
+                        'state': 'submitted',
+                        'user_id': self.env.user.id,
+                        'company_id': line.company_id.id,
+                        'iqama_no': line.iqama_no,
+                        'identification_id': line.identification_id,
+                        'passport_no': line.passport_no,
+                        'sponsor_id': line.sponsor_id.id if line.sponsor_id else False,
+                        'is_inside_ksa': True,
+                        'ere_last_date': getattr(line, 'ere_last_date', None) or getattr(line, 'expiry_of_ere', None),
+                        'dynamic_action_status': 'Pm needs to assign 1st GRE',
+                    }
+                    # Create the new ticket first
+                    new_ticket = self.sudo().create(vals)
+                    # Assign to Project Manager if available
+                    pm_employee = line.client_id.company_spoc_id
+                    if pm_employee and pm_employee.user_id:
+                        new_ticket.action_user_id = pm_employee.user_id.id
 
     def action_require_payment_confirmation(self):
         for line in self:
@@ -1527,7 +1576,7 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','final_exit_issuance','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','salary_certificate'):
+            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','istiqdam_letter','bilingual_salary_certificate','contract_letter','exception_letter','attestation_waiver_letter','embassy_letter','rental_agreement','car_loan','bank_loan','emp_secondment_or_cub_contra_ltr','cultural_letter','employment_contract','apartment_lease','vehicle_lease','bank_letter','gosi','sec','ins_class_upgrade','iqama_no_generation','salary_certificate'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
@@ -1570,8 +1619,6 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Bank account Opening Letter")
                 if line.upload_bank_limit_upgrading_letter_doc and not line.bank_limit_upgrading_letter_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Bank limit upgrading letter")
-                if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Final exit issuance document")
             if line.service_request == 'prof_change_qiwa':
                 if line.profession_change_final_doc and not line.prof_change_final_ref:
                     raise ValidationError("Kindly Update Reference Number for Profession Change Document")
@@ -1702,7 +1749,7 @@ class ServiceEnquiry(models.Model):
         'upload_cultural_letter_doc','fee_receipt_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
-        'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
+        'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_soa_doc',
         'upload_sec_doc','residance_doc','reupload_hr_card','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
@@ -1711,7 +1758,7 @@ class ServiceEnquiry(models.Model):
             line.upload_salary_certificate_doc or \
             line.upload_employment_contract_doc or \
             line.upload_bilingual_salary_certificate_doc or  \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_issuance_doc:
+            line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
             #     line.doc_uploaded = True
