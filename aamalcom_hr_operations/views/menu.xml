@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      
+        <!-- Menu for requests -->
+    <menuitem id="menu_hr_operations_root" name="Hr Operations">
+    	<menuitem id="menu_hr_employee_change_requests" name="Change Requests" action="action_hr_employee_change_requests" sequence="10"/>
+    </menuitem>
+    </data>
+</odoo>

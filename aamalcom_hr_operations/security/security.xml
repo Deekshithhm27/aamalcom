@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Groups -->
+
+    <!-- Parent group -->
+<record id="module_category_hr_operations" model="ir.module.category">
+    <field name="name">Hr Operations</field>
+    <field name="parent_id" ref="base.module_category_human_resources"/>
+    <field name="sequence">50</field>
+    <!-- This makes it a dropdown instead of checkboxes -->
+</record>
+
+<!-- Internal Employee -->
+<record id="group_hr_employee_internal" model="res.groups">
+    <field name="name">Internal Employee</field>
+    <field name="category_id" ref="module_category_hr_operations"/>
+    <field name="comment">Internal employees who can create change requests</field>
+</record>
+
+<!-- External Employee -->
+<record id="group_hr_employee_external" model="res.groups">
+    <field name="name">External Employee</field>
+    <field name="category_id" ref="module_category_hr_operations"/>
+    <field name="comment">External employees with restricted access</field>
+</record>
+
+    <!-- Record Rules for employees -->
+    <!-- Employee sees and modifies only own requests -->
+    
+    <record id="hr_change_request_rule_own_employee" model="ir.rule">
+	    <field name="name">Employee can only see own change requests</field>
+	    <field name="model_id" ref="model_hr_employee_change_request"/>
+	    <field name="domain_force">['|', ('requested_by','=',user.id),
+	        ('requested_by','=',False)]</field> <!-- fallback -->
+	    <field name="groups" eval="[(4, ref('aamalcom_hr_operations.group_hr_employee_internal'))]"/>
+	    <field name="perm_read" eval="True"/>
+	    <field name="perm_write" eval="True"/>
+	    <field name="perm_create" eval="True"/>
+	    <field name="perm_unlink" eval="True"/>
+	</record>
+
+    <!-- HR Manager (using built-in group) can see all -->
+    <record id="hr_change_request_rule_hr_manager" model="ir.rule">
+        <field name="name">HR Manager can see all employee change requests</field>
+        <field name="model_id" ref="model_hr_employee_change_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

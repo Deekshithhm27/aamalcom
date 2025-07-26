@@ -1,0 +1,22 @@
+{
+    'name': 'Aamalcom Hr Operations',
+    'version': '1.0.0',
+    'summary': 'Manage employee info change requests with approval and notifications',
+    'category': 'Human Resources',
+    'author': 'Lucidspire',
+    'website': 'https://lucidspire.com',
+    'depends': ['hr', 'mail','visa_process'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/ir_sequence.xml',
+        'data/mail_template.xml',
+        'views/hr_employee_change_request_views.xml',
+        'views/hr_employee_views.xml',
+        'wizard/hr_employee_reject_wizard_views.xml',
+        'views/menu.xml'
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

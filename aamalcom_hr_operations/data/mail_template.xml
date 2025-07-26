@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Email template: Notify HR managers about new request -->
+    <record id="email_template_hr_employee_change_request_new" model="mail.template">
+        <field name="name">New Employee Change Request Notification (HR)</field>
+        <field name="email_from">${object.requested_by.partner_id.email or 'noreply@company.com'}</field>
+        <field name="model_id" ref="aamalcom_hr_operations.model_hr_employee_change_request"/>
+        <field name="subject">New Employee Change Request: ${object.name}</field>
+        <field name="email_to">${','.join(user.email for user in env.ref('visa_process.group_service_request_hr_manager').users if user.email)}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello HR Manager,</p>
+            <p>A new employee change request has been submitted by ${object.requested_by.name}.</p>
+            <ul>
+                <li><b>Employee:</b> ${object.employee_id.name}</li>
+                <li><b>Change Type:</b> ${object.change_type == 'marital' and 'Marital Status' or object.change_type == 'mobile' and 'Mobile Number' or 'Email Address'}</li>
+                <li><b>New Value:</b> ${object.new_value}</li>
+                <li><b>Reason:</b> ${object.reason or '-'}</li>
+            </ul>
+            <p>Please review and approve/reject it in the system.</p>
+        ]]></field>
+    </record>
+
+    <!-- Email template: Notify Employee about approval/rejection -->
+    <record id="email_template_hr_employee_change_request_status" model="mail.template">
+        <field name="name">Employee Change Request Status Update</field>
+        <field name="email_from">${object.approved_by.partner_id.email or 'noreply@company.com'}</field>
+        <field name="model_id" ref="aamalcom_hr_operations.model_hr_employee_change_request"/>
+        <field name="subject">Your Employee Change Request has been ${object.state}</field>
+        <field name="email_to">${object.requested_by.partner_id.email or ''}</field>
+        <field name="body_html"><![CDATA[
+            <p>Dear ${object.requested_by.name},</p>
+            <p>Your employee change request for <b>${
+                object.change_type == 'marital' and 'Marital Status' or object.change_type == 'mobile' and 'Mobile Number' or 'Email Address'
+            }</b> has been <b>${object.state.capitalize()}</b>.</p>
+            <p><b>Details:</b></p>
+            <ul>
+                <li>Employee: ${object.employee_id.name}</li>
+                <li>New Value: ${object.new_value}</li>
+                <li>Reason: ${object.reason or '-'}</li>
+            </ul>
+            <p>Thank you.</p>
+        ]]></field>
+    </record>
+</odoo>
