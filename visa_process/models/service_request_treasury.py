@@ -67,8 +67,8 @@ class ServiceRequestTreasury(models.Model):
             # Set dynamic_action_status based on conditions
             if line.service_request_id.service_request == 'hr_card':
                 if line.service_request_id.state == 'approved':
-                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
-                    line.service_request_id.action_user_id = line.service_request_id.first_govt_employee_id.user_id.id
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by second govt employee."
+                    line.service_request_id.action_user_id = line.service_request_id.second_govt_employee_id.user_id.id
                     line.service_request_id.write({'processed_date': fields.Datetime.now()})
 
             elif line.service_request_id.service_request == 'transfer_req':
