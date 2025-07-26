@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_qiwa_document_form" model="ir.ui.view">
+        <field name="name">qiwa.document.form</field>
+        <field name="model">qiwa.document</field>
+        <field name="arch" type="xml">
+            <form string="Iqama Card Generation">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,ticket_submitted,completed,refused,cancelled"
+                           options='{"clickable": "1"}'/>
+                    <button name="action_confirm_documents"
+                            type="object"
+                            string="Confirm Documents"
+                            class="btn-primary"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'draft'),('fee_receipt_doc','=',False),('confirmation_doc','=',False)]}"/>
+                    </header>
+                <sheet>
+                    <div class="oe_title mb24" name="service_enquiry">
+                        <field name="service_request_type" widget="web_ribbon" readonly="1"/>
+                        <field name="service_request_type" invisible="1"/>
+                        <field name="service_request" invisible="1"/>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="service_request_config_id" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="iqama_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="passport_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="identification_id" string="Border No." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="sponsor_id" string="Sponsor Number" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Documents" attrs="{'invisible': [('service_request', '!=', 'iqama_print')]}">
+                            <group>
+                                <group> <field name="fee_receipt_doc"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           force_save="1"
+                                           filename="fee_receipt_doc_file_name"/>
+                                    <field name="fee_receipt_doc_file_name" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="fee_receipt_doc_ref"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           force_save="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group> <field name="confirmation_doc"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           force_save="1"
+                                           filename="confirmation_doc_file_name"/>
+                                    <field name="confirmation_doc_file_name" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="confirmation_doc_ref"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           force_save="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_qiwa_document_tree" model="ir.ui.view">
+        <field name="name">qiwa.document.tree</field>
+        <field name="model">qiwa.document</field>
+        <field name="arch" type="xml">
+            <tree string="Qiwa Documents">
+                <field name="employee_id"/>
+                <field name="iqama_no"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_qiwa_document" model="ir.actions.act_window">
+        <field name="name">Iqama Card Generation</field>
+        <field name="res_model">qiwa.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your Iqama Card
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_qiwa_documents"
+              name="Iqama Card Generation"
+              parent="iqama_card_generation.menu_documents_section"
+              action="action_qiwa_document"
+              sequence="10"/>
+</odoo>
