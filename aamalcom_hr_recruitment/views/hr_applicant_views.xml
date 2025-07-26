@@ -16,6 +16,9 @@
 	        <xpath expr="//button[@name='create_employee_from_applicant']" position="replace">
 	            <button string="Create Employee" name="create_employee_from_applicant" type="object" data-hotkey="v" class="oe_highlight o_create_employee" attrs="{'invisible': ['|', ('emp_id', '!=', False), '|', ('active', '=', False), ('stage_id', '!=', 4)]}"/>
 	        </xpath>
+	        <xpath expr="//field[@name='job_id']" position="after">
+	        	<field name="doj"/>
+	        </xpath>
 	    </field>
 	</record>
 

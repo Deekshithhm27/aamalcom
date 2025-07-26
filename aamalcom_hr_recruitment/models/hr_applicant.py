@@ -6,6 +6,7 @@ class HrApplicant(models.Model):
     _description = 'Resume Uploaded for Hiring Request'
 
     job_request_id = fields.Many2one('recruitment.hiring.request',string='Request')
+    doj = fields.Date(string="Date of Joining")
     
 
     def create_employee_from_applicant(self):
@@ -35,6 +36,7 @@ class HrApplicant(models.Model):
                     'default_job_id': applicant.job_id.id,
                     'default_job_title': applicant.job_id.name,
                     'default_address_home_id': address_id,
+                    'default_doj':applicant.doj,
                     'default_custom_employee_type': 'internal',
                     'default_department_id': applicant.department_id.id or False,
                     'default_address_id': applicant.company_id and applicant.company_id.partner_id
