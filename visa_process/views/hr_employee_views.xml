@@ -124,6 +124,7 @@
                         <field name="arrival_date"/>
                         <field name="employment_duration"/>
                         <field name="probation_term"/>
+                        <field name="probation_end_date"/>
                     </group>
                     <group>
                         <field name="notice_period"/>

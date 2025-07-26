@@ -6,6 +6,8 @@ from datetime import datetime
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+from datetime import timedelta
+import re
 
 
 class HrEmployee(models.Model):
@@ -57,6 +59,11 @@ class HrEmployee(models.Model):
     employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
         ('15','15 Months'),('18','18 Months'),('21','21 Months'),('24','24 Months')],string="Duration of Employment",tracking=True)
     probation_term = fields.Char(string="Probation Term")
+
+    probation_end_date = fields.Date(
+        string="Probation End Date",
+        compute='_compute_probation_end_date',
+    )
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
@@ -82,6 +89,26 @@ class HrEmployee(models.Model):
     member_no = fields.Char(string="Insurance Member Number")
 
     bank_ids = fields.One2many('res.partner.bank','employee_id',string="Banks")
+
+    @api.depends('doj', 'probation_term')
+    def _compute_probation_end_date(self):
+        for rec in self:
+            rec.probation_end_date = False
+            if not rec.doj or not rec.probation_term:
+                continue
+
+            term = rec.probation_term.strip().lower()
+            match = re.match(r"(\d+)\s*(day|days|week|weeks|month|months)?", term)
+            if match:
+                value = int(match.group(1))
+                unit = match.group(2)
+
+                if not unit or 'day' in unit:
+                    rec.probation_end_date = rec.doj + timedelta(days=value)
+                elif 'week' in unit:
+                    rec.probation_end_date = rec.doj + timedelta(weeks=value)
+                elif 'month' in unit:
+                    rec.probation_end_date = rec.doj + relativedelta(months=value)
 
 
     @api.model
