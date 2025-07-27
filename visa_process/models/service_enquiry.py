@@ -53,7 +53,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_client_approval', 'Waiting Client Spoc Approval'),
         ('submitted_to_insurance','Submitted to Insurance'),
         ('submit_to_pm','Submitted to PM'),
-        ('doc_uploaded_by_first_govt_employee','Documents uploaded By First Govt Employee'),
+        ('doc_uploaded_by_first_govt_employee','Documents uploaded By Govt Employee'),
         ('submit_for_review','Submit for Review'),
         ('final_exit_confirmed','Final exit Conirmed'),
         ('client_approved','Approved by Client Spoc'),
@@ -169,9 +169,12 @@ class ServiceEnquiry(models.Model):
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
 
+    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Type", store=True)
+    hr_card_amount=fields.Integer(string="HR Card Amount")
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
     hr_card_ref = fields.Char(string="Ref No.*")
+    jawazat_card_amount=fields.Integer(string="Jawazat Amount")
     iqama_issue_date = fields.Date(string="Iqama Issue Date")
     iqama_expiry_date = fields.Date(string="Iqama Expiry Date")
     reupload_hr_card = fields.Binary(string="Paid HR Card Document")
@@ -544,17 +547,50 @@ class ServiceEnquiry(models.Model):
             is_req_admin = req_admin in record.env.user.groups_id
             record.is_service_request_client_spoc = is_client_spoc or is_aamalcom_spoc or is_fin_group or is_req_admin
 
+    def update_hr_card_amount(self):
+        for line in self:
+            if line.service_request == 'hr_card': # New condition
+                if line.hr_card_amount:
+                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                            'name': 'HR Card Amount',
+                            'amount': line.hr_card_amount,
+                            'service_enquiry_id': line.id
+                            })
+            line.state = 'doc_uploaded_by_first_govt_employee'
+            line.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
+            line.action_user_id =line.approver_id.user_id.id
+            line.write({'processed_date': fields.Datetime.now()})
+
+    def update_jawazat_amount(self):
+        for line in self:
+            if line.service_request == 'hr_card': # New condition
+                if line.jawazat_card_amount:
+                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                            'name': 'Jawazat Amount',
+                            'amount': line.jawazat_card_amount,
+                            'service_enquiry_id': line.id
+                            })
+            line.state = 'waiting_op_approval'
+            group = self.env.ref('visa_process.group_service_request_operations_manager')
+            users = group.users
+            employee = self.env['hr.employee'].search([
+            ('user_id', 'in', users.ids)
+            ], limit=1)
+            line.dynamic_action_status = f"Waiting for approval by OM"
+            line.action_user_id = employee.user_id
+            line.write({'processed_date': fields.Datetime.now()})
+            self.send_email_to_op()
+            
+
     def action_doc_uplaod_submit(self):
         for record in self:
             if record.service_request == 'hr_card':
                 if record.reupload_hr_card and not record.rehr_card_ref:
                     raise ValidationError("Kindly Update Reference Number for Paid HR Document")
-                record.state = 'approved'
+                record.state = 'doc_uploaded_by_first_govt_employee'
                 record.dynamic_action_status = f"Document uploaded by 1st Govt employee, PM ,needs to assign 2nd Govt Employee"
                 record.action_user_id =record.approver_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
-                record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded paid HR card,PM Needs to Review and assign 2nd GRE")
-                record.submit_clicked = True
 
     def action_doc_uplaod_submit_self_pay(self):
         for record in self:
@@ -873,6 +909,13 @@ class ServiceEnquiry(models.Model):
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
+            if line.service_request == 'hr_card':
+                    if line.state == 'submitted':
+                        level = 'level1'
+                    if line.state == 'doc_uploaded_by_first_govt_employee':
+                        level = 'level2'
+                    if line.state == 'payment_done':
+                        level = 'level2'
             elif line.service_request =='iqama_card_req':
                 if line.state == 'payment_done':
                     level = 'level1'
@@ -975,7 +1018,7 @@ class ServiceEnquiry(models.Model):
                     ('service_request', '=', record.service_request)], limit=1)
             # iqama_card_req - payment will be collected offline
             # if record.aamalcom_pay and record.service_request == 'transfer_req' or record.service_request != 'iqama_card_req':
-            if record.aamalcom_pay and record.service_request == 'new_ev' or record.service_request == 'hr_card' or record.service_request == 'iqama_renewal' or record.service_request == 'prof_change_qiwa':
+            if record.aamalcom_pay and record.service_request == 'new_ev'  or record.service_request == 'iqama_renewal' or record.service_request == 'prof_change_qiwa':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -1040,7 +1083,12 @@ class ServiceEnquiry(models.Model):
             if line.service_request=='hr_card':
                 if not line.employment_duration:
                     raise ValidationError('Please select the Duration')
-            if line.service_request == 'new_ev' or line.service_request == 'transfer_req' or line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'iqama_card_req':
+            # if line.service_request == 'transfer_req':
+            #     if not line.aamalcom_pay and not line.self_pay:
+            #         raise ValidationError('Please select who needs to pay fees.')
+            # if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
+            #     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
+            if line.service_request == 'new_ev' or line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'iqama_card_req':
                 if not line.aamalcom_pay and not line.self_pay:
                     raise ValidationError('Please select who needs to pay fees.')
             if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
@@ -1163,10 +1211,17 @@ class ServiceEnquiry(models.Model):
                     if not line.proof_of_request_ref:
                         raise ValidationError("Kindly Update Reference Number for Proof of Request Document")
 
-            if line.service_request in ('hr_card','iqama_renewal'):
+            if line.service_request in ('iqama_renewal'):
                 if line.state=='submitted' and line.aamalcom_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
+            if line.service_request =='hr_card':
+                if line.hr_card_amount:
+                    line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                            'name': 'HR Card Amount',
+                            'amount': line.hr_card_amount,
+                            'service_enquiry_id': line.id
+                            })
             if line.service_request == 'prof_change_qiwa':
                 if line.state=='submitted':
                     if line.profession_change_doc and not line.profession_change_doc_ref:
@@ -1486,8 +1541,8 @@ class ServiceEnquiry(models.Model):
             #     line.dynamic_action_status = f'Payment done by {line.client_id.name}. Process to be completed by {line.first_govt_employee_id.name}'
             # else:
             if line.service_request == 'hr_card':
-                line.dynamic_action_status=f'Payment documents uploaded by Client Spoc, Document upload pending by 1st Govt employee'
-                line.action_user_id = line.first_govt_employee_id.user_id.id
+                line.dynamic_action_status = f'Payment done by client spoc. Second govt employee need to be assigned by PM'
+                line.action_user_id = line.approver_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
                 line.state = 'payment_done'
                 line.doc_uploaded = False
@@ -1538,13 +1593,18 @@ class ServiceEnquiry(models.Model):
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
             if line.service_request =='hr_card':
+                if line.self_pay==True:
+                    if line.jawazat_card_amount:
+                        line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                                'name': 'Jawazat Amount',
+                                'amount': line.jawazat_card_amount,
+                                'service_enquiry_id': line.id
+                                })
                 if line.state in ('approved'):
-                    if not line.rehr_card_ref:
-                        raise ValidationError("Kindly Update Reference Number for Updated HR Document")
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    # if not line.muqeem_print_doc_ref:
-                    #     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    if not line.muqeem_print_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
