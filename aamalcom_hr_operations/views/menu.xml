@@ -5,6 +5,10 @@
         <!-- Menu for requests -->
     <menuitem id="menu_hr_operations_root" name="Hr Operations">
     	<menuitem id="menu_hr_employee_change_requests" name="Change Requests" action="action_hr_employee_change_requests" sequence="10"/>
+    	 <menuitem id="menu_hr_probation_extension_root" name="Probation Extension" sequence="99">
+		    <menuitem id="menu_probation_extend_request" name="Extend Requests" sequence="1" action="action_probation_extend_request"/>
+		</menuitem>
+
     </menuitem>
     </data>
 </odoo>

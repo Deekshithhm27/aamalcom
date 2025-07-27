@@ -10,5 +10,14 @@
 	        <field name="number_increment">1</field>
 	        <field name="code">hr.employee.change.request</field>
 	    </record>
+	     <record id="ir_sequence_probation_extend_request" model="ir.sequence">
+            <field name="name">Probation Extend Request</field>
+        	<field name="code">hr.probation.extend.request</field>
+            <field name="prefix">PER/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+        </record>
+        
 	</data>
 </odoo>

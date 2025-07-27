@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Employee sees and modifies only own requests -->
+    
+    <record id="hr_change_request_rule_own_employee" model="ir.rule">
+	    <field name="name">Employee can only see own change requests</field>
+	    <field name="model_id" ref="model_hr_employee_change_request"/>
+	    <field name="domain_force">['|', ('requested_by','=',user.id),
+	        ('requested_by','=',False)]</field> <!-- fallback -->
+	    <field name="groups" eval="[(4, ref('aamalcom_hr_operations.group_hr_employee_internal'))]"/>
+	    <field name="perm_read" eval="True"/>
+	    <field name="perm_write" eval="True"/>
+	    <field name="perm_create" eval="True"/>
+	    <field name="perm_unlink" eval="True"/>
+	</record>
+
+    <!-- HR Manager (using built-in group) can see all -->
+    <record id="hr_change_request_rule_hr_manager" model="ir.rule">
+        <field name="name">HR Manager can see all employee change requests</field>
+        <field name="model_id" ref="model_hr_employee_change_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Rule: HR Manager and Employee / Manager can only see probation extension requests related to them -->
+    <record id="rule_probation_extend_request_manager" model="ir.rule">
+        <field name="name">Probation Extend Requests only for Managers and HR</field>
+        <field name="model_id" ref="model_hr_probation_extend_request"/>
+        <field name="domain_force">['|',('manager_id.user_id','=',user.id),('hr_manager_id','=',user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_manager')), (4, ref('aamalcom_hr_operations.group_hr_employee_internal'))]"/>
+    </record>
+
+    <record id="rule_employee_probation_requests" model="ir.rule">
+        <field name="name">Employees can only see their own probation extension requests</field>
+        <field name="model_id" ref="model_hr_probation_extend_request"/>
+        <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>
+        <field name="groups" eval="[(4, ref('aamalcom_hr_operations.group_hr_employee_internal'))]"/>
+    </record>
+</odoo>

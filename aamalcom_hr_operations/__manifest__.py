@@ -9,10 +9,14 @@
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
         'data/ir_sequence.xml',
         'data/mail_template.xml',
+        'data/ir_cron.xml',
+        'reports/probation_report.xml',
         'views/hr_employee_change_request_views.xml',
         'views/hr_employee_views.xml',
+        'views/hr_probation_extend_request_views.xml',
         'wizard/hr_employee_reject_wizard_views.xml',
         'views/menu.xml'
     ],
