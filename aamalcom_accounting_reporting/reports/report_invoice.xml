@@ -307,6 +307,15 @@
                             <img t-if="company.seal" t-att-src="image_data_uri(company.seal)" style="height: 130px;width: 150px; " alt="Logo"/>
                         </div>
                     </div>
+                    <t t-if="o.move_type == 'out_refund'">
+                        <div style="border-top: 1px solid black; padding-top: 5px;">
+                            <span>Printed Date/Time: </span>
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M:%S')"/>
+                            <br/>
+                            <span>Printed By: </span>
+                            <span t-esc="user.name"/>
+                        </div>
+                    </t>
                     <!-- <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
 
                     
@@ -461,6 +470,7 @@
                     <!-- <br/><br/><br/><br/> -->
                     </div>
                 </div>
+
             </t>
         </t>
     </template>
