@@ -1,0 +1,38 @@
+<odoo>
+    <record id="view_attachment_kanban_journal_line_custom" model="ir.ui.view">
+        <field name="name">ir.attachment.kanban.journal.line</field>
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="res_id"/>
+                <field name="res_model"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_record">
+                            <strong><field name="name"/></strong>
+                            <div>Model: <field name="res_model"/></div>
+                            <div>ID: <field name="res_id"/></div>
+                            <a t-attf-href="/web/content?model=ir.attachment&amp;id={{ record.id.raw_value }}&amp;field=datas&amp;download=true&amp;filename={{ record.name.raw_value }}"
+                               class="btn btn-sm btn-primary mt-2" target="_blank">
+                                Download
+                            </a>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="action_attachment_journal_line" model="ir.actions.act_window">
+        <field name="name">Journal Line Attachments</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">kanban</field>
+        <field name="domain">[('res_model','=','account.move.line')]</field>
+        <field name="view_id" ref="journal_line_attachments.view_attachment_kanban_journal_line_custom"/>
+    </record>
+    <menuitem id="menu_attachment_journal_line"
+              name="Journal Line Attachments"
+              parent="account.menu_finance"
+              action="action_attachment_journal_line"
+              sequence="99"/>
+</odoo>
