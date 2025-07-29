@@ -8,7 +8,7 @@
                 <button name="action_view_all_line_attachments"
                         type="object"
                         class="oe_stat_button"
-                        icon="fa-paperclip">
+                        icon="fa-paperclip" attrs="{'invisible':[('move_type','!=','entry')]}">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Line Attachments</span>
                     </div>
