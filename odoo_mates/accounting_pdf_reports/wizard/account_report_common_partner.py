@@ -12,9 +12,12 @@ class AccountingCommonPartnerReport(models.TransientModel):
                                          ('supplier', 'Payable Accounts'),
                                          ('customer_supplier', 'Receivable and Payable Accounts')
                                          ], string="Partner's", required=True, default='customer')
+
+    payment_type = fields.Selection([('paid','Paid'),('unpaid','Unpaid')],string="Payment Type")
     partner_ids = fields.Many2many('res.partner', string='Partners')
 
     def pre_print_report(self, data):
         data['form'].update(self.read(['result_selection'])[0])
+        data['form'].update(self.read(['payment_type'])[0])
         data['form'].update({'partner_ids': self.partner_ids.ids})
         return data
