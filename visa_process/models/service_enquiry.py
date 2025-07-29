@@ -169,7 +169,7 @@ class ServiceEnquiry(models.Model):
     insurance_availability = fields.Selection([('yes','Yes'),('no','No')],string="Medical Insurance")
     medical_doc = fields.Binary(string="Medical Doc")
 
-    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Type", store=True)
+    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Status", store=True)
     hr_card_amount=fields.Integer(string="HR Card Amount")
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")

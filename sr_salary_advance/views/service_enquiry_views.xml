@@ -18,7 +18,7 @@
                     <button name="action_process_complete"
                         string="Process Complete"
                         type="object" class="btn-primary"
-                        attrs="{'invisible': ['|', ('service_request', '!=', 'salary_advance'), ('state', '!=', 'approved')]}" 
+                        attrs="{'invisible': ['|','|', ('service_request', '!=', 'salary_advance'),('upload_payment_doc','=',False), ('state', '!=', 'approved')]}" 
                         groups="visa_process.group_service_request_manager"/>    
                 </xpath>
 
