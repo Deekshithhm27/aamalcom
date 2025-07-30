@@ -1380,7 +1380,7 @@ class ServiceEnquiry(models.Model):
             'client_parent_id':self.client_id.parent_id.id,
             'employee_id':self.employee_id.id,
             'employment_duration':self.employment_duration.id,
-            'total_amount':self.total_amount,
+            'total_amount':self.total_amount
             }
             service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
             if service_request_treasury_id:
@@ -1505,9 +1505,9 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
-                    if not iqama_issue_date:
+                    if not line.iqama_issue_date:
                         raise ValidationError("Kindly Update Iqama Issue Date")
-                    if not iqama_expiry_date:
+                    if not line.iqama_expiry_date:
                         raise ValidationError("Kindly Update Iqama Expiry Date")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
@@ -1515,7 +1515,7 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
-                    if not iqama_expiry_date:
+                    if not line.iqama_expiry_date:
                         raise ValidationError("Kindly Update Reference Number for Iqama Expiry Date")
             if line.service_request == 'qiwa':
                 if line.upload_qiwa_doc and not line.qiwa_doc_ref:
