@@ -162,7 +162,7 @@ class ServiceEnquiry(models.Model):
     fee_receipt_doc = fields.Binary(string="Fee Receipt Document")
     fee_receipt_doc_file_name = fields.Char(string="Fee Receipt File Name")
     fee_receipt_doc_ref = fields.Char(string="Ref No.*")
-    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Type", store=True)
+    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Status", store=True)
     hr_card_amount=fields.Integer(string="HR Card Amount")
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
@@ -1380,7 +1380,7 @@ class ServiceEnquiry(models.Model):
             'client_parent_id':self.client_id.parent_id.id,
             'employee_id':self.employee_id.id,
             'employment_duration':self.employment_duration.id,
-            'total_amount':self.total_amount
+            'total_amount':self.total_amount,
             }
             service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
             if service_request_treasury_id:
