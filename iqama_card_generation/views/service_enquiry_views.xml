@@ -25,7 +25,7 @@
                     <group>
                         <group>
                             <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="service_request_config_id" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="iqma_card_generation_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group/>
                     </group>
@@ -38,11 +38,15 @@
                         <group>
                             <field name="identification_id" string="Border No." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="sponsor_id" string="Sponsor Number" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+
                         </group>
                     </group>
+                    <field name="client_id" invisible="1"/>
+                <field name="user_id" invisible="1"/>
+                <field name ="client_parent_id" invisible="1"/>
 
                     <notebook>
-                        <page string="Documents" attrs="{'invisible': [('service_request', '!=', 'iqama_print')]}">
+                        <page string="Documents" attrs="{'invisible': [('iqma_card_generation_type', '!=', 'iqama_print')]}">
                             <group>
                                 <group> <field name="fee_receipt_doc"
                                            attrs="{'readonly': [('state', '!=', 'draft')]}"
@@ -68,6 +72,14 @@
                                            attrs="{'readonly': [('state', '!=', 'draft')]}"
                                            force_save="1"/>
                                 </group>
+                                <group>
+                        <field name="iqama_scanned_doc"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"
+                               filename="iqama_scanned_doc_file_name"/>
+                        <field name="iqama_scanned_doc_file_name" invisible="1"/>
+                        <field name="iqama_scanned_doc_ref"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </group>
                             </group>
                         </page>
                     </notebook>

@@ -7,7 +7,12 @@ class IqamaDocument(models.Model):
     _rec_name = 'employee_id'
     _order = 'id desc'
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, tracking=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+
+    client_id = fields.Many2one('res.partner',string="Client Spoc")
+    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
+    employee_id = fields.Many2one('hr.employee', string='Employee', required=True,domain="[('client_parent_id','=',client_parent_id)]")
     iqama_no = fields.Char(string="Iqama No")
     identification_id = fields.Char(string='Border No.')
     passport_no = fields.Char(string='Passport No')
@@ -30,17 +35,26 @@ class IqamaDocument(models.Model):
     confirmation_doc_file_name = fields.Char(string="Confirmation Document File Name")
     confirmation_doc_ref = fields.Char(string="Ref No.*")
 
-    @api.onchange('service_request_config_id')
-    def update_process_type(self):
-        for line in self:
-            if line.service_request_config_id:
-                line.process_type = line.service_request_config_id.process_type
-            # Passing the latest existing request name in the alert message for visibility,
-            if line.service_request_config_id and line.employee_id:
-                latest_existing_request = self.search([
-                    ('employee_id', '=', line.employee_id.id),
-                    ('service_request_config_id', '=', line.service_request_config_id.id)
-                ], limit=1)
+    iqama_scanned_doc = fields.Binary(string="Iqama Scanned Document")
+    iqama_scanned_doc_file_name = fields.Char(string="Iqama Scanned Document File Name")
+    iqama_scanned_doc_ref = fields.Char(string="Ref No.*")
+
+    iqma_card_generation_type = fields.Selection([
+        ('iqama_print', 'Iqama Print'),
+    ], string='Service Request', required=True)
+
+
+    # @api.onchange('service_request_config_id')
+    # def update_process_type(self):
+    #     for line in self:
+    #         if line.service_request_config_id:
+    #             line.process_type = line.service_request_config_id.process_type
+    #         # Passing the latest existing request name in the alert message for visibility,
+    #         if line.service_request_config_id and line.employee_id:
+    #             latest_existing_request = self.search([
+    #                 ('employee_id', '=', line.employee_id.id),
+    #                 ('service_request_config_id', '=', line.service_request_config_id.id)
+    #             ], limit=1)
                 
     service_request = fields.Selection([('iqama_print', 'Iqama Print')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     @api.onchange('employee_id')
