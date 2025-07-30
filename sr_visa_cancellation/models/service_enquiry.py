@@ -110,9 +110,19 @@ class ServiceEnquiry(models.Model):
                     'client_id': record.client_id.id,
                     'client_parent_id': record.client_id.parent_id.id,
                     'employee_id': record.employee_id.id,
+
                     'total_amount': record.total_amount if hasattr(record, 'total_amount') else 0.0
                 }
                 service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
+                treasury = self.env['service.request.treasury'].sudo().search([
+                    ('service_request_id', '=', record.id)
+                ], limit=1)
+                if treasury:
+                    treasury.write({
+                        'service_request_config_id':self.service_request_config_id.id,
+                        'ref_ev_id': record.ref_ev_id,
+                        'reason_of_cancellation':record.reason_of_cancellation
+                    })
                 if service_request_treasury_id:
                     record.state = 'submitted_to_treasury'
                     record.dynamic_action_status = f'Submitted to Treasury Department by . Review to be done by Treasury'
