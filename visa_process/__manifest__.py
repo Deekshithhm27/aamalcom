@@ -55,6 +55,7 @@
         'views/service_enquiry_views.xml',
 
         'wizard/employee_selection_wizard.xml',
+        'wizard/select_employee_wizard.xml',
 
 
 
