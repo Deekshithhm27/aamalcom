@@ -1686,7 +1686,7 @@ class ServiceEnquiry(models.Model):
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or \
             line.upload_salary_certificate_doc or \
-            line.upload_bilingual_salary_certificate_doc or  \
+            
             line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:
