@@ -796,8 +796,17 @@
                                     <field name="hr_card_amount"  attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
                             </group>
-                            <group attrs="{'invisible': ['|',('state', '=', 'draft'),('second_govt_employee_id','=',False),]}">
+                            <group attrs="{'invisible': ['|',('state', '=', 'draft'),('self_pay','!=',True),]}">
                                 <group string="Jawazat Document" attrs="{'invisible': [('service_request', '!=', 'hr_card')]}">
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
+                                     <field name="upload_jawazat_doc_file_name"  invisible="1"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}"  force_save="1"/>
+                                    <field name="jawazat_card_amount" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}"  force_save="1"/>
+                                </group>
+                            </group>
+
+                            <group attrs="{'invisible': ['|',('state', '=', 'draft'),('second_govt_employee_id','=',False),]}">
+                                <group string="Jawazat Document" attrs="{'invisible': ['|',('service_request', '!=', 'hr_card'),('aamalcom_pay','!=',True),]}">
                                     <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
                                      <field name="upload_jawazat_doc_file_name"  invisible="1"/>
                                     <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>

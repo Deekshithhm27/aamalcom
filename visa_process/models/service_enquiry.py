@@ -515,7 +515,11 @@ class ServiceEnquiry(models.Model):
 
     def update_hr_card_amount(self):
         for line in self:
-            if line.service_request == 'hr_card': # New condition
+            if line.service_request == 'hr_card':
+                if not line.hr_card_ref:
+                    raise ValidationError("Kindly Update Reference Number for HR Document")
+                if not line.hr_card_amount:
+                    raise ValidationError("Kindly Update HR card amount")
                 if line.hr_card_amount:
                     line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
                             'name': 'HR Card Amount',
@@ -530,6 +534,10 @@ class ServiceEnquiry(models.Model):
     def update_jawazat_amount(self):
         for line in self:
             if line.service_request == 'hr_card': # New condition
+                if not line.jawazat_doc_ref:
+                    raise ValidationError("Kindly Update Jawazat Document Reference Number")
+                if not line.jawazat_card_amount:
+                    raise ValidationError("Kindly add Jawazat card amount")
                 if line.jawazat_card_amount:
                     line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
                             'name': 'Jawazat Amount',
@@ -1123,13 +1131,34 @@ class ServiceEnquiry(models.Model):
                 if line.state=='submitted' and line.aamalcom_pay == True:
                     if not line.hr_card_ref:
                         raise ValidationError("Kindly Update Reference Number for Hr Card Document")
-            if line.service_request =='hr_card':
+            if line.service_request =='hr_card' and line.hr_card_type=='paid_hr_card':
+                if not line.rehr_card_ref:
+                    raise ValidationError("Kindly Updated HR card Ref No.")
+            if line.service_request =='hr_card' and line.hr_card_type=='unpaid_hr_card':
+                if not line.hr_card_ref:
+                    raise ValidationError("Kindly Updated HR card Ref No.")
+                if not line.hr_card_amount:
+                    raise ValidationError("Kindly Update HR card amount")
                 if line.hr_card_amount:
                     line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
                             'name': 'HR Card Amount',
                             'amount': line.hr_card_amount,
                             'service_enquiry_id': line.id
                             })
+            if line.service_request =='hr_card':
+                if line.self_pay==True:
+                    if not line.upload_jawazat_doc:
+                        raise ValidationError("Kindly Update Jawazat Document")
+                    if not line.jawazat_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Jawazat Document")
+                    if not line.jawazat_card_amount:
+                        raise ValidationError("Kindly Update Jawazat Amount")
+                    if line.jawazat_card_amount:
+                        line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+                                'name': 'Jawazat Amount',
+                                'amount': line.jawazat_card_amount,
+                                'service_enquiry_id': line.id
+                                })
             if line.service_request == 'prof_change_qiwa':
                 if line.state=='submitted':
                     if line.profession_change_doc and not line.profession_change_doc_ref:
@@ -1500,23 +1529,21 @@ class ServiceEnquiry(models.Model):
                             line.employee_id.sudo().write({'sponsor_id': line.sponsor_id})
                         else:
                             line.sponsor_id = line.employee_id.sponsor_id
-            if line.service_request =='hr_card':
-                if line.self_pay==True:
-                    if line.jawazat_card_amount:
-                        line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
-                                'name': 'Jawazat Amount',
-                                'amount': line.jawazat_card_amount,
-                                'service_enquiry_id': line.id
-                                })
+            
                 if line.state in ('approved'):
                     if not line.residance_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
                     if not line.muqeem_print_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
-                    if not line.iqama_issue_date:
-                        raise ValidationError("Kindly Update Iqama Issue Date")
-                    if not line.iqama_expiry_date:
-                        raise ValidationError("Kindly Update Iqama Expiry Date")
+            if line.service_request =='hr_card':
+                if not line.muqeem_print_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                if not line.residance_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number fo Residance Permit")
+                if not line.iqama_issue_date:
+                    raise ValidationError("Kindly Update Iqama Issue Date")
+                if not line.iqama_expiry_date:
+                    raise ValidationError("Kindly Update Iqama Expiry Date")
             if line.service_request =='iqama_renewal':
                 if line.state in ('payment_done','approved'):
                     if not line.residance_doc_ref:
