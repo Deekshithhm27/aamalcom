@@ -41,6 +41,9 @@ class ServiceEnquiry(models.Model):
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
     upload_family_visit_visa_doc_file_name = fields.Char(string="Family Visit Visa Doc")
     family_visit_visa_doc_ref = fields.Char(string="Ref No.*")
+    upload_istiqdam_letter_doc = fields.Binary(string="Istiqdam Letter")
+    upload_istiqdam_letter_doc_file_name = fields.Char(string="Istiqdam Letter")
+    istiqdam_letter_doc_ref = fields.Char(string="Ref No.*")
     family_visa_doc_uploaded = fields.Boolean(string="Document Uploaded", default=False, copy=False,store=True)
 
     @api.depends('upload_family_visa_letter_doc', 'upload_attested_application_doc', 'fee_receipt_doc', 'upload_istiqdam_form_doc', 'upload_family_visit_visa_doc','upload_family_visa_doc')
