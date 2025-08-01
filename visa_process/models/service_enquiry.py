@@ -1079,6 +1079,10 @@ class ServiceEnquiry(models.Model):
                 if self.env.user.has_group('visa_process.group_service_request_employee'):
                     # Find the service_request_config_id for muqeem_dropout
                     muqeem_config = self.env['service.request.config'].search([('service_request', '=', 'muqeem_dropout')], limit=1)
+                    
+                    # Get the Project Manager (SPOC) for this client
+                    pm_employee = line.client_id.company_spoc_id
+                    
                     vals = {
                         'employee_id': line.employee_id.id,
                         'client_id': line.client_id.id,
@@ -1093,13 +1097,17 @@ class ServiceEnquiry(models.Model):
                         'passport_no': line.passport_no,
                         'sponsor_id': line.sponsor_id.id if line.sponsor_id else False,
                         'is_inside_ksa': True,
-                        'ere_last_date': getattr(line, 'ere_last_date', None) or getattr(line, 'expiry_of_ere', None),
+                        'aamalcom_pay':True,
+                        'billable_to_aamalcom':True,
+                        'expiry_of_ere': getattr(line, 'ere_last_date', None) or getattr(line, 'ere_last_date', None),
                         'dynamic_action_status': 'Pm needs to assign 1st GRE',
+                        # Set the approver_id and approver_user_id so PM can see the ticket
+                        'approver_id': pm_employee.id if pm_employee else False,
+                        'approver_user_id': pm_employee.user_id.id if pm_employee and pm_employee.user_id else False,
                     }
                     # Create the new ticket first
                     new_ticket = self.sudo().create(vals)
                     # Assign to Project Manager if available
-                    pm_employee = line.client_id.company_spoc_id
                     if pm_employee and pm_employee.user_id:
                         new_ticket.action_user_id = pm_employee.user_id.id
 

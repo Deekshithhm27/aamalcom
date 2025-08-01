@@ -567,10 +567,10 @@
                             <field name="ere_last_date" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','inside_or_outside_ksa'),('is_service_request_client_spoc', '=', True)]}"/>
                         </group>
                         <group>
-                            <field name="is_inside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="is_inside_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
                         </group>
                         <group>
-                            <field name="is_outside_ksa" attrs="{'readonly': ['|','|',('state', '!=','submit_to_pm'),('is_project_manager','!=',True),('is_service_request_client_spoc', '!=', True)]}"/>
+                            <field name="is_outside_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
                             <field name="remarks_for_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
                         </group>
                     </group>
@@ -1018,6 +1018,7 @@
               </p>
         </field>
     </record>
+
     <record id="action_service_enquiry_payroll_employee" model="ir.actions.act_window">
         <field name="name">Service Tickets</field>
         <field name="res_model">service.enquiry</field>
