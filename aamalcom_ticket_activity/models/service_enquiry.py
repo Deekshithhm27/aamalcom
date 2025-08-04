@@ -16,7 +16,7 @@ class ServiceEnquiry(models.Model):
         result = super(ServiceEnquiry, self).action_submit()
         client_manager_user_id = self.env.user.company_spoc_id.user_id.id
         for line in self:
-            if line.service_request in ['new_ev', 'exit_reentry_issuance_ext'] and line.aamalcom_pay:
+            if line.service_request in ['new_ev'] and line.aamalcom_pay:
                 self._schedule_ticket_activity(
                     user_id=client_manager_user_id,
                     summary='Action Required on Ticket',
@@ -28,6 +28,14 @@ class ServiceEnquiry(models.Model):
                     summary='Action Required on Ticket',
                     note='Do review and take action (confirmation on payment) on this ticket.'
                 )
+            elif line.service_request in ['exit_reentry_issuance_ext','exit_reentry_issuance'] and line.aamalcom_pay:
+                operations_manager_users = self.env.ref('visa_process.group_service_request_operations_manager').users
+                for user in operations_manager_users:
+                    self._schedule_ticket_activity(
+                        user_id=user.id,
+                        summary='Action Required on Ticket',
+                        note='Do review and take action (Approval) on this ticket.'
+                    )
             else:
                 self._schedule_ticket_activity(
                     user_id=client_manager_user_id,
