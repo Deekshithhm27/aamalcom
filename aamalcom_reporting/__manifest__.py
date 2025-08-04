@@ -32,7 +32,10 @@
         'views/qiwa_wizard.xml',
         'reports/final_action.xml',
         'reports/final_clearance_template.xml',
-        'views/final_cleraance_views.xml'
+        'views/final_cleraance_views.xml',
+        'views/final_exit_views.xml',
+        'reports/final_exit_action.xml',
+        'reports/final_exit_template.xml',
     ],
     'installable': True,
     'application': True,
