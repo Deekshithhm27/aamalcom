@@ -5,6 +5,7 @@ class ServiceEnquiry(models.Model):
     _inherit = "service.enquiry"
 
     to_another_establishment_type = fields.Selection([('local_transfer_to_another_establishment', 'Local Transfer'),('termination_letter_to_another_establishment', 'Termination Request'),('resignation_to_another_establishment', 'Resignation Request')], string="To Another Establishment  Type", store=True)
+    np_type = fields.Selection([('np_gov', 'Notice Period as per Government Law'),('np_contract', 'Notice Period as per contract')], string="Notice Period Status", store=True)
     upload_confirmation_doc = fields.Binary(string="Confirmation Document")
     upload_confirmation_doc_file_name = fields.Char(string="Confirmation Document")
     upload_resignation_doc = fields.Binary(string="Resignation Document")
@@ -16,6 +17,7 @@ class ServiceEnquiry(models.Model):
     articles_for_termination = fields. Char(string="Articles")
     accepted_articles_for_termination = fields. Char(string="Accepted Article")
     last_working_date = fields.Date(string="Last Working Day")
+    transfer_date = fields.Date(string="Transfer Date")
     notice_period_date = fields.Date(string="Notice Period")
     upload_clearnace_doc = fields.Binary(string="Clearance Document")
     upload_clearnace_doc_file_name = fields.Char(string="Clearance Document")
@@ -32,6 +34,9 @@ class ServiceEnquiry(models.Model):
     upload_signed_resignation_doc = fields.Binary(string="Signed Resignation Document")
     upload_signed_resignation_doc_file_name = fields.Char(string="Signed Resignation Document")
     signed_resignation_doc_ref = fields.Char(string="Ref No.*")
+    upload_notice_period_confirmation_doc = fields.Binary(string="Confirmation Document")
+    upload_notice_period_confirmation_doc_file_name = fields.Char(string="Confirmation Document")
+    np_period_doc_ref = fields.Char(string="Ref No.*")
 
     def action_to_another_establishment_local(self):
         for line in self:
