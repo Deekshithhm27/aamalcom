@@ -24,6 +24,10 @@ class ServiceEnquiry(models.Model):
         ('bank_account_opening_letter','Bank account Opening Letter'),
         ('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('employment_contract','Employment contract'),
+        ('salary_certificate','Salary certificate'),
+        ('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
+        ('family_visa_letter','Family Visa Letter'),
+        ('family_resident','Family Resident Visa Application'),
     ],
     string="Service Requests",
     store=True,
@@ -47,6 +51,10 @@ class ServiceEnquiry(models.Model):
         'bank_account_opening_letter': 'cascade',
         'bank_limit_upgrading_letter': 'cascade',
         'employment_contract':'cascade',
+        'salary_certificate':'cascade',
+        'istiqdam_form':'cascade',
+        'family_resident':'cascade',
+        'family_visa_letter':'cascade'
     }
     )
 
@@ -141,6 +149,30 @@ class ServiceEnquiry(models.Model):
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
     upload_employment_contract_doc_file_name = fields.Char(string="Employment Contract")
     employment_contract_doc_ref = fields.Char(string="Ref No.*")
+
+    #Salary Certificate
+    upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
+    upload_salary_certificate_doc_file_name = fields.Char(string="Salary Certificate")
+    salary_certificate_ref = fields.Char(string="Ref No.*")
+
+    #Istiqdam Form
+    draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
+    updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
+    upload_istiqdam_form_doc_file_name = fields.Char(string="Updated Istiqdam Form")
+    upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
+    istiqdam_form_doc_ref = fields.Char(string="Ref No.*")
+
+    #Family Visa Letter
+    upload_family_visa_letter_doc = fields.Binary(string="Family Visa Letter")
+    upload_family_visa_letter_doc_file_name = fields.Char(string="Family Visa Letter")
+    family_visa_letter_doc_ref = fields.Char(string="Ref No.*")
+
+    #family resident
+    upload_attested_application_doc = fields.Binary(string="Upload Attested Application")
+    upload_attested_application_file_name = fields.Char(string="Attested Application")
+    attested_application_doc_ref = fields.Char(string="Ref No.*")
+    
+   
     
     # Common fields for loan letters
     upload_saddad_doc = fields.Binary(string="Saddad Document")
@@ -154,6 +186,21 @@ class ServiceEnquiry(models.Model):
     upload_mofa_doc_file_name = fields.Char(string="MOFA Document")
     mofa_doc_ref = fields.Char(string="Ref No.*")
 
+    show_mofa_section = fields.Boolean(
+        string='Show MOFA Section',
+        compute='_compute_show_mofa_section',
+        store=False
+    )
+
+    @api.depends('letter_print_type_id')
+    def _compute_show_mofa_section(self):
+        for rec in self:
+            rec.show_mofa_section = (
+                rec.letter_print_type_id and
+                len(rec.letter_print_type_id) == 1 and
+                rec.letter_print_type_id[0].name == 'MOFA (Stamp)'
+            )
+
     
     doc_uploaded = fields.Boolean(string="Document uploaded",default=False,copy=False)
 
@@ -163,7 +210,7 @@ class ServiceEnquiry(models.Model):
                   'upload_embassy_letter_doc', 'upload_istiqdam_letter_doc', 'upload_sce_letter_doc',
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
-                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc')
+                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc')
     def loan_letter_document_uploaded(self):
         for record in self:
             if record.service_request == 'bank_loan' and record.upload_bank_loan_doc and record.dependent_document_ids:
@@ -202,8 +249,25 @@ class ServiceEnquiry(models.Model):
                 record.doc_uploaded = True
             elif record.service_request == 'employment_contract' and record.upload_employment_contract_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
+            elif record.service_request == 'salary_certificate' and record.upload_salary_certificate_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
+            elif record.service_request == 'istiqdam_form' and record.upload_istiqdam_form_doc and record.dependent_document_ids and record.upload_istiqdam_letter_doc:
+                record.doc_uploaded = True
+            elif record.service_request == 'family_resident' and record.upload_attested_application_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
+            elif record.service_request == 'family_visa_letter' and record.upload_family_visa_letter_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
             else:
-                record.doc_uploaded = False  
+                record.doc_uploaded = False 
+
+    @api.depends('service_request')
+    def auto_fill_istiqdam_form(self):
+        for line in self:
+            if line.service_request == 'istiqdam_form':
+                istiqdam_id = self.env['visa.ref.documents'].search([('is_istiqdam_doc','=',True)],limit=1)
+                line.draft_istiqdam = istiqdam_id.istiqdam_doc
+            else:
+                line.draft_istiqdam = False  
     
     @api.model
     def create(self, vals):
@@ -252,6 +316,14 @@ class ServiceEnquiry(models.Model):
             vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
         if 'upload_employment_contract_doc' in vals:
             vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
+        if 'upload_salary_certificate_doc' in vals:
+            vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
+        if 'upload_istiqdam_form_doc' in vals:
+            vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamFormDoc.pdf"
+        if 'upload_family_visa_letter_doc' in vals:
+            vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
+        if 'upload_attested_application_doc' in vals:
+            vals['upload_attested_application_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestedApplication.pdf"
         return super(ServiceEnquiry, self).create(vals)
 
     def write(self, vals):
@@ -298,7 +370,14 @@ class ServiceEnquiry(models.Model):
                 vals['upload_emp_secondment_or_cub_contra_ltr_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentorSubcontractDoc.pdf"
             if 'upload_employment_contract_doc' in vals:
                 vals['upload_employment_contract_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_EmploymentContractDoc.pdf"
-
+            if 'upload_salary_certificate_doc' in vals:
+                vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
+            if 'upload_istiqdam_form_doc' in vals:
+                vals['upload_istiqdam_form_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_IstiqdamFormDoc.pdf"
+            if 'upload_family_visa_letter_doc' in vals:
+                vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
+            if 'upload_attested_application_doc' in vals:
+                vals['upload_attested_application_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestedApplication.pdf"
         return super(ServiceEnquiry, self).write(vals)
 
     def action_submit(self):
@@ -308,7 +387,7 @@ class ServiceEnquiry(models.Model):
                                        'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                        'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                        'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract']:
+                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
                 if not line.aamalcom_pay and not line.self_pay and not line.employee_pay:
                     raise ValidationError('Please select who needs to pay fees.')
                 if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
@@ -321,7 +400,7 @@ class ServiceEnquiry(models.Model):
                                        'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                        'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                        'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract']:
+                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
                 line.dynamic_action_status = f'Payment done by client spoc. Document upload pending by first govt employee'
                 line.action_user_id = line.first_govt_employee_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
@@ -384,6 +463,22 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'employment_contract':
                 if record.upload_employment_contract_doc and not record.employment_contract_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Employee Contract letter")
+            if record.service_request == 'salary_certificate':
+                if record.upload_salary_certificate_doc and not record.salary_certificate_ref:
+                    raise ValidationError("Kindly Update Reference Number for Salary Certificate letter")
+            if record.service_request == 'istiqdam_form':
+                if record.upload_istiqdam_letter_doc and not record.istiqdam_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Istiqdam Letter")
+                if record.upload_istiqdam_form_doc and not record.istiqdam_form_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Istiqdam Document")
+            if record.service_request == 'family_visa_letter':
+                if record.upload_family_visa_letter_doc and not record.family_visa_letter_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Family visa letter") 
+            if record.service_request == 'family_resident':
+                if record.upload_attested_application_doc and not record.attested_application_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Attested Visa Application")
+                 
+           
             # --- End Validation Checks ---
             department_ids = []
             # Simplified logic - always use level1
@@ -410,7 +505,88 @@ class ServiceEnquiry(models.Model):
                     'default_levels': level
                 },
             }
-        
+
+    def action_process_complete_without_mofa(self):
+        super(ServiceEnquiry, self).action_process_complete()
+        for record in self:
+            if record.service_request in ['bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 
+                                         'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
+                                         'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
+                                         'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
+                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                if record.service_request == 'vehicle_lease':
+                    if record.upload_vehicle_lease_doc and not record.vehicle_lease_ref:
+                        raise ValidationError("Kindly Update Reference Number for Vehicle lease letter")
+                if record.service_request == 'bank_loan':
+                    if record.upload_bank_loan_doc and not record.bank_loan_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Bank Loan letter")
+                if record.service_request == 'apartment_lease':
+                    if record.upload_apartment_lease_doc and not record.apartment_lease_ref:
+                        raise ValidationError("Kindly Update Reference Number for Apartment lease letter")
+                if record.service_request == 'bank_letter':
+                    if record.upload_bank_letter_doc and not record.bank_letter_ref:
+                        raise ValidationError("Kindly Update Reference Number for Bank letter")
+                if record.service_request == 'car_loan':
+                    if record.upload_car_loan_doc and not record.car_loan_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Car loan letter")
+                if record.service_request == 'rental_agreement':
+                    if record.upload_rental_agreement_doc and not record.rental_agreement_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Rental agreement letter")
+                if record.service_request == 'exception_letter':
+                    if record.upload_exception_letter_doc and not record.exception_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Exception letter")
+                if record.service_request == 'attestation_waiver_letter':
+                    if record.upload_attestation_waiver_letter_doc and not record.attestation_waiver_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Attestation Waiver letter")
+                if record.service_request == 'embassy_letter':
+                    if record.upload_embassy_letter_doc and not record.embassy_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Embassy letter")
+                if record.service_request == 'istiqdam_letter':
+                    if record.upload_istiqdam_letter_doc and not record.istiqdam_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Istiqdam Letter")
+                if record.service_request == 'sce_letter':
+                    if record.upload_sce_letter_doc and not record.sce_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for SCE Letter")
+                if record.service_request == 'bilingual_salary_certificate':
+                    if record.upload_bilingual_salary_certificate_doc and not record.bilingual_salary_certificate_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Bilingual Salary Certificate")
+                if record.service_request == 'contract_letter':
+                    if record.upload_contract_letter_doc and not record.contract_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Contract letter")
+                if record.service_request == 'bank_account_opening_letter':
+                    if record.upload_bank_account_opening_letter_doc and not record.bank_account_opening_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Bank account Opening Letter")
+                if record.service_request == 'bank_limit_upgrading_letter':
+                    if record.upload_bank_limit_upgrading_letter_doc and not record.bank_limit_upgrading_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Bank limit upgrading letter")
+                if record.service_request == 'cultural_letter':
+                    if record.upload_cultural_letter_doc and not record.cultural_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Cultural Letter/Bonafide Letter")
+                if record.service_request == 'emp_secondment_or_cub_contra_ltr':
+                    if record.upload_emp_secondment_or_cub_contra_ltr_doc and not record.emp_secondment_ltr_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Employee secondment / Subcontract letter")
+                if record.service_request == 'employment_contract':
+                    if record.upload_employment_contract_doc and not record.employment_contract_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Employee Contract letter")
+                if record.service_request == 'salary_certificate':
+                    if record.upload_salary_certificate_doc and not record.salary_certificate_ref:
+                        raise ValidationError("Kindly Update Reference Number for Salary Certificate letter")
+                if record.service_request == 'istiqdam_form':
+                    if record.upload_istiqdam_letter_doc and not record.istiqdam_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Istiqdam Letter")
+                    if record.upload_istiqdam_form_doc and not record.istiqdam_form_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Istiqdam Document")
+                if record.service_request == 'family_visa_letter':
+                    if record.upload_family_visa_letter_doc and not record.family_visa_letter_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Family visa letter") 
+                if record.service_request == 'family_resident':
+                    if record.upload_attested_application_doc and not record.attested_application_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Attested Visa Application")
+                     
+                record.state='done'
+                record.dynamic_action_status='Process Completed'
+                record.action_user_id=False  
+                record.write({'processed_date': fields.Datetime.now()})     
     
      
 
@@ -421,7 +597,7 @@ class ServiceEnquiry(models.Model):
                                          'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                          'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                          'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract']:
+                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
                 if record.upload_saddad_doc and not record.saddad_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Saddad Document")
                 if not record.saddad_number:

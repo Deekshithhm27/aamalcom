@@ -22,6 +22,9 @@ class ServiceEnquiry(models.Model):
         ('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),
         ('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),('employment_contract','Employment contract'),
+        ('salary_certificate','Salary certificate'),('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
+        ('family_resident', 'Family Resident Visa Application'),
+        ('family_visa_letter', 'Family Visa Letter'),
     ],
     string="Service Requests",
     store=True,
@@ -45,5 +48,9 @@ class ServiceEnquiry(models.Model):
         'bank_account_opening_letter': 'cascade',
         'bank_limit_upgrading_letter': 'cascade',
         'employment_contract':'cascade',
+        'salary_certificate':'cascade',
+        'istiqdam_form':'cascade',
+        'family_visa_letter':'cascade',
+        'family_resident':'cascade'
     }
     )
