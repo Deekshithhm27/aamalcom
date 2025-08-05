@@ -101,11 +101,11 @@
                     <!-- LT Medical Health Insurance Upload start-->
 
                     <!-- 2 step process. Pm assign employee, emp updates document and completes process -->
-                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','salary_certificate','final_exit_issuance'))]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="action_submit_initiate" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','final_exit_issuance'))]}" groups="visa_process.group_service_request_client_spoc"/>
 
 
 
-                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','salary_certificate','bilingual_salary_certificate','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('doc_uploaded', '=',False),('service_request', 'not in', ('sec','ins_class_upgrade','iqama_no_generation','qiwa','gosi','final_exit_issuance'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>
 
                     <button name="action_submit_doc_uploaded_final_exit" string="Document Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|','|',('state','!=','submitted'),('upload_final_exit_issuance_doc','=',False),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
 
@@ -530,19 +530,7 @@
 
                     <!-- New Physical Iqama Card Request(cost 1,000sar) end-->
                     <!-- #################################################### -->
-                    <!-- Salary Certificate start-->
-                    <group name="lt_salary_certificate" attrs="{'invisible': [('service_request', '!=', 'salary_certificate')]}">
-                        <group>
-                            <field name="bank_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="purpose" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                    </group>
-
-                    <!-- Salary Certificate Stop-->
+                    
                     <!-- #################################################### -->
                    
                     
@@ -620,13 +608,6 @@
                                     <field name="upload_gosi_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_gosi_doc_file_name"/>
                                      <field name="upload_gosi_doc_file_name"  invisible="1"/>
                                     <field name="gosi_doc_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                </group>
-                            </group>
-                            <group attrs="{'invisible': [('service_request', '!=', 'salary_certificate')]}" string="Salary Certificate">
-                                <group>
-                                    <field name="upload_salary_certificate_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_salary_certificate_doc_file_name"/>
-                                     <field name="upload_salary_certificate_doc_file_name"  invisible="1"/>
-                                    <field name="salary_certificate_ref" attrs="{'readonly': [('state', '!=','submitted')]}"/>
                                 </group>
                             </group>
                             

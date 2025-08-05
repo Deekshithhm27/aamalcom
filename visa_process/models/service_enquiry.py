@@ -100,7 +100,7 @@ class ServiceEnquiry(models.Model):
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
-        ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
+        ('prof_change_qiwa','Profession change Request In qiwa'),
         ('final_exit_issuance','Final exit Issuance'),
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
     
@@ -217,9 +217,7 @@ class ServiceEnquiry(models.Model):
     profession_change_final_doc = fields.Binary(string="Profession Change Final  Request Doc")
     profession_change_final_doc_file_name = fields.Char(string="Profession Change Req. Doc")
     prof_change_final_ref = fields.Char(string="Ref No.*")
-    upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
-    upload_salary_certificate_doc_file_name = fields.Char(string="Salary Certificate")
-    salary_certificate_ref = fields.Char(string="Ref No.*")
+ 
    
 
     
@@ -688,9 +686,6 @@ class ServiceEnquiry(models.Model):
                 vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
             if 'profession_change_final_doc' in vals:
                 vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
-            if 'upload_salary_certificate_doc' in vals:
-                vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"    
-            
             if 'transfer_confirmation_doc' in vals:
                 vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
             if 'upload_jawazat_doc' in vals:
@@ -737,8 +732,6 @@ class ServiceEnquiry(models.Model):
                 vals['profession_change_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionChangeDoc.pdf"
             if 'profession_change_final_doc_' in vals:
                 vals['profession_change_final_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_ProfessionFinalChangeDoc.pdf"
-            if 'upload_salary_certificate_doc' in vals:
-                vals['upload_salary_certificate_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SalaryCertificateDoc.pdf"
             if 'transfer_confirmation_doc' in vals:
                 vals['transfer_confirmation_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_TransferConfirmationDoc.pdf"
             if 'upload_jawazat_doc' in vals:
@@ -1578,13 +1571,11 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('bank_account_opening_letter','bank_limit_upgrading_letter','bilingual_salary_certificate','contract_letter','embassy_letter','bank_loan','gosi','sec','ins_class_upgrade','iqama_no_generation','salary_certificate'):
+            if line.service_request in ('gosi','sec','ins_class_upgrade','iqama_no_generation'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
-                if line.upload_salary_certificate_doc and not line.salary_certificate_ref:
-                    raise ValidationError("Kindly Update Reference Number for Salary Certificate Document")
                 if line.upload_sec_doc and not line.sec_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for SEC Letter Document")
                 if line.upload_gosi_doc and not line.gosi_doc_ref:
@@ -1714,14 +1705,13 @@ class ServiceEnquiry(models.Model):
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
-        'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc',
+        'upload_payment_doc','profession_change_final_doc',
         'fee_receipt_doc','upload_soa_doc',
         'upload_sec_doc','residance_doc','reupload_hr_card','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
             line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or \
-            line.upload_salary_certificate_doc or \
             line.upload_soa_doc or line.upload_issuance_doc:
                 line.doc_uploaded = True
             # elif line.upload_enjaz_doc and line.e_wakala_doc:

@@ -26,7 +26,7 @@ class ServiceRequestConfg(models.Model):
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
-        ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
+        ('prof_change_qiwa','Profession change Request In qiwa'),
         ('final_exit_issuance','Final exit Issuance'),
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date')],string="Requests",required=True)
 

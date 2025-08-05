@@ -23,7 +23,7 @@
             <xpath expr="//notebook[@id='notebook_four']" position="before">
                     <group name="lt_billing_letters" attrs="{'invisible': [('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident'))]}">
                         <group string="Fees to be paid by">
-                        <field name="show_mofa_section"/>
+                        <field name="show_mofa_section" invisible="1"/>
                         <field name="self_bill_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
                         <field name="self_pay" attrs="{'readonly': [('state', '!=','draft')]}" nolabel="1"/>
                         <field name="aamalcom_pay_string" readonly="1" nolabel="1" style="color: black; font-weight: bold;"/>
