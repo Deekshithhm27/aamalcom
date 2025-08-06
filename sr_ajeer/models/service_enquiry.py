@@ -49,6 +49,22 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Please select at least one: Either Secondment Ajeer Permit or Ajeer Contracting Permit.")
                 if not line.employment_duration:
                     raise ValidationError('Please select Duration.')
+    def action_require_payment_confirmation(self):
+        super(ServiceEnquiry, self).action_require_payment_confirmation()
+        for record in self:
+            if record.service_request == 'ajeer_permit':
+                if record.upload_screenshot_of_saddad and not record.saddad_number:
+                    raise ValidationError("Kindly Update Saddad Number")
+                
+                record.write({'processed_date': fields.Datetime.now()})
+                
+    def action_submit_payment_confirmation(self):
+        super(ServiceEnquiry, self).action_submit_payment_confirmation()
+        for record in self:
+            if record.service_request == 'ajeer_permit':
+                record.dynamic_action_status=f"Document upload pending by first govt employee"
+                record.action_user_id=record.first_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
     @api.model
     def create(self, vals):
