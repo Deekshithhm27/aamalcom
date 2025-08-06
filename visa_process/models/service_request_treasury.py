@@ -60,7 +60,7 @@ class ServiceRequestTreasury(models.Model):
             if not line.issue_date:
                 raise ValidationError("Kindly update issue date before upload confirmation")
             # Upload documents for specific services
-            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card','prof_change_qiwa']:
+            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card','prof_change_qiwa','iqama_renewal']:
                 line.service_request_id.write({
                     'upload_payment_doc': line.confirmation_doc,
                     'payment_doc_ref': line.confirmation_doc_ref
@@ -92,10 +92,3 @@ class ServiceRequestTreasury(models.Model):
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
                 line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
                 line.service_request_id.write({'processed_date': fields.Datetime.now()})
-
-
-
-
-
-
-
