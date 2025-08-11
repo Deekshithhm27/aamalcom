@@ -28,6 +28,9 @@ class ServiceEnquiry(models.Model):
     upload_confirmation_visa_doc = fields.Binary(string="Confirmation of visa cancellation document")
     upload_confirmation_visa_file_name = fields.Char(string="confirmation of visa cancellation document")
     confirmation_visa_doc_ref = fields.Char(string="Ref No.*")
+    upload_visa_to_be_cancelled_doc = fields.Binary(string="Visa to be Cancelled document")
+    upload_visa_to_be_cancelled_doc_file_name = fields.Char(string="Visa to be Cancelled document")
+    visa_to_be_cancelled_doc_ref = fields.Char(string="Ref No.*")
 
     def action_submit(self):
         """Validation checks before submitting the service request."""
@@ -42,8 +45,9 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'visa_cancellation':
                 # Validate required fields for visa cancellation
-                if not record.ref_ev_id:
-                    raise ValidationError(_("Please select the Reference-EV for visa cancellation request."))
+                if not record.ref_ev_id and not record.upload_visa_to_be_cancelled_doc:
+                    raise ValidationError(_("Please select the Reference-EV or upload the visa cancellation document."))
+        
                 if not record.reason_of_cancellation:
                     raise ValidationError(_("Please provide the reason for cancellation for visa cancellation request."))
         # Call the parent method

@@ -894,6 +894,13 @@ class ServiceEnquiry(models.Model):
                      self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
                 ])
                 activity_ids.unlink()
+                fm_users = self.env.ref('visa_process.group_service_request_finance_manager').users
+                for user in fm_users:
+                    self._schedule_ticket_activity(
+                        user_id=user.id,
+                        summary='Action Required on Ticket',
+                        note='Take action  for this request.'
+                    )
                 
         return result
 

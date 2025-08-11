@@ -97,7 +97,7 @@ class ServiceEnquiry(models.Model):
                         line.latest_existing_request_id = True
                         line.latest_existing_request_name = latest_existing_request.display_name
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
-        ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
+        ('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama Card Generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),
@@ -269,9 +269,7 @@ class ServiceEnquiry(models.Model):
     e_wakala_doc = fields.Binary(string="E Wakala Document")
     e_wakala_doc_file_name = fields.Char(string="E Wakala Document")
     e_wakala_doc_ref = fields.Char(string="Ref No.*")
-    upload_sec_doc = fields.Binary(string="SEC Letter")
-    upload_sec_doc_file_name = fields.Char(string="SEC Letter")
-    sec_doc_ref = fields.Char(string="Ref No.*")
+    
 
     visa_document = fields.Binary(string="Visa Document")
     chamber = fields.Selection([('yes','Yes'),('no','No')],string="Chamber")
@@ -1574,13 +1572,11 @@ class ServiceEnquiry(models.Model):
                     if not line.payment_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for Payment Confirmation Document")
 
-            if line.service_request in ('gosi','sec','ins_class_upgrade','iqama_no_generation'):
+            if line.service_request in ('gosi','ins_class_upgrade','iqama_no_generation'):
                 if line.upload_upgrade_insurance_doc and not line.upgarde_ins_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation of Insurance upgarde Document")
                 if line.upload_iqama_card_no_doc and not line.iqama_card_no_ref:
                     raise ValidationError("Kindly Update Reference Number for Iqama Card Document")
-                if line.upload_sec_doc and not line.sec_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for SEC Letter Document")
                 if line.upload_gosi_doc and not line.gosi_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Gosi Letter Document")
             if line.service_request == 'prof_change_qiwa':
@@ -1710,7 +1706,7 @@ class ServiceEnquiry(models.Model):
         'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_sponsorship_doc','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc',
         'fee_receipt_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','reupload_hr_card','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
+        'residance_doc','reupload_hr_card','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc','e_wakala_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \

@@ -22,7 +22,7 @@ class ServiceRequestConfg(models.Model):
     service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",default='lt_request',tracking=True)
 
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
-        ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
+        ('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),

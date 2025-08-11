@@ -9,7 +9,7 @@
 
                 <button name="action_to_another_establishment_local_approval" string="Submit for approval" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'submit_to_pm'),('upload_signed_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_manager"/>
                 
-                <button name="action_to_another_establishment_local_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'payment_done'),('transfer_confirmation_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_employee"/>
+               
                 
 
                 <button name="action_to_another_establishment_termination_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|','|',('state', '!=', 'submitted'),('upload_clearnace_doc', '=', False), ('upload_termination_doc', '=', False), ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_employee"/>
@@ -32,7 +32,7 @@
 
             <button name="action_to_another_establishment_resignation_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|', '|', ('state', '!=', 'approved'),  ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','resignation_to_another_establishment'),('transfer_confirmation_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
 
-            <button name="action_to_another_establishment_resignation_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmation_pending'),('upload_absent_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_employee"/>
+            <button name="action_to_another_establishment_local_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmation_pending'),('upload_absent_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_employee"/>
             </xpath>
 
             <xpath expr="//notebook[@id='notebook_four']" position="before">

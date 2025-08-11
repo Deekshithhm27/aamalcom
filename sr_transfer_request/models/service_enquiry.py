@@ -143,8 +143,9 @@ class ServiceEnquiry(models.Model):
     def action_to_another_establishment_local_process_complete(self):
         for line in self:
             if line.service_request == 'transfer_req':
-                if line.transfer_confirmation_doc and not line.transfer_confirmation_ref:
-                    raise ValidationError("Kindly Update Reference Number for Transfer Acceptance Document")
+                if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'local_transfer_to_another_establishment':
+                    if line.upload_absent_doc and not line.absent_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Snapshot")
                 line.state='done'
                 line.dynamic_action_status = "Process Completed"
                 line.action_user_id=False
@@ -388,9 +389,6 @@ class ServiceEnquiry(models.Model):
 
     def action_to_another_establishment_resignation_process_complete(self):
         for line in self:
-            if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'local_transfer_to_another_establishment':
-                if line.upload_absent_doc and not line.absent_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Snapshot")
             if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'resignation_to_another_establishment':
                 if line.transfer_confirmation_doc and not line.transfer_confirmation_ref:
                     raise ValidationError("Kindly Update Reference Number for Acceptance Document")

@@ -27,7 +27,7 @@ class ServiceEnquiry(models.Model):
         ('salary_certificate','Salary certificate'),
         ('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
         ('family_visa_letter','Family Visa Letter'),
-        ('family_resident','Family Resident Visa Application'),
+        ('family_resident','Family Resident Visa Application'),('sec','SEC Letter')
     ],
     string="Service Requests",
     store=True,
@@ -54,7 +54,8 @@ class ServiceEnquiry(models.Model):
         'salary_certificate':'cascade',
         'istiqdam_form':'cascade',
         'family_resident':'cascade',
-        'family_visa_letter':'cascade'
+        'family_visa_letter':'cascade',
+        'sec':'cascade'
     }
     )
 
@@ -171,10 +172,15 @@ class ServiceEnquiry(models.Model):
     upload_attested_application_doc = fields.Binary(string="Upload Attested Application")
     upload_attested_application_file_name = fields.Char(string="Attested Application")
     attested_application_doc_ref = fields.Char(string="Ref No.*")
+
+    #sec letter 
+    upload_sec_doc = fields.Binary(string="SEC Letter")
+    upload_sec_doc_file_name = fields.Char(string="SEC Letter")
+    sec_doc_ref = fields.Char(string="Ref No.*")
     
    
     
-    # Common fields for loan letters
+    # Common fields for  letters
     upload_saddad_doc = fields.Binary(string="Saddad Document")
     upload_saddad_doc_file_name = fields.Char(string="Saddad Document")
     saddad_doc_ref = fields.Char(string="Ref No.*")
@@ -185,6 +191,9 @@ class ServiceEnquiry(models.Model):
     upload_mofa_doc = fields.Binary(string="MOFA Attested Document")
     upload_mofa_doc_file_name = fields.Char(string="MOFA Document")
     mofa_doc_ref = fields.Char(string="Ref No.*")
+    upload_payment_doc_letters = fields.Binary(string="Payment Confirmation Document",tracking=True,store=True)
+    upload_payment_doc_file_name_letters = fields.Char(string="Payment Confirmation Document",tracking=True,store=True)
+    payment_doc_ref_letters = fields.Char(string="Ref No.*")
 
     show_mofa_section = fields.Boolean(
         string='Show MOFA Section',
@@ -195,11 +204,10 @@ class ServiceEnquiry(models.Model):
     @api.depends('letter_print_type_id')
     def _compute_show_mofa_section(self):
         for rec in self:
-            rec.show_mofa_section = (
-                rec.letter_print_type_id and
-                len(rec.letter_print_type_id) == 1 and
-                rec.letter_print_type_id[0].name == 'MOFA (Stamp)'
+            rec.show_mofa_section = any(
+                'MOFA' in name for name in rec.letter_print_type_id.mapped('name')
             )
+            
 
     
     doc_uploaded = fields.Boolean(string="Document uploaded",default=False,copy=False)
@@ -210,7 +218,7 @@ class ServiceEnquiry(models.Model):
                   'upload_embassy_letter_doc', 'upload_istiqdam_letter_doc', 'upload_sce_letter_doc',
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
-                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc')
+                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec')
     def loan_letter_document_uploaded(self):
         for record in self:
             if record.service_request == 'bank_loan' and record.upload_bank_loan_doc and record.dependent_document_ids:
@@ -256,6 +264,8 @@ class ServiceEnquiry(models.Model):
             elif record.service_request == 'family_resident' and record.upload_attested_application_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             elif record.service_request == 'family_visa_letter' and record.upload_family_visa_letter_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
+            elif record.service_request == 'sec' and record.upload_sec_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             else:
                 record.doc_uploaded = False 
@@ -324,6 +334,8 @@ class ServiceEnquiry(models.Model):
             vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
         if 'upload_attested_application_doc' in vals:
             vals['upload_attested_application_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestedApplication.pdf"
+        if 'upload_sec_doc' in vals:
+            vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDocument.pdf"
         return super(ServiceEnquiry, self).create(vals)
 
     def write(self, vals):
@@ -378,6 +390,8 @@ class ServiceEnquiry(models.Model):
                 vals['upload_family_visa_letter_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_FamilyVisaLetter.pdf"
             if 'upload_attested_application_doc' in vals:
                 vals['upload_attested_application_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_AttestedApplication.pdf"
+            if 'upload_sec_doc' in vals:
+                vals['upload_sec_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SECDocument.pdf"
         return super(ServiceEnquiry, self).write(vals)
 
     def action_submit(self):
@@ -387,14 +401,18 @@ class ServiceEnquiry(models.Model):
                                        'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                        'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                        'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
                 if not line.aamalcom_pay and not line.self_pay and not line.employee_pay:
                     raise ValidationError('Please select who needs to pay fees.')
                 if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
                     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
                 if not line.letter_print_type_id:
                     raise ValidationError('Please select atleast on Letter Print Type')
-        
+                if line.self_pay and not line.upload_payment_doc_letters:
+                    raise ValidationError('Please upload payment confirmation document.')
+                if line.employee_pay and not line.upload_payment_doc_letters:
+                    raise ValidationError('Please upload payment confirmation document.')
+
     def action_submit_payment_confirmation(self):
         super(ServiceEnquiry, self).action_submit_payment_confirmation()
         for line in self:
@@ -402,7 +420,7 @@ class ServiceEnquiry(models.Model):
                                        'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                        'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                        'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
                 line.dynamic_action_status = f'Payment done by client spoc. Document upload pending by first govt employee'
                 line.action_user_id = line.first_govt_employee_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
@@ -479,7 +497,10 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'family_resident':
                 if record.upload_attested_application_doc and not record.attested_application_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Attested Visa Application")
-                 
+            if record.service_request == 'sec':
+                if record.upload_sec_doc and not record.sec_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for sec document")
+                  
            
             # --- End Validation Checks ---
             department_ids = []
@@ -515,7 +536,7 @@ class ServiceEnquiry(models.Model):
                                          'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                          'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                          'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
                 if record.service_request == 'vehicle_lease':
                     if record.upload_vehicle_lease_doc and not record.vehicle_lease_ref:
                         raise ValidationError("Kindly Update Reference Number for Vehicle lease letter")
@@ -599,7 +620,7 @@ class ServiceEnquiry(models.Model):
                                          'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
                                          'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                          'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
-                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
                 if record.upload_saddad_doc and not record.saddad_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Saddad Document")
                 if not record.saddad_number:
