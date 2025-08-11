@@ -80,7 +80,12 @@
                         <field name="iqama_scanned_doc_ref"
                                attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
+                    <group>
+                        <field name="muqeem_points" 
+                                      attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="final_muqeem_cost" readonly="1"/>
                             </group>
+                        </group>
                         </page>
                     </notebook>
                 </sheet>

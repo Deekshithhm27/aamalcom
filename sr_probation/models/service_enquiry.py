@@ -24,8 +24,12 @@ class ServiceEnquiry(models.Model):
 
     # New field to display calculated probation end date
     calculated_probation_end_date = fields.Date(
-        string="Probation End Date",
+        string="Current Probation End Date",
         compute='_compute_probation_end_date',
+        store=True,
+    )
+    next_probation_end_date = fields.Date(
+        string="Next Probation End Date",
         store=True,
     )
     extended_employment_duration = fields.Selection([('3','3 Months'),('6','6 Months'),('9','9 Months'),('12','12 Months'),
@@ -172,17 +176,28 @@ class ServiceEnquiry(models.Model):
         today = fields.Date.today()
         delta = self.calculated_probation_end_date - today
         return delta.days
-    def open_assign_employee_wizard(self):
-        """Inherit open_assign_employee_wizard to add validation for visa cancellation"""
-        for record in self:
-            if record.service_request == 'probation_request':
-                # Validate required fields for visa cancellation
-                if not record.extended_employment_duration:
-                    raise ValidationError(_("Please select Employment Duration"))
-                if not record.extended_probation_term:
-                    raise ValidationError(_("Please provide the probation term"))
-        # Call the parent method
-        return super(ServiceEnquiry, self).open_assign_employee_wizard()
+    def action_submit(self):
+        super(ServiceEnquiry, self).action_submit()
+        for line in self:
+            if line.service_request in ['probation_request']:
+                if not line.next_probation_end_date:
+                    raise ValidationError('Please add Next Probation End Date')
+                if not line.extended_employment_duration:
+                    raise ValidationError(_("Please select Extension of Probation Duration"))
+                if not line.extended_probation_term:
+                    raise ValidationError(_("Please provide the Extended probation term"))
+        
+    # def open_assign_employee_wizard(self):
+    #     """Inherit open_assign_employee_wizard to add validation for visa cancellation"""
+    #     for record in self:
+    #         if record.service_request == 'probation_request':
+    #             # Validate required fields for visa cancellation
+    #             if not record.extended_employment_duration:
+    #                 raise ValidationError(_("Please select Employment Duration"))
+    #             if not record.extended_probation_term:
+    #                 raise ValidationError(_("Please provide the probation term"))
+    #     # Call the parent method
+    #     return super(ServiceEnquiry, self).open_assign_employee_wizard()
 
     def action_doc_uploaded_probation(self):
         for record in self:

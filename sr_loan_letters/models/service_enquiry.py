@@ -392,6 +392,8 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError('Please select who needs to pay fees.')
                 if line.aamalcom_pay and not (line.billable_to_client or line.billable_to_aamalcom):
                     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
+                if not line.letter_print_type_id:
+                    raise ValidationError('Please select atleast on Letter Print Type')
         
     def action_submit_payment_confirmation(self):
         super(ServiceEnquiry, self).action_submit_payment_confirmation()

@@ -399,11 +399,37 @@ class ServiceEnquiry(models.Model):
                      self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
                 ])
                 activity_ids.unlink()
-                client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+                second_govt_employee_id = line.second_govt_employee_id.user_id.id
                 self._schedule_ticket_activity(
-                user_id=client_manager_user_id,
-                summary='Action Required on Ticket',
-                note='Do review and take action (Employee needs to be assigned) on this ticket.'
+                    user_id=second_govt_employee_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Documents upload) on this ticket.'
+                )
+            elif line.service_request in ['bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 
+                                       'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
+                                       'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
+                                       'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
+                                       'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident']:
+                # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+                activity_id = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('user_id', '=', self.env.user.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_id.action_feedback(feedback='Payment Confirmation')
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=',
+                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+                first_govt_employee_id = line.first_govt_employee_id.user_id.id
+                self._schedule_ticket_activity(
+                    user_id=first_govt_employee_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Documents upload) on this ticket.'
                 )
             
             else:

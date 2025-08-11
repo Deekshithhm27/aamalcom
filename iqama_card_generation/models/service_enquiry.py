@@ -42,6 +42,35 @@ class IqamaDocument(models.Model):
     iqma_card_generation_type = fields.Selection([
         ('iqama_print', 'Iqama Print'),
     ], string='Service Request', required=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
+
+    muqeem_points = fields.Integer(string="Points")
+    final_muqeem_cost = fields.Monetary(
+        string="Final Muqeem Points Cost (with VAT)",
+        currency_field='currency_id',
+        compute='_compute_final_muqeem_cost',
+    )
+
+    # @api.onchange('final_muqeem_cost')
+    # def _update_muqeem_pricing_line(self):
+    #     for line in self:
+    #         if line.final_muqeem_cost:
+    #             line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
+    #                     'name': 'Muqeem Fee',
+    #                     'amount':line.final_muqeem_cost,
+    #                     'service_enquiry_id': line.id
+    #                     })
+                
+    @api.depends('muqeem_points')
+    def _compute_final_muqeem_cost(self):
+        for record in self:
+            if record.muqeem_points:
+                base_cost = record.muqeem_points * 0.2
+                vat_cost = base_cost * 0.15
+                total = base_cost + vat_cost
+                record.final_muqeem_cost = round(total, 2)
+            else:
+                record.final_muqeem_cost = 0.0
 
 
     # @api.onchange('service_request_config_id')

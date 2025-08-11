@@ -14,13 +14,14 @@
                 <group name="probation_term" attrs="{'invisible': [('service_request', 'not in', ('probation_request'))]}">
                         <group>
                             <field name="calculated_probation_end_date" readonly="1"/>
+                            <field name="next_probation_end_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
-                        <group attrs="{'invisible': ['|',('state','=','draft'),('service_request', 'not in', ('probation_request'))]}">
-                            <field name="extended_employment_duration"  
-                                   attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}"
+                        <group attrs="{'invisible': [('service_request', 'not in', ('probation_request'))]}">
+                            <field name="extended_employment_duration" string="Extension of Probation Duration"  
+                                   attrs="{'readonly': [('state', '!=','draft')]}" 
                                  force_save="1"/>
-                            <field name="extended_probation_term"
-                                   attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" force_save="1"/>
+                            <field name="extended_probation_term" string="Extension of Probation Term"
+                                   attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
                         </group>  
                 </group>
             </xpath>
