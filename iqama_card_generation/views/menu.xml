@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Parent menu -->
     <menuitem
         id="menu_documents_section"
         name="Documents"
         parent="visa_process.menu_base_visa_process"
         sequence="5"
-        groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator"
+        groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator,visa_process.group_service_request_manager"
     />
 
-    </odoo>
+    <!-- Employee/Admin menu -->
+    <menuitem id="menu_qiwa_documents"
+              name="Iqama Card Generation"
+              parent="menu_documents_section"
+              action="action_qiwa_document"
+              groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator"
+              sequence="10"/>
 
-    
+    <!-- Manager menu -->
+    <menuitem id="menu_qiwa_documents_manager_readonly"
+              parent="menu_documents_section"
+              action="action_qiwa_document_manager"
+              groups="visa_process.group_service_request_manager"
+              sequence="11"/>
+</odoo>

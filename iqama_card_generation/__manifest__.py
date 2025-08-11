@@ -10,9 +10,10 @@
     'category': 'Services',
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
-    'depends': ['base', 'mail', 'visa_process'],
+    'depends': ['base', 'hr','visa_process'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
         'views/menu.xml',
         'views/service_enquiry_views.xml'
     ],

@@ -1,18 +1,26 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class IqamaDocument(models.Model):
     _name = 'qiwa.document'
     _description = 'Qiwa Document'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _rec_name = 'employee_id'
-    _order = 'id desc'
+    
 
+    client_id = fields.Many2one('res.partner', string="Client Spoc")
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    client_parent_id = fields.Many2one(
+    'res.partner',
+    string="Client",
+    domain="[('is_company','=',True),('parent_id','=',False)]",store=True
+    )
+    name = fields.Char(string="Reference", copy=False)
+    employee_id = fields.Many2one(
+    'hr.employee',
+    string='Employee',
+    required=True
+    )
 
-    client_id = fields.Many2one('res.partner',string="Client Spoc")
-    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
-    employee_id = fields.Many2one('hr.employee', string='Employee', required=True,domain="[('client_parent_id','=',client_parent_id)]")
     iqama_no = fields.Char(string="Iqama No")
     identification_id = fields.Char(string='Border No.')
     passport_no = fields.Char(string='Passport No')
@@ -50,16 +58,6 @@ class IqamaDocument(models.Model):
         currency_field='currency_id',
         compute='_compute_final_muqeem_cost',
     )
-
-    # @api.onchange('final_muqeem_cost')
-    # def _update_muqeem_pricing_line(self):
-    #     for line in self:
-    #         if line.final_muqeem_cost:
-    #             line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
-    #                     'name': 'Muqeem Fee',
-    #                     'amount':line.final_muqeem_cost,
-    #                     'service_enquiry_id': line.id
-    #                     })
                 
     @api.depends('muqeem_points')
     def _compute_final_muqeem_cost(self):
@@ -71,21 +69,38 @@ class IqamaDocument(models.Model):
                 record.final_muqeem_cost = round(total, 2)
             else:
                 record.final_muqeem_cost = 0.0
-
-
-    # @api.onchange('service_request_config_id')
-    # def update_process_type(self):
-    #     for line in self:
-    #         if line.service_request_config_id:
-    #             line.process_type = line.service_request_config_id.process_type
-    #         # Passing the latest existing request name in the alert message for visibility,
-    #         if line.service_request_config_id and line.employee_id:
-    #             latest_existing_request = self.search([
-    #                 ('employee_id', '=', line.employee_id.id),
-    #                 ('service_request_config_id', '=', line.service_request_config_id.id)
-    #             ], limit=1)
-                
     service_request = fields.Selection([('iqama_print', 'Iqama Print')],string="Service Requests",related="service_request_config_id.service_request",store=True,copy=False)
+
+    @api.onchange('client_id')
+    def _onchange_client_id(self):
+        """Update client_parent_id when client_id changes"""
+        if self.client_id and self.client_id.parent_id:
+            self.client_parent_id = self.client_id.parent_id.id
+        else:
+            self.client_parent_id = False
+        # Update employee domain
+        self._update_employee_domain()
+
+   
+    
+    @api.onchange('client_parent_id')
+    def _onchange_client_parent_id(self):
+        """Filter employees based on selected client_parent_id."""
+        if self.client_parent_id:
+            return {
+                'domain': {
+                    'employee_id': [('client_parent_id', '=', self.client_parent_id.id)]
+                }
+            }
+       
+
+    def _update_employee_domain(self):
+        """Update the employee domain based on client_parent_id"""
+        if self.client_parent_id:
+            return {'domain': {'employee_id': [('client_parent_id', '=', self.client_parent_id.id)]}}
+        else:
+            return {'domain': {'employee_id': []}}
+
     @api.onchange('employee_id')
     def update_service_request_type_from_employee(self):
         for line in self:
@@ -102,4 +117,19 @@ class IqamaDocument(models.Model):
                if line.confirmation_doc and not line.confirmation_doc_ref:
                    raise ValidationError("Kindly Update Reference Number for Confirmation Document")
                line.state = 'done'
+
+    @api.model
+    def create(self, vals):
+        """Generate sequence for the document"""
+        if not vals.get('name'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('qiwa.document')
+        res = super(IqamaDocument, self).create(vals)
+        return res
+
+    def write(self, vals):
+        """Override write to ensure domain is updated"""
+        res = super(IqamaDocument, self).write(vals)
+        if 'client_parent_id' in vals:
+            self._update_employee_domain()
+        return res
     
