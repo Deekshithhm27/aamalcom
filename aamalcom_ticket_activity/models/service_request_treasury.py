@@ -53,11 +53,7 @@ class ServiceRequestTreasury(models.Model):
             ])
             activity_ids.unlink()
 
-            # Define variables once to use in the entire if/elif block
-            client_manager_user_id = line.client_id.company_spoc_id.user_id.id
-            govt_users = self.env.ref('visa_process.group_service_request_employee').users
-            first_govt_employee_id = line.service_request_id.first_govt_employee_id.user_id.id
-
+            
             if line.service_request_id.service_request == 'transfer_req':
                 for user in govt_users:
                     line.service_request_id._schedule_ticket_activity(
