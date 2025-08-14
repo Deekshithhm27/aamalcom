@@ -22,7 +22,7 @@ class EmployeeSelectionWizard(models.TransientModel):
              # if active_enquiry.state == 'submitted':
                         if not active_enquiry.aamalcom_pay:
                             active_enquiry.dynamic_action_status = (
-                                f"Review and request payment confirmation pending by employee from {department_names} department."
+                                f"Review and request payment confirmation pending by employee from government department."
                             )
                             active_enquiry.first_govt_employee_id = self.employee_id.id
                             active_enquiry.assigned_govt_emp_one = True

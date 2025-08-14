@@ -10,11 +10,11 @@
                            statusbar_visible="draft,ticket_submitted,completed,refused,cancelled"
                            options='{"clickable": "1"}'/>
                     <button name="action_confirm_documents"
-                            type="object"
-                            string="Confirm Documents"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|','|',('state', '!=', 'draft'),('fee_receipt_doc','=',False),('confirmation_doc','=',False)]}"/>
-                    </header>
+                             type="object"
+                             string="Submit"
+                             class="btn-primary"
+                             attrs="{'invisible': ['|','|','|',('state', '!=', 'draft'),('fee_receipt_doc','=',False),('confirmation_doc','=',False),('iqama_scanned_doc','=',False)]}"/>
+                </header>
                 <sheet>
                     <div class="oe_title mb24" name="service_enquiry">
                         <field name="service_request_type" widget="web_ribbon" readonly="1"/>
@@ -24,31 +24,32 @@
                     
                     <group>
                         <group>
-                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="client_parent_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="employee_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"
+                                domain="[('client_parent_id', '!=', False), ('client_parent_id', '=', client_parent_id)]"/>
+                        
                             <field name="iqma_card_generation_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
-                        <group/>
                     </group>
 
                     <group>
                         <group>
                             <field name="iqama_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="passport_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        </group>
-                        <group>
+                        
                             <field name="identification_id" string="Border No." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="sponsor_id" string="Sponsor Number" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-
                         </group>
                     </group>
+                    
                     <field name="client_id" invisible="1"/>
-                <field name="user_id" invisible="1"/>
-                <field name ="client_parent_id" invisible="1"/>
+                    <field name="user_id" invisible="1"/>
 
                     <notebook>
                         <page string="Documents" attrs="{'invisible': [('iqma_card_generation_type', '!=', 'iqama_print')]}">
                             <group>
-                                <group> <field name="fee_receipt_doc"
+                                <group> 
+                                    <field name="fee_receipt_doc"
                                            attrs="{'readonly': [('state', '!=', 'draft')]}"
                                            force_save="1"
                                            filename="fee_receipt_doc_file_name"/>
@@ -61,7 +62,8 @@
                                 </group>
                             </group>
                             <group>
-                                <group> <field name="confirmation_doc"
+                                <group> 
+                                    <field name="confirmation_doc"
                                            attrs="{'readonly': [('state', '!=', 'draft')]}"
                                            force_save="1"
                                            filename="confirmation_doc_file_name"/>
@@ -73,27 +75,26 @@
                                            force_save="1"/>
                                 </group>
                                 <group>
-                        <field name="iqama_scanned_doc"
-                               attrs="{'readonly': [('state', '!=', 'draft')]}"
-                               filename="iqama_scanned_doc_file_name"/>
-                        <field name="iqama_scanned_doc_file_name" invisible="1"/>
-                        <field name="iqama_scanned_doc_ref"
-                               attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                    </group>
-                    <group>
-                        <field name="muqeem_points" 
-                                      attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="final_muqeem_cost" readonly="1"/>
+                                    <field name="iqama_scanned_doc"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           filename="iqama_scanned_doc_file_name"/>
+                                    <field name="iqama_scanned_doc_file_name" invisible="1"/>
+                                    <field name="iqama_scanned_doc_ref"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                </group>
+                                <group>
+                                    <field name="muqeem_points"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="final_muqeem_cost" readonly="1"/>
+                                </group>
                             </group>
-                        </group>
                         </page>
                     </notebook>
                 </sheet>
             </form>
         </field>
     </record>
-
-    <record id="view_qiwa_document_tree" model="ir.ui.view">
+<record id="view_qiwa_document_tree" model="ir.ui.view">
         <field name="name">qiwa.document.tree</field>
         <field name="model">qiwa.document</field>
         <field name="arch" type="xml">
@@ -133,4 +134,4 @@
               action="action_qiwa_document"
               sequence="10"/>
 
-</odoo>
+    </odoo>
