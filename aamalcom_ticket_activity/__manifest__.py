@@ -10,7 +10,7 @@
     'website': 'https://www.aamalcom.com',
     'category': 'Operations/Workflow',
     'depends': ['base', 'mail', 'visa_process','sr_iqama_requests','sr_exit_reentry', 'sr_muqeem','sr_visa_cancellation','sr_loan_letters',
-    'sr_salary_increase','sr_salary_advance','sr_probation','sr_medical_blood_test','sr_final_clearance','sr_ajeer','sr_courier_charges','sr_dependents_ere'],
+    'sr_salary_increase','sr_salary_advance','sr_probation','sr_medical_blood_test','sr_final_clearance','sr_ajeer','sr_courier_charges','sr_dependents_ere','aamalcom_insurance'],
     'data': [
         'data/activity.xml',
     ],
