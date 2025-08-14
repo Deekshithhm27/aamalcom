@@ -59,7 +59,6 @@ class ServiceEnquiry(models.Model):
     }
     )
 
-    state = fields.Selection(selection_add=[('coc_mofa_document', 'COC/MOFA Document')])
     
     # Bank Loan fields
     upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
@@ -194,6 +193,42 @@ class ServiceEnquiry(models.Model):
     upload_payment_doc_letters = fields.Binary(string="Payment Confirmation Document",tracking=True,store=True)
     upload_payment_doc_file_name_letters = fields.Char(string="Payment Confirmation Document",tracking=True,store=True)
     payment_doc_ref_letters = fields.Char(string="Ref No.*")
+    upload_enjaz_doc = fields.Binary(string="Enjaz Document")
+    upload_enjaz_doc_file_name = fields.Char(string="Enjaz Document")
+    enjaz_doc_ref = fields.Char(string="Ref No.*")
+    upload_completed_doc = fields.Binary(string="Completed Document")
+    upload_completed_doc_file_name = fields.Char(string="Completed Document")
+    completed_doc_ref = fields.Char(string="Ref No.*")
+    upload_coc_stamp_doc = fields.Binary(string="COC(Stamp) Document")
+    upload_coc_stamp_doc_file_name = fields.Char(string="COC(Stamp) Document")
+    coc_stamp_doc_ref = fields.Char(string="Ref No.*")
+
+    show_coc_online_section = fields.Boolean(
+        string='Show COC(online) Section',
+        compute='_compute_show_coc_online_section',
+        store=False
+    )
+
+    @api.depends('letter_print_type_id')
+    def _compute_show_coc_online_section(self):
+        for rec in self:
+            rec.show_coc_online_section = any(
+                'COC (Online)' in name for name in rec.letter_print_type_id.mapped('name')
+            )
+
+    show_coc_stamp_section = fields.Boolean(
+        string='Show COC(Stamp) Section',
+        compute='_compute_show_coc_stamp_section',
+        store=False
+    )
+
+    @api.depends('letter_print_type_id')
+    def _compute_show_coc_stamp_section(self):
+        for rec in self:
+            rec.show_coc_stamp_section = any(
+                'COC (Stamp)' in name for name in rec.letter_print_type_id.mapped('name')
+            )
+
 
     show_mofa_section = fields.Boolean(
         string='Show MOFA Section',
@@ -207,6 +242,36 @@ class ServiceEnquiry(models.Model):
             rec.show_mofa_section = any(
                 'MOFA' in name for name in rec.letter_print_type_id.mapped('name')
             )
+
+    show_enjaz_section = fields.Boolean( 
+    string='Show Enjaz Section', 
+    compute='_compute_show_enjaz_section', 
+    store=False 
+    ) 
+
+    @api.depends('letter_print_type_id') 
+    def _compute_show_enjaz_section(self): 
+        for rec in self: 
+            rec.show_enjaz_section = ( 
+            rec.letter_print_type_id and 
+            len(rec.letter_print_type_id) == 1 and 
+            rec.letter_print_type_id[0].name == 'Enjaz (E-Wakala)' 
+            )
+
+    show_letter_head_section = fields.Boolean( 
+    string='Show Letter Head Section', 
+    compute='_compute_show_letter_head_section', 
+    store=False 
+    ) 
+
+    @api.depends('letter_print_type_id') 
+    def _compute_show_letter_head_section(self): 
+        for rec in self: 
+            rec.show_letter_head_section = ( 
+            rec.letter_print_type_id and 
+            len(rec.letter_print_type_id) == 1 and 
+            rec.letter_print_type_id[0].name == 'Letter-Head' 
+            )
             
 
     
@@ -218,9 +283,16 @@ class ServiceEnquiry(models.Model):
                   'upload_embassy_letter_doc', 'upload_istiqdam_letter_doc', 'upload_sce_letter_doc',
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
-                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec')
+                  'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec',
+                  'upload_enjaz_doc','upload_completed_doc','upload_coc_stamp_doc')
     def loan_letter_document_uploaded(self):
         for record in self:
+            if record.show_letter_head_section and record.upload_completed_doc:
+                record.doc_uploaded = True
+            if record.show_coc_stamp_section and record.upload_coc_stamp_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
+            if record.show_enjaz_section and record.upload_enjaz_doc and record.dependent_document_ids:
+                record.doc_uploaded = True
             if record.service_request == 'bank_loan' and record.upload_bank_loan_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             elif record.service_request == 'vehicle_lease' and record.upload_vehicle_lease_doc:
@@ -537,6 +609,15 @@ class ServiceEnquiry(models.Model):
                                          'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
                                          'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
                                          'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
+                # validation for Enjaz section
+                if record.show_enjaz_section and (not record.upload_enjaz_doc or not record.enjaz_doc_ref):
+                    raise ValidationError("Kindly Update Reference Number and Upload Document for Enjaz")
+                 # validation for coc stamp section
+                if record.show_coc_stamp_section and (not record.upload_coc_stamp_doc or not record.coc_stamp_doc_ref):
+                    raise ValidationError("Kindly Update Reference Number and Upload Document for COC(stamp)")
+                 # validation for letetr head
+                if record.show_letter_head_section and (not record.upload_completed_doc or not record.completed_doc_ref):
+                    raise ValidationError("Kindly Update Reference Number and Upload Document for Completed")
                 if record.service_request == 'vehicle_lease':
                     if record.upload_vehicle_lease_doc and not record.vehicle_lease_ref:
                         raise ValidationError("Kindly Update Reference Number for Vehicle lease letter")
