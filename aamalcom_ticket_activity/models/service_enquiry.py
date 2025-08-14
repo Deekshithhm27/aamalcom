@@ -43,6 +43,27 @@ class ServiceEnquiry(models.Model):
                     note='Do review and take action (Employee needs to be assigned) on this ticket.'
                 )
         return result
+    def open_assign_employee_wizard(self):
+        result = super(ServiceEnquiry, self).open_assign_employee_wizard()
+        for line in self:
+            if line.service_request in ['muqeem_dropout']:
+                # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
+                activity_id = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('user_id', '=', self.env.user.id),
+                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_id.action_feedback(feedback='Approved')
+
+                # If one user completes the activity or action on the record, delete activities for other users
+                activity_ids = self.env['mail.activity'].search([
+                    ('res_id', '=', self.id),
+                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+                ])
+                activity_ids.unlink()
+            
+        return result
+
 
     def action_require_payment_confirmation(self):
         result = super(ServiceEnquiry, self).action_require_payment_confirmation()
@@ -708,53 +729,17 @@ class ServiceEnquiry(models.Model):
                      self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
                 ])
                 activity_ids.unlink()
-                first_govt_employee_id = line.first_govt_employee_id.user_id.id
-                self._schedule_ticket_activity(
-                            user_id=first_govt_employee_id,
-                            summary='Action Required on Ticket',
-                            note='Do review and take action (Last Working Date) on this ticket.'
-                        )  
-                activity_id = self.env['mail.activity'].search([
-                    ('res_id', '=', self.id),
-                    ('user_id', '=', self.env.user.id),
-                    ('activity_type_id', '=',
-                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-                ])
-                activity_id.action_feedback(feedback='Approved')
-                # If one user completes the activity or action on the record, delete activities for other users
-                activity_ids = self.env['mail.activity'].search([
-                    ('res_id', '=', self.id),
-                    ('activity_type_id', '=',
-                     self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-                ])      
-                
-        return result
-
-    def action_submit_for_check_final_exit(self):
-        result=super(ServiceEnquiry, self).action_submit_for_check_final_exit()
-        # Automatically approve the activity if the user forgot to mark it as done before moving to the next state
-        for line in self:
-            if line.service_request in ['final_exit_issuance']:
-                activity_id = self.env['mail.activity'].search([
-                    ('res_id', '=', self.id),
-                    ('user_id', '=', self.env.user.id),
-                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-                ])
-                activity_id.action_feedback(feedback='Approved')
-                # If one user completes the activity or action on the record, delete activities for other users
-                activity_ids = self.env['mail.activity'].search([
-                    ('res_id', '=', self.id),
-                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-                ])
-                activity_ids.unlink()
                 client_manager_user_id = line.client_id.company_spoc_id.user_id.id
                 self._schedule_ticket_activity(
                     user_id=client_manager_user_id,
                     summary='Action Required on Ticket',
-                    note='Do review and take action (Last Working Date) on this ticket.'
-                )
-        
+                    note='Do review and take action (Confirm Inside/Outside KSA) on this ticket.'
+                ) 
+                
+                
         return result
+
+   
 
     def action_submit_for_review_final_exit(self):
         result=super(ServiceEnquiry, self).action_submit_for_review_final_exit()
@@ -814,6 +799,12 @@ class ServiceEnquiry(models.Model):
                      self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
                 ])
                 activity_ids.unlink()
+                client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action (Assign Employee ) on this ticket.'
+                )
         return result
 
     def final_exit_submit(self):
