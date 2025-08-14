@@ -61,7 +61,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
-        ('coc_mofa_document','COC/MOFA Document'),
+        ('coc_mofa_document','COC Document Upload'),
         ('confirmation_pending','Confirmation Pending'),
         ('inside_or_outside_ksa','Inside/Outside KSA Confirmation Pending'),
         ('passed_to_treasury','Passed to Treasury'),
@@ -163,7 +163,7 @@ class ServiceEnquiry(models.Model):
     fee_receipt_doc = fields.Binary(string="Fee Receipt Document")
     fee_receipt_doc_file_name = fields.Char(string="Fee Receipt File Name")
     fee_receipt_doc_ref = fields.Char(string="Ref No.*")
-    hr_card_type = fields.Selection([('unpaid_hr_card', 'UnPaid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Status", store=True)
+    hr_card_type = fields.Selection([('unpaid_hr_card', 'Un-paid HR Card'),('paid_hr_card', 'Paid HR Card')], string="HR Card Status", store=True)
     hr_card_amount=fields.Integer(string="HR Card Amount")
     upload_hr_card = fields.Binary(string="HR Card Document")
     upload_hr_card_file_name = fields.Char(string="HR Card Document")
@@ -823,6 +823,10 @@ class ServiceEnquiry(models.Model):
                     level = 'level1'
                 else:
                     level = 'level2'
+            if line.service_request == 'final_exit_issuance':
+                # Validate required fields for final exit
+                if not line.ere_last_date:
+                    raise ValidationError(_("Please update Last Working Day."))
             req_lines = line.service_request_config_id.service_department_lines
             # Sort lines by sequence
             sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
@@ -1023,29 +1027,10 @@ class ServiceEnquiry(models.Model):
                 if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
                     raise ValidationError('Please enter the Reference Number.')
                 line.state='inside_or_outside_ksa'
-                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
-                line.action_user_id=line.first_govt_employee_id.user_id.id
-                line.write({'processed_date': fields.Datetime.now()})
-
-    def action_submit_for_check_final_exit(self):
-        for line in self:
-            if line.service_request=='final_exit_issuance':
-                if not line.ere_last_date:
-                    raise ValidationError("Kindly Update Last Working Day")
-                line.state='submit_to_pm'
                 line.dynamic_action_status=f"Review is Pending By PM"
                 line.action_user_id=line.approver_id.user_id.id
                 line.write({'processed_date': fields.Datetime.now()})
 
-    def action_submit_doc_uploaded_final_exit(self):
-        for line in self:
-            if line.service_request=='final_exit_issuance':
-                if line.upload_final_exit_issuance_doc and not line.final_exit_issuance_doc_ref:
-                    raise ValidationError('Please enter the Reference Number.')
-                line.state='inside_or_outside_ksa'
-                line.dynamic_action_status=f"Review is Pending By First Govt Employee"
-                line.action_user_id=line.first_govt_employee_id.user_id.id
-                line.write({'processed_date': fields.Datetime.now()})
 
     def action_submit_for_review_final_exit(self):
         for line in self:
@@ -1098,6 +1083,7 @@ class ServiceEnquiry(models.Model):
                         'identification_id': line.identification_id,
                         'passport_no': line.passport_no,
                         'sponsor_id': line.sponsor_id.id if line.sponsor_id else False,
+                        'assign_govt_emp_one': True,
                         'is_inside_ksa': True,
                         'aamalcom_pay':True,
                         'billable_to_aamalcom':True,
@@ -1413,6 +1399,11 @@ class ServiceEnquiry(models.Model):
             'employment_duration':self.employment_duration.id,
             'total_amount':self.total_amount
             }
+            # This is used to pass hr and jawazt amount to treasury
+            if self.service_request == 'hr_card':
+                vals['hr_card_amount'] = self.hr_card_amount
+                vals['jawazat_card_amount'] = self.jawazat_card_amount
+            # logic ends here for hr  card
             service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
             if service_request_treasury_id:
                 line.state = 'approved'

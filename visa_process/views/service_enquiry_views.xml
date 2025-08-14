@@ -111,13 +111,13 @@
 
                     <button name="action_submit_doc_uploaded_final_exit" string="Document Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|','|',('state','!=','submitted'),('upload_final_exit_issuance_doc','=',False),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
 
-                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submit_to_pm'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_for_review_final_exit" string="Submit for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','inside_or_outside_ksa'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="action_submit_for_check_final_exit" string="Submit for Review to PM" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','inside_or_outside_ksa'),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    
 
                     <button name="final_exit_submit" type="object" class="oe_highlight" string="Confirm Final Exit" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_outside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
 
-                    <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Initiate Muqeem Charges" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Initiate Muqeem Dropout" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
                     
                     <!-- LT Medical Health Insurance Upload end-->
 
@@ -176,7 +176,7 @@
                             attrs="{'invisible': [('state','!=','waiting_fin_approval')]}"
                             groups="visa_process.group_service_request_finance_manager"/>
                     <!-- Show Refuse Button only to specific users in each state - End -->
-                    <button name="action_submit" string="Re-Submit" type="object" class="oe_highlight"
+                    <button name="action_submit" string="Re-Set to Submitted" type="object" class="oe_highlight"
                             attrs="{'invisible': ['|', ('state', '!=', 'refuse'), ('service_request', '=', 'salary_advance')]}"
                             groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager"/>
                 </header>
@@ -350,7 +350,7 @@
                                 
                                 
                                 
-                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', '|',('service_request', 'not in', ('hr_card','iqama_renewal')),('aamalcom_pay', '!=',True), ('state', 'in', ('draft', 'submitted'))]}">
+                                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|', '|',('service_request', 'not in', ('iqama_renewal')),('aamalcom_pay', '!=',True), ('state', 'in', ('draft', 'submitted'))]}">
                                     <group attrs="{'invisible': [('aamalcom_pay', '!=',True)]}">
                                         <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" filename="upload_payment_doc_file_name"/>
                                         <field name="upload_payment_doc_file_name"  invisible="1"/>
@@ -545,16 +545,16 @@
                         </group>
                     </group>
 
-                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm','inside_or_outside_ksa'))]}">
-                        <group>
-                            <field name="ere_last_date" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','inside_or_outside_ksa'),('is_service_request_client_spoc', '=', True)]}"/>
+                    <group name="lt_final_exit_issuance" attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','=','draft')]}">
+                        <group >
+                            <field name="ere_last_date" string="Last Working Day" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager','!=',True)]}"/>
                         </group>
-                        <group>
-                            <field name="is_inside_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
+                        <group attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm','inside_or_outside_ksa'))]}">
+                            <field name="is_inside_ksa" attrs="{'readonly': [('state', 'not in',('inside_or_outside_ksa','submit_for_review'))]}"/>
                         </group>
-                        <group>
-                            <field name="is_outside_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
-                            <field name="remarks_for_ksa" attrs="{'readonly': [('state', 'not in',('submit_to_pm','submit_for_review'))]}"/>
+                        <group attrs="{'invisible': ['|',('service_request', '!=', 'final_exit_issuance'),('state','not in',('done','submit_for_review','final_exit_confirmed','submit_to_pm','inside_or_outside_ksa'))]}">
+                            <field name="is_outside_ksa" attrs="{'readonly': [('state', 'not in',('inside_or_outside_ksa','submit_for_review'))]}"/>
+                            <field name="remarks_for_ksa" attrs="{'readonly': [('state', 'not in',('inside_or_outside_ksa','submit_for_review'))]}"/>
                         </group>
                     </group>
                     <!-- Final exit issuance stop-->
@@ -746,23 +746,24 @@
                                 <field name="hr_card_type" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}"/>
                             </group>
                             </group>
-                            <group string="Paid Hr Card Document" attrs="{'invisible':['|','|',('service_request', '!=', 'hr_card'),('hr_card_type','!=','paid_hr_card'),('state', 'in', ('draft'))]}">
+                           
+                            <group string="Paid Hr Card Document" attrs="{'invisible':['|','|','|',('service_request', '!=', 'hr_card'),('hr_card_type','!=','paid_hr_card'),('state', '=', 'draft'),('first_govt_employee_id','=',False)]}">
                                 <group>
                                 <field name="reupload_hr_card" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="reupload_hr_card_file_name"/>
                                 <field name="reupload_hr_card_file_name" invisible="1"/>
                                 <field name="rehr_card_ref" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                             </group>
                             </group> 
-                            <group attrs="{'invisible': ['|',('state', '=', 'draft'),('first_govt_employee_id','=',False),]}">
-                                <group string="Hr Card Document" attrs="{'invisible': ['|',('service_request', '!=', 'hr_card'),('hr_card_type','!=','unpaid_hr_card'),]}">
+                       
+                            
+                                <group string="Hr Card Document" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'hr_card'),('hr_card_type','!=','unpaid_hr_card'),('state', '=', 'draft'),('first_govt_employee_id','=',False),]}">
+                                    <group>
                                     <field name="upload_hr_card" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_hr_card_file_name"/>
                                      <field name="upload_hr_card_file_name"  invisible="1"/>
                                     <field name="hr_card_ref" attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                     <field name="hr_card_amount"  attrs="{'readonly': ['|',('state', 'not in', ('submitted')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
-                            </group>
-                            
-
+                                </group>
                             <group attrs="{'invisible': ['|',('state', '=', 'draft'),('second_govt_employee_id','=',False),]}">
                                 <group string="Jawazat Document" attrs="{'invisible': [('service_request', '!=', 'hr_card')]}">
                                     <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
@@ -770,22 +771,35 @@
                                     <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                     <field name="jawazat_card_amount" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
+                            </group>
+                       
+
+                            
+
+                            
+                                <group attrs="{'invisible': ['|',('state', '=', 'draft'),('second_govt_employee_id','=',False),]}">
                                 <group string="Residance Permit" attrs="{'invisible': ['|',('state', 'not in', ('approved','done','payment_done')),('service_request', '!=', 'hr_card')]}">
                                     <field name="residance_doc"  attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="residance_doc_file_name"/>
                                      <field name="residance_doc_file_name"  invisible="1"/>
                                     <field name="residance_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    <field name="iqama_issue_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}" force_save="1"/>
                             </group>
                             <group string="Muqeem Print" attrs="{'invisible': ['|',('state', 'not in', ('approved','done','payment_done')),('service_request', '!=', 'hr_card')]}">
                                 <field name="muqeem_print_doc"  attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="muqeem_print_doc_file_name"/>
                                  <field name="muqeem_print_doc_file_name"  invisible="1"/>
                                 <field name="muqeem_print_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                <field name="iqama_expiry_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}"/>
                                 
                             </group>
-                            <group attrs="{'invisible':['|',('service_request', '!=','hr_card'),('second_govt_employee_id','=',False)]}">
-                                <field name="iqama_expiry_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done','client_approved')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}"/>
-                                <field name="iqama_issue_date" attrs="{'readonly': ['|','|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True),('service_request','!=','hr_card')]}" force_save="1"/>
-                            </group>
+
                         </group>
+                        <group string="Payment Confirmation Document" attrs="{'invisible': ['|', '|',('service_request', '!=','hr_card'),('aamalcom_pay', '!=',True), ('state', 'in', ('draft', 'submitted','doc_uploaded_by_first_govt_employee','waiting_fin_approval','waiting_gm_approval','waiting_op_approval'))]}">
+                                    <group attrs="{'invisible': [('aamalcom_pay', '!=',True)]}">
+                                        <field name="upload_payment_doc" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}" filename="upload_payment_doc_file_name"/>
+                                        <field name="upload_payment_doc_file_name"  invisible="1"/>
+                                        <field name="payment_doc_ref" attrs="{'readonly': ['|', ('state', '!=', 'payment_initiation'), '|', ('is_project_manager', '=', True), ('is_gov_employee', '=', True)]}"/>
+                                    </group>
+                                </group>
                         </page>
                     </notebook>
 

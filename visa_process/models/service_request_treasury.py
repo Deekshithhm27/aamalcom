@@ -31,6 +31,10 @@ class ServiceRequestTreasury(models.Model):
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
     issue_date = fields.Date(string='Issue Date')
+    #filed used for hr_card service request
+    hr_card_amount=fields.Integer(string="HR Card Amount")
+    jawazat_card_amount=fields.Integer(string="Jawazat Amount")
+
 
     state = fields.Selection([('draft','Draft'),('updated_by_treasury','Waiting for Approval'),('passed_to_treasury','Passed to Treasury'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
