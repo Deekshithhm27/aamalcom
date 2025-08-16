@@ -20,8 +20,8 @@
                             <field name="extended_employment_duration" string="Extension of Probation Duration"  
                                    attrs="{'readonly': [('state', '!=','draft')]}" 
                                  force_save="1"/>
-                            <field name="extended_probation_term" string="Extension of Probation Term"
-                                   attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
+                           <!--  <field name="extended_probation_term" string="Extension of Probation Term"
+                                   attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/> -->
                         </group>  
                 </group>
             </xpath>

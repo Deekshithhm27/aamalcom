@@ -184,8 +184,8 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError('Please add Next Probation End Date')
                 if not line.extended_employment_duration:
                     raise ValidationError(_("Please select Extension of Probation Duration"))
-                if not line.extended_probation_term:
-                    raise ValidationError(_("Please provide the Extended probation term"))
+                # if not line.extended_probation_term:
+                #     raise ValidationError(_("Please provide the Extended probation term"))
         
     # def open_assign_employee_wizard(self):
     #     """Inherit open_assign_employee_wizard to add validation for visa cancellation"""
@@ -271,8 +271,8 @@ class ServiceEnquiry(models.Model):
                 # Validate required fields for probation extension
                 if not record.extended_employment_duration:
                     raise ValidationError(_("Please set the Extended Employment Duration before completing the process."))
-                if not record.extended_probation_term:
-                    raise ValidationError(_("Please set the Extended Probation Term before completing the process."))
+                # if not record.extended_probation_term:
+                #     raise ValidationError(_("Please set the Extended Probation Term before completing the process."))
                 
                 # Update employee's employment_duration and probation_term
                 if record.employee_id and (record.extended_employment_duration or record.extended_probation_term):
