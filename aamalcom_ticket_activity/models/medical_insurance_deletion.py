@@ -1,16 +1,12 @@
 from odoo import models, fields, _
 from odoo.exceptions import UserError
-import logging
-
-_logger = logging.getLogger(__name__)
-
 
 class MedicalInsuranceDeletion(models.Model):
     _inherit = 'medical.insurance.deletion'
 
-    def _schedule_ticket_activity_mid(self, user_id, summary, note):
+    def _schedule_ticket_activity(self, user_id, summary, note):
         self.activity_schedule(
-            act_type_xmlid='aamalcom_ticket_activity.mail_activity_type_ticket_mid_action',
+            act_type_xmlid='aamalcom_ticket_activity.mail_activity_type_ticket_action',
             date_deadline=None,
             summary=summary,
             note=note,
@@ -18,81 +14,170 @@ class MedicalInsuranceDeletion(models.Model):
         )
 
     def action_submit(self):
-        result = super().action_submit()
-        group = self.env.ref('visa_process.group_service_request_insurance_employee')
-        users = group.users
-        for user in users:
-            self._schedule_ticket_activity_mid(
+        result = super(MedicalInsuranceDeletion, self).action_submit()
+        insurance_users = self.env.ref('visa_process.group_service_request_insurance_employee').users
+        for user in insurance_users:
+            self._schedule_ticket_activity(
                 user_id=user.id,
                 summary='Action Required on Ticket',
-                note='Do review and give confirmation for this ticket.'
-            )
+                note='Do review and take action  on this ticket.'
+                )
         return result
 
-    def action_get_confirmation(self):
-        result = super().action_get_confirmation()
-        group = self.env.ref('visa_process.group_service_request_employee')
-        users = group.users
-        for user in users:
-            self._schedule_ticket_activity_mid(
-                user_id=user.id,
-                summary='Ticket Ready for GE Review',
-                note='Please review the approved request and proceed.'
-            )
+    def action_get_confirmation(self):               
+        result = super(MedicalInsuranceDeletion, self).action_get_confirmation()
+        for line in self:
+            client_manager_user_id = line.client_id.company_spoc_id.user_id.id
+
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+            group = self.env.ref('visa_process.group_service_request_employee')
+            users = group.users
+            for line in users:
+                self._schedule_ticket_activity(
+                    user_id=line.id,
+                    summary='Ticket Ready for GE Review',
+                    note='Please review the approved request and proceed.'
+                )
         return result
 
     def action_govt_confirm(self):
-        self.ensure_one()
+        result = super(MedicalInsuranceDeletion, self).action_govt_confirm()
 
-        if not self.is_inside_ksa and not self.is_outside_ksa:
-            raise UserError("Choose whether Employee is Inside or Outside KSA before confirming.")
+        for line in self:
+            client_manager_user_id = line.client_id.company_spoc_id.user_id.id
 
-        # Call parent method
-        super(MedicalInsuranceDeletion, self).action_govt_confirm()
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+            if client_manager_user_id:
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action  on this ticket.'
+                )
+            
+        return result
 
-        # Notify GE users
-        group = self.env.ref('visa_process.group_service_request_employee')
-        users = group.users
-        for user in users:
-            self._schedule_ticket_activity_mid(
-                user_id=user.id,
-                summary='Ticket Ready for GE Review',
-                note='Please review the approved request and proceed.'
-            )
-
-        # Notify Project Manager only here
-        if self.project_manager_id and self.project_manager_id.user_id:
-            self._schedule_ticket_activity_mid(
-                user_id=self.project_manager_id.user_id.id,
-                summary='Ticket Ready for PM Review',
-                note='Please review the approved request and proceed.'
-            )
-
-        return True
-
-    def action_pm_confirm_exit(self):
-        # Avoid any PM notification here
-        self.ensure_one()
-        self.confirmed_by_pm = self.env.user.id
-        self.is_outside_ksa = True
-        self.is_inside_ksa = False
-        self.state = 'exit_confirmed'
-        return True
-
-    def action_insurance_confirm(self):
-        result = super().action_insurance_confirm()
-        group = self.env.ref('visa_process.group_service_request_insurance_employee')
-        users = group.users
-        for user in users:
-            self._schedule_ticket_activity_mid(
-                user_id=user.id,
-                summary='Ticket Reviewed by GE',
-                note='Govt team confirmation received.'
-            )
+    def action_docs_uploaded(self):
+        result = super(MedicalInsuranceDeletion, self).action_docs_uploaded()
+        for line in self:
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+            insurance_users = self.env.ref('visa_process.group_service_request_insurance_employee').users
+            for user in insurance_users:
+                self._schedule_ticket_activity(
+                    user_id=user.id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action  on this ticket.'
+                    )
         return result
 
 
+    def action_pm_confirm_exit(self):
+        result = super(MedicalInsuranceDeletion, self).action_pm_confirm_exit()
+        for line in self:
+            client_manager_user_id = line.client_id.company_spoc_id.user_id.id
 
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+
+            if client_manager_user_id:
+                self._schedule_ticket_activity(
+                    user_id=client_manager_user_id,
+                    summary='Action Required on Ticket',
+                    note='Do review and take action  on this ticket.'
+                )
+        return result
+
+    def action_insurance_confirm(self):
+        result = super(MedicalInsuranceDeletion, self).action_insurance_confirm()
+        for line in self:
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
+            insurance_users = self.env.ref('visa_process.group_service_request_insurance_employee').users
+            for user in insurance_users:
+                self._schedule_ticket_activity(
+                    user_id=user.id,
+                    summary='Action Required on Ticket',
+                    note='Govt Team Confirmation Recieved.'
+                    )
+        return result
+
+    def action_insurance_confirm(self):
+        result = super(MedicalInsuranceDeletion, self).action_insurance_confirm()
+        for line in self:
+            # Approve current user's activity
+            activity_id = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('user_id', '=', self.env.user.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_id.action_feedback(feedback='Approved')
+
+            # Remove other users' activities
+            activity_ids = self.env['mail.activity'].search([
+                ('res_id', '=', line.id),
+                ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
+            ])
+            activity_ids.unlink()
 
 
         
