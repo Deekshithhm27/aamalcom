@@ -309,11 +309,14 @@
                     </div>
                     <t t-if="o.move_type == 'out_refund'">
                         <div style="border-top: 1px solid black; padding-top: 5px;">
-                            <!-- <span>Printed Date/Time: </span>
-                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M:%S')"/>
-                            <br/> -->
-                            <span>Printed By: </span>
-                            <span t-esc="user.name"/>
+                            <span>Created Date/Time: </span>
+                            <span t-esc="o.create_date.strftime('%d-%m-%Y %H:%M:%S') if o.create_date else ''"/>
+                            <br/>
+                            <br/>
+                            <!-- Invoice Created By -->
+                            <span>Created By: </span>
+                            <span t-esc="o.create_uid.name"/>
+                            <br/>
                         </div>
                     </t>
                     <!-- <h6><span style="font-weight:bold;">Note:</span>Payment against all cash invoices will be valid only if customer have cash receipt voucher proof of payment. otherwise it will be considered as a credit invoice.</h6>
