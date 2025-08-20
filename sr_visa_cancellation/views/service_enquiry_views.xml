@@ -15,6 +15,9 @@
                 <group name="final_exit" attrs="{'invisible': ['|',('service_request', '!=', 'visa_cancellation'),('state', '=','draft')]}">
                     <group>
                         <field name="ref_ev_id" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" options="{'no_create': True, 'no_edit': True}"/>
+                        <field name="upload_visa_to_be_cancelled_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" filename="upload_visa_cancellation_doc_file_name"/>
+                        <field name="upload_visa_to_be_cancelled_doc_file_name" invisible="1"/>
+                        <field name="visa_to_be_cancelled_doc_ref" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}"/>
                         <field name="reason_of_cancellation" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}"/>
                     </group>
                 </group>

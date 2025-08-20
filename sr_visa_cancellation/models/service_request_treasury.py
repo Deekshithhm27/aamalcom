@@ -11,6 +11,21 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class ServiceRequestTreasury(models.Model):
     _inherit = 'service.request.treasury'
 
+    service_request_type = fields.Selection(
+        related="service_request_id.service_request",
+        store=True,
+        readonly=True,
+    )
+
+    ref_ev_id = fields.Many2one(
+        'service.enquiry',
+        string="Ref SR-EV",
+        domain="[('service_request', '=', 'new_ev'), ('state', '=', 'done'),('employee_id','=',employee_id)]",
+       
+    )
+    reason_of_cancellation = fields.Text("Reason for Visa Cancellation")
+
+
     def action_submit_to_treasury_visa_cancellation(self):
         """Submit visa cancellation request to treasury"""
         for record in self:

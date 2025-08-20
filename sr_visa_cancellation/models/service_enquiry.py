@@ -28,6 +28,9 @@ class ServiceEnquiry(models.Model):
     upload_confirmation_visa_doc = fields.Binary(string="Confirmation of visa cancellation document")
     upload_confirmation_visa_file_name = fields.Char(string="confirmation of visa cancellation document")
     confirmation_visa_doc_ref = fields.Char(string="Ref No.*")
+    upload_visa_to_be_cancelled_doc = fields.Binary(string="Visa to be Cancelled document")
+    upload_visa_to_be_cancelled_doc_file_name = fields.Char(string="Visa to be Cancelled document")
+    visa_to_be_cancelled_doc_ref = fields.Char(string="Ref No.*")
 
     def action_submit(self):
         """Validation checks before submitting the service request."""
@@ -42,8 +45,9 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'visa_cancellation':
                 # Validate required fields for visa cancellation
-                if not record.ref_ev_id:
-                    raise ValidationError(_("Please select the Reference-EV for visa cancellation request."))
+                if not record.ref_ev_id and not record.upload_visa_to_be_cancelled_doc:
+                    raise ValidationError(_("Please select the Reference-EV or upload the visa cancellation document."))
+        
                 if not record.reason_of_cancellation:
                     raise ValidationError(_("Please provide the reason for cancellation for visa cancellation request."))
         # Call the parent method
@@ -110,9 +114,19 @@ class ServiceEnquiry(models.Model):
                     'client_id': record.client_id.id,
                     'client_parent_id': record.client_id.parent_id.id,
                     'employee_id': record.employee_id.id,
+
                     'total_amount': record.total_amount if hasattr(record, 'total_amount') else 0.0
                 }
                 service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
+                treasury = self.env['service.request.treasury'].sudo().search([
+                    ('service_request_id', '=', record.id)
+                ], limit=1)
+                if treasury:
+                    treasury.write({
+                        'service_request_config_id':self.service_request_config_id.id,
+                        'ref_ev_id': record.ref_ev_id,
+                        'reason_of_cancellation':record.reason_of_cancellation
+                    })
                 if service_request_treasury_id:
                     record.state = 'submitted_to_treasury'
                     record.dynamic_action_status = f'Submitted to Treasury Department by . Review to be done by Treasury'

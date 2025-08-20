@@ -1,0 +1,72 @@
+<odoo>
+    <data>
+        <record id="service_enquiry_form_inherit_for_loan_letters" model="ir.ui.view">
+            <field name="name">service.enquiry.form.request.probations</field>
+            <field name="model">service.enquiry</field>
+            <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'probation_request')]}"/>
+                    <button name="action_doc_uploaded_probation" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), '|', ('upload_qiwa_modified_doc', '=', False),  '|', ('upload_probation_doc', '=', False),('service_request', '!=', 'probation_request')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete_probation" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'submit_to_pm'), '|', ('upload_qiwa_acceptace_doc', '=', False),  '|', ('upload_signed_doc', '=', False),('service_request', '!=', 'probation_request')]}" groups="visa_process.group_service_request_manager"/>
+                </xpath>
+                <xpath expr="//notebook[@id='notebook_four']" position="before">
+                <group name="probation_term" attrs="{'invisible': [('service_request', 'not in', ('probation_request'))]}">
+                        <group>
+                            <field name="calculated_probation_end_date" readonly="1"/>
+                            <field name="next_probation_end_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group attrs="{'invisible': [('service_request', 'not in', ('probation_request'))]}">
+                            <field name="extended_employment_duration" string="Extension of Probation Duration"  
+                                   attrs="{'readonly': [('state', '!=','draft')]}" 
+                                 force_save="1"/>
+                           <!--  <field name="extended_probation_term" string="Extension of Probation Term"
+                                   attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/> -->
+                        </group>  
+                </group>
+            </xpath>
+            <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
+                <group  attrs="{'invisible': ['|',('service_request', '!=', 'probation_request'),('state','in',('draft'))]}">   
+                
+                    <group >
+                        <field name="upload_qiwa_modified_doc" 
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
+                               filename="upload_qiwa_modified_doc_file_name"/>
+                        <field name="upload_qiwa_modified_doc_file_name" invisible="1"/>
+                        <field name="qiwa_modified_doc_ref"
+                              attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                    </group> 
+                    <group >
+                        <field name="upload_probation_doc" 
+                               attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"
+                               filename="upload_probation_doc_file_name"/>
+                        <field name="upload_probation_doc_file_name" invisible="1"/>
+                        <field name="probation_doc_ref"
+                              attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                    </group> 
+                    <group  attrs="{'invisible': ['|',('service_request', '!=', 'probation_request'),('state','in',('draft','submitted'))]}">
+                        <field name="upload_qiwa_acceptace_doc"  
+                               attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}"
+                               filename="upload_qiwa_acceptace_doc_file_name" force_save="1"/>
+                        <field name="upload_qiwa_modified_doc_file_name" invisible="1"/>
+                        <field name="qiwa_acceptance_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1"/>
+                     
+                    </group>
+                    <group  attrs="{'invisible': ['|',('service_request', '!=', 'probation_request'),('state','in',('draft','submitted'))]}"> 
+                   
+                        <field name="upload_signed_doc"  
+                               attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}"
+                               filename="upload_signed_doc_file_name" force_save="1"/>
+                        <field name="upload_signed_doc_file_name" invisible="1"/>
+                        <field name="signed_doc_ref"
+                               attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1"/>
+                      
+                </group>
+                </group>
+            </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

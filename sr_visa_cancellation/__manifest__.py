@@ -17,6 +17,7 @@ This module provides a centralized platform to manage and configure service requ
     'data': [
     
 	'views/service_enquiry_views.xml', 
+    'views/service_request_treasury_views.xml',
     
     ],
     "price": 0.0,

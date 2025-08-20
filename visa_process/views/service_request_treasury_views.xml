@@ -35,6 +35,17 @@
                            <field name="total_amount" attrs="{'readonly':[('state','!=','passed_to_treasury')]}"/>
                         </group>
                     </group>
+                    <field name="service_request_type" invisible="1"/>
+                     <notebook id="notebook_treasury_salary_advance" attrs="{'invisible':[('service_request_type', '!=', 'hr_card')]}">
+                        <page string="Price Details for HR card">
+                            
+                            
+                            <group >
+                                <field name="hr_card_amount" readonly="1"/>
+                                <field name="jawazat_card_amount" readonly="1"/>
+                       </group>
+                   </page>
+               </notebook>
                     <notebook id="notebook_treasury" attrs="{'invisible':[('state','=','draft')]}">
                     	<page string="Documents">
                     		<group>
