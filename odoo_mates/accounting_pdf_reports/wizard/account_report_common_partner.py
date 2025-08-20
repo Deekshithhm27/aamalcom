@@ -13,7 +13,7 @@ class AccountingCommonPartnerReport(models.TransientModel):
                                          ('customer_supplier', 'Receivable and Payable Accounts')
                                          ], string="Client's", required=True, default='customer')
 
-    payment_type = fields.Selection([('paid','Paid'),('unpaid','Unpaid')],string="Payment Type")
+    payment_type = fields.Selection([('paid','Paid'),('unpaid','Unpaid'),('both','Both')],string="Payment Type")
     partner_ids = fields.Many2many('res.partner', string='Clients',domain="[('is_company','=',True),('parent_id','=',False)]")
 
     def pre_print_report(self, data):

@@ -30,6 +30,11 @@ class ReportPartnerLedger(models.AbstractModel):
                 AND account.internal_type IN ('receivable', 'payable')
                 AND "account_move_line".amount_residual > 0.01
             """
+        elif payment_type == 'both':  # new option
+            residual_clause = """
+                AND account.internal_type IN ('receivable', 'payable')
+            """
+
 
         params = [
             tuple(data['computed']['account_ids']),
@@ -94,6 +99,10 @@ class ReportPartnerLedger(models.AbstractModel):
             residual_clause = """
                 AND account.internal_type IN ('receivable', 'payable')
                 AND "account_move_line".amount_residual > 0.01
+            """
+        elif payment_type == 'both':
+            residual_clause = """
+                AND account.internal_type IN ('receivable', 'payable')
             """
 
         params = [
@@ -160,6 +169,10 @@ class ReportPartnerLedger(models.AbstractModel):
             residual_clause = """
                 AND account.internal_type IN ('receivable', 'payable')
                 AND "account_move_line".amount_residual > 0.01
+            """
+        elif payment_type in ("both", None, ""):
+            residual_clause = """
+                AND account.internal_type IN ('receivable', 'payable')
             """
 
         params = [
