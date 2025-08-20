@@ -307,7 +307,7 @@
                             <img t-if="company.seal" t-att-src="image_data_uri(company.seal)" style="height: 130px;width: 150px; " alt="Logo"/>
                         </div>
                     </div>
-                    <t t-if="o.move_type == 'out_refund'">
+                    <t t-if="o.move_type == 'out_refund' and o.state == 'posted'">
                         <div style="border-top: 1px solid black; padding-top: 5px;">
                             <span>Created Date/Time: </span>
                             <span t-esc="o.create_date.strftime('%d-%m-%Y %H:%M:%S') if o.create_date else ''"/>
