@@ -309,9 +309,9 @@
                     </div>
                     <t t-if="o.move_type == 'out_refund'">
                         <div style="border-top: 1px solid black; padding-top: 5px;">
-                            <span>Printed Date/Time: </span>
+                            <!-- <span>Printed Date/Time: </span>
                             <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M:%S')"/>
-                            <br/>
+                            <br/> -->
                             <span>Printed By: </span>
                             <span t-esc="user.name"/>
                         </div>
