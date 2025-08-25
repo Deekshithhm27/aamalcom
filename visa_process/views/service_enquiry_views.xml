@@ -24,9 +24,14 @@
                     <button id="open_assign_employee_wizard_two_new_ev" name="open_assign_employee_wizard" string="Assign Employee"
                     type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|','|',('state', '!=', 'approved'),('upload_issuance_doc','=',False),('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True),('service_request', '!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button id="open_assign_employee_wizard_two_hr" name="open_assign_employee_wizard" string="Assign Employee"
-                    type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ('payment_done')),('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True),'|',
-                    ('service_request', '!=', 'hr_card')]}" groups="visa_process.group_service_request_manager"/>
+                    <button id="open_assign_employee_wizard_two_hr" name="open_assign_employee_wizard"
+                    string="Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|',
+                              ('state', 'not in', ('payment_done',)),
+                              ('assign_govt_emp_two', '=', False),
+                              ('assigned_govt_emp_two', '=', True),
+                              ('service_request', '!=', 'hr_card')]} "
+                    groups="visa_process.group_service_request_manager"/>
+
 
                     <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary"
                         attrs="{'invisible': ['|',('state','!=','doc_uploaded_by_first_govt_employee'),'|',('assign_govt_emp_two','!=',False),'|',('assigned_govt_emp_two','=',True),('service_request','!=','hr_card')]}"
