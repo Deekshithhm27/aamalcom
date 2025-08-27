@@ -122,6 +122,7 @@ class LifeInsuranceEnrollment(models.Model):
         'confirmation_of_activation_doc', 'confirmation_of_activation_doc_filename',
     )
     def _check_uploaded_docs_are_pdf(self):
+        allowed_extensions = ('.pdf', '.jpeg', '.jpg', '.png')
         doc_fields = [
             ('passport_copy', 'passport_copy_filename', 'Passport'),
             ('iqama_doc', 'iqama_doc_filename', 'Iqama Document'),
@@ -133,6 +134,6 @@ class LifeInsuranceEnrollment(models.Model):
             for binary_field, filename_field, label in doc_fields:
                 binary = getattr(rec, binary_field)
                 filename = getattr(rec, filename_field)
-                if binary and filename and not filename.lower().endswith('.pdf'):
-                    raise ValidationError(f"{label} must be uploaded as a PDF file.")
+                if binary and filename and not filename.lower().endswith(allowed_extensions):
+                    raise ValidationError(f"{label} must be uploaded as jpg or PDF file.")
 

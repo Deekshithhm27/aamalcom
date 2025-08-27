@@ -231,6 +231,8 @@ class MedicalInsuranceEnrollment(models.Model):
         'dependent_visa_doc', 'dependent_visa_doc_filename',
     )
     def _check_documents_are_pdf(self):
+
+        allowed_extensions = ('.pdf', '.jpeg', '.jpg', '.png')
         pdf_fields = [
             ('hdf_form', 'hdf_form_filename', 'HDF Form'),
             ('passport_copy', 'passport_copy_filename', 'Passport Copy'),
@@ -247,7 +249,7 @@ class MedicalInsuranceEnrollment(models.Model):
                 binary = getattr(rec, binary_field)
                 filename = getattr(rec, filename_field)
                 if binary and filename:
-                    if not filename.lower().endswith('.pdf'):
-                        raise ValidationError(f"{label} must be a PDF file.")
+                    if not filename.lower().endswith(allowed_extensions):
+                        raise ValidationError(f"{label} must be a Jpg or PDF file.")
 
     
