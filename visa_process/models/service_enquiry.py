@@ -589,7 +589,23 @@ class ServiceEnquiry(models.Model):
                 record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
-            
+    ##groupby method for client spoc 
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        """Restrict records for client SPOC group."""
+        if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
+            args = args + [('state', 'in', ['draft','payment_initiation'])]
+        return super(ServiceEnquiry, self).search(args, offset=offset, limit=limit, order=order, count=count)
+
+        
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        """Restrict groupby aggregation for client SPOC group."""
+        if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
+            domain = domain + [('state', 'in', ['draft','payment_initiation'])]
+        return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+     
+          
 
     # @api.onchange('emp_visa_id')
     # def update_employee_id(self):
