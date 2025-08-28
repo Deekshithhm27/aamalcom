@@ -53,11 +53,17 @@
                             type="object"
                             class="btn-primary"
                             attrs="{'invisible': ['|', ('updated_approval_payslip_document','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/>
-                    <!-- <button name="action_refused_by_pm"
+                    <button name="action_refused_by_pm"
                             string="Refuse"
                             type="object"
                             class="btn-primary"
-                            attrs="{'invisible': ['|', ('updated_approval_payslip_document','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/> -->
+                            attrs="{'invisible': ['|', ('updated_approval_payslip_document','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_to_payroll"
+                                                string="Re-submit"
+                                                type="object"
+                                                class="btn-primary"
+                                                attrs="{'invisible': [ ('state','!=','refuse')]}" 
+                                                groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_submit_to_payroll_employee"
                             string="Submit to Payroll Review"
                             type="object"
