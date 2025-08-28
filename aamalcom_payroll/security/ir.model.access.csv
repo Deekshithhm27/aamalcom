@@ -54,3 +54,5 @@ hr_holidays.access_hr_holidays_employee_allocation,hr.holidays.employee.allocati
 
 access_client_payslip_approval,client.payslip.approval,model_client_payslip_approval,base.group_user,1,1,0,1
 access_client_payslip_approval_manager,client.payslip.approval.manager,model_client_payslip_approval,visa_process.group_service_request_manager,1,1,1,1
+access_client_payslip_refuse_wizard,Payslip Refuse Wizard Access,model_client_payslip_refuse_wizard,visa_process.group_service_request_manager,1,1,1,0
+

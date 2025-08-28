@@ -2,15 +2,8 @@
 
 from odoo import models, fields, api
 
-# No need for the standard Python logging library for this type of log
-# import logging 
-
-# The logger is not needed as we are using the chatter for logging.
-# _logger = logging.getLogger(__name__)
-
 class ClientPayslipApproval(models.Model):
     _name = 'client.payslip.approval'
-    # These two mixins enable the chatter on the form view
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
@@ -31,6 +24,9 @@ class ClientPayslipApproval(models.Model):
     other_payslip_document = fields.Binary(string="Other Document")
     other_payslip_second_document = fields.Binary(string="Other Document")
     other_payslip__third_document = fields.Binary(string="Other Document")
+    
+    # New field to store the refusal reason
+    refusal_reason = fields.Text(string="Refusal Reason", tracking=True, readonly=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -43,7 +39,6 @@ class ClientPayslipApproval(models.Model):
         ('refuse', 'Refused by PM'),
     ], string="Status", default='draft', tracking=True)
 
-    #  boolean field to check if the current user is a payroll manager
     is_payroll_manager = fields.Boolean(
         string="Is Payroll Manager?",
         compute="_compute_is_payroll_manager"
@@ -57,12 +52,9 @@ class ClientPayslipApproval(models.Model):
         for rec in self:
             rec.is_payroll_manager = self.env.user.has_group('visa_process.group_service_request_payroll_manager')
 
-
-    # Action to move to payroll
     def action_submit_to_payroll(self):
         for rec in self:
             rec.state = 'submit_to_payroll'
-            # Post a message to the chatter to log the action
             rec.message_post(body="Payslip approval submitted to Payroll.")
         return True
 
@@ -96,8 +88,40 @@ class ClientPayslipApproval(models.Model):
             rec.message_post(body="Payslip process complete. The document is finalized.")
         return True
 
+    # This method is now a button to open the wizard, not change the state directly
     def action_refused_by_pm(self):
-        for rec in self:
-            rec.state = 'refuse'
-            rec.message_post(body="Payslip has been refused by PM. A new document may be required.")
-        return True
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'client.payslip.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_payslip_approval_id': self.id,
+            }
+        }
+    
+class ClientPayslipRefuseWizard(models.TransientModel):
+    _name = 'client.payslip.refuse.wizard'
+    _description = 'Wizard to Refuse Payslip Approval'
+
+    # The field to capture the reason from the user
+    reason = fields.Text(string="Reason for Refusal", required=True)
+    
+    # This field links the wizard to the main record
+    payslip_approval_id = fields.Many2one('client.payslip.approval', string="Payslip Approval")
+
+    # The action that will be called by the "Refuse" button in the wizard
+    def refuse_payslip(self):
+        self.ensure_one()
+        payslip = self.payslip_approval_id
+        
+        # Update the state of the main record
+        payslip.state = 'refuse'
+        
+        # Store the reason on the main record
+        payslip.refusal_reason = self.reason
+        
+        # Post the refusal reason to the chatter
+        payslip.message_post(body="Payslip has been refused by PM with the following reason: <br/>%s" % self.reason)
+
+        return {'type': 'ir.actions.act_window_close'}
