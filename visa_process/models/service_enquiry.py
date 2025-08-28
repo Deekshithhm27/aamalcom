@@ -594,7 +594,7 @@ class ServiceEnquiry(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         """Restrict records for client SPOC group."""
         if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
-            args = args + [('state', 'in', ['draft','payment_initiation'])]
+            args = args + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
         return super(ServiceEnquiry, self).search(args, offset=offset, limit=limit, order=order, count=count)
 
         
@@ -602,7 +602,7 @@ class ServiceEnquiry(models.Model):
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         """Restrict groupby aggregation for client SPOC group."""
         if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
-            domain = domain + [('state', 'in', ['draft','payment_initiation'])]
+            domain = domain + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
         return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
      
           
