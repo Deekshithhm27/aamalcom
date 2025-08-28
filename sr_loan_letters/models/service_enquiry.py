@@ -284,11 +284,10 @@ class ServiceEnquiry(models.Model):
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
                   'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec',
-                  'upload_enjaz_doc','upload_completed_doc','upload_coc_stamp_doc')
+                  'upload_enjaz_doc','upload_coc_stamp_doc')
     def loan_letter_document_uploaded(self):
         for record in self:
-            if record.show_letter_head_section and record.upload_completed_doc:
-                record.doc_uploaded = True
+            
             if record.show_coc_stamp_section and record.upload_coc_stamp_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             if record.show_enjaz_section and record.upload_enjaz_doc and record.dependent_document_ids:
