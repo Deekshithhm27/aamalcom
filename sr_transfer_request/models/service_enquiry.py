@@ -147,10 +147,10 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly select the To Another Establishment Type")
             if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'local_transfer_to_another_establishment':
                 if not line.upload_confirmation_doc:
-                    raise ValidationError("Kindly upload the Confirmation Document for Local Transfer")
+                    raise ValidationError("Kindly upload the Approved LT Document for Local Transfer")
             if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'termination_letter_to_another_establishment':
                 if not line.upload_confirmation_doc:
-                    raise ValidationError("Kindly upload the Confirmation Document for Termination Request")
+                    raise ValidationError("Kindly upload the Approved Termination Document for Termination Request")
                 if not line.termination_article_short_version:
                     raise ValidationError("Kindly select anyone  Article for Termination")
             if line.service_request == 'transfer_req' and line.to_another_establishment_type == 'resignation_to_another_establishment':
