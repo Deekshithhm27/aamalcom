@@ -51,3 +51,6 @@ access_hr_leave_type_employee,access_hr_leave_type_employee,hr_holidays.model_hr
 
 
 hr_holidays.access_hr_holidays_employee_allocation,hr.holidays.employee.allocation,hr_holidays.model_hr_leave_allocation,base.group_user,1,0,0,0
+
+access_client_payslip_approval,client.payslip.approval,model_client_payslip_approval,base.group_user,1,1,0,1
+access_client_payslip_approval_manager,client.payslip.approval.manager,model_client_payslip_approval,visa_process.group_service_request_manager,1,1,1,1
