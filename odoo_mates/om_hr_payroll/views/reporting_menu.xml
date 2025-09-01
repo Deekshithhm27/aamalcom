@@ -1,0 +1,36 @@
+<odoo>
+    <!-- Parent menu: Reporting (inside Payroll) -->
+    <menuitem id="menu_payroll_reporting" 
+              name="Reporting" 
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              sequence="50"/>
+
+    <!-- Wizard Action -->
+    <record id="action_employee_excel_wizard" model="ir.actions.act_window">
+        <field name="name">Employee Excel Report</field>
+        <field name="res_model">employee.excel.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Submenu for Wizard -->
+    <menuitem id="menu_employee_excel_report"
+              name="Employee Excel Report"
+              parent="menu_payroll_reporting"
+              action="action_employee_excel_wizard"
+              sequence="10"/>
+
+
+    <!-- Direct menu to open the wizard -->
+    <record id="action_employee_excel_wizard" model="ir.actions.act_window">
+        <field name="name">Employee Excel Report</field>
+        <field name="res_model">employee.excel.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_employee_excel_report_root"
+              name="Employee Excel Report"
+              action="action_employee_excel_wizard"
+              sequence="100"/>
+</odoo>

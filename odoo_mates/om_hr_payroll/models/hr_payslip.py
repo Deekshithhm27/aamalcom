@@ -65,6 +65,42 @@ class HrPayslip(models.Model):
     payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batches', readonly=True,
         copy=False, states={'draft': [('readonly', False)]})
     payslip_count = fields.Integer(compute='_compute_payslip_count', string="Payslip Computation Details")
+    
+    # >>> New Fields Start Here <<<
+    month = fields.Char(string="Month", compute="_compute_month", store=True)
+    working_days = fields.Float(string="Working Days", compute="_compute_working_days", store=True)
+
+    iqama_no = fields.Char(string="Iqama No", related="employee_id.iqama_no", store=True, readonly=True)
+    # iban = fields.Char(string="IBAN", related="employee_id.iban", store=True, readonly=True)
+    sponsorship_number = fields.Char(string="Sponsorship Number", related="employee_id.sponsor_id.sponsor_no", store=True, readonly=True)
+     # Bank details from employee's bank account
+    bank_name = fields.Char(string="Bank Name", compute='_compute_employee_bank_details', store=True)
+    bank_iban = fields.Char(string="IBAN", compute='_compute_employee_bank_details', store=True)
+    identification_no = fields.Char(string="Identification No", compute='_compute_employee_bank_details', store=True)
+
+    @api.depends('employee_id')
+    def _compute_employee_bank_details(self):
+        for slip in self:
+            if slip.employee_id:
+                slip.bank_name = slip.employee_id.bank_account_id.bank_id.name or ''
+                slip.bank_iban = slip.employee_id.bank_account_id.acc_number or ''
+                slip.identification_no = slip.employee_id.identification_id or ''
+            else:
+                slip.bank_name = ''
+                slip.bank_iban = ''
+                slip.identification_no = ''
+
+
+    @api.depends('date_from')
+    def _compute_month(self):
+        for rec in self:
+            rec.month = rec.date_from.strftime('%B %Y') if rec.date_from else ''
+
+    @api.depends('worked_days_line_ids.number_of_days')
+    def _compute_working_days(self):
+        for rec in self:
+            rec.working_days = sum(rec.worked_days_line_ids.mapped('number_of_days'))
+    # >>> New Fields End Here <<<
 
     def _compute_details_by_salary_rule_category(self):
         for payslip in self:
