@@ -29,7 +29,6 @@
     	'views/hr_employee_views.xml',
     	'views/client_employee_monthly_salary_tracking_views.xml',
         'views/client_payslip_approval_views.xml',
-        'views/internal_payslip_approval_views.xml',
         'views/client_payslip_refuse_wizard.xml',
         'views/hr_payslip_views.xml',
     	'views/hr_payslip_employees_views.xml',
