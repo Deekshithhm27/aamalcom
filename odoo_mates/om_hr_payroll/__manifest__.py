@@ -14,7 +14,7 @@
     'depends': [
         'mail',
         'hr_contract',
-        'hr_holidays','visa_process'
+        'hr_holidays','visa_process',
     ],
     'data': [
             'security/hr_payroll_security.xml',
@@ -25,6 +25,7 @@
             'data/hr_payroll_data.xml',
             'wizard/hr_payroll_payslips_by_employees_views.xml',
             'wizard/wizard_excel_report_views.xml',
+            'wizard/hr_payroll_approval_views.xml',
             'views/hr_contract_type_views.xml',
             'views/hr_contract_views.xml',
             'views/hr_salary_rule_views.xml',

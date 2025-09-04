@@ -1,0 +1,33 @@
+<odoo>
+    <record id="hr_payroll_approval_wizard_form" model="ir.ui.view">
+        <field name="name">hr.payroll.approval.wizard.form</field>
+        <field name="model">hr.payroll.approval.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payslip Approval">
+                <sheet>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="submit_for_approval" 
+                            type="object" 
+                            string="Submit for Approval" 
+                            class="oe_highlight"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_open_hr_payroll_approval_wizard" model="ir.actions.act_window">
+        <field name="name">Payslip Approval</field>
+        <field name="res_model">hr.payroll.approval.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
