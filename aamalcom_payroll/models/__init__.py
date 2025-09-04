@@ -11,3 +11,4 @@ from . import client_emp_salary_tracking
 from . import hr_payslip
 from . import hr_payslip_employees
 from . import client_payslip_approval
+from . import client_payslip_document
