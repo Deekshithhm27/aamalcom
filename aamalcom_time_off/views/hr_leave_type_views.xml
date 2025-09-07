@@ -1,0 +1,31 @@
+<odoo>
+    <!-- Extend Leave Type form to add custom fields -->
+    <record id="view_hr_leave_type_form_inherit_custom" model="ir.ui.view">
+        <field name="name">hr.leave.type.form.inherit.custom</field>
+        <field name="model">hr.leave.type</field>
+        <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='validation']" position="after">
+                <group string="Custom Settings">
+                    <field name="max_days"/>
+                    <field name="is_hajj_leave"/>
+                    <field name="is_annual_leave"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend Leave Type tree (list) view -->
+    <record id="view_hr_leave_type_tree_inherit_custom" model="ir.ui.view">
+        <field name="name">hr.leave.type.tree.inherit.custom</field>
+        <field name="model">hr.leave.type</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_type_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="after">
+                <field name="max_days"/>
+                <field name="is_hajj_leave"/>
+                <field name="is_annual_leave"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

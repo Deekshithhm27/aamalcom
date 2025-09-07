@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_leave_custom,hr.leave.custom,model_hr_leave,base.group_user,1,1,1,0
+access_hr_employee_custom,hr.employee.custom,model_hr_employee,base.group_user,1,1,1,0
+access_hr_contract_custom,hr.contract.custom,model_hr_contract,base.group_user,1,1,1,0
+access_hr_leave_type_custom,hr.leave.type.custom,model_hr_leave_type,visa_process.group_service_request_administrator,1,1,1,1
+access_hr_leave_manager,hr.leave.manager,model_hr_leave,visa_process.group_service_request_manager,1,1,0,0
+access_hr_leave_hr_specialist,hr.leave.hr_specialist,model_hr_leave,visa_process.group_service_request_employee,1,1,0,0
+access_hr_leave_hr_manager,hr.leave.hr_manager,model_hr_leave,visa_process.group_service_request_hr_manager,1,1,0,0
+access_hr_leave_gm,hr.leave.gm,model_hr_leave,visa_process.group_service_request_general_manager,1,1,0,0

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_leave_view_form_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.form.inherit</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='holiday_status_id']" position="after">
+                <field name="leave_type_name" invisible="0"/>
+                <field name="replacement_id" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                <field name="is_saudi" invisible="1"/>
+                <field name="exit_reentry" attrs="{'invisible': ['|',('is_saudi', '=', True),('leave_type_name','=','Unpaid')]}"/>
+                <field name="ere_from_company" attrs="{'invisible': [('exit_reentry', '=', False)]}"/>
+                <field name="ticket" attrs="{'invisible': [('leave_type_name','=','Unpaid')]}"/>
+                <field name="ticket_from" attrs="{'invisible': [('ticket', '=', False)]}"/>
+                <field name="ere_dates" attrs="{'invisible': [('exit_reentry', '=', False)]}"/>
+                <field name="passport_front" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                <field name="passport_back" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                <field name="sick_leave_report" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Sick Leave')]}"/>
+                <field name="hajj_permission" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Hajj Vacation')]}"/>
+                <field name="invitation" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Marriage Leave')]}"/>
+                <field name="birth_certificate" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', 'not in', ['Maternity Leave', 'Paternity Leave'])]}"/>
+                <field name="death_certificate" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
+                <field name="relationship" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
+                <field name="emergency_reason" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
+                <field name="emergency_documents" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="refuse_reason" attrs="{'readonly': [('state', '!=', 'refuse')],'invisible':[('refuse_reason','=',False)]}"/>
+            </xpath>
+            <!-- <xpath expr="//button[@name='action_validate']" position="replace"/>
+            <xpath expr="//button[@name='action_refuse']" position="replace"/> -->
+            <!-- <xpath expr="//button[@name='action_draft']" position="replace"/> -->
+
+            <xpath expr="//header" position="inside">
+                    <button string="Mark as Draft" name="action_draft" type="object"
+                            attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['confirm', 'refuse'])]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_hr_specialist_approve" string="HR Specialist Approve"
+                            type="object"
+                            groups="visa_process.group_service_request_hr_manager"
+                            attrs="{'invisible': [('state', '!=', 'hr_specialist')]}"/>
+
+                    <button name="action_hr_manager_approve" string="HR Manager Approve"
+                            type="object"
+                            groups="visa_process.group_service_request_hr_manager"
+                            attrs="{'invisible': [('state', '!=', 'validate1')]}"/>
+
+                    <button name="action_gm_forward" string="GM Approve"
+                            type="object"
+                            groups="visa_process.group_service_request_general_manager"
+                            attrs="{'invisible': [('state', '!=', 'gm_approve')]}"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_leave_view_tree_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.tree.inherit</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="refuse_reason"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_leave_view_search_inherit" model="ir.ui.view">
+        <field name="name">hr.leave.search.inherit</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Submitted" name="submit" domain="[('state', '=', 'submit')]"/>
+                <filter string="Manager Approved" name="manager_approve" domain="[('state', '=', 'manager_approve')]"/>
+                <filter string="HR Specialist Review" name="hr_specialist" domain="[('state', '=', 'hr_specialist')]"/>
+                <filter string="HR Manager Approval" name="hr_manager" domain="[('state', '=', 'hr_manager')]"/>
+                <filter string="GM Approval" name="gm_approve" domain="[('state', '=', 'gm_approve')]"/>
+                <filter string="Validated" name="validate" domain="[('state', '=', 'validate')]"/>
+                <filter string="Refused" name="refuse" domain="[('state', '=', 'refuse')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

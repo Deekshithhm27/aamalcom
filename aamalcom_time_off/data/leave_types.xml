@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <!-- Annual -->
+    <record id="lt_annual_vacation" model="hr.leave.type">
+        <field name="name">Annual Vacation</field>
+        <field name="category">annual</field>
+        <field name="requires_passport">True</field>
+        <field name="saudi_rule">True</field>
+        <field name="min_notice_company_ticket">60</field>
+        <field name="min_notice_self_ticket">14</field>
+        <field name="min_notice_saudi">14</field>
+        <field name="request_unit">day</field>
+        <field name="allocation_type">accrual</field>
+    </record>
+
+    <!-- Sick -->
+    <record id="lt_sick" model="hr.leave.type">
+        <field name="name">Sick Leave</field>
+        <field name="category">sick</field>
+        <field name="requires_medical_report">True</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Remote -->
+    <record id="lt_remote" model="hr.leave.type">
+        <field name="name">Remote Work</field>
+        <field name="category">remote</field>
+        <field name="max_per_quarter">1</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Hajj (Muslims only) -->
+    <record id="lt_hajj" model="hr.leave.type">
+        <field name="name">Hajj Vacation</field>
+        <field name="category">hajj</field>
+        <field name="religion">muslim</field>
+        <field name="requires_hajj_permission">True</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Marriage -->
+    <record id="lt_marriage" model="hr.leave.type">
+        <field name="name">Marriage Leave</field>
+        <field name="category">marriage</field>
+        <field name="requires_invitation">True</field>
+        <field name="fixed_days">5</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Paternity -->
+    <record id="lt_paternity" model="hr.leave.type">
+        <field name="name">Paternity Leave</field>
+        <field name="category">paternity</field>
+        <field name="requires_birth_certificate">True</field>
+        <field name="fixed_days">3</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Maternity -->
+    <record id="lt_maternity" model="hr.leave.type">
+        <field name="name">Maternity Leave</field>
+        <field name="category">maternity</field>
+        <field name="requires_medical_report">True</field>
+        <!-- 10 weeks ≈ 70 working days; keep flexible, HR can set fixed_days=70 if they want -->
+        <field name="fixed_days">0</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Bereavement -->
+    <record id="lt_bereavement" model="hr.leave.type">
+        <field name="name">Bereavement Leave</field>
+        <field name="category">bereavement</field>
+        <field name="requires_death_certificate">True</field>
+        <field name="request_unit">day</field>
+    </record>
+
+    <!-- Emergency (Unpaid) -->
+    <record id="lt_emergency" model="hr.leave.type">
+        <field name="name">Emergency Leave</field>
+        <field name="category">emergency</field>
+        <field name="request_unit">day</field>
+    </record>
+</odoo>
