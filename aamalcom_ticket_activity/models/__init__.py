@@ -12,6 +12,7 @@ from . import life_insurance_enrollment
 from . import life_insurance_deletion
 from . import life_insurance_class_change
 from . import swapping_border_to_iqama
+from . import client_payslip_approval
 
 
 

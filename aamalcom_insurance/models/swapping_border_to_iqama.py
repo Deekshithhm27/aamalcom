@@ -132,6 +132,7 @@ class SwappingBorderToIqama(models.Model):
         'muqeem_print_doc', 'muqeem_print_doc_filename',
     )
     def _check_documents_are_pdf_format(self):
+        allowed_extensions = ('.pdf', '.jpeg', '.jpg', '.png')
         file_pairs = [
             ('digital_iqama_copy', 'digital_iqama_copy_filename', 'Digital Iqama Copy'),
             ('cchi_confirmation_document', 'cchi_confirmation_document_filename', 'CCHI Confirmation Document'),
@@ -143,5 +144,5 @@ class SwappingBorderToIqama(models.Model):
             for binary_field, filename_field, label in file_pairs:
                 binary = getattr(rec, binary_field)
                 filename = getattr(rec, filename_field)
-                if binary and filename and not filename.lower().endswith('.pdf'):
-                    raise ValidationError(f"{label} must be uploaded as a PDF file.")
+                if binary and filename and not filename.lower().endswith(allowed_extensions):
+                    raise ValidationError(f"{label} must be uploaded as a jpg or  PDF file.")

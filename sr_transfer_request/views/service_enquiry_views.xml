@@ -5,17 +5,22 @@
         <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button name="action_to_another_establishment_local" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', '!=', 'submitted') ,('upload_clearnace_doc', '=', False), ('service_request', '!=', 'transfer_req'),('to_another_establishment_type','=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_to_another_establishment_local" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', '!=', 'submitted') , ('service_request', '!=', 'transfer_req'),('to_another_establishment_type','!=','local_transfer_to_another_establishment'),('upload_clearnace_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+
+                <button name="action_to_another_establishment_resignation" string="Documents Upload" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|','|',('state', '!=', 'submitted'),('service_request', '!=', 'transfer_req'),('to_another_establishment_type','!=','resignation_to_another_establishment'),('upload_clearnace_doc', '=', False),('upload_resignation_letter', '=', False)]}" groups="visa_process.group_service_request_employee"/>
 
                 <button name="action_to_another_establishment_local_approval" string="Submit for approval" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'submit_to_pm'),('upload_signed_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_manager"/>
+
+                <button name="action_to_another_establishment_termination_approval" string="Submit for approval" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', '!=', 'submitted'), ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_employee"/>
+
+
                 
-               
-                
+                <button name="action_to_another_establishment_termination" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|','|','|',('state', '!=', 'approved'),('upload_clearnace_doc', '=', False), ('upload_termination_doc', '=', False),('upload_resignation_qiwa_letter', '=', False), ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_employee"/>
 
-                <button name="action_to_another_establishment_termination_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|','|',('state', '!=', 'submitted'),('upload_clearnace_doc', '=', False), ('upload_termination_doc', '=', False), ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_doc_upload_pm_termination" string="Documents Uploaded" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|','|','|',('state', '!=', 'submit_to_pm'),('upload_signed_resignation_doc', '=', False), ('upload_signed_clerance_doc', '=', False),('upload_signed_qiwa_resignation_letter', '=', False), ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}" groups="visa_process.group_service_request_manager"/>
 
 
-                <button name="action_to_another_establishment_resignation_approval" string="Submit for approval" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|',('state', '!=', 'submit_to_pm'),('upload_signed_clerance_doc', '=', False), ('upload_signed_resignation_doc', '=', False), ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_to_another_establishment_resignation_approval" string="Submit for approval" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|', '|', '|',('state', '!=', 'submit_to_pm'),('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','resignation_to_another_establishment'),('upload_signed_clerance_doc', '=', False), ('upload_signed_resignation_doc', '=', False)]}" groups="visa_process.group_service_request_manager"/>
 
                 <button name="action_submit_to_hr_resignation" string="Submit to HR" type="object" 
                 class="btn-primary" attrs="{'invisible': ['|','|',
@@ -33,6 +38,8 @@
             <button name="action_to_another_establishment_resignation_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|', '|', ('state', '!=', 'approved'),  ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','resignation_to_another_establishment'),('transfer_confirmation_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
 
             <button name="action_to_another_establishment_local_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state', '!=', 'confirmation_pending'),('upload_absent_doc', '=', False),  ('service_request', '!=', 'transfer_req')]}" groups="visa_process.group_service_request_employee"/>
+
+            <button name="action_to_another_establishment_termination_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|', '|', ('state', '!=', 'submit_for_review'),  ('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment'),('upload_notice_period_confirmation_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
             </xpath>
 
             <xpath expr="//notebook[@id='notebook_four']" position="before">
@@ -40,17 +47,27 @@
                 <group>
                     <field name="to_another_establishment_type" attrs="{'readonly': [('state', '!=','draft')]}" />
                 </group>
-                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','=','resignation_to_another_establishment')]}">
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','local_transfer_to_another_establishment')]}">
                     <field name="upload_confirmation_doc" attrs="{'readonly': [('state', '!=','draft')]}" />
                 </group>
                 <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
-                        <field name="articles_for_termination" attrs="{'readonly': [('state', '!=','draft')]}" />
-                    </group>
+                        <field name="upload_confirmation_doc" string="Approved Termination Document" attrs="{'readonly': [('state', '!=','draft')]}" />
+                </group>
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
+                        <field name="termination_article_short_version" attrs="{'readonly': [('state', '!=','draft')]}" />
+                        <field name="termination_normal_version" readonly="1"/>
+                </group>
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
+                        <field name="notice_period" readonly="1" />
+                        <field name="immediate_termination" readonly="1"/>
+                        <field name="grace_period" readonly="1"/>
+                </group>
+                    
                 <group attrs="{'invisible': ['|','|',('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','resignation_to_another_establishment')]}">
                     <field name="upload_resignation_doc" attrs="{'readonly': [('state', '!=','draft')]}" />
                 </group>
                 <group attrs="{'invisible': ['|','|','|',('service_request', '!=', 'transfer_req'),('state','=','draft'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
-                    <field name="type_of_termination" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" />
+                    <!-- <field name="type_of_termination" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" /> -->
                     <field name="last_date" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_project_manager', '!=', True)]}" force_save="1"/>
                 </group>
                 </group>
@@ -64,28 +81,27 @@
                         <field name="clearance_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                     </group>
                     <group>
-                        <field name="upload_termination_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_termination_doc_file_name"/>
+                        <field name="upload_termination_doc" attrs="{'readonly': [('state', 'not in', ('submitted','submit_to_pm'))]}" force_save="1" filename="upload_termination_doc_file_name"/>
                         <field name="upload_termination_doc_file_name"  invisible="1"/>
-                        <field name="termination_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        <field name="termination_doc_ref" attrs="{'readonly': [('state', 'not in', ('submitted','submit_to_pm'))]}" pforce_save="1"/>
                     </group>
-                    <group>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft'))]}" >
                         <field name="upload_signed_doc" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1" filename="upload_signed_doc_file_name"/>
                         <field name="upload_termination_doc_file_name"  invisible="1"/>
                         <field name="signed_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
                         <field name="last_working_date" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" />
                     </group>
-                    <group string="Transfer Acceptance Document">
+                    <group string="Transfer Acceptance Document" attrs="{'invisible': [('state', 'in', ('submitted','draft','submit_to_pm','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}">
                                     <field name="transfer_confirmation_doc" string="Transfer Acceptance Document" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="transfer_confirmation_doc_file_name"/>
                                      <field name="transfer_confirmation_doc_file_name"  invisible="1"/>
                                     <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                                    <field name="transfer_date"  attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    <field name="acceptance_date"  attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
                                 </group>
-                    <group >
-                        
-                        <field name="upload_absent_doc" string="Snapshot" attrs="{'readonly': ['|',('state', '!=', 'confirmation_pending'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_absent_doc_file_name"/>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft','submit_to_pm','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}" > 
+                        <field name="upload_absent_doc" string="Transfer Confirmation from QIWA" attrs="{'readonly': ['|',('state', '!=', 'confirmation_pending'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_absent_doc_file_name"/>
                         <field name="upload_absent_doc_file_name"  invisible="1"/>
-                        <field name="absent_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'confirmation_pending'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        <field name="transfer_date" attrs="{'readonly': ['|',('state', '!=', 'confirmation_pending'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                         
 
                     </group>
@@ -101,42 +117,49 @@
                     <group>
                         <field name="accepted_articles_for_termination" invisible="1"/>
                     </group>
-                    <group>
-                        <field name="upload_clearnace_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_clearnace_doc_file_name"/>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}">
+                        <field name="upload_clearnace_doc" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_clearnace_doc_file_name"/>
                         <field name="upload_clearnace_doc_file_name"  invisible="1"/>
-                        <field name="clearance_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        <field name="clearance_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}">
+                        <field name="upload_termination_doc" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_termination_doc_file_name"/>
+                        <field name="upload_termination_doc_file_name"  invisible="1"/>
+                        <field name="termination_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        
+                    </group>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}">
+                        <field name="upload_resignation_qiwa_letter" string="QIWA Termination Request" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_resignation_qiwa_letter_file_name"/>
+                        <field name="upload_resignation_qiwa_letter_file_name"  invisible="1"/>
+                        <field name="resignation_qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                    </group>
+                    </group>
+                    <group attrs="{'invisible': ['|','|','|','|',('state','in',('draft','submitted','waiting_gm_approval','waiting_hr_approval','waiting_om_approval','approved')),('first_govt_employee_id','=',False),('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
+                        <group>
+                        <field name="upload_signed_qiwa_resignation_letter" string="Approved QIWA Termination Request" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1" filename="upload_signed_qiwa_resignation_letter_file_name"/>
+                        <field name="upload_signed_qiwa_resignation_letter_file_name"  invisible="1"/>
+                        <field name="resignation_signed_qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
                     </group>
                     <group>
-                        <field name="upload_termination_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_termination_doc_file_name"/>
-                        <field name="upload_termination_doc_file_name"  invisible="1"/>
-                        <field name="termination_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        <field name="np_type" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        <field name="upload_signed_clerance_doc" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1" filename="upload_signed_clerance_doc_file_name"/>
+                        <field name="upload_signed_clerance_doc_file_name"  invisible="1"/>
+                        <field name="signed_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
                     </group>
-                    <group attrs="{'invisible': [('np_type','!=','np_gov')]}">
-                        <field name="notice_period_date" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        <field name="upload_notice_period_confirmation_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_notice_period_confirmation_doc_file_name"/>
+                    <group>
+                        <field name="upload_signed_resignation_doc" string="Signed Termination Letter" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1" filename="upload_signed_resignation_doc_file_name"/>
+                        <field name="upload_signed_resignation_doc_file_name"  invisible="1"/>
+                        <field name="signed_resignation_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
+                    </group>
+                    </group>
+                    <group attrs="{'invisible': ['|','|','|','|',('state','in',('draft','submitted','waiting_gm_approval','waiting_hr_approval','waiting_om_approval','approved','submit_to_pm')),('first_govt_employee_id','=',False),('service_request', '!=', 'transfer_req'),('transfer_type','!=','to_another_establishment'),('to_another_establishment_type','!=','termination_letter_to_another_establishment')]}">
+                        <group>
+                        <field name="notice_period_date" attrs="{'readonly': ['|',('state', '!=', 'submit_for_review'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                        <field name="upload_notice_period_confirmation_doc" string="Notice Period Confirmation Document" attrs="{'readonly': ['|',('state', '!=', 'submit_for_review'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_notice_period_confirmation_doc_file_name"/>
                         <field name="upload_notice_period_confirmation_doc_file_name"  invisible="1"/>
-                        <field name="np_period_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        
-
+                        <field name="np_period_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_for_review'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                     </group>
-                    <group attrs="{'invisible': [('np_type','!=','np_contract')]}">
-                        <field name="notice_period_date" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        <field name="upload_notice_period_confirmation_doc" string="Notice period changed document" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_notice_period_confirmation_doc_file_name"/>
-                        <field name="upload_notice_period_confirmation_doc_file_name"  invisible="1"/>
-                        <field name="np_period_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        
-
                     </group>
-                    <group attrs="{'invisible': [('np_type','!=','np_contract')]}">
-                        
-                        <field name="upload_absent_doc"  attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_absent_doc_file_name"/>
-                        <field name="upload_absent_doc_file_name"  invisible="1"/>
-                        <field name="absent_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                        
-
-                    </group>
-                </group>
+                    
                 <!--Termination Request Stop-->
 
 
@@ -147,23 +170,33 @@
                         <field name="upload_clearnace_doc_file_name"  invisible="1"/>
                         <field name="clearance_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                     </group>
-                    <!-- <group>
+                    <group>
                         <field name="upload_resignation_letter" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_resignation_letter_file_name"/>
                         <field name="upload_resignation_letter_file_name"  invisible="1"/>
                         <field name="resignation_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                    </group> -->
+                    </group>
                     <group>
+                        <field name="upload_resignation_qiwa_letter" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_resignation_qiwa_letter_file_name"/>
+                        <field name="upload_resignation_qiwa_letter_file_name"  invisible="1"/>
+                        <field name="resignation_qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submitted'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                    </group>
+                    <group attrs="{'invisible': ['|',('upload_resignation_qiwa_letter', '=', False),('state', 'in', ('submitted','draft'))]}">
+                        <field name="upload_signed_qiwa_resignation_letter" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1" filename="upload_signed_qiwa_resignation_letter_file_name"/>
+                        <field name="upload_signed_qiwa_resignation_letter_file_name"  invisible="1"/>
+                        <field name="resignation_signed_qiwa_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft'))]}">
                         <field name="upload_signed_clerance_doc" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1" filename="upload_signed_clerance_doc_file_name"/>
                         <field name="upload_signed_clerance_doc_file_name"  invisible="1"/>
                         <field name="signed_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
                     </group>
-                    <group>
+                    <group attrs="{'invisible': [('state', 'in', ('submitted','draft'))]}">
                         <field name="upload_signed_resignation_doc" attrs="{'readonly': ['|',('state', '!=','submit_to_pm'),('is_project_manager', '!=', True)]}" force_save="1" filename="upload_signed_resignation_doc_file_name"/>
                         <field name="upload_signed_resignation_doc_file_name"  invisible="1"/>
                         <field name="signed_resignation_doc_ref" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager','!=',True)]}" force_save="1"/>
                     </group>
-                    <group string="Confirmation accepatnce of resignation document">
-                        <field name="transfer_confirmation_doc" string="Confirmation accepatnce of resignation document" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="transfer_confirmation_doc_file_name"/>
+                    <group string="Confirmation accepatnce of resignation document" attrs="{'invisible': [('state', 'in', ('submitted','draft','submit_to_pm','waiting_om_approval','waiting_gm_approval','waiting_hr_approval'))]}">
+                        <field name="transfer_confirmation_doc" string="QIWA Confirmation Acceptance Document" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="transfer_confirmation_doc_file_name"/>
                         <field name="transfer_confirmation_doc_file_name"  invisible="1"/>
                         <field name="transfer_confirmation_ref" attrs="{'readonly': ['|',('state', '!=', 'approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
@@ -171,8 +204,8 @@
                 </group>
                 <!--Resignation Request Stop-->
             </xpath>
-             <xpath expr="//button[@name='action_gm_approved']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', '|',('state','!=','waiting_gm_approval'), ('service_request','=','transfer_req'), ('transfer_type','=','to_another_establishment')]}</attribute>
+            <xpath expr="//button[@name='action_gm_approved']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('state','!=','waiting_gm_approval'),  ('transfer_type','=','to_another_establishment')]}</attribute>
             </xpath>
         </field>
     </record>

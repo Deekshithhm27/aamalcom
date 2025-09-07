@@ -55,6 +55,12 @@
         <field name="category_id" ref="visa_process.module_category_service_request"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
+    <record id="group_service_request_hr_employee" model="res.groups">
+        <field name="name">HR Employee</field>
+        <field name="comment">The user will have access to Service Request.</field>
+        <field name="category_id" ref="visa_process.module_category_service_request"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
     <record id="group_service_request_payroll_manager" model="res.groups">
         <field name="name">Payroll Manager</field>
         <field name="comment">The user will have access to System</field>

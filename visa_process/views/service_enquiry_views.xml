@@ -16,7 +16,14 @@
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
-                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state','!=','submitted'),('assigned_govt_emp_one','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state','!=','submitted'),('assigned_govt_emp_one','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
+
+                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee"
+                    type="object" class="btn-primary" attrs="{'invisible': ['|','|',
+                              ('state','!=','doc_uploaded_by_first_govt_employee'),
+                              ('assigned_govt_emp_two','=',False),
+                              ('service_request','in',('iqama_card_req'))]}"
+                    groups="visa_process.group_service_request_manager"/>
 
                     <button id="open_assign_employee_wizard_two" name="open_assign_employee_wizard" string="Assign Employee"
                     type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|',('state', 'not in', ('payment_done', 'approved')),('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True),('service_request', 'in',( 'hr_card','new_ev'))]}" groups="visa_process.group_service_request_manager"/>
@@ -24,9 +31,6 @@
                     <button id="open_assign_employee_wizard_two_new_ev" name="open_assign_employee_wizard" string="Assign Employee"
                     type="object" class="btn-primary" attrs="{'invisible': ['|', '|', '|','|',('state', '!=', 'approved'),('upload_issuance_doc','=',False),('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True),('service_request', '!=','new_ev')]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button id="open_assign_employee_wizard_two_hr" name="open_assign_employee_wizard" string="Assign Employee"
-                    type="object" class="btn-primary" attrs="{'invisible': ['|', '|', ('state', 'not in', ('payment_done')),('assign_govt_emp_two', '=', False),('assigned_govt_emp_two', '=', True),'|',
-                    ('service_request', '!=', 'hr_card')]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="open_assign_employee_wizard" string="Assign Employee" type="object" class="btn-primary"
                         attrs="{'invisible': ['|',('state','!=','doc_uploaded_by_first_govt_employee'),'|',('assign_govt_emp_two','!=',False),'|',('assigned_govt_emp_two','=',True),('service_request','!=','hr_card')]}"
@@ -120,13 +124,6 @@
                     <button name="final_exit_submit_inside" type="object" class="oe_highlight" string="Initiate Muqeem Dropout" attrs="{'invisible': ['|','|',('state','!=','submit_for_review'),('is_inside_ksa','!=', True),('service_request','!=','final_exit_issuance')]}" groups="visa_process.group_service_request_employee"/>
                     
                     <!-- LT Medical Health Insurance Upload end-->
-
-
-                    <!-- New Physical Iqama Card Request(cost 1,000sar) start-->
-                    <!-- <button name="action_iqama_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('service_request', '!=', 'iqama_card_req')]}" groups="visa_process.group_service_request_client_spoc"/> -->
-
-                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),('service_request','not in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
-
                     
 
                     <button id="open_assign_employee_wizard_five" name="open_assign_employee_wizard" string="Assign Employee"
@@ -766,10 +763,10 @@
                                 </group>
                             <group attrs="{'invisible': ['|',('state', '=', 'draft'),('second_govt_employee_id','=',False),]}">
                                 <group string="Jawazat Document" attrs="{'invisible': [('service_request', '!=', 'hr_card')]}">
-                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
+                                    <field name="upload_jawazat_doc" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('is_service_request_client_spoc','=',True)]}" force_save="1" filename="upload_jawazat_doc_file_name"/>
                                      <field name="upload_jawazat_doc_file_name"  invisible="1"/>
-                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
-                                    <field name="jawazat_card_amount" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    <field name="jawazat_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
+                                    <field name="jawazat_card_amount" attrs="{'readonly': ['|',('state', 'not in', ('doc_uploaded_by_first_govt_employee')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
                                 </group>
                             </group>
                        

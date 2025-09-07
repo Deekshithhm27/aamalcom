@@ -83,8 +83,8 @@ class ClientEmployeeSalaryTracking(models.Model):
                 line.hra = line.contract_id.hra
                 line.travel_allowance = line.contract_id.travel_allowance
                 line.other_allowance = line.contract_id.other_allowance
-            else:
-                raise ValidationError(("No Contract defined for %s")%(line.employee_id.name))
+            # else:
+            #     raise ValidationError(("No Contract defined for %s")%(line.employee_id.name))
 
 
    
