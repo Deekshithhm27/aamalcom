@@ -28,12 +28,7 @@
                   sequence="1"
                   groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee"/>
 
-        <menuitem id="menu_internal_payslip_approval"
-          name="Internal Approval Payslip"
-          parent="menu_payslip_approval_root"
-          action="action_internal_payslip_approval"
-          sequence="2"
-          groups="visa_process.group_service_request_hr_employee,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_manager"/>
+        
 
 
 
