@@ -53,9 +53,11 @@
 
         
         'views/service_enquiry_views.xml',
+        'views/leave_external_employee_views.xml',
 
         'wizard/employee_selection_wizard.xml',
         'wizard/select_employee_wizard.xml',
+        'wizard/leave_assign_employee_wizard_view.xml',
 
 
 
@@ -64,6 +66,7 @@
         
         
         'views/menu.xml',
+        'views/leave_menu.xml',
     ],
     'demo': [
         # 'demo/visa_demo.xml',
