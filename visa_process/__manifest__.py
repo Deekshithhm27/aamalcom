@@ -14,59 +14,51 @@
     'version': '1.0',
     'license': 'OPL-1',
     'depends': ['base','mail','hr','product','contacts','web','contacts','resource','hr_contract','calendar'],
+    
     'data': [
-        'security/security.xml',
-        'security/ir.model.access.csv',
-        'security/standard_security/update_access.xml',
-        'data/sequences.xml',
-        'data/ir_cron.xml',
-        'security/ir_rule.xml',
+    'security/security.xml',
+    'security/ir.model.access.csv',
+    'security/standard_security/update_access.xml',
+    'data/sequences.xml',
+    'data/ir_cron.xml',
+    'security/ir_rule.xml',
 
-        'reports/service_request_treasury_report.xml',
-        'reports/action.xml',
+    'reports/service_request_treasury_report.xml',
+    'reports/action.xml',
 
-        'wizard/refuse_reason_wizard_view.xml',
+    'wizard/refuse_reason_wizard_view.xml',
+    'wizard/employee_selection_wizard.xml',
+    'wizard/select_employee_wizard.xml',
+    'wizard/leave_assign_employee_wizard_view.xml',  # This needs to be loaded before it's used.
 
-        'views/configurations/hr_agency_views.xml',
-        'views/configurations/hr_employee_company_views.xml',
-        'views/configurations/employment_duration_views.xml',
-        'views/configurations/letter_print_type_views.xml',
-        'views/configurations/res_partner_phonecode_views.xml',
-        'views/configurations/service_request_config_views.xml',
-        'views/configurations/service_pricing_views.xml',
-        'views/configurations/visa_ref_documents_views.xml',
-        'views/configurations/employee_sponsor_views.xml',
+    'views/configurations/hr_agency_views.xml',
+    'views/configurations/hr_employee_company_views.xml',
+    'views/configurations/employment_duration_views.xml',
+    'views/configurations/letter_print_type_views.xml',
+    'views/configurations/res_partner_phonecode_views.xml',
+    'views/configurations/service_request_config_views.xml',
+    'views/configurations/service_pricing_views.xml',
+    'views/configurations/visa_ref_documents_views.xml',
+    'views/configurations/employee_sponsor_views.xml',
 
-        
-        'views/hr_employee_views.xml',
-        'views/res_bank_views.xml',
-        'views/res_users_views.xml',
-        'views/res_company_views.xml',
-        
-        'views/employment_visa_views.xml',
-        'views/temporary_work_visa_views.xml',
-        'views/local_transfer_views.xml',
-        'views/service_request_treasury_views.xml',
-        'views/smart_buttons_views.xml',
-        
-        'views/res_partner_views.xml',
+    'views/hr_employee_views.xml',
+    'views/res_bank_views.xml',
+    'views/res_users_views.xml',
+    'views/res_company_views.xml',
 
-        
-        'views/service_enquiry_views.xml',
-        'views/leave_external_employee_views.xml',
+    'views/employment_visa_views.xml',
+    'views/temporary_work_visa_views.xml',
+    'views/local_transfer_views.xml',
+    'views/service_request_treasury_views.xml',
+    'views/smart_buttons_views.xml',
 
-        'wizard/employee_selection_wizard.xml',
-        'wizard/select_employee_wizard.xml',
-        'wizard/leave_assign_employee_wizard_view.xml',
+    'views/res_partner_views.xml',
 
+    'views/service_enquiry_views.xml',
+    'views/leave_external_employee_views.xml', 
 
-
-        
-        
-        
-        
-        'views/menu.xml',
-        'views/leave_menu.xml',
+    'views/menu.xml',
+    'views/leave_menu.xml',
     ],
     'demo': [
         # 'demo/visa_demo.xml',
