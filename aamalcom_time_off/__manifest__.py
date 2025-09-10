@@ -5,7 +5,7 @@
     'summary': 'Custom leave types with multi-level approvals and validations',
     'category': 'Human Resources',
     'author': 'Grok Assistant',
-    'depends': ['hr_holidays', 'hr', 'mail','visa_process','hr_work_entry_contract','hr_work_entry_holidays'],
+    'depends': ['hr_holidays', 'hr', 'mail','visa_process','hr_work_entry_contract','hr_work_entry_holidays','base'],
     'data': [
         # 'security/groups.xml',
         'security/ir.model.access.csv',
@@ -13,7 +13,8 @@
         'data/hr_leave_type_data.xml',
         'data/mail_templates.xml',
         'views/hr_leave_views.xml',
-        'views/hr_employee_views.xml',
+        # 'views/hr_employee_views.xml',
+        'views/menu_views.xml'
     ],
     'installable': True,
     'application': False,

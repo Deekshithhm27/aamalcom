@@ -5,25 +5,38 @@
         <field name="model">hr.leave</field>
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
+             <!-- Insert custom fields -->
             <xpath expr="//field[@name='holiday_status_id']" position="after">
-                <field name="leave_type_name" invisible="0"/>
-                <field name="replacement_id" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                <field name="leave_type_name" invisible="1"/>
+                <field name="replacement_id" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}" options="{'no_create': True, 'no_edit': True}"/>
                 <field name="is_saudi" invisible="1"/>
-                <field name="exit_reentry" attrs="{'invisible': ['|',('is_saudi', '=', True),('leave_type_name','=','Unpaid')]}"/>
-                <field name="ere_from_company" attrs="{'invisible': [('exit_reentry', '=', False)]}"/>
-                <field name="ticket" attrs="{'invisible': [('leave_type_name','=','Unpaid')]}"/>
-                <field name="ticket_from" attrs="{'invisible': [('ticket', '=', False)]}"/>
-                <field name="ere_dates" attrs="{'invisible': [('exit_reentry', '=', False)]}"/>
-                <field name="passport_front" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
-                <field name="passport_back" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
-                <field name="sick_leave_report" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Sick Leave')]}"/>
-                <field name="hajj_permission" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Hajj Vacation')]}"/>
-                <field name="invitation" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Marriage Leave')]}"/>
-                <field name="birth_certificate" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', 'not in', ['Maternity Leave', 'Paternity Leave'])]}"/>
-                <field name="death_certificate" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
-                <field name="relationship" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
-                <field name="emergency_reason" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
-                <field name="emergency_documents" widget="pdf_viewer" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
+                
+            </xpath>
+
+            <!-- Create new tab for documents -->
+            <xpath expr="//sheet" position="inside">
+                <notebook attrs="{'invisible':[('leave_type_name','in',('Sick Leave','Work Remotely','Hajj Vacation'))]}">
+                    <page string="Supporting Documents">
+                        <group>
+                            <field name="exit_reentry" attrs="{'invisible': ['|',('is_saudi', '=', True),('leave_type_name','in',('Unpaid','Hajj Vacation'))]}"/>
+                            <field name="service_request_id" attrs="{'invisible': [('exit_reentry', '=', False)]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="is_ticket" attrs="{'invisible': [('leave_type_name','in',('Unpaid','Hajj Vacation'))]}" />
+                            <field name="ticket_doc" widget="binary" attrs="{'invisible': [('is_ticket', '=', False)]}"/>
+                            <field name="ere_dates" attrs="{'invisible': [('exit_reentry', '=', False)]}"/>
+                        </group>
+                        <group>
+                            <field name="passport_front" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                            <field name="passport_back" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Annual Vacation')]}"/>
+                            <!-- <field name="hajj_permission" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Hajj Vacation')]}"/> -->
+                            <field name="invitation" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Marriage Leave')]}"/>
+                            <field name="birth_certificate" widget="binary" attrs="{'invisible': [('leave_type_name', 'not in', ['Maternity Leave', 'Paternity Leave'])]}"/>
+                            <field name="death_certificate" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
+                            <field name="relationship" attrs="{'invisible': [('leave_type_name', '!=', 'Bereavement Leave')]}"/>
+                            <field name="emergency_reason" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
+                            <field name="emergency_documents" widget="binary" attrs="{'invisible': [('leave_type_name', '!=', 'Emergency Vacation')]}"/>
+                        </group>
+                    </page>
+                </notebook>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="refuse_reason" attrs="{'readonly': [('state', '!=', 'refuse')],'invisible':[('refuse_reason','=',False)]}"/>
@@ -33,18 +46,16 @@
             <!-- <xpath expr="//button[@name='action_draft']" position="replace"/> -->
 
             <xpath expr="//header" position="inside">
-                    <button string="Mark as Draft" name="action_draft" type="object"
-                            attrs="{'invisible': ['|', ('can_reset', '=', False), ('state', 'not in', ['confirm', 'refuse'])]}" groups="visa_process.group_service_request_hr_manager"/>
-                    <button name="action_hr_specialist_approve" string="HR Specialist Approve"
+                    <button name="action_hr_specialist_approve" string="Approve"
                             type="object"
-                            groups="visa_process.group_service_request_hr_manager"
+                            groups="visa_process.group_service_request_hr_employee"
                             attrs="{'invisible': [('state', '!=', 'hr_specialist')]}"/>
 
-                    <button name="action_hr_manager_approve" string="HR Manager Approve"
+                   <!--  <button name="action_hr_manager_approve" string="HR Manager Approve"
                             type="object"
                             groups="visa_process.group_service_request_hr_manager"
-                            attrs="{'invisible': [('state', '!=', 'validate1')]}"/>
-
+                            attrs="{'invisible': [('state', '!=', 'hr_manager')]}"/>
+ -->
                     <button name="action_gm_forward" string="GM Approve"
                             type="object"
                             groups="visa_process.group_service_request_general_manager"
