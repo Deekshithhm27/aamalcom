@@ -6,6 +6,7 @@ from datetime import timedelta
 class VisaLeave(models.Model):
     _name = "visa.leave"
     _description = "Employee Leave"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     employee_id = fields.Many2one(
         "hr.employee",

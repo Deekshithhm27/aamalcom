@@ -1,72 +1,67 @@
-<!-- views/visa_leave_views.xml -->
 <odoo>
-    <record id="view_visa_leave_tree" model="ir.ui.view">
-        <field name="name">visa.leave.tree</field>
-        <field name="model">visa.leave</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="employee_id"/>
-                <field name="leave_type"/>
-                <field name="number_of_days"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
-
     <record id="view_visa_leave_form" model="ir.ui.view">
         <field name="name">visa.leave.form</field>
         <field name="model">visa.leave</field>
         <field name="arch" type="xml">
             <form string="Leave Request">
                 <header>
-                                   <field name="state" widget="statusbar"
-                                       statusbar_visible="draft,submit,done"
-                                       statusbar_status="state"/>
-                                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_client_spoc"/>
-                                    <button name="%(action_leave_assign_employee_wizard)d"
-                                    string="Assign Employee" type="action"
-                                    class="btn-primary" attrs="{'invisible': [('state', '!=', 'submit')]}" groups="visa_process.group_service_request_manager"/>
-                                    <!-- <button name="action_pm_submit" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit')]}" groups="visa_process.group_service_request_manager"/> -->
-                                    <button name="action_pm_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit')]}" groups="visa_process.group_service_request_manager"/>
-                                    <button name="action_done" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_gre'),('upload_snapshot_doc','=',False)]}" groups="visa_process.group_service_request_employee"/>
-                                  
-                               </header>
-                               <sheet>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,submit,done"
+                        statusbar_status="state"/>
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="%(action_leave_assign_employee_wizard)d"
+                        string="Assign Employee" type="action" class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'submit')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                    <button name="action_pm_reject" string="Reject" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'submit')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                    <button name="action_done" string="Process Complete" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state', '!=', 'submitted_to_gre'),('upload_snapshot_doc','=',False)]}"
+                        groups="visa_process.group_service_request_employee"/>
+                </header>
+                <sheet>
                     <group>
                         <group>
-                        <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="leave_type" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="religion" readonly="1"/>
-
-                    </group>
-                    </group>
-                    <group>
-                        <group>
-                        <field name="from_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="to_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="number_of_days" readonly="1"/>
-                    </group>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="leave_type" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="religion" readonly="1"/>
+                        </group>
                     </group>
                     <group>
                         <group>
-                        <field name="upload_medical_report_doc" filename="medical_report_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="upload_accident_report_doc" filename="accident_report_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="from_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="to_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="number_of_days" readonly="1"/>
+                        </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="upload_medical_report_doc" filename="medical_report_filename"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="upload_accident_report_doc" filename="accident_report_filename"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
                     </group>
                     <group attrs="{'invisible': [('state', 'not in', ('done','submitted_to_gre'))]}">
                         <group>
-                        <field name="upload_snapshot_doc" attrs="{'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
-                        <field name="ref_no_snapshot" attrs="{'readonly': [('state', '!=', 'submitted_to_gre')]}" />
-                    </group>
+                            <field name="upload_snapshot_doc"
+                                attrs="{'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                            <field name="ref_no_snapshot"
+                                attrs="{'readonly': [('state', '!=', 'submitted_to_gre')]}" />
+                        </group>
                     </group>
                 </sheet>
-            
+
+                <!-- 🔑 Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
-    </record>
-    <record id="action_visa_leave" model="ir.actions.act_window">
-        <field name="name">Leaves</field>
-        <field name="res_model">visa.leave</field>
-        <field name="view_mode">tree,form</field>
     </record>
 </odoo>
