@@ -13,20 +13,20 @@
 
     <!-- a new parent menu for Payslip Approvals -->
         <menuitem id="menu_payslip_approval_root"
-                  name="Payslip Approval"
+                  name="Payroll Approval"
                   parent="menu_hr_client_payroll_base"
                   sequence="3"
-                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_hr_employee"/>
+                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_employee,visa_process.group_service_request_hr_manager"/>
 
         
 
         <!-- The original menu has been modified to be a sub-menu of the new parent menu -->
         <menuitem id="menu_client_payslip_approval"
-                  name="Client Payslip Approval"
+                  name="Client Payroll Approval"
                   parent="menu_payslip_approval_root"
                   action="action_client_payslip_approval"
                   sequence="1"
-                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee"/>
+                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_employee"/>
 
         
 
