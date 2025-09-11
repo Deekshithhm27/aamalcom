@@ -5,7 +5,7 @@ from datetime import timedelta
 
 class VisaLeave(models.Model):
     _name = "visa.leave"
-    _description = "Employee Leave"
+    _description = "E-Leave"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     employee_id = fields.Many2one(
@@ -15,6 +15,8 @@ class VisaLeave(models.Model):
         
     )
    
+    name = fields.Char(string='Request ID', required=True, copy=False, readonly=True, 
+        default=lambda self: self.env['ir.sequence'].next_by_code('visa.leave'))
 
     state = fields.Selection([
             ('draft', 'Draft'),
@@ -25,17 +27,7 @@ class VisaLeave(models.Model):
         ], string="Status", default="draft", tracking=True)
 
     leave_type = fields.Selection([
-        ('annual', 'Annual Vacation'),
-        ('sick', 'Sick Leave'),
         ('injury', 'Work Injury'),
-        ('wfh', 'Work From Home'),
-        ('eid', 'Eid Holidays'),
-        ('emergency', 'Emergency Leave'),
-        ('unpaid', 'Unpaid Leave'),
-        ('hajj', 'Hajj Vacation'),
-        ('married', 'Married Leave'),
-        ('maternity', 'Maternity Leave'),
-        ('paternity', 'Paternity Leave'),
     ], string="Type of Leave", required=True)
 
    
