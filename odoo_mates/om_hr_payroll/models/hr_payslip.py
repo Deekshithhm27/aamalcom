@@ -571,7 +571,7 @@ class HrPayslip(models.Model):
             rec.is_payroll_manager = self.env.user.has_group('visa_process.group_service_request_payroll_manager')
 
 
-    employee_status = fields.Selection([('saudi_employee', 'Saudi Employee'),('non_saudi_employee', 'Non Saudi Employee')], string="Employee Status", store=True,required=True)
+    employee_status = fields.Selection([('saudi_employee', 'Saudi Employee'),('non_saudi_employee', 'Non Saudi Employee')], string="Employee Status", store=True)
 
     def action_submit_to_payroll(self):
         for rec in self:

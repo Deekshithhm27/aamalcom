@@ -6,7 +6,7 @@
               sequence="50"/>
 
     <menuitem id="menu_hr_payroll_approval_process" 
-              name="Approval Process" 
+              name="Payroll Approval Process" 
               parent="om_hr_payroll.menu_hr_payroll_root" 
               sequence="31" 
               action="action_open_hr_payroll_approval_wizard" groups="visa_process.group_service_request_hr_employee,visa_process.group_service_request_administrator"/>

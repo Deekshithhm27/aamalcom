@@ -6,7 +6,7 @@
             <form string="Payslip Approval">
                 <sheet>
                     <group>
-                        <field name="employee_id"/>
+                        <!-- <field name="employee_id"/> -->
                         <field name="date_from"/>
                         <field name="date_to"/>
                     </group>
