@@ -18,4 +18,4 @@ class LeaveAssignEmployeeWizard(models.TransientModel):
         leave = self.env['visa.leave'].browse(self._context.get('active_id'))
         if leave:
             # The employee field in visa.leave is 'employee_id'
-            leave.write({'employee_id': self.employee_id.id, 'state': 'submitted_to_gre'})
+            leave.write({'state': 'submitted_to_gre'})
