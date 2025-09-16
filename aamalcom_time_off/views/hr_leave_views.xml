@@ -56,10 +56,10 @@
                             groups="visa_process.group_service_request_hr_manager"
                             attrs="{'invisible': [('state', '!=', 'hr_manager')]}"/>
  -->
-                    <button name="action_gm_forward" string="GM Approve"
+                    <!-- <button name="action_gm_forward" string="GM Approve"
                             type="object"
                             groups="visa_process.group_service_request_general_manager"
-                            attrs="{'invisible': [('state', '!=', 'gm_approve')]}"/>
+                            attrs="{'invisible': [('state', '!=', 'gm_approve')]}"/> -->
             </xpath>
         </field>
     </record>

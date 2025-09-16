@@ -114,7 +114,7 @@ class HrLeave(models.Model):
     def action_hr_specialist_approve(self):
         # if not self.env.user.has_group('visa_process.group_service_request_employee'):
         #     raise ValidationError(_('Only HR Specialist can approve this step.'))
-        self.state = 'gm_approve'
+        self.state = 'validate_1'
         return True
 
     # def action_hr_manager_approve(self):
@@ -123,11 +123,11 @@ class HrLeave(models.Model):
     #     self.state = 'gm_approve'
     #     return True
 
-    def action_gm_forward(self):
-        if not self.env.user.has_group('visa_process.group_service_request_general_manager'):
-            raise ValidationError(_('Only General Manager can approve this step.'))
-        self.state = 'validate1'
-        return True
+    # def action_gm_forward(self):
+    #     if not self.env.user.has_group('visa_process.group_service_request_general_manager'):
+    #         raise ValidationError(_('Only General Manager can approve this step.'))
+    #     self.state = 'validate1'
+    #     return True
 
     # -------------------------------------------------------------------------
     # Custom Validations
