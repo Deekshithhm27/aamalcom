@@ -127,11 +127,5 @@
             </form>
         </field>
     </record>
-    <!-- Menu -->
-    <menuitem id="menu_client_payslip_approval"
-              name="Client Payroll Approval"
-              parent="menu_hr_client_payroll_base"
-              action="action_client_payslip_approval"
-              sequence="3"
-              groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_employee,visa_process.group_service_request_hr_manager,"/>
+
 </odoo>
