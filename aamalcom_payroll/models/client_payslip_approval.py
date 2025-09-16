@@ -35,7 +35,7 @@ class ClientPayslipApproval(models.Model):
         ('submit_to_payroll', 'Submit to Payroll'),
         ('submit_to_pm', 'Submitted to PM'),
         ('verified_by_pm', 'Verified By PM'),
-        ('submit_to_hr_employee', 'Submitted to HR Employee'),
+        ('submit_to_hr_employee', 'Submitted to Payroll Employee'),
         ('submit_to_hr_manager', 'Submitted to HR Manager'),
         ('done', 'Done'),
         ('refuse', 'Refused by PM'),
