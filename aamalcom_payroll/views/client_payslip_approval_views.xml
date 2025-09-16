@@ -67,17 +67,17 @@
                                                 attrs="{'invisible': [ ('state','not in',('refuse','submit_to_pm'))]}" 
                                                 groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_submit_to_payroll_employee"
-                            string="Submit to Payroll Review"
+                            string="Submit to HR"
                             type="object"
                             class="btn-primary"
                             attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','verified_by_pm')]}" groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_reviewed_by_payroll_employee"
-                            string="Submit to HR Review"
+                            string="Confirm Submission"
                             type="object"
                             class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll_employee')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_hr_employee')]}" groups="visa_process.group_service_request_hr_employee"/>
                     <button name="action_reviewed_by_hr_manager"
-                            string="Process Complete"
+                            string="Submit to Review"
                             type="object"
                             class="btn-primary"
                             attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
@@ -127,11 +127,5 @@
             </form>
         </field>
     </record>
-    <!-- Menu -->
-    <menuitem id="menu_client_payslip_approval"
-              name="Approval Client Payslip"
-              parent="menu_hr_client_payroll_base"
-              action="action_client_payslip_approval"
-              sequence="3"
-              groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager"/>
+
 </odoo>

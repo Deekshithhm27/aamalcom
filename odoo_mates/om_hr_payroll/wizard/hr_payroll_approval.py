@@ -10,7 +10,7 @@ class HrPayrollApprovalWizard(models.TransientModel):
 
     def submit_for_approval(self):
         payslips = self.env['hr.payslip'].search([
-            ('employee_id', '=', self.employee_id.id),
+            
             ('date_from', '>=', self.date_from),
             ('date_to', '<=', self.date_to),
             ('state', 'in', ['draft', 'verify'])

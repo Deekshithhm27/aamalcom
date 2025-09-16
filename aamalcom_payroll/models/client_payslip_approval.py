@@ -5,6 +5,7 @@ from datetime import datetime, date
 
 class ClientPayslipApproval(models.Model):
     _name = 'client.payslip.approval'
+    _description = "Client Payroll Approval"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
@@ -32,10 +33,10 @@ class ClientPayslipApproval(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit_to_payroll', 'Submit to Payroll'),
-        ('submit_to_pm', 'Submit to PM'),
+        ('submit_to_pm', 'Submitted to PM'),
         ('verified_by_pm', 'Verified By PM'),
-        ('submit_to_payroll_employee', 'Submit to Payroll Employee'),
-        ('submit_to_hr_manager', 'Submit to HR Manager'),
+        ('submit_to_hr_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_hr_manager', 'Submitted to HR Manager'),
         ('done', 'Done'),
         ('refuse', 'Refused by PM'),
     ], string="Status", default='draft', tracking=True)
@@ -69,42 +70,36 @@ class ClientPayslipApproval(models.Model):
     def action_submit_to_payroll(self):
         for rec in self:
             rec.state = 'submit_to_payroll'
-            rec.message_post(body="Payslip approval submitted to Payroll.")
             rec.processed_date = datetime.now()
         return True
 
     def action_submit_to_pm(self):
         for rec in self:
             rec.state = 'submit_to_pm'
-            rec.message_post(body="Payslip updated and submitted to PM.")
             rec.processed_date = datetime.now()
         return True
 
     def action_reviewed_by_pm(self):
         for rec in self:
             rec.state = 'verified_by_pm'
-            rec.message_post(body="Payslip verified by PM.")
             rec.processed_date = datetime.now()
         return True
 
     def action_submit_to_payroll_employee(self):
         for rec in self:
-            rec.state = 'submit_to_payroll_employee'
-            rec.message_post(body="Payslip submitted for Payroll Employee review.")
+            rec.state = 'submit_to_hr_manager'
             rec.processed_date = datetime.now()
         return True
 
     def action_reviewed_by_payroll_employee(self):
         for rec in self:
-            rec.state = 'submit_to_hr_manager'
-            rec.message_post(body="Payslip submitted to HR Manager for final review.")
+            rec.state = 'done'
             rec.processed_date = datetime.now()
         return True
 
     def action_reviewed_by_hr_manager(self):
         for rec in self:
-            rec.state = 'done'
-            rec.message_post(body="Payslip process complete. The document is finalized.")
+            rec.state = 'submit_to_hr_employee'
             rec.processed_date = datetime.now()
         return True
 
@@ -123,6 +118,7 @@ class ClientPayslipApproval(models.Model):
 class ClientPayslipRefuseWizard(models.TransientModel):
     _name = 'client.payslip.refuse.wizard'
     _description = 'Wizard to Refuse Payslip Approval'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # The field to capture the reason from the user
     reason = fields.Text(string="Reason for Refusal", required=True)
