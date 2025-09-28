@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+            <menuitem id="menu_internal_treasury"
+          name="Treasury"
+          parent="aamalcom_hr_operations.menu_hr_operations_root"
+          action="action_hr_service_request_treasury" sequence="15" groups="visa_process.group_service_request_finance_manager"/>
+
+                
+            
+    </data>
+</odoo>
