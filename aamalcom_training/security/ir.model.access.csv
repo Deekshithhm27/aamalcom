@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+training_course_access_rules,training.course.access,model_training_course,aamalcom_training.group_training_manager,1,1,1,1
+training_course_access_rules_user,training.course.access,model_training_course,aamalcom_training.group_training_user,1,1,0,0

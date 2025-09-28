@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <menuitem id="training_management_root_menu"
+                  name="Training"
+                  sequence="10"
+                  />
+
+        <menuitem id="training_details_menu"
+                  name="Training Details"
+                  parent="training_management_root_menu"
+                  action="training_course_action"
+                  groups="aamalcom_training.group_training_user,aamalcom_training.group_training_manager"
+                  sequence="10"/>
+
+        <menuitem id="training_configs_menu"
+                  name="Configurations"
+                  parent="training_management_root_menu"
+                  sequence="20"
+                  groups="aamalcom_training.group_training_manager"/>
+
+
+    </data>
+</odoo>
