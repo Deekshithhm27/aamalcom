@@ -36,9 +36,9 @@
                                 <tree editable="bottom" create="false" delete="false">
                                     <field name="onboarding_checklist_id"/>
                                     <field name="comments"/>  <!-- editable -->
-                                        <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}"/>
-                                        <field name="status"/>
-                                        <button name="action_remove_item"string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}"/>
+                                    <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}"/>
+                                    <field name="status"/>
+                                    <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}"/>
                                 </tree>
                             </field>
 
