@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_resignation_view_tree" model="ir.ui.view">
+        <field name="name">hr.resignation.view.tree</field>
+        <field name="model">hr.resignation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="resignation_date"/>
+                <field name="last_working_day"/>
+                <field name="state"/>
+                <field name="reason"/>
+            </tree>
+        </field>
+    </record>
+    <record id="hr_resignation_view_form" model="ir.ui.view">
+        <field name="name">hr.resignation.view.form</field>
+        <field name="model">hr.resignation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit_to_hr,submit_to_review,acceptance_resignation"/>
+                    <button name="action_submit_to_hr" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_withdraw" string="Withdraw" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_hr'),('is_hr_manager','=',True)]}"/>
+                    <button name="action_resignation_hr" string="Acceptance" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_hr'),('resignation_status','!=','accept_resignation')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_postpone_hr" string="Postpone" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_hr'),('resignation_status','!=','postpone_resignation_request')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_rejection_hr" string="Rejection" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_hr'),('resignation_status','!=','rejected_resignation_request')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_accepted_employee" string="Accept Extension Date" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_review'),('is_hr_manager','=',True)]}"/>
+                    <button name="action_postpone_accepted_date" string="Postpone" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'accepted_extension_date')]}" groups="visa_process.group_service_request_hr_manager"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1" force_save="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                            <field name="last_working_day" attrs="{'readonly': [('state', 'not in', ('draft'))]}"/>
+                            <field name="resignation_status" attrs="{'readonly': ['|',('state', 'not in', ('submit_to_hr')),('is_hr_manager','!=',True)]}"/>
+                        </group>
+                        
+                        <group>
+                            <field name="manager_id" invisible="1"/>
+                            <field name="is_hr_manager" invisible="1"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="name" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field string="Reason for Resignation" name="reason" placeholder="Write your reason for resignation here..." class="o_field_text" nolabel="1" attrs="{'readonly': [('state', 'not in', ('draft'))]}"/>
+                    </group>
+                    <group>
+                        <field name="extend_last_working_day"
+                               attrs="{'invisible': ['|',('state', 'not in', ('submit_to_hr','submit_to_review','accepted_extension_date','postpone_resignation')),('resignation_status','!=','postpone_resignation_request')],
+                                'readonly': ['|',('state', 'not in', ('submit_to_hr',)),('is_hr_manager','!=',True)]
+                               }"/>
+
+                    </group>
+                    <notebook attrs="{'invisible': [('state', '=','draft')]}">
+                        <page string="Documents" >
+                            <field name="termination_document_ids" attrs="{'invisible': [('state', '=','draft') ],
+                               }">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="file_data" filename="file_name"/>
+                                    <field name="file_name" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_hr_resignation_request" model="ir.actions.act_window">
+            <field name="name">Resignation Request</field>
+            <field name="res_model">hr.resignation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+</odoo>

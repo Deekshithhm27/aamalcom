@@ -1,0 +1,11 @@
+<odoo>
+    <report
+        id="action_report_partner_ledger_xlsx"
+        model="account.report.partner.ledger"
+        string="Partner Ledger (XLSX)"
+        report_type="xlsx"
+        name="accounting_pdf_reports.report_partnerledger_xlsx"
+        file="accounting_pdf_reports.report_partnerledger_xlsx"
+        menu="True"
+    />
+</odoo>
