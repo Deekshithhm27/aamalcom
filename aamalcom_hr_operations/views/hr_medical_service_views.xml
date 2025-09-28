@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_medical_blood_test_view_tree" model="ir.ui.view">
+        <field name="name">hr.medical.blood.test.view.tree</field>
+        <field name="model">hr.medical.blood.test</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_medical_blood_test_view_form" model="ir.ui.view">
+        <field name="name">Meidcal Blood Test</field>
+        <field name="model">hr.medical.blood.test</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,done"/>
+                    
+                    <button name="action_submit_medical" string="Submit" type="object" class="oe_highlight" 
+                            attrs="{'invisible': [('state', '!=', 'draft')]}" 
+                            groups="visa_process.group_service_request_hr_employee"/>
+                    
+                    <button name="action_submit_to_treasury_hr" string="Submit to Treasury" type="object" class="oe_highlight" 
+                            attrs="{'invisible': ['|', ('state', 'not in', ('submitted')), ('upload_stamped_visa_doc', '=', False)]}"/>
+
+                    <button name="action_oh_approve" string="Approve" type="object" class="oe_highlight" 
+                            attrs="{'invisible': [('state', 'not in', ('submit_for_approval'))]}" 
+                            groups="visa_process.group_service_request_operations_manager"/>
+
+                    <button name="action_gm_approve" string="Approve" type="object" class="oe_highlight" 
+                            attrs="{'invisible': [('state', 'not in', ('submit_to_gm'))]}" 
+                            groups="visa_process.group_service_request_general_manager"/>
+
+                    <button name="action_fm_approve" string="Approve" type="object" class="oe_highlight" 
+                            attrs="{'invisible': [('state', 'not in', ('submit_to_fm'))]}" 
+                            groups="visa_process.group_service_request_finance_manager"/>
+
+                    <button name="%(action_assign_employee_medical_wizard)d"
+                        string="Assign Employee"
+                        type="action"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'approved')]}"
+                        groups="visa_process.group_service_request_manager"/>
+                    <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_gre'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_treasury_requests"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-money"
+                            groups="visa_process.group_service_request_finance_manager"
+                            attrs="{'invisible': [('total_treasury_requests', '=', 0)]}">
+                            <field name="total_treasury_requests" widget="statinfo" string="Treasury Requests"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="service_type" readonly="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                           
+                        </group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="name" invisible="1"/>
+                        </group>
+                        </group>
+                    
+                    <field name="is_project_manager" invisible="1"/>
+                    <field name="is_gov_employee" invisible="1"/>
+                    
+                    <group>
+                        <field name="upload_stamped_visa_doc" 
+                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}" 
+                               filename="upload_stamped_visa_doc_file_name"/>
+                        <field name="upload_stamped_visa_doc_file_name" invisible="1"/>
+                        <field name="stamped_visa_doc_ref" 
+                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}"/>
+                    </group>
+                    <group string="Payment Confirmation Document" 
+                           attrs="{'invisible': [('state', 'not in', ('submitted_to_gre', 'done', 'approved'))]}">
+                        <group>
+                            <field name="treasury_confirmation_doc" readonly="1" filename="treasury_confirmation_ref"/>
+                            <field name="treasury_confirmation_ref" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group >
+                        <field name="upload_medical_test_doc" 
+                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)]}" 
+                               filename="upload_medical_test_doc_file_name"/>
+                        <field name="upload_medical_test_doc_file_name" invisible="1"/>
+                        <field name="medical_test_doc_ref" 
+                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)]}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_medical_blood_test_request" model="ir.actions.act_window">
+        <field name="name">Iqama Issuance-Medical Blood Test</field>
+        <field name="res_model">hr.medical.blood.test</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_warning_view_tree" model="ir.ui.view">
+        <field name="name">hr.warning.view.tree</field>
+        <field name="model">hr.warning</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="hr_warning_view_form" model="ir.ui.view">
+        <field name="name">hr.warning.view.form</field>
+        <field name="model">hr.warning</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit_to_employee"/>
+                    <button name="action_submit_to_employee" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_hr_manager"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <group>
+
+                        <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': True}"/>
+                        <field name="iqama_no" readonly="1"/>
+                        <field name="identification_id" readonly="1"/>
+                        <field name="passport_no" readonly="1"/>
+                        <field name="sponsor_id" readonly="1"/>
+                        <field name="user_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <group>
+                            <field name="reason_for_warning" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                    
+                    <notebook>
+                        
+                        <page string="warning Documents">
+                            <field name="termination_document_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="file_data" filename="file_name"/>
+                                    <field name="file_name" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_warning_letters" model="ir.actions.act_window">
+        <field name="name">Warning Letters</field>
+        <field name="res_model">hr.warning</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
