@@ -24,7 +24,7 @@
         'views/hr_business_views.xml',
         'views/hr_end_of_service_views.xml',
         'views/hr_onboarding_checklist_views.xml',
-        'views/hr_onbboarding_process_views.xml',
+        'views/hr_onboarding_process_views.xml',
         'views/hr_resignation_views.xml',
         'views/hr_warning_views.xml',
         'views/hr_suspending_employee_views.xml',
