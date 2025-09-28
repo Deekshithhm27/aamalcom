@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_finance_access_level,access.finance.access.level,model_finance_access_level,base.group_system,1,1,1,1
+access_finance_access_wizard,access.finance.access.wizard,model_finance_access_wizard,base.group_system,1,1,1,1
+access_menu_access_history_admin,menu.access.history.admin,model_menu_access_history,base.group_system,1,1,1,1
+
