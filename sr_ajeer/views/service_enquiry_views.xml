@@ -12,7 +12,7 @@
                     <button name="action_process_complete"
                         string="Process Complete"
                         type="object" class="btn-primary"
-                        attrs="{'invisible': ['|','|', ('service_request', '!=', 'ajeer_permit'), ('state', 'not in',('payment_done','approved')),('upload_ajeer_permit_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/> 
+                        attrs="{'invisible': ['|','|','|', ('service_request', '!=', 'ajeer_permit'), ('state', 'not in',('payment_done','approved')),('upload_ajeer_permit_doc', '=', False),('upload_invoice_payment_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/> 
                     <button name="action_require_payment_confirmation" string="Request Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','submitted'),'|',('billable_to_aamalcom','=',True),'|',('billable_to_client','=',True),'|',('self_pay','!=',True),'|',('upload_screenshot_of_saddad', '=',False),('service_request', 'not in', ('ajeer_permit'))]}" groups="visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager"/>    
                     <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state','!=','payment_initiation'),'|',('upload_payment_doc', '=',False),('service_request', 'not in', ('ajeer_permit'))]}" groups="visa_process.group_service_request_client_spoc"/>
                 </xpath>
@@ -68,19 +68,20 @@
                         
                     </group>
                     <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|', ('service_request', '!=', 'ajeer_permit'), ('state', 'in', ('draft', 'submitted')),('aamalcom_pay','!=',True)]}">
-                        <group attrs="{'invisible': [('self_pay', '!=',True)]}">
+                        
                             <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name"/>
                             <field name="upload_payment_doc_file_name"  invisible="1"/>
                             <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/>
-                        </group>
+                        
                     </group>
+                    
                     <group attrs="{'invisible': ['|','|','|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False),('state','in',('draft','submitted')),('aamalcom_pay','!=', True)]}">
                         <field name="upload_ajeer_permit_doc" 
                                attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}"
-                               filename="upload_ajeer_permit_doc_file_name"/>
+                               filename="upload_ajeer_permit_doc_file_name" force_save="1"/>
                         <field name="upload_ajeer_permit_doc_file_name" invisible="1"/>
                         <field name="ajeer_permit_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}"/>    
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}" force_save="1"/>    
                     </group>
                 </group>
             </xpath>
@@ -92,7 +93,15 @@
                         <field name="ajeer_permit_doc_ref"
                                attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}"/>    
                     </group>
+                   
                 </group>
+                 <group attrs="{'invisible': ['|','|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False),('state','in',('draft','submitted'))]}">
+                    <group>
+                        <field name="upload_invoice_payment_doc" attrs="{'readonly': ['|',('state', 'not in',('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                        <field name="invoice_payment_ref_no"
+                        />
+                    </group>    
+                    </group>
             </xpath>
             </field>
         </record>
