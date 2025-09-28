@@ -35,6 +35,7 @@
 	        	<xpath expr="//field[@name='line_ids']//field[@name='name']" position="after">
 	        		<field name="employee_id" invisible="1"/>
 	        		<field name="service_enquiry_id" attrs="{'column_invisible': [('parent.invoice_type', '!=','operation')]}" invisible="1"/>
+	        		<field name="bank_ref" optional="show"/>
 	        	</xpath>
 
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">

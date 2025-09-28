@@ -94,4 +94,5 @@ class AccountMoveLine(models.Model):
 
     employee_id = fields.Many2one('hr.employee',string="Employee",store=True)
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Enquiry Id")
+    bank_ref = fields.Char(string="Bank Reference")
 
