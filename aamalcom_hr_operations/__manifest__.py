@@ -14,7 +14,7 @@
         'data/mail_template.xml',
         'data/ir_cron.xml',
         'reports/probation_report.xml',
-        'wizard/employee_slection_hr_views.xml',
+        'wizard/employee_selection_hr_views.xml',
         'views/hr_medical_service_views.xml',
         'views/hr_employee_change_request_views.xml',
         'views/hr_employee_views.xml',
