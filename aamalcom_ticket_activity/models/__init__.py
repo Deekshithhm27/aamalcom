@@ -14,6 +14,13 @@ from . import life_insurance_class_change
 from . import swapping_border_to_iqama
 from . import client_payslip_approval
 from . import leave_external_employee
+from . import hr_annual_request
+from . import hr_medical_report
+from . import hr_resignation
+from . import hr_business_trip
+from . import hr_ere_request
+from . import hr_end_of_service
+
 
 
 
