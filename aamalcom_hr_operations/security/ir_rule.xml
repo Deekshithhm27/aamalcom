@@ -41,4 +41,124 @@
         <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>
         <field name="groups" eval="[(4, ref('aamalcom_hr_operations.group_hr_employee_internal'))]"/>
     </record>
+    <!-- Record Rule for Regular Employees -->
+        <record id="hr_annual_request_rule_employee_own" model="ir.rule">
+            <field name="name">Annual Request: Employee can see own records</field>
+            <field name="model_id" ref="model_hr_annual_request"/>
+            <field name="domain_force">[('employee_id', '=', user.employee_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Record Rule for Managers (Department Head, HR Manager, GM) -->
+        <record id="hr_annual_request_rule_manager_all" model="ir.rule">
+            <field name="name">Annual Request: Managers can see all records</field>
+            <field name="model_id" ref="model_hr_annual_request"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('visa_process.group_service_request_payroll_manager')),(4, ref('visa_process.group_service_request_insurance_manager')),
+            (4, ref('visa_process.group_service_request_hr_manager')),(4, ref('visa_process.group_service_request_govt_manager')),(4, ref('visa_process.group_service_request_general_manager')),(4, ref('visa_process.group_service_request_hr_employee')),(4, ref('visa_process.group_service_request_employee'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    <!-- Rule for restricted users: can only see their own EOS requests -->
+    <record id="hr_eos_request_rule_employee_own" model="ir.rule">
+        <field name="name">EOS - Employee Own Records</field>
+        <field name="model_id" ref="model_hr_eos_request"/>
+        <field name="domain_force">[('employee_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/> 
+    </record>
+
+    <!-- Rule for HR/Payroll/GM/HR Manager: can see all EOS records -->
+    <record id="hr_eos_request_rule_hr_all" model="ir.rule">
+        <field name="name">EOS - HR/Managers Full Access</field>
+        <field name="model_id" ref="model_hr_eos_request"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_hr_employee')),
+                                    (4, ref('visa_process.group_service_request_payroll_manager')),
+                                    (4, ref('visa_process.group_service_request_general_manager')),
+                                    (4, ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+    
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_business_trip_all_access" model="ir.rule">
+        <field name="name">HR Business Trip - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_business_trip"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_general_manager'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_business_trip_employee_own" model="ir.rule">
+        <field name="name">HR Business Trip - Own Records Only</field>
+        <field name="model_id" ref="model_hr_business_trip"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_warning_letters_all_access" model="ir.rule">
+        <field name="name">HR Warning Letters - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_warning"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_manager'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_warning_letters_employee_own" model="ir.rule">
+        <field name="name">HR Warning Letters - Own Records Only</field>
+        <field name="model_id" ref="model_hr_warning"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_suspension_letters_all_access" model="ir.rule">
+        <field name="name">HR Suspension Letters - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_suspending"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_manager'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_suspendion_letters_employee_own" model="ir.rule">
+        <field name="name">HR Supension Letters - Own Records Only</field>
+        <field name="model_id" ref="model_hr_suspending"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_resignation_all_access" model="ir.rule">
+        <field name="name">HR Resignation Letters - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_resignation"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_employee'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_resignation_employee_own" model="ir.rule">
+        <field name="name">HR Resignation Letters - Own Records Only</field>
+        <field name="model_id" ref="model_hr_resignation"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
 </odoo>

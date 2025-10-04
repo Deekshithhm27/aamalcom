@@ -31,6 +31,7 @@ class HrServiceRequestTreasury(models.Model):
         ondelete='cascade',
         tracking=True,
     )
+    
 
     employee_id = fields.Many2one('hr.employee', string="Employee")
     total_amount = fields.Monetary(string="Amount")
@@ -106,7 +107,7 @@ class HrServiceRequestTreasury(models.Model):
         if self.service_request_ref and self.service_request_ref._name == 'hr.medical.blood.test':
             self.service_request_ref.write({
                 'state': 'submit_for_approval',
-                'total_price': self.total_amount, # Pass back the updated amount
+                'total_amount': self.total_amount, # Pass back the updated amount
                 'clinic_name': self.clinic_name,  # Pass back the updated clinic name
             })
 

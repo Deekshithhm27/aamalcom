@@ -20,7 +20,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft"/>
                     <button name="action_submit_to_hr" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <!-- Updated the attrs to use the new is_my_coach field. -->
-                    <button name="action_approved_by_dept_head" string="Approve"  type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit_to_dept_head')]}"  groups="visa_process.group_service_request_hr_manager" />
+                    <button name="action_approved_by_dept_head" string="Approve"  type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
                     <button name="action_approved_by_hr" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}" groups="visa_process.group_service_request_hr_manager"/>
                     <button name="action_approved_by_gm" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
                     <button name="process_complete" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_hr_employee"/>
@@ -48,8 +48,14 @@
                     </group>
                     </group>
                     <group>
+                        <field name="start_destination" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="start_destination_date" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="end_destination" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="end_destination_date" attrs="{'readonly': [('state','!=','draft')]}"/>
+                    </group>
+                    <group>
                             <field name="annual_request_description" attrs="{'readonly': [('state','!=','draft')]}"/>
-                            <field name="confirmed_ticket_id" attrs="{'invisible': [('state', '=', ('draft','approved_by_dept_head','submit_to_dept_head','submit_to_gm'))],'readonly': ['|',('is_hr_employee', '!=', True),('state','!=','approved')]}" options="{'no_create': True}"/>
+                            <field name="confirmed_ticket_id" attrs="{'invisible': [('state', 'not in', ('done','approved_by_dept_head','submit_to_dept_head','submit_to_gm','approved'))],'readonly': ['|',('is_hr_employee', '!=', True),('state','!=','approved')]}" options="{'no_create': True}"/>
                         </group>
                 </sheet>
                 <!-- Add chatter for logs -->
@@ -63,7 +69,7 @@
     </record>
 
     <record id="action_hr_annual_request_request" model="ir.actions.act_window">
-        <field name="name">Annual Entitlement Request</field>
+        <field name="name">Annual Entilelemt(Air Ticket)</field>
         <field name="res_model">hr.annual.request</field>
         <field name="view_mode">tree,form</field>
     </record>

@@ -20,6 +20,7 @@ from . import hr_resignation
 from . import hr_business_trip
 from . import hr_ere_request
 from . import hr_end_of_service
+from . import hr_onboarding_process
 
 
 

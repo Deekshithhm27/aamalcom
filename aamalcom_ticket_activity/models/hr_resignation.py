@@ -29,7 +29,7 @@ class HrResignation(models.Model):
                     
             activity_ids.unlink()
             # Code snippet from your previous message, representing the flawed logic.
-            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
+            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_employee').users
             for user in hr_manager_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,
@@ -110,7 +110,7 @@ class HrResignation(models.Model):
                     
             activity_ids.unlink()
             # Code snippet from your previous message, representing the flawed logic.
-            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
+            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_employee').users
             for user in hr_manager_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,

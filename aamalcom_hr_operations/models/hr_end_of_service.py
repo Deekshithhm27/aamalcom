@@ -62,7 +62,7 @@ class EndOfService(models.Model):
 
     eos_type = fields.Selection([
         ('eos_request', 'End Of Service'),
-    ], string='Service Request')
+    ], string='Service Request',default='eos_request')
 
     details_for_eos = fields.Char(string="Details for EOS")
     is_hr_employee = fields.Boolean(
@@ -126,7 +126,7 @@ class EndOfService(models.Model):
 
 
     def action_confirmed_by_payroll(self):
-        self.state = 'approved_by_payroll'
+        self.state = 'submitted_to_hr_manager'
 
     def action_send_to_pm(self):
         self.state = 'submitted_to_pm'
@@ -144,7 +144,7 @@ class EndOfService(models.Model):
         self.state = 'submitted_to_gm'
 
     def action_confirmed_by_gm(self):
-        self.state = 'approved_by_gm'
+        self.state = 'employee_review'
 
     def action_send_to_employee(self):
         self.state = 'employee_review'

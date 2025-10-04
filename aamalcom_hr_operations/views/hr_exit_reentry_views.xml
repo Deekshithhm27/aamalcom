@@ -50,6 +50,7 @@
                     <button name="action_done_ere" string="Process Done" type="object" class="oe_highlight" 
                             attrs="{'invisible': ['|','|',('state', '!=', 'submitted_to_gre'),('upload_confirmation_of_exit_reentry','=',False),('upload_exit_reentry_visa','=',False)]}" 
                             groups="visa_process.group_service_request_employee"/> 
+                   
                     
                 </header>
                 <sheet>
@@ -68,6 +69,7 @@
                         <group>
                             <field name="employee_id"/>
                             <field name="service_request_config_id" attrs="{'readonly': [('state', '!=','draft')]}" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
+                            <field name="service_request" invisible="1"/>
                             <field name="iqama_no" readonly="1"/>
                             <field name="identification_id" readonly="1"/>
                             <field name="passport_no" readonly="1"/>
@@ -82,6 +84,7 @@
                             <field name="is_hr_employee" invisible="1"/>
                             <field name="is_gov_employee" invisible="1"/>
                             <field name="is_gov_employee" invisible="1"/>
+                            <field name="service_request" invisible="1"/>
                         </group>
                     </group>
                     
@@ -92,7 +95,7 @@
                                 options="{'no_create': True, 'no_edit': True}"/>
                         </group>
                         <group>
-                            <field name="to_be_issued_date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="to_be_issued_date" string="Exit Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                     
@@ -138,12 +141,30 @@
 
                     
                 </sheet>
+                <sheet>
+                <notebook>
+                    <page string="Service Pricing">
+                        <field name="service_enquiry_pricing_ids">
+                            <tree editable="bottom">
+                                <field name="service_enquiry_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="remarks"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
                 <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
                         <field name="activity_ids" widget="mail_activity"/>
                         <field name="message_ids" widget="mail_thread"/>
                     </div>
             </form>
+            
         </field>
     </record>
 

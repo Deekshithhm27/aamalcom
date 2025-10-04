@@ -63,7 +63,7 @@
 
                     <group>
                         <group>
-                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': True}"/>
                             <field name="service_type" readonly="1"/>
                             <field name="iqama_no" readonly="1"/>
                             <field name="identification_id" readonly="1"/>
@@ -82,12 +82,14 @@
                     <field name="is_gov_employee" invisible="1"/>
                     
                     <group>
+                        <group>
                         <field name="upload_stamped_visa_doc" 
-                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}" 
+                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}" 
                                filename="upload_stamped_visa_doc_file_name"/>
                         <field name="upload_stamped_visa_doc_file_name" invisible="1"/>
                         <field name="stamped_visa_doc_ref" 
-                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')]}"/>
+                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}"/>
+                           </group>
                     </group>
                     <group string="Payment Confirmation Document" 
                            attrs="{'invisible': [('state', 'not in', ('submitted_to_gre', 'done', 'approved'))]}">
@@ -96,14 +98,20 @@
                             <field name="treasury_confirmation_ref" readonly="1"/>
                         </group>
                     </group>
+                    <group>
+                        <field name="clinic_name" attrs="{'invisible': [('state', 'in', ('draft','submitted'))]}" readonly="1"/>
+                        <field name="total_amount" attrs="{'invisible': [('state', 'in', ('draft','submitted'))]}" readonly="1"/>
+                    </group>
 
                     <group >
+                        <group>
                         <field name="upload_medical_test_doc" 
-                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)]}" 
+                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)],'invisible': [('state', 'not in', ('done','submitted_to_gre'))]}" 
                                filename="upload_medical_test_doc_file_name"/>
                         <field name="upload_medical_test_doc_file_name" invisible="1"/>
                         <field name="medical_test_doc_ref" 
-                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)]}"/>
+                               attrs="{'readonly': ['|', ('state', '!=', 'submitted_to_gre'),('is_gov_employee','!=',True)],'invisible': [('state', 'not in', ('done','submitted_to_gre'))]}"/>
+                           </group>
                     </group>
                 </sheet>
                 <div class="oe_chatter">

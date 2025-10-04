@@ -1,12 +1,14 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+from odoo import _
+
 
 class HrOnboardingProcess(models.Model):
     _name = 'hr.onboarding.process'
     _description = 'Onboarding Process'
-    _rec_name = 'ref_id'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    ref_id = fields.Char(
+    name = fields.Char(
         string='Request ID',
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.onboarding.process')
     )
@@ -33,11 +35,12 @@ class HrOnboardingProcess(models.Model):
     )
 
     status = fields.Selection(
-        [('issued', 'Issued'),
+        [('draft', 'Draft'),('issued', 'Issued'),
          ('not_issued', 'Not Issued')],
         string="Status",
-        default='not_issued'
+        default='draft'
     )
+    
     
     @api.depends('employee_id')
     def _compute_employee_details(self):
@@ -76,12 +79,12 @@ class HrOnboardingProcess(models.Model):
                 
                 self.checklist_line_ids = lines
         
-    # --- Keep create method clean ---
-    @api.model
-    def create(self, vals):
-        """The lines from the onchange will be included in vals and saved."""
-        record = super(HrOnboardingProcess, self).create(vals)
-        return record
+    def action_submit(self):
+        for record in self:
+            if not record.employee_id:
+                raise ValidationError(_("You must select an Employee before submit."))
+            record.status = 'not_issued'
+
 
     def action_issued(self):
         for record in self:
@@ -96,7 +99,6 @@ class HrOnboardingProcess(models.Model):
 
 
 class HrOnboardingProcessLine(models.Model):
-    # ... (HrOnboardingProcessLine remains the same as your previous code) ...
     _name = 'hr.onboarding.process.line'
     _description = 'Onboarding Process Line'
 
@@ -107,8 +109,7 @@ class HrOnboardingProcessLine(models.Model):
     )
     onboarding_checklist_id = fields.Many2one(
         'hr.onboarding.checklist',
-        string='Checklist Item',
-        required=True, 
+        string='Checklist Item', 
         ondelete='restrict', 
     )
     comments = fields.Text(

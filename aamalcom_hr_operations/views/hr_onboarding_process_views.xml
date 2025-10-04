@@ -10,11 +10,15 @@
                     <header>
                         <field name="status" widget="statusbar"
                                statusbar_visible="draft,issued,not issued"/>
+                        <button name="action_submit" string="Submit"
+                                type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': [('status', '!=', 'draft')]}" groups="visa_process.group_service_request_hr_employee"/>
                         <button name="action_issued"
                                 string="Submit"
                                 type="object"
                                 class="oe_highlight"
-                                attrs="{'invisible': [('status', '!=', 'not_issued')]}"/>
+                                attrs="{'invisible': [('status', '!=', 'not_issued')]}" groups="visa_process.group_service_request_it_employee"/>
                     </header>
 
 
@@ -22,23 +26,24 @@
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         
                         <group>
-                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="employee_id" options="{'no_create': True}" attrs="{'readonly': [('status', '!=','draft')]}"/>
                             <field name="date_of_joining" readonly="1"/>
                             <field name="user_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="active" invisible="1"/>
-                            <field name="ref_id" invisible="1"/>
+                            <field name="name" invisible="1"/>
                         </group>
 
                         <notebook>
                             <page string="Checklist">
                             <field name="checklist_line_ids" force_save="1">
                                 <tree editable="bottom" create="false" delete="false">
-                                    <field name="onboarding_checklist_id"/>
-                                    <field name="comments"/>  <!-- editable -->
-                                    <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}"/>
-                                    <field name="status"/>
-                                    <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}"/>
+                                    <field name="onboarding_checklist_id" attrs="{'readonly': [('status','!=','draft')]}"/>
+                                    <field name="comments" attrs="{'readonly': [('status','not in',('not_issued','draft'))]}"/>  
+                                    <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
+                                    <field name="status" attrs="{'readonly': [('status','!=','not_issued')]}"/>
+
+                                    <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
                                 </tree>
                             </field>
 
@@ -46,6 +51,12 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <!-- Add chatter for logs -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -56,7 +67,7 @@
             <field name="model">hr.onboarding.process</field>
             <field name="arch" type="xml">
                 <tree string="Onboarding Processes">
-                    <field name="ref_id"/>
+                    <field name="name"/>
                     <field name="employee_id"/>
                     <field name="status"/>
                 </tree>

@@ -12,3 +12,5 @@ from . import hr_onboarding_process
 from . import hr_resignation
 from . import hr_suspending
 from . import hr_warning
+from . import hr_end_of_contract
+from . import business_trip_from

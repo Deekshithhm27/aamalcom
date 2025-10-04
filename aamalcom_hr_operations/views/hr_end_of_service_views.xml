@@ -24,7 +24,7 @@
 
                    
                     <button name="action_submit_to_payroll" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('upload_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
-                    <button name="action_confirmed_by_payroll" string="Confirmed" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                    <button name="action_confirmed_by_payroll" string="Verified" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
                     
                     <button name="action_send_to_hr_manager" string="Submit for Approval" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_payroll')]}"  groups="visa_process.group_service_request_hr_employee"/>
                     <button name="action_confirmed_by_hr_manager" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_hr_manager')]}"  groups="visa_process.group_service_request_hr_manager"/>

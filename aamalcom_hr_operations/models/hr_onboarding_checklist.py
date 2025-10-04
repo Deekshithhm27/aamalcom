@@ -5,7 +5,7 @@ class HrOnboardingChecklist(models.Model):
     _description = 'Onboarding Checklist'
     _order = 'sequence,id'  # This is crucial!
 
-    ref_id = fields.Char(string='Request ID', required=True, readonly=True,
+    ref_id = fields.Char(string='Request ID', readonly=True,
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.onboarding.checklist'))
 
     name = fields.Char(string="Name", store=True)

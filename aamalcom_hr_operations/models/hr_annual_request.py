@@ -36,11 +36,22 @@ class AnnualRequestService(models.Model):
         ('refuse', 'Refuse'),
     ], string="Status", default="draft")
     
-    confirmed_ticket_id = fields.Many2one(
-        'hr.annual.request',
+    confirmed_ticket_id = fields.Binary(
         string="Confirmed Ticket",
-        domain=[('state', '=', 'approved')] # This domain filters tickets by their 'state'
+       
     )
+    start_destination = fields.Char(string="From")
+    end_destination = fields.Char(string="To")
+    start_destination_date= fields.Date(
+        string='From Date',
+        store=True,
+        tracking=True
+    )
+    end_destination_date = fields.Date(
+        string='To Date',
+        tracking=True
+    )
+
     
     is_my_coach = fields.Boolean(
         string="Is My Coach",
@@ -114,5 +125,7 @@ class AnnualRequestService(models.Model):
 
     def process_complete(self):
         for record in self:
+            if not record.confirmed_ticket_id:
+                raise ValidationError("Please upload Confirmed Tickets")
             record.state = 'done'
             record.message_post(body="Process completed")

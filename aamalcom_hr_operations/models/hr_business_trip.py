@@ -35,7 +35,7 @@ class HrBusinessTrip(models.Model):
         ('submit_to_hr', 'Submitted'),
         ('submit_to_fm', 'Approved by HR'),
         ('submit_to_gm','Approved by FM'),
-        ('approve_businees_trip', 'Accepted'),
+        ('approve_businees_trip', 'Done'),
         ('refuse_business_trip', 'Refuse'),
     ], string="Status", default="draft")
 
@@ -50,6 +50,19 @@ class HrBusinessTrip(models.Model):
         compute='_compute_is_dept_head',
         store=False
     )
+    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form")
+    draft_business_trip_form_filename = fields.Char(string="Filename")
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        business_trip_form_record = self.env['business.trip.form'].search(
+            [('name', '=', 'Business Trip Form')], limit=1
+        )
+        if business_trip_form_record:
+            res['draft_business_trip_form'] = business_trip_form_record.business_trip_form
+            res['draft_business_trip_form_filename'] = "Business_Trip_Form.pdf"
+        return res
 
     @api.depends()
     def _compute_is_dept_head(self):

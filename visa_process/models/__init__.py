@@ -25,6 +25,8 @@ from . import temporary_work_visa
 from . import service_request_treasury
 from . import service_enquiry
 from . import leave_external_employee
+from . import end_of_service
+from . import external_termination
 
 
 

@@ -9,15 +9,19 @@
 
             <menuitem id="menu_onboarding_process_main" name="Onboarding Process" action="action_onboarding_process" sequence="11"/>
 
-            <menuitem id="menu_exit_process_root" name="Exit Process" sequence="12">
+
+            <menuitem id="menu_employee_process_root" name="Employee Requests" sequence="12">  
+                <menuitem id="menu_hr_businees_trip" name="Business Trip" action="action_hr_business_trip_request" sequence="1"/>
+                <menuitem id="menu_annual_request" name="Annual Entilelemt(Air Ticket)" action="action_hr_annual_request_request" sequence="2"/>
+                <menuitem id="menu_ere_request" name="Exit Reentry Issuance request" action="action_hr_ere_request" sequence="3"/> 
+                <menuitem id="menu_medical_request" name="Iqama Issuance-Medical Report request" action ="action_hr_medical_blood_test_request" sequence="4"/>
+            </menuitem>
+            <menuitem id="menu_exit_process_root" name="Employee Exit Requests" sequence="13">
                 <menuitem id="menu_hr_resignation_submenu" name="Resignation" action="action_hr_resignation_request" sequence="1"/>
-                <menuitem id="menu_hr_businees_trip" name="Business Trip" action="action_hr_business_trip_request" sequence="2"/>
-                <menuitem id="menu_hr_suspending_employees" name="Employee Suspension" action="action_hr_suspending_employees_request" sequence="3"/>
-                <menuitem id="menu_hr_warning_letters" name="Warning Letter" action="action_hr_warning_letters" sequence="4"/>
-                <menuitem id="menu_hr_eos_request" name="End of Service" action="hr_action_eos_request" sequence="5"/>
-                <menuitem id="menu_annual_request" name="Annual Entilelemt request" action="action_hr_annual_request_request" sequence="7"/>
-                <menuitem id="menu_ere_request" name="Exit Reentry Issuance request" action="action_hr_ere_request" sequence="8"/> 
-                <menuitem id="menu_medical_request" name="Iqama Issuance-Medical Report request" action ="action_hr_medical_blood_test_request" sequence="9"/>
+                <menuitem id="menu_hr_suspending_employees" name="Employee Suspension" action="action_hr_suspending_employees_request" sequence="2"/>
+                <menuitem id="menu_hr_warning_letters" name="Warning Letter" action="action_hr_warning_letters" sequence="3"/>
+                <menuitem id="menu_hr_eos_request" name="End of Service" action="hr_action_eos_request" sequence="4"/>
+                <menuitem id="menu_hr_end_of_contract" name="End of Contract" action ="action_hr_end_of_contract" sequence="5"/>
             </menuitem>
             
             

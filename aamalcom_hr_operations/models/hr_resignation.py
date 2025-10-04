@@ -52,7 +52,7 @@ class HrResignation(models.Model):
         ('accept_resignation','Accept Resignation'),
         ('postpone_resignation_request', 'Postpone Resignation'),
         ('rejected_resignation_request', 'Reject Resignation')
-    ], string="Resignation Status", store=True)
+    ], string="Resignation Decision", store=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -73,7 +73,7 @@ class HrResignation(models.Model):
     @api.depends()
     def _compute_is_hr_manager(self):
         for rec in self:
-            rec.is_hr_manager = self.env.user.has_group('visa_process.group_service_request_hr_manager')
+            rec.is_hr_manager = self.env.user.has_group('visa_process.group_service_request_hr_employee')
 
     termination_document_ids = fields.One2many(
         'hr.resignation.document', 

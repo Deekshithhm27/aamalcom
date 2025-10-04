@@ -56,6 +56,8 @@
 
     'views/service_enquiry_views.xml',
     'views/leave_external_employee_views.xml', 
+    'views/end_of_service_views.xml',
+    'views/termination_views.xml',
 
     'views/menu.xml',
     'views/leave_menu.xml',

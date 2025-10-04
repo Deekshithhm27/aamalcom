@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_termination_request_tree" model="ir.ui.view">
+        <field name="name">termination.request.tree</field>
+        <field name="model">termination.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="termination_request_leave_form" model="ir.ui.view">
+        <field name="name">termination.request.form</field>
+        <field name="model">termination.request</field>
+        <field name="arch" type="xml">
+            <form >
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" statusbar_status="state"/>
+                    <button name="action_submitted" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="%(action_leave_assign_employee_wizard)d" string="Assign Employee" type="action" class="btn-primary" attrs="{'invisible': ['|',('state', '!=', 'submit'),('upload_proof_of_request_doc','=',False)]}" groups="visa_process.group_service_request_manager"/>
+                  
+                   
+                    <button name="action_process_done" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit'),('upload_termination_doc','=',False)]}" groups="visa_process.group_service_request_employee"/> 
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="termination_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="iqama_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="identification_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="passport_no" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="sponsor_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            
+                        </group>
+                    </group>
+                        <group>
+                            <field name="reason_of_termination" attrs="{'readonly': [('state', '!=', 'submit')]}"/>
+                            <field name="upload_proof_of_request_doc" attrs="{'readonly': [('state', '!=', 'submit')]}"/>
+                        </group>
+                        <group>
+                            <field name="upload_termination_doc" attrs="{'readonly': [('state', '!=', 'submit')]}"/>
+                        </group>
+                    
+                   
+                    
+                </sheet>
+                <!-- Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_termination_request" model="ir.actions.act_window">
+        <field name="res_model">termination.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
