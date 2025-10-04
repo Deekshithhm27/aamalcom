@@ -13,7 +13,7 @@ class ExitReentryService(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Request ID',
-                       default=lambda self: self.env['ir.sequence'].next_by_code('hr.annual.request'))
+                       default=lambda self: self.env['ir.sequence'].next_by_code('hr.exit.reentry'))
 
     employee_id = fields.Many2one(
         'hr.employee',
@@ -98,7 +98,15 @@ class ExitReentryService(models.Model):
         string="Ref No.",
         copy=False,
     )
-    
+    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
+    service_request = fields.Selection([ 
+        ('exit_reentry_issuance','Exit Rentry Issuance'),
+    ],
+    string="Service Request",
+    store=True,
+    copy=False,
+    default='exit_reentry_issuance'
+)
     is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
     @api.depends('is_gov_employee')
     def _compute_is_gov_employee(self):
@@ -117,9 +125,17 @@ class ExitReentryService(models.Model):
         string="Treasury Requests",
         compute="_compute_total_treasury_requests"
     )
+    @api.onchange('exit_type')
+    def _onchange_exit_type(self):
+        for line in self:
+            if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
+                if line.exit_type == 'single':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=','ev_request'),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'SER'
+                elif line.exit_type == 'multiple':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=','ev_request'),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'MER'
 
-    
-    
+     
+
     def _compute_total_treasury_requests(self):
         for rec in self:
             rec.total_treasury_requests = self.env['hr.service.request.treasury'].search_count(
@@ -209,9 +225,38 @@ class ExitReentryService(models.Model):
     ##Below Methods are used if aamalcom is choosen
     def action_submit_ere(self):
         for record in self:
+            # 1. Pricing Logic - Execute for the CURRENT record
+            pricing_id = self.env['service.pricing'].search(
+                [
+                    ('service_request_config_id', '=', record.service_request_config_id.id),
+                ], limit=1)
+
+            if pricing_id and record.employment_duration:
+                
+                # Find the specific pricing line matching the selected duration
+                p_line = pricing_id.pricing_line_ids.filtered(
+                    lambda line: line.duration_id == record.employment_duration
+                )
+                
+                # 2. Check and Create Pricing Line
+                if p_line:
+                    # IMPORTANT: Clear old pricing lines if needed, otherwise this will add a duplicate every time.
+                    # record.service_enquiry_pricing_ids = [(5, 0, 0)] 
+                    
+                    p_line = p_line[0] 
+                    
+                    record.service_enquiry_pricing_ids.create({
+                        'name': f"{p_line.duration_id.name}",
+                        'service_enquiry_id': record.id, # Use record.id
+                        'service_pricing_id': pricing_id.id,
+                        'service_pricing_line_id': p_line.id,
+                        'amount': p_line.amount,
+                        'remarks': p_line.remarks,
+                    })
+            
+            # 3. State Change - Execute for the CURRENT record
             record.state = 'submit_to_dept_head'
             record.message_post(body=_("Request has been submitted to Department Head for approval."))
-
     def action_approval_dept(self):
         for record in self:
             record.state = 'approved_by_dept_head'
@@ -276,9 +321,39 @@ class ExitReentryService(models.Model):
 
     def action_submit_if_employee(self):
         for record in self:
-            record.state = 'submit'
-            record.message_post(body=_("Request has been submitted by the employee."))
+            # 1. Pricing Logic - Execute for the CURRENT record
+            pricing_id = self.env['service.pricing'].search(
+                [
+                    ('service_request_config_id', '=', record.service_request_config_id.id),
+                ], limit=1)
 
+            if pricing_id and record.employment_duration:
+                
+                # Find the specific pricing line matching the selected duration
+                p_line = pricing_id.pricing_line_ids.filtered(
+                    lambda line: line.duration_id == record.employment_duration
+                )
+                
+                # 2. Check and Create Pricing Line
+                if p_line:
+                    # IMPORTANT: Clear old pricing lines if needed, otherwise this will add a duplicate every time.
+                    # record.service_enquiry_pricing_ids = [(5, 0, 0)] 
+                    
+                    p_line = p_line[0] 
+                    
+                    record.service_enquiry_pricing_ids.create({
+                        'name': f"{p_line.duration_id.name}",
+                        'service_enquiry_id': record.id, # Use record.id
+                        'service_pricing_id': pricing_id.id,
+                        'service_pricing_line_id': p_line.id,
+                        'amount': p_line.amount,
+                        'remarks': p_line.remarks,
+                    })
+            
+            # 3. State Change - Execute for the CURRENT record
+            record.state = 'submit'
+            record.message_post(body=_("Request has been submitted"))
+        
 
     def action_done_ere(self):
         for record in self:
@@ -292,10 +367,19 @@ class ExitReentryService(models.Model):
 
 
 
-class ServiceEnquiryPricingLine(models.Model):
-    _inherit = 'service.enquiry.pricing.line'
+class ServicePricingLine(models.Model):
+    _inherit = 'service.pricing.line'
+   
 
-    company_id = fields.Many2one('res.company', string='Company', required=True,
-                                 default=lambda self: self.env.user.company_id)
+    pricing_id = fields.Many2one('service.pricing',string="Service Pricing")
+
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
-                                  related="company_id.currency_id", help="The payment's currency.")
+        related="company_id.currency_id",help="The payment's currency.")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",related="pricing_id.service_request_type")
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",related="pricing_id.service_request_config_id")
+
+    duration_id = fields.Many2one('employment.duration',string="Duration",domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
+    amount = fields.Monetary(string="Amount")
+    remarks = fields.Text(string="Remarks")
