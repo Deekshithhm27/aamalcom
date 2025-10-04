@@ -141,7 +141,7 @@
 
                     
                 </sheet>
-                <sheet>
+                <!-- <sheet>
                 <notebook>
                     <page string="Service Pricing">
                         <field name="service_enquiry_pricing_ids">
@@ -157,7 +157,7 @@
                         </field>
                     </page>
                 </notebook>
-            </sheet>
+            </sheet> -->
                 <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
                         <field name="activity_ids" widget="mail_activity"/>

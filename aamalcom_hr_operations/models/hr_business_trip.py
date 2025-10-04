@@ -50,8 +50,8 @@ class HrBusinessTrip(models.Model):
         compute='_compute_is_dept_head',
         store=False
     )
-    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form")
-    draft_business_trip_form_filename = fields.Char(string="Filename")
+    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form",readonly=True)
+    draft_business_trip_form_filename = fields.Char(string="Draft Business Trip Form",readonly=True)
 
     @api.model
     def default_get(self, fields_list):

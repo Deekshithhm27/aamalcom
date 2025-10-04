@@ -67,7 +67,6 @@
 			<field name="model">hr.service.request.treasury</field>
 			<field name="arch" type="xml">
 			<tree string="Treasury Details">
-			<field name="name"/>
 			<field name="service_request_ref"/>  <field name="employee_id"/>
 			<field name="total_amount"/>
 			<field name="state"/>

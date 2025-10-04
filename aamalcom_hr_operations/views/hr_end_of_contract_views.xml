@@ -31,7 +31,7 @@
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}"
                         groups="visa_process.group_service_request_hr_employee"/>
-                    <button name="action_process_complete_end_of_contract" string="Process Done"  type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_gre')]}" groups="visa_process.group_service_request_hr_employee,visa_process.group_service_request_employee"/>
+                    <button name="action_process_complete_end_of_contract" string="Process Done"  type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_gre')]}" groups="visa_process.group_service_request_employee"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
@@ -57,7 +57,7 @@
                         <field name="final_exit" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="notice_period" attrs="{'invisible': [('state', 'not in', ('submitted_to_gre','done'))],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
                         <field name="upload_notice_period_doc"  attrs="{'invisible': [('state', 'not in', ('submitted_to_gre','done'))],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
-                        <field name="upload_final_exit_doc"  attrs="{'invisible': [('state', 'not in', ('submitted_to_gre','done'))],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                        <field name="upload_final_exit_doc"  attrs="{'invisible': ['|',('state', 'not in', ('submitted_to_gre','done')),('final_exit','=',False)],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
                     </group>
                     </group>
                 </sheet>

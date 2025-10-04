@@ -89,7 +89,20 @@ class HrEmployee(models.Model):
     member_no = fields.Char(string="Insurance Member Number")
 
     bank_ids = fields.One2many('res.partner.bank','employee_id',string="Banks")
+    job_description = fields.Text(string="Job Description")
+    can_edit_job_description = fields.Boolean(
+        compute="_compute_can_edit_job_description",
+        string="Can Edit Job Description",
+        store=False
+    )
 
+    @api.depends()
+    def _compute_can_edit_job_description(self):
+        """Check if user belongs to HR Manager group"""
+        for rec in self:
+            rec.can_edit_job_description = self.env.user.has_group(
+                "visa_process.group_service_request_hr_manager"
+            )
     @api.depends('doj', 'probation_term')
     def _compute_probation_end_date(self):
         for rec in self:

@@ -38,10 +38,10 @@
                             <page string="Checklist">
                             <field name="checklist_line_ids" force_save="1">
                                 <tree editable="bottom" create="false" delete="false">
-                                    <field name="onboarding_checklist_id" attrs="{'readonly': [('status','!=','draft')]}"/>
-                                    <field name="comments" attrs="{'readonly': [('status','not in',('not_issued','draft'))]}"/>  
+                                    <field name="onboarding_checklist_id" />
+                                    <field name="comments" />  
                                     <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
-                                    <field name="status" attrs="{'readonly': [('status','!=','not_issued')]}"/>
+                                    <field name="status"/>
 
                                     <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
                                 </tree>
