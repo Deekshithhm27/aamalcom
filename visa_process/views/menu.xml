@@ -94,6 +94,18 @@
 
 
     </menuitem>
+    <!-- Submenu for End of Service -->
+    <menuitem id="menu_eos_request"
+              name="End of Service"
+              parent="menu_base_visa_process"
+              action="action_eos_request"
+              sequence="19"
+              groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_hr_employee,visa_process.group_service_request_payroll_manager"/>
+              
+    <!-- Submenu for Termination -->
+    <menuitem id="menu_termination_request" name="Termination" parent="menu_base_visa_process"
+    action="action_termination_request" sequence="20"
+    groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_hr_manager,visa_process.group_service_request_hr_employee,visa_process.group_service_request_general_manager"/>
     <menuitem id="menu_partner_phonecode_base" parent="contacts.res_partner_menu_config" name="Phone Codes" sequence="10">
         <menuitem id="menu_partner_phonecode" name="Codes" sequence="1" action="action_partner_phonecodes"/>
     </menuitem>

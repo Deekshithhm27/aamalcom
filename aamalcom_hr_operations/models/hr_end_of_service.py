@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class EndOfService(models.Model):
@@ -45,7 +45,6 @@ class EndOfService(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit', 'Submitted'),
-        ('reject', 'Rejected'),
         ('submitted_to_payroll', 'Submitted to Payroll'),
         ('approved_by_payroll', 'Approved By Payroll'),
         ('submitted_to_pm', 'Submitted to PM'),
@@ -57,6 +56,7 @@ class EndOfService(models.Model):
         ('employee_review', 'Pending Employee Review'),
         ('approved_by_employee', 'Confirmed by Employee'),
         ('approved', 'Approved'),
+        ('refuse', 'Refuse'),
         ('done', 'Done'),
     ], string="Status", default="draft", tracking=True)
 
@@ -69,7 +69,25 @@ class EndOfService(models.Model):
         string="Is HR Employee?",
         compute="_compute_is_hr_employee"
     )
-
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    
+    def action_reject(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_("requests in draft state cant be rejected."))
+        return {
+            'name': 'Reject Change Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee.change.request.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_ids': self.ids},
+        }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("EndOfService Re-submitted."))
+    
     @api.depends()
     def _compute_is_hr_employee(self):
         """

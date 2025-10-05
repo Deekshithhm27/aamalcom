@@ -62,6 +62,23 @@ class AnnualRequestService(models.Model):
         string="Is HR Employee?",
         compute="_compute_is_hr_employee"
     )
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    def action_reject(self):
+            for rec in self:
+                if rec.state == 'draft':
+                    raise UserError(_("requests in draft state cant be rejected."))
+            return {
+                'name': 'Reject Change Request',
+                'type': 'ir.actions.act_window',
+                'res_model': 'hr.employee.change.request.reject.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'active_ids': self.ids},
+            }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("AnnualRequestService Re-submitted ."))
 
     @api.depends()
     def _compute_is_hr_employee(self):

@@ -29,6 +29,9 @@ class HrBusinessTrip(models.Model):
         ('inside_saudi_business_trip', 'Inside'),
         ('outside_saudi_business_trip', 'Outside')
     ], string="Business Trip Status", store=True)
+    tickets_confirmed=fields.Boolean(string="Tickets")
+    accomadtion_confirmed=fields.Char(string="Accomadtion")
+    expense_confirmed=fields.Char(string="Expense")
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -36,8 +39,9 @@ class HrBusinessTrip(models.Model):
         ('submit_to_fm', 'Approved by HR'),
         ('submit_to_gm','Approved by FM'),
         ('approve_businees_trip', 'Done'),
-        ('refuse_business_trip', 'Refuse'),
+        ('refuse', 'Refuse'),
     ], string="Status", default="draft")
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
 
     upload_business_trip_form = fields.Binary(string="Business Trip Form")
     
@@ -45,14 +49,9 @@ class HrBusinessTrip(models.Model):
         string="Is HR Manager?",
         compute="_compute_is_hr_manager"
     )
-    is_dept_head = fields.Boolean(
-        string="Is Department Head",
-        compute='_compute_is_dept_head',
-        store=False
-    )
-    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form",readonly=True)
-    draft_business_trip_form_filename = fields.Char(string="Draft Business Trip Form",readonly=True)
-
+    
+    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form",readonly=True,store=True)
+    draft_business_trip_form_filename = fields.Char(string="Draft Business Trip Form",readonly=True,store=True)
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
@@ -64,15 +63,7 @@ class HrBusinessTrip(models.Model):
             res['draft_business_trip_form_filename'] = "Business_Trip_Form.pdf"
         return res
 
-    @api.depends()
-    def _compute_is_dept_head(self):
-        for rec in self:
-            rec.is_dept_head = (
-                self.env.user.has_group('visa_process.group_service_request_payroll_manager')
-                or self.env.user.has_group('visa_process.group_service_request_insurance_manager')
-                or self.env.user.has_group('visa_process.group_service_request_hr_manager')
-                or self.env.user.has_group('visa_process.group_service_request_govt_manager')
-            )
+
 
     @api.onchange('employee_id')
     def update_service_request_type_from_employee(self):
@@ -114,3 +105,21 @@ class HrBusinessTrip(models.Model):
         for record in self:
             record.state = 'approve_businees_trip'
             record.message_post(body=_("Business trip approved by GM. Trip accepted."))
+
+    
+    def action_reject(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_("requests in draft state cant be rejected."))
+        return {
+            'name': 'Reject Change Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee.change.request.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_ids': self.ids},
+        }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("Business trip Re-submitted to HR."))

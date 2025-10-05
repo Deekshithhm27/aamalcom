@@ -73,5 +73,14 @@
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
         </record>
+        <!-- Sequence for Termination Request External -->
+        <record id="seq_termination_request" model="ir.sequence">
+            <field name="name">Termination Sequence</field>
+            <field name="code">termination.request</field>
+            <field name="prefix">ETS</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
     </data>
 </odoo>

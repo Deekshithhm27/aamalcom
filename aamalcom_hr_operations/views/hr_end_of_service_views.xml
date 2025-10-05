@@ -36,6 +36,10 @@
                     class="oe_highlight"
                     attrs="{'invisible': ['|',('state', '!=', 'employee_review'),('upload_employee_signed_eos_doc','=',False)]}"/>
                     <button name="action_process_done" string="Recieved" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'approved_by_employee'),('upload_signed_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submitted_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'approved_by_hr_manager')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}"/>
                    
                 </header>
                 <sheet>
