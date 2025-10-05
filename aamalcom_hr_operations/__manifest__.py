@@ -16,7 +16,6 @@
         'reports/probation_report.xml',
         'wizard/employee_selection_hr_views.xml',
         'wizard/hr_employee_reject_wizard_views.xml',
-        'wizard/refuse_reason_views.xml',
         'views/hr_medical_service_views.xml',
         'views/hr_employee_change_request_views.xml',
         'views/hr_employee_views.xml',
