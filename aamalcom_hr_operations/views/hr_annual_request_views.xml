@@ -28,7 +28,7 @@
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}" groups="visa_process.group_service_request_hr_manager"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
-                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'refuse'),('is_submit_visible','=',False)]}" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
@@ -49,6 +49,7 @@
                         <!-- Added the new computed field here and made it invisible. -->
                         <field name="is_my_coach" invisible="1"/>
                         <field name="is_hr_employee" invisible="1"/>
+                        <field name="is_submit_visible" invisible="1"/>
                     </group>
                     </group>
                     <group>

@@ -39,7 +39,7 @@ class EndOfService(models.Model):
             ('approved_by_payroll', 'Approved By Payroll'),
             ('submitted_to_pm', 'Submitted to PM'),
             ('approved_by_pm', 'Approved By PM'),
-            ('submitted_to_hr_manager', 'Submitted to HR Manager'),
+            ('submitted_to_hr_manager', 'Submitted to HR'),
             ('approved_by_hr_manager', 'Waiting GM Approval'),
             ('submitted_to_gm', 'Submitted to GM'),
             ('approved_by_gm', 'Approved By GM'),

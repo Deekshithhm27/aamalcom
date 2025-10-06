@@ -52,3 +52,16 @@ class AccountMove(models.Model):
                     'invoice': False
                 })
         return res
+
+    def action_post(self):
+        """Post invoice & update repayment line"""
+        res = super().action_post()
+        for record in self:
+            loan_line_ids = self.env['repayment.line'].search([
+                ('name', 'ilike', record.payment_reference)])
+            if loan_line_ids:
+                loan_line_ids.update({
+                    'state': 'paid',   # or maybe 'invoiced' depending on your flow
+                    'invoice': True
+                })
+        return res

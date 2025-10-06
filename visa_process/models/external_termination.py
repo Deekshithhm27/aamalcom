@@ -14,9 +14,10 @@ class TerminationService(models.Model):
             ('draft', 'Draft'),
             ('submit', 'Submitted'),
             ('reject', 'Rejected'),
-            ('submitted_to_hr', 'Submitted to Review'),
+            ('submitted_to_hr', 'Submitted to HR'),
             ('approved_by_pm', 'Reviewed Pending By HR'),
             ('submitted_to_pm', 'Submitted to PM'),
+            ('submitted_to_gre', 'Documents Upload Pending '),
             ('approved', 'PM needs to Review'),
             ('done', 'Done'),
         ], string="Status", default="draft", tracking=True)
@@ -48,6 +49,8 @@ class TerminationService(models.Model):
         string="Is HR Employee?",
         compute="_compute_is_hr_employee"
     )
+    refuse_reason = fields.Text(string="Refuse Reason", readonly=True,tracking=True)
+
 
     @api.depends()
     def _compute_is_hr_employee(self):
@@ -184,6 +187,8 @@ class TerminationService(models.Model):
     def action_final_review_by_pm(self):
         for record in self:
             record.state = 'approved'
+   
+   
 
 
     def action_process_done(self):

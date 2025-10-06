@@ -29,7 +29,8 @@
     'wizard/refuse_reason_wizard_view.xml',
     'wizard/employee_selection_wizard.xml',
     'wizard/select_employee_wizard.xml',
-    'wizard/leave_assign_employee_wizard_view.xml',  # This needs to be loaded before it's used.
+    'wizard/leave_assign_employee_wizard_view.xml',
+    'wizard/termination_wizard_views.xml',
 
     'views/configurations/hr_agency_views.xml',
     'views/configurations/hr_employee_company_views.xml',

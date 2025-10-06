@@ -1,8 +1,8 @@
 <!-- leave_assign_employee_wizard_view.xml -->
 <odoo>
-    <record id="view_leave_assign_employee_wizard" model="ir.ui.view">
-        <field name="name">leave.assign.employee.wizard.form</field>
-        <field name="model">leave.assign.employee.wizard</field>
+    <record id="view_termination_assign_employee_wizard" model="ir.ui.view">
+        <field name="name">Assign Employee</field>
+        <field name="model">termination.assign.employee.wizard</field>
         <field name="arch" type="xml">
             <form string="Select Employee">
                 <group>
@@ -17,9 +17,9 @@
         </field>
     </record>
 
-    <record id="action_leave_assign_employee_wizard" model="ir.actions.act_window">
+    <record id="action_termination_assign_employee_wizard" model="ir.actions.act_window">
         <field name="name">Assign Employee</field>
-        <field name="res_model">leave.assign.employee.wizard</field>
+        <field name="res_model">termination.assign.employee.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>

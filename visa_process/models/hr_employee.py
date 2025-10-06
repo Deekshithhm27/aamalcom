@@ -96,13 +96,60 @@ class HrEmployee(models.Model):
         store=False
     )
 
-    @api.depends()
+    @api.depends('custom_employee_type') # Added custom_employee_type to dependencies
     def _compute_can_edit_job_description(self):
-        """Check if user belongs to HR Manager group"""
+        """Check if user belongs to the correct group based on employee type."""
+        manager_group = "visa_process.group_service_request_manager"
+        client_spoc_group = "visa_process.group_service_request_client_spoc"
+        hr_manager_group = "visa_process.group_service_request_hr_manager"
+        
+        # Pre-fetch user's group status outside the loop for efficiency
+        is_manager = self.env.user.has_group(manager_group)
+        is_client_spoc = self.env.user.has_group(client_spoc_group)
+        is_hr_manager = self.env.user.has_group(hr_manager_group)
+
         for rec in self:
-            rec.can_edit_job_description = self.env.user.has_group(
-                "visa_process.group_service_request_hr_manager"
-            )
+            can_edit = False
+            if rec.custom_employee_type == 'external':
+                # Editable by service_request_manager OR service_request_client_spoc
+                if is_manager or is_client_spoc:
+                    can_edit = True
+            elif rec.custom_employee_type == 'internal':
+                # Editable by service_request_hr_manager
+                if is_hr_manager:
+                    can_edit = True
+            
+            rec.can_edit_job_description = can_edit
+    ##To track who edited the job description 
+    def write(self, vals):
+        """ Log an update to the Job Description field """
+        
+        if 'job_description' in vals:
+            for employee in self: # 'employee' is a single record
+                old_description = employee.job_description or ''
+                new_description = vals.get('job_description')
+
+                if old_description.strip() != new_description.strip():
+                    log_message = _(
+                        "Job Description updated for **%s** on **%s**."
+                        "<br/>**Previous Value:**<br/>%s"
+                        "<br/>**New Value:**<br/>%s"
+                    ) % (
+                        employee.name,
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                        old_description,
+                        new_description
+                    )
+                    
+                    # This is the correct call on the recordset:
+                    employee.message_post(
+                        body=log_message,
+                        subject=_("Job Description Update"), 
+                    )
+
+        res = super(HrEmployee, self).write(vals)
+        return res
+
     @api.depends('doj', 'probation_term')
     def _compute_probation_end_date(self):
         for rec in self:

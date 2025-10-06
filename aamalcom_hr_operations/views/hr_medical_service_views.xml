@@ -47,6 +47,12 @@
                         groups="visa_process.group_service_request_manager"/>
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_gre'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
 
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_for_approval')]}" groups="visa_process.group_service_request_operations_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', 'not in', ('submit_to_fm'))]}" 
+                    groups="visa_process.group_service_request_finance_manager"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}" groups="visa_process.group_service_request_hr_employee"/>
+
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>

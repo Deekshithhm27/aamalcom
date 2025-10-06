@@ -45,7 +45,7 @@ class TerminationService(models.Model):
 
 
     def action_submit_to_pm(self):
-        result=super(TerminationService, self).action_submit_to_payroll()
+        result=super(TerminationService, self).action_submit_to_pm()
         for line in self:
             # Mark existing activity as done
             activity_id = self.env['mail.activity'].search([

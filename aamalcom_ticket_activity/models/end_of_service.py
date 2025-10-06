@@ -229,7 +229,7 @@ class EndOfService(models.Model):
             ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
             ])
             activity_ids.unlink()
-            
+           
         return result
 
 

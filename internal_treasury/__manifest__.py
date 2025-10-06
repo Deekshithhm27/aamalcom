@@ -6,6 +6,7 @@
     'depends': ['base', 'account', 'hr','visa_process'],
     'data': [
     'security/ir.model.access.csv',
+    'data/ir.sequence.xml',
     'views/internal_views.xml',
     'views/menu.xml'
         

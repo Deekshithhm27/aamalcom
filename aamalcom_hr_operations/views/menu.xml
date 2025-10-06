@@ -18,14 +18,16 @@
             </menuitem>
             <menuitem id="menu_exit_process_root" name="Employee Exit Requests" sequence="13">
                 <menuitem id="menu_hr_resignation_submenu" name="Resignation" action="action_hr_resignation_request" sequence="1"/>
-                <menuitem id="menu_hr_suspending_employees" name="Employee Suspension" action="action_hr_suspending_employees_request" sequence="2"/>
-                <menuitem id="menu_hr_warning_letters" name="Warning Letter" action="action_hr_warning_letters" sequence="3"/>
-                <menuitem id="menu_hr_eos_request" name="End of Service" action="hr_action_eos_request" sequence="4"/>
-                <menuitem id="menu_hr_end_of_contract" name="End of Contract" action ="action_hr_end_of_contract" sequence="5"/>
+                <menuitem id="menu_hr_eos_request" name="End of Service" action="hr_action_eos_request" sequence="2"/>
+                <menuitem id="menu_hr_end_of_contract" name="End of Contract" action ="action_hr_end_of_contract" sequence="3"/>
+            </menuitem>
+            <menuitem id="menu_disciplinary_actions" name="Disciplinary Actions" sequence="14">
+                <menuitem id="menu_hr_suspending_employees" name="Suspension Letter" action="action_hr_suspending_employees_request" sequence="1"/>
+                <menuitem id="menu_hr_warning_letters" name="Warning Letter" action="action_hr_warning_letters" sequence="2"/>
             </menuitem>
             
             
-            <menuitem id="menu_confiugration_root" name="Configurations" sequence="99">
+            <menuitem id="menu_confiugration_root" name="Configuration" sequence="15">
                 <menuitem id="menu_onboarding_checklist" name="Onboarding Checklist" action="action_onboarding_checklist" sequence="1" groups="visa_process.group_service_request_hr_employee"/>
             </menuitem>
               

@@ -43,7 +43,7 @@
                                     <button name="action_issue_item" string="Issued" type="object" class="oe_highlight" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
                                     <field name="status"/>
 
-                                    <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_it_employee"/>
+                                    <button name="action_remove_item" string="Remove" type="object" class="btn btn-secondary" confirm="Are you sure you want to remove this checklist item?" attrs="{'invisible': [('status', '=', 'issued')]}" groups="visa_process.group_service_request_hr_employee"/>
                                 </tree>
                             </field>
 

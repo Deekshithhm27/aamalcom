@@ -28,7 +28,7 @@ from odoo.exceptions import UserError
 class LoanRequest(models.Model):
     """Can create new loan requests and manage records"""
     _name = 'loan.request'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Loan Request'
 
     name = fields.Char(string='Loan Reference', readonly=True,
@@ -58,7 +58,7 @@ class LoanRequest(models.Model):
     date = fields.Date(string="Date", default=fields.Date.today(),
                        readonly=True, help="Date")
     partner_id = fields.Many2one('res.partner', string="Partner",
-                                 required=True,
+                                 required=True,default=lambda self: self.env.user.partner_id.id,
                                  help="Partner")
     repayment_lines_ids = fields.One2many('repayment.line',
                                           'loan_id',
@@ -101,10 +101,19 @@ class LoanRequest(models.Model):
         readonly=True,
         help="Link to the related Treasury Request record."
     )
+    employee_id = fields.Many2one(
+        'hr.employee',
+        string='Employee',
+        store=True,
+        readonly=True,
+        tracking=True,
+        default=lambda self: self.env.user.employee_id.id
+    )
     state = fields.Selection(
         string='State',
         selection=[('draft', 'Draft'), ('checked', 'Checked'),('confirmed', 'Confirmed'),
                    ('waiting for approval', 'Waiting For Approval'),
+                   ('waiting_hr_approval', 'Waiting HR Manager Approval'),
                    ('waiting_gm_approval', 'Waiting GM Approval'), ('waiting_fm_approval', 'Waiting FM Approval'),('submit_to_treasury', 'submitted To Treasury'),('disbursed', 'Disbursed'),
                    ('rejected', 'Rejected'), ('closed', 'Closed'),
                    ('approved','Approved')],
@@ -119,6 +128,36 @@ class LoanRequest(models.Model):
         compute='_compute_is_my_coach',
         store=False
     )
+    reason_for_loan = fields.Text(string="Reason")
+    
+    is_finance_manager = fields.Boolean(
+        string="Is Finance Manager?",
+        compute="_compute_is_finance_manager"
+    )
+    
+     
+    @api.depends()
+    def _compute_is_finance_manager(self):
+        """
+        Check if the current user belongs to the HR manager group.
+        """
+        for rec in self:
+            rec.is_finance_manager = self.env.user.has_group('visa_process.group_service_request_finance_manager')
+
+    is_payroll_manager = fields.Boolean(
+        string="Is Payroll Manager?",
+        compute="_compute_is_payroll_manager"
+    )
+    
+     
+    @api.depends()
+    def _compute_is_payroll_manager(self):
+        """
+        Check if the current user belongs to the HR manager group.
+        """
+        for rec in self:
+            rec.is_payroll_manager = self.env.user.has_group('visa_process.group_service_request_payroll_manager')
+
     @api.depends('partner_id')
     def _compute_is_my_coach(self):
         for rec in self:
@@ -148,6 +187,19 @@ class LoanRequest(models.Model):
         tracking=True,
         default=lambda self: self.env.user.employee_id.id
     )
+    is_my_coach = fields.Boolean(
+        string="Is My Coach",
+        compute='_compute_is_my_coach',
+        store=False
+    )
+    @api.depends('employee_id')
+    def _compute_is_my_coach(self):
+        for rec in self:
+            if rec.employee_id and rec.employee_id.coach_id:
+                current_user_employee = self.env.user.employee_id
+                rec.is_my_coach = (current_user_employee == rec.employee_id.coach_id)
+            else:
+                rec.is_my_coach = False
     @api.model
     def create(self, vals):
         if not vals.get('employee_id'):
@@ -157,13 +209,23 @@ class LoanRequest(models.Model):
         request = super(LoanRequest, self).create(vals)
         return request
 
-        
+    @api.constrains('loan_amount', 'disbursal_amount')
+    def _check_loan_vs_disbursal_amount(self):
+        """
+        Check if the requested loan_amount is not greater than the disbursal_amount.
+        """
+        for record in self:
+            if record.loan_amount > record.disbursal_amount:
+                raise UserError(_(
+                    "Limit set is below then the requested amount."
+                    "Kindly try a different Amount."
+                )) 
 
     @api.onchange('loan_type_id')
     def _onchange_loan_type_id(self):
         """Changing field values based on the chosen loan type"""
         type_id = self.loan_type_id
-        self.loan_amount = type_id.loan_amount
+        # self.loan_amount = type_id.loan_amount
         self.disbursal_amount = type_id.disbursal_amount
         self.tenure = type_id.tenure
         self.interest_rate = type_id.interest_rate
@@ -171,7 +233,20 @@ class LoanRequest(models.Model):
 
     def action_loan_request(self):
         """Changes the state to confirmed and send confirmation mail"""
+        self.ensure_one()
+        
+        # 1. VALIDATION: Check for mandatory fields first.
+        if not self.loan_amount:
+            # The UserError will stop the execution and prevent the state change.
+            raise UserError(_("Kindly Update the Loan Amount"))
+        
+        # Optional: Compute repayments right before submitting (as per previous request).
+        # self.action_compute_repayment(reference_date=fields.Date.today())
+
+        # 2. STATE CHANGE: Change the state only if validation passes.
         self.write({'state': "confirmed"})
+            
+        # 3. MAIL LOGIC: Execute mail logic after successful state change.
         partner = self.partner_id
         loan_no = self.name
         subject = 'Loan Confirmation'
@@ -190,27 +265,38 @@ class LoanRequest(models.Model):
         }
         mail = self.env['mail.mail'].sudo().create(mail_values)
         mail.send()
+        return True
 
     def action_request_for_loan(self):
         """Change the state to waiting for approval"""
-        if self.request:
-            self.write({'state': "waiting for approval"})
-        else:
-            message_id = self.env['message.popup'].create(
-                {'message': _("Compute the repayments before requesting")})
-            return {
-                'name': _('Repayment'),
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'res_model': 'message.popup',
-                'res_id': message_id.id,
-                'target': 'new'
-            }
+        
+        # Original logic removed:
+        # if self.request:
+        #    self.write({'state': "waiting for approval"})
+        # else:
+        #    message_id = self.env['message.popup'].create(
+        #        {'message': _("Compute the repayments before requesting")})
+        #    return {
+        #        'name': _('Repayment'),
+        #        'type': 'ir.actions.act_window',
+        #        'view_mode': 'form',
+        #        'res_model': 'message.popup',
+        #        'res_id': message_id.id,
+        #        'target': 'new'
+        #    }
+
+        # Simplified Logic to bypass the validation and immediately change state
+        self.write({'state': "waiting for approval"})
+        return True
     def action_resubmit(self):
         """Change to Approved state"""
         self.write({'state': "draft"})
     
     def action_loan_approved(self):
+        """Change to Approved state"""
+        self.write({'state': "waiting_hr_approval"})
+
+    def action_loan_approved_hr(self):
         """Change to Approved state"""
         self.write({'state': "waiting_gm_approval"})
     
@@ -221,6 +307,9 @@ class LoanRequest(models.Model):
     # The crucial method update
     def action_loan_approved_treasury(self):
         self.ensure_one()
+        if not self.journal_id:
+            raise UserError(_("Kindly Update Journal ID"))
+         
         
         # 1. Find the HR Employee record associated with the Partner
         # We use partner_id to find the related employee, which is required by hr.service.request.treasury
@@ -345,31 +434,47 @@ class LoanRequest(models.Model):
                 'context': {'default_loan': self.name}
                 }
 
-    def action_compute_repayment(self):
-        """This automatically create the installment the employee need to pay to
-        company based on payment start date and the no of installments.
+    def action_compute_repayment(self, reference_date=None):
+            """This automatically creates the installment lines based on the 
+            reference_date (typically the approval date).
             """
-        self.request = True
-        for loan in self:
-            loan.repayment_lines_ids.unlink()
-            date_start = (datetime.strptime(str(loan.date),
-                                            '%Y-%m-%d') +
-                          relativedelta(months=1))
-            amount = loan.loan_amount / loan.tenure
-            interest = loan.loan_amount * loan.interest_rate
-            interest_amount = interest / loan.tenure
-            total_amount = amount + interest_amount
-            partner = self.partner_id
-            for rand_num in range(1, loan.tenure + 1):
-                self.env['repayment.line'].create({
-                    'name': f"{loan.name}/{rand_num}",
-                    'partner_id': partner.id,
-                    'date': date_start,
-                    'amount': amount,
-                    'interest_amount': interest_amount,
-                    'total_amount': total_amount,
-                    # 'interest_account_id': self.env.ref('advanced_loan_management.loan_management_inrst_accounts').id,
-                    # 'repayment_account_id': self.env.ref('advanced_loan_management.demo_loan_accounts').id,
-                    'loan_id': loan.id})
-                date_start += relativedelta(months=1)
-        return True
+            self.request = True
+
+            # 1. Determine the reference date.
+            # Ensure a reference date is available (it should be passed from action_loan_approved_treasury)
+            if not reference_date:
+                 # Fallback: If no reference date is provided (e.g., manual call), use today.
+                 date_ref = fields.Date.today() 
+            elif isinstance(reference_date, str):
+                date_ref = datetime.strptime(reference_date, '%Y-%m-%d').date()
+            else:
+                date_ref = reference_date
+
+            for loan in self:
+                loan.repayment_lines_ids.unlink()
+
+                # The first repayment starts *one month* after the reference date (the approval date)
+                # Example: Approved 6/9/2025 -> First Payment 6/10/2025
+                current_payment_date = date_ref + relativedelta(months=1)
+                
+                amount = loan.loan_amount / loan.tenure
+                interest = loan.loan_amount * loan.interest_rate
+                interest_amount = interest / loan.tenure
+                total_amount = amount + interest_amount
+                partner = self.partner_id
+                
+                for rand_num in range(1, loan.tenure + 1):
+                    self.env['repayment.line'].create({
+                        'name': f"{loan.name}/{rand_num}",
+                        'partner_id': partner.id,
+                        'date': current_payment_date,  # Use the calculated date
+                        'amount': amount,
+                        'interest_amount': interest_amount,
+                        'total_amount': total_amount,
+                        # 'interest_account_id': ...,
+                        # 'repayment_account_id': ...,
+                        'loan_id': loan.id})
+                    
+                    # Move to the next payment date (next month)
+                    current_payment_date += relativedelta(months=1)
+            return True

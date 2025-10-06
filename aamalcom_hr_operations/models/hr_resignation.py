@@ -81,6 +81,8 @@ class HrResignation(models.Model):
         string='Termination Documents'
     )
 
+    
+
     @api.depends('employee_id')
     def _compute_employee_details(self):
         for rec in self:

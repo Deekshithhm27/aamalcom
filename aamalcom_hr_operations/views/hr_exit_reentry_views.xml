@@ -50,6 +50,11 @@
                     <button name="action_done_ere" string="Process Done" type="object" class="oe_highlight" 
                             attrs="{'invisible': ['|','|',('state', '!=', 'submitted_to_gre'),('upload_confirmation_of_exit_reentry','=',False),('upload_exit_reentry_visa','=',False)]}" 
                             groups="visa_process.group_service_request_employee"/> 
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_fm')]}" groups="visa_process.group_service_request_finance_manager"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'refuse'),('is_submit_visible','=',False)]}" />
                    
                     
                 </header>
@@ -85,6 +90,7 @@
                             <field name="is_gov_employee" invisible="1"/>
                             <field name="is_gov_employee" invisible="1"/>
                             <field name="service_request" invisible="1"/>
+                            <field name="is_submit_visible" invisible="1"/>
                         </group>
                     </group>
                     
@@ -93,9 +99,11 @@
                             <field name="exit_type" attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
                             <field name="employment_duration" attrs="{'readonly': [('state', '!=','draft')]}"
                                 options="{'no_create': True, 'no_edit': True}"/>
+
                         </group>
                         <group>
                             <field name="to_be_issued_date" string="Exit Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="total_amount_from_pricing" readonly="1"/> 
                         </group>
                     </group>
                     

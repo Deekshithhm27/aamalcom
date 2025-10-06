@@ -1,7 +1,12 @@
-from odoo import models, fields
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
-class AnnualRequestService(models.Model):
-    _inherit = 'hr.annual.request'
+
+class LoanRequest(models.Model):
+    """Can create new loan requests and manage records"""
+    _inherit = 'loan.request'
 
     def _schedule_ticket_activity(self, user_id, summary, note):
         self.activity_schedule(
@@ -11,8 +16,8 @@ class AnnualRequestService(models.Model):
             note=note,
             user_id=user_id
         )
-    def action_submit_to_hr(self):
-        result=super(AnnualRequestService, self).action_submit_to_hr()
+    def action_loan_request(self):
+        result=super(LoanRequest, self).action_loan_request()
         for line in self:
             activity_id = self.env['mail.activity'].search([
             ('res_id', '=', self.id),
@@ -35,9 +40,8 @@ class AnnualRequestService(models.Model):
                     note=f"Air ticket has been submitted for {line.employee_id.name}. Please review."
                 )
         return result
-
-    def action_approved_by_dept_head(self):
-        result = super(AnnualRequestService, self).action_approved_by_dept_head()
+    def action_loan_approved(self):
+        result = super(LoanRequest, self).action_loan_approved()
         for line in self:
             activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
@@ -57,13 +61,13 @@ class AnnualRequestService(models.Model):
             for user in hr_manager_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,
-                    summary='Action Required on AnnualRequestService',
-                    note='A AnnualRequestService requires your action. Please review and take action.'
+                    summary='Action Required on LoanRequest',
+                    note='A LoanRequest requires your action. Please review and take action.'
                     )
             return result
 
-    def action_approved_by_hr(self):
-        result = super(AnnualRequestService, self).action_approved_by_hr()
+    def action_loan_approved_hr(self):
+        result = super(LoanRequest, self).action_loan_approved_hr()
         for line in self:
             activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
@@ -83,13 +87,13 @@ class AnnualRequestService(models.Model):
             for user in gm_manager_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,
-                    summary='Action Required on AnnualRequestService',
-                    note='A AnnualRequestService requires your action. Please review and take action.'
+                    summary='Action Required on LoanRequest',
+                    note='A LoanRequest requires your action. Please review and take action.'
                     )
             return result
 
-    def action_approved_by_gm(self):
-        result = super(AnnualRequestService, self).action_approved_by_gm()
+    def action_loan_approved_gm(self):
+        result = super(LoanRequest, self).action_loan_approved_gm()
         for line in self:
             activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
@@ -105,34 +109,17 @@ class AnnualRequestService(models.Model):
                     
             activity_ids.unlink()
             # Code snippet from your previous message, representing the flawed logic.
-            hr_employee_users = self.env.ref('visa_process.group_service_request_hr_employee').users
-            for user in hr_employee_users:
+            fm_employee_users = self.env.ref('visa_process.group_service_request_finance_manager').users
+            for user in fm_employee_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,
-                    summary='Action Required on AnnualRequestService',
-                    note='A AnnualRequestService requires your action. Please review and take action.'
+                    summary='Action Required on LoanRequest',
+                    note='A LoanRequest requires your action. Please review and take action.'
                     )
             return result
 
-    def process_complete(self):
-        result = super(AnnualRequestService, self).process_complete()
-        for line in self:
-            activity_id = self.env['mail.activity'].search([
-                    ('res_id', '=', self.id),
-                    ('user_id', '=', self.env.user.id),
-                    ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-                ])
-            activity_id.action_feedback(feedback='Approved')
-            # If one user completes the activity or action on the record, delete activities for other users
-            activity_ids = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-                    
-            activity_ids.unlink()
-        return result
-    def action_resubmit(self):
-        result = super(AnnualRequestService, self).action_resubmit()
+    def action_close_loan(self):
+        result = super(LoanRequest, self).action_close_loan()
         for line in self:
             activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),

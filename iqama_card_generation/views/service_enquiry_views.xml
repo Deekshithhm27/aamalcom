@@ -99,6 +99,7 @@
         <field name="model">qiwa.document</field>
         <field name="arch" type="xml">
             <tree string="Qiwa Documents">
+                <field name="name"/>
                 <field name="employee_id"/>
                 <field name="iqama_no"/>
                 <field name="state"/>
@@ -128,10 +129,6 @@
     </field>
     </record>
 
-    <menuitem id="menu_qiwa_documents"
-              name="Iqama Card Generation"
-              parent="iqama_card_generation.menu_documents_section"
-              action="action_qiwa_document"
-              sequence="10"/>
+   
 
     </odoo>

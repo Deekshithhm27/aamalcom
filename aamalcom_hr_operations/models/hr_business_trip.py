@@ -63,6 +63,19 @@ class HrBusinessTrip(models.Model):
             res['draft_business_trip_form_filename'] = "Business_Trip_Form.pdf"
         return res
 
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
+        for rec in self:
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
+
+
 
 
     @api.onchange('employee_id')

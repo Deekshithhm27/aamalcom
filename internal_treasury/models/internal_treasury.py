@@ -6,7 +6,6 @@ class HrServiceRequestTreasury(models.Model):
     _name = 'hr.service.request.treasury'
     _order = 'id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _rec_name = 'name'
     _description = 'Treasury'
     
     name = fields.Char(
@@ -36,6 +35,7 @@ class HrServiceRequestTreasury(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Employee")
     total_amount = fields.Monetary(string="Amount")
     exit_type = fields.Selection([('single', 'Single'), ('multiple', 'Multiple')], string="Exit Type", store=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),

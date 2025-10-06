@@ -70,6 +70,13 @@ class HrResignation(models.Model):
             ('res_id', '=', self.id),
             ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
             ])
+            # Code snippet from your previous message, representing the flawed logic.
+            if line.employee_id and line.employee_id.user_id:
+                self._schedule_ticket_activity(
+                    user_id=line.employee_id.user_id.id,
+                    summary='Please review your Resignation Postponed Date Letter',
+                    note='Please review the Resignation letter .'
+                )
                     
             activity_ids.unlink()
             

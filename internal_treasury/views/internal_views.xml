@@ -30,9 +30,8 @@
             <field name="service_request_ref" widget="reference" readonly="1" nolabel="1" class="oe_inline"/>
         </div>
         <field name="employee_id" readonly="1"/>
-        <field name="service_type" invisible="1"/>
-        <field name="total_amount" attrs="{'readonly': [('state', '!=', 'passed_to_treasury')],
-        'invisible': [('service_type', '!=', 'iqama_issuance')]}"/>
+        <field name="service_type" readonly="1"/>
+        <field name="total_amount" attrs="{'readonly': [('state', '!=', 'passed_to_treasury')]}"/>
         <field name="clinic_name" 
         attrs="{'readonly': [('state', '!=', 'passed_to_treasury')],'invisible': [('service_type', '!=', 'iqama_issuance')]}"/>
 		<field name="currency_id" invisible="1"/>

@@ -22,10 +22,10 @@ class HrWarningLetter(models.Model):
     identification_id = fields.Char(string='Border No.', compute="_compute_employee_details", store=True, readonly=True)
     passport_no = fields.Char(string='Passport No', compute="_compute_employee_details", store=True, readonly=True)
     sponsor_id = fields.Many2one('employee.sponsor', string="Sponsor Number", tracking=True)
-    reason_for_warning = fields .Text(string="Review")
+    reason_for_warning = fields .Text(string="Reason")
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('submit_to_employee', 'Submitted'),
+        ('submit_to_employee', 'Done'),
     ], string="Status", default="draft")
 
     # Correct One2many field pointing to the document model and the correct inverse field

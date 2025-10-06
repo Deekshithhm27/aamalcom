@@ -62,83 +62,7 @@ class EndOfService(models.Model):
                     )
         return result
 
-    def action_send_to_pm(self):
-        result = super(EndOfService, self).action_send_to_pm()
-        for line in self:
-            activity_id = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('user_id', '=', self.env.user.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_id.action_feedback(feedback='Approved')
-            # If one user completes the activity or action on the record, delete activities for other users
-            activity_ids = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_ids.unlink()
-            # Code snippet from your previous message, representing the flawed logic.
-            pm_users = self.env.ref('visa_process.group_service_request_manager').users
-            for user in pm_users:
-                self._schedule_ticket_activity(
-                user_id=user.id,
-                summary='Action Required on End of Service',
-                note='A EndOfService requires your action. Please review and take action.'
-                )
-        return result
     
-
-    def action_confirmed_by_pm(self):
-        result = super(EndOfService, self).action_confirmed_by_pm()
-        for line in self:
-            activity_id = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('user_id', '=', self.env.user.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_id.action_feedback(feedback='Approved')
-            # If one user completes the activity or action on the record, delete activities for other users
-            activity_ids = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_ids.unlink()
-            # Code snippet from your previous message, representing the flawed logic.
-            hr_employee_users = self.env.ref('visa_process.group_service_request_hr_employee').users
-            for user in hr_employee_users:
-                self._schedule_ticket_activity(
-                    user_id=user.id,
-                    summary='Action Required on End of Service',
-                    note='A EndOfService requires your action. Please review and take action.'
-                    )
-        return result
-
-
-    def action_send_to_hr_manager(self):
-        result = super(EndOfService, self).action_send_to_hr_manager()
-        for line in self:
-            activity_id = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('user_id', '=', self.env.user.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_id.action_feedback(feedback='Approved')
-            # If one user completes the activity or action on the record, delete activities for other users
-            activity_ids = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_ids.unlink()
-            # Code snippet from your previous message, representing the flawed logic.
-            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
-            for user in hr_manager_users:
-                self._schedule_ticket_activity(
-                    user_id=user.id,
-                    summary='Action Required on End of Service',
-                    note='A EndOfService requires your action. Please review and take action.'
-                    )
-        return result
-
     def action_confirmed_by_hr_manager(self):
         result = super(EndOfService, self).action_confirmed_by_hr_manager()
         for line in self:
@@ -179,17 +103,16 @@ class EndOfService(models.Model):
             ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
             ])
             activity_ids.unlink()
-            # Code snippet from your previous message, representing the flawed logic.
-            if line.employee_id and line.employee_id.user_id:
+            hr_employee_users = self.env.ref('visa_process.group_service_request_hr_employee').users
+            for user in hr_employee_users:
                 self._schedule_ticket_activity(
-                    user_id=line.employee_id.user_id.id,
-                    summary='Action Required on End of Service',
-                    note='Your End Of Service request has been confirmed. Please review .'
-                )
+                    user_id=user.id,
+                    summary='End of Service Request has been Approved',
+                    note='A End Of Service requires has been Approved. Please review and take action.'
+                    )
         return result
-
-    def action_send_to_employee(self):
-        result = super(EndOfService, self).action_send_to_employee()
+    def action_process_done(self):
+        result = super(EndOfService, self).action_process_done()
         for line in self:
             activity_id = self.env['mail.activity'].search([
             ('res_id', '=', self.id),
@@ -205,8 +128,8 @@ class EndOfService(models.Model):
             activity_ids.unlink()
         return result
 
-    def action_confirmed_by_employee(self):
-        result = super(EndOfService, self).action_confirmed_by_employee()
+    def action_reject(self):
+        result = super(EndOfService, self).action_reject()
         for line in self:
             activity_id = self.env['mail.activity'].search([
             ('res_id', '=', self.id),
@@ -230,22 +153,7 @@ class EndOfService(models.Model):
                     )
         return result
 
-    def action_process_done(self):
-        result = super(EndOfService, self).action_process_done()
-        for line in self:
-            activity_id = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('user_id', '=', self.env.user.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_id.action_feedback(feedback='Approved')
-            # If one user completes the activity or action on the record, delete activities for other users
-            activity_ids = self.env['mail.activity'].search([
-            ('res_id', '=', self.id),
-            ('activity_type_id', '=', self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
-            ])
-            activity_ids.unlink()
-        return result
+    
 
 
 

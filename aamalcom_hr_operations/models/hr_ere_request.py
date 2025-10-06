@@ -58,6 +58,18 @@ class ExitReentryService(models.Model):
         store=True,
         tracking=True
     )
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
+        for rec in self:
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
+
 
     @api.model
     def default_get(self,fields):
@@ -125,6 +137,24 @@ class ExitReentryService(models.Model):
         string="Treasury Requests",
         compute="_compute_total_treasury_requests"
     )
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    def action_reject(self):
+            for rec in self:
+                if rec.state == 'draft':
+                    raise UserError(_("requests in draft state cant be rejected."))
+            return {
+                'name': 'Reject Change Request',
+                'type': 'ir.actions.act_window',
+                'res_model': 'hr.employee.change.request.reject.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'active_ids': self.ids},
+            }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("AnnualRequestService Re-submitted ."))
+
     @api.onchange('exit_type')
     def _onchange_exit_type(self):
         for line in self:
@@ -221,7 +251,22 @@ class ExitReentryService(models.Model):
     upload_exit_reentry_visa_file_name = fields.Char(string="Exit Re-entry Visa File Name")
     exit_reentry_visa_ref = fields.Char(string="Ref No.*")
 
-    
+    total_amount_from_pricing = fields.Monetary(
+        string="Total Amount",
+        readonly=True,
+        compute="_compute_total_amount_from_pricing",
+        store=True # Optional: store it for better performance/reporting
+    )
+
+    @api.depends('service_enquiry_pricing_ids.amount')
+    def _compute_total_amount_from_pricing(self):
+        """
+        Sums the amount from all related service enquiry pricing lines.
+        """
+        for record in self:
+            total = sum(record.service_enquiry_pricing_ids.mapped('amount'))
+            record.total_amount_from_pricing = total
+
     ##Below Methods are used if aamalcom is choosen
     def action_submit_ere(self):
         for record in self:
@@ -280,8 +325,9 @@ class ExitReentryService(models.Model):
             'service_request_ref': 'hr.exit.reentry,%s' % self.id,
             'service_type': 'exit_reentry',
             'employee_id': self.employee_id.id,
-            'total_amount': self.final_muqeem_cost,
+            'total_amount': self.total_amount_from_pricing,
             'exit_type': self.exit_type,
+            'employment_duration':self.employment_duration,
             'state': 'submitted',
         }
         

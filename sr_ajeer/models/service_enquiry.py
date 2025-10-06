@@ -23,7 +23,7 @@ class ServiceEnquiry(models.Model):
     upload_ajeer_permit_doc=fields.Binary(string="Ajeer Permit Document")
     ajeer_permit_doc_ref=fields.Char(string="Ref No.*")
     upload_ajeer_permit_doc_file_name=fields.Char(string="Ajeer Permit Document")
-    upload_invoice_payment_doc = fields.Binary(string="Invoice Payment Document")
+    upload_invoice_payment_doc = fields.Binary(string="Invoice")
     invoice_payment_ref_no = fields.Char(string="Ref No.*")
 
 

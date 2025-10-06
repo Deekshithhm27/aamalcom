@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import timedelta
 
@@ -51,6 +51,17 @@ class AnnualRequestService(models.Model):
         string='To Date',
         tracking=True
     )
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
+        for rec in self:
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
 
     
     is_my_coach = fields.Boolean(

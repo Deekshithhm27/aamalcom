@@ -54,8 +54,7 @@ class EndOfService(models.Model):
         ('submitted_to_gm', 'Submitted to GM'),
         ('approved_by_gm', 'Approved by GM'),
         ('employee_review', 'Pending Employee Review'),
-        ('approved_by_employee', 'Confirmed by Employee'),
-        ('approved', 'Approved'),
+        ('approved_by_employee', 'Approved'),
         ('refuse', 'Refuse'),
         ('done', 'Done'),
     ], string="Status", default="draft", tracking=True)
@@ -71,23 +70,7 @@ class EndOfService(models.Model):
     )
     reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
     
-    def action_reject(self):
-        for rec in self:
-            if rec.state == 'draft':
-                raise UserError(_("requests in draft state cant be rejected."))
-        return {
-            'name': 'Reject Change Request',
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.employee.change.request.reject.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'active_ids': self.ids},
-        }
-    def action_resubmit(self):
-        for record in self:
-            record.state = 'draft'
-            record.message_post(body=_("EndOfService Re-submitted."))
-    
+     
     @api.depends()
     def _compute_is_hr_employee(self):
         """
@@ -139,36 +122,33 @@ class EndOfService(models.Model):
             raise ValidationError("Please select the EOS type")
         self.state = 'submitted_to_payroll'
     
-    def action_submitted(self):
-        self.state = 'submit'
-
-
     def action_confirmed_by_payroll(self):
-        self.state = 'submitted_to_hr_manager'
-
-    def action_send_to_pm(self):
-        self.state = 'submitted_to_pm'
-
-    def action_confirmed_by_pm(self):
-        self.state = 'approved_by_pm'
-
-    def action_send_to_hr_manager(self):
         self.state = 'submitted_to_hr_manager'
 
     def action_confirmed_by_hr_manager(self):
         self.state = 'approved_by_hr_manager'
 
-    def action_send_to_gm(self):
-        self.state = 'submitted_to_gm'
-
     def action_confirmed_by_gm(self):
-        self.state = 'employee_review'
-
-    def action_send_to_employee(self):
-        self.state = 'employee_review'
-
-    def action_confirmed_by_employee(self):
         self.state = 'approved_by_employee'
 
     def action_process_done(self):
         self.state = 'done'
+
+    def action_reject(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_("requests in draft state cant be rejected."))
+        return {
+            'name': 'Reject Change Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee.change.request.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_ids': self.ids},
+        }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("EndOfService Re-submitted."))
+   
+

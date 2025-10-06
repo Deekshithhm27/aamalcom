@@ -25,7 +25,7 @@
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_hr')]}" groups="visa_process.group_service_request_hr_manager"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_fm')]}" groups="visa_process.group_service_request_finance_manager"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
-                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}"/> 
+                   <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'refuse'),('is_submit_visible','=',False)]}" /> 
                     
                 </header>
                 <sheet>
@@ -45,6 +45,7 @@
                             <field name="company_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                             <field name="name" invisible="1"/>
+                            <field name="is_submit_visible" invisible="1"/>
                         </group>
                     </group>
                     <group>
