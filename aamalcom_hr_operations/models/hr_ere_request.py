@@ -270,34 +270,34 @@ class ExitReentryService(models.Model):
     ##Below Methods are used if aamalcom is choosen
     def action_submit_ere(self):
         for record in self:
-            # 1. Pricing Logic - Execute for the CURRENT record
-            pricing_id = self.env['service.pricing'].search(
-                [
-                    ('service_request_config_id', '=', record.service_request_config_id.id),
-                ], limit=1)
+            # # 1. Pricing Logic - Execute for the CURRENT record
+            # pricing_id = self.env['service.pricing'].search(
+            #     [
+            #         ('service_request_config_id', '=', record.service_request_config_id.id),
+            #     ], limit=1)
 
-            if pricing_id and record.employment_duration:
+            # if pricing_id and record.employment_duration:
                 
-                # Find the specific pricing line matching the selected duration
-                p_line = pricing_id.pricing_line_ids.filtered(
-                    lambda line: line.duration_id == record.employment_duration
-                )
+            #     # Find the specific pricing line matching the selected duration
+            #     p_line = pricing_id.pricing_line_ids.filtered(
+            #         lambda line: line.duration_id == record.employment_duration
+            #     )
                 
-                # 2. Check and Create Pricing Line
-                if p_line:
-                    # IMPORTANT: Clear old pricing lines if needed, otherwise this will add a duplicate every time.
-                    # record.service_enquiry_pricing_ids = [(5, 0, 0)] 
-                    
-                    p_line = p_line[0] 
-                    
-                    record.service_enquiry_pricing_ids.create({
-                        'name': f"{p_line.duration_id.name}",
-                        'service_enquiry_id': record.id, # Use record.id
-                        'service_pricing_id': pricing_id.id,
-                        'service_pricing_line_id': p_line.id,
-                        'amount': p_line.amount,
-                        'remarks': p_line.remarks,
-                    })
+            #     # 2. Check and Create Pricing Line
+            #     if p_line:
+            #         # Clear existing lines to prevent duplicates or constraint issues
+            #         record.service_enquiry_pricing_ids = [(5, 0, 0)]
+
+            #         p_line = p_line[0]
+            #         record.service_enquiry_pricing_ids.create({
+            #             'name': f"{p_line.duration_id.name}",
+            #             'service_enquiry_id': record.id,
+            #             'service_pricing_id': pricing_id.id,
+            #             'service_pricing_line_id': p_line.id,
+            #             'amount': p_line.amount,
+            #             'remarks': p_line.remarks,
+            #         })
+
             
             # 3. State Change - Execute for the CURRENT record
             record.state = 'submit_to_dept_head'
@@ -327,7 +327,8 @@ class ExitReentryService(models.Model):
             'employee_id': self.employee_id.id,
             'total_amount': self.total_amount_from_pricing,
             'exit_type': self.exit_type,
-            'employment_duration':self.employment_duration,
+            'employment_duration': self.employment_duration.id,
+
             'state': 'submitted',
         }
         

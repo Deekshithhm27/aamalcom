@@ -98,12 +98,12 @@
                         <group>
                             <field name="exit_type" attrs="{'readonly': [('state', '!=','draft')]}" force_save="1"/>
                             <field name="employment_duration" attrs="{'readonly': [('state', '!=','draft')]}"
-                                options="{'no_create': True, 'no_edit': True}"/>
+                                options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
 
                         </group>
                         <group>
                             <field name="to_be_issued_date" string="Exit Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="total_amount_from_pricing" readonly="1"/> 
+                            <field name="total_amount_from_pricing" attrs="{'invisible': [('state', 'in',('draft','submit_to_dept_head'))]}" readonly="1"/> 
                         </group>
                     </group>
                     

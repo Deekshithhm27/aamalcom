@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import timedelta
 
@@ -135,6 +135,16 @@ class EndofContract(models.Model):
         return True 
 
     def action_process_complete_end_of_contract(self):
-        self.state = 'done'
+        for rec in self:
+            # Validation: check notice period and document
+            if not rec.notice_period:
+                raise ValidationError(_("Please set the Notice Period before completing the process."))
+
+            if not rec.upload_notice_period_doc:
+                raise ValidationError(_("Please upload the Notice Period document before completing the process."))
+
+            # If all validations pass, mark as done
+            rec.state = 'done'
+            rec.message_post(body=_("End of Contract process completed successfully."))
         return True
 

@@ -48,7 +48,7 @@ class EndOfService(models.Model):
         ], string="Status", default="draft", tracking=True)
 
     eos_type = fields.Selection([
-        ('eos_request', 'EndOfService'),
+        ('eos_request', 'End Of Service'),
     ], string='Service Request',default='eos_request', store=True)
     details_for_eos = fields.Text(string="Details for EOS")
 
