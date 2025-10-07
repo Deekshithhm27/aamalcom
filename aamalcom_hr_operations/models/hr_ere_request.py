@@ -13,7 +13,7 @@ class ExitReentryService(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Request ID',
-                       default=lambda self: self.env['ir.sequence'].next_by_code('hr.annual.request'))
+                       default=lambda self: self.env['ir.sequence'].next_by_code('hr.exit.reentry'))
 
     employee_id = fields.Many2one(
         'hr.employee',
@@ -58,6 +58,18 @@ class ExitReentryService(models.Model):
         store=True,
         tracking=True
     )
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
+        for rec in self:
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
+
 
     @api.model
     def default_get(self,fields):
@@ -98,7 +110,15 @@ class ExitReentryService(models.Model):
         string="Ref No.",
         copy=False,
     )
-    
+    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id',copy=False)
+    service_request = fields.Selection([ 
+        ('exit_reentry_issuance','Exit Rentry Issuance'),
+    ],
+    string="Service Request",
+    store=True,
+    copy=False,
+    default='exit_reentry_issuance'
+)
     is_gov_employee = fields.Boolean(compute='_compute_is_gov_employee', store=False)
     @api.depends('is_gov_employee')
     def _compute_is_gov_employee(self):
@@ -117,9 +137,35 @@ class ExitReentryService(models.Model):
         string="Treasury Requests",
         compute="_compute_total_treasury_requests"
     )
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    def action_reject(self):
+            for rec in self:
+                if rec.state == 'draft':
+                    raise UserError(_("requests in draft state cant be rejected."))
+            return {
+                'name': 'Reject Change Request',
+                'type': 'ir.actions.act_window',
+                'res_model': 'hr.employee.change.request.reject.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'active_ids': self.ids},
+            }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("AnnualRequestService Re-submitted ."))
 
-    
-    
+    @api.onchange('exit_type')
+    def _onchange_exit_type(self):
+        for line in self:
+            if line.service_request in ('exit_reentry_issuance','exit_reentry_issuance_ext'):
+                if line.exit_type == 'single':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'SER'),('service_request_type','=','ev_request'),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'SER'
+                elif line.exit_type == 'multiple':
+                    return {'domain': {'employment_duration': [('name', 'ilike', 'MER'),('service_request_type','=','ev_request'),('service_request_config_id','=',line.service_request_config_id.id)]}}  # Matches any duration containing 'MER'
+
+     
+
     def _compute_total_treasury_requests(self):
         for rec in self:
             rec.total_treasury_requests = self.env['hr.service.request.treasury'].search_count(
@@ -205,13 +251,57 @@ class ExitReentryService(models.Model):
     upload_exit_reentry_visa_file_name = fields.Char(string="Exit Re-entry Visa File Name")
     exit_reentry_visa_ref = fields.Char(string="Ref No.*")
 
-    
+    total_amount_from_pricing = fields.Monetary(
+        string="Total Amount",
+        readonly=True,
+        compute="_compute_total_amount_from_pricing",
+        store=True # Optional: store it for better performance/reporting
+    )
+
+    @api.depends('service_enquiry_pricing_ids.amount')
+    def _compute_total_amount_from_pricing(self):
+        """
+        Sums the amount from all related service enquiry pricing lines.
+        """
+        for record in self:
+            total = sum(record.service_enquiry_pricing_ids.mapped('amount'))
+            record.total_amount_from_pricing = total
+
     ##Below Methods are used if aamalcom is choosen
     def action_submit_ere(self):
         for record in self:
+            # # 1. Pricing Logic - Execute for the CURRENT record
+            # pricing_id = self.env['service.pricing'].search(
+            #     [
+            #         ('service_request_config_id', '=', record.service_request_config_id.id),
+            #     ], limit=1)
+
+            # if pricing_id and record.employment_duration:
+                
+            #     # Find the specific pricing line matching the selected duration
+            #     p_line = pricing_id.pricing_line_ids.filtered(
+            #         lambda line: line.duration_id == record.employment_duration
+            #     )
+                
+            #     # 2. Check and Create Pricing Line
+            #     if p_line:
+            #         # Clear existing lines to prevent duplicates or constraint issues
+            #         record.service_enquiry_pricing_ids = [(5, 0, 0)]
+
+            #         p_line = p_line[0]
+            #         record.service_enquiry_pricing_ids.create({
+            #             'name': f"{p_line.duration_id.name}",
+            #             'service_enquiry_id': record.id,
+            #             'service_pricing_id': pricing_id.id,
+            #             'service_pricing_line_id': p_line.id,
+            #             'amount': p_line.amount,
+            #             'remarks': p_line.remarks,
+            #         })
+
+            
+            # 3. State Change - Execute for the CURRENT record
             record.state = 'submit_to_dept_head'
             record.message_post(body=_("Request has been submitted to Department Head for approval."))
-
     def action_approval_dept(self):
         for record in self:
             record.state = 'approved_by_dept_head'
@@ -235,8 +325,10 @@ class ExitReentryService(models.Model):
             'service_request_ref': 'hr.exit.reentry,%s' % self.id,
             'service_type': 'exit_reentry',
             'employee_id': self.employee_id.id,
-            'total_amount': self.final_muqeem_cost,
+            'total_amount': self.total_amount_from_pricing,
             'exit_type': self.exit_type,
+            'employment_duration': self.employment_duration.id,
+
             'state': 'submitted',
         }
         
@@ -277,8 +369,8 @@ class ExitReentryService(models.Model):
     def action_submit_if_employee(self):
         for record in self:
             record.state = 'submit'
-            record.message_post(body=_("Request has been submitted by the employee."))
-
+            record.message_post(body=_("Request has been submitted"))
+        
 
     def action_done_ere(self):
         for record in self:
@@ -292,10 +384,19 @@ class ExitReentryService(models.Model):
 
 
 
-class ServiceEnquiryPricingLine(models.Model):
-    _inherit = 'service.enquiry.pricing.line'
+class ServicePricingLine(models.Model):
+    _inherit = 'service.pricing.line'
+   
 
-    company_id = fields.Many2one('res.company', string='Company', required=True,
-                                 default=lambda self: self.env.user.company_id)
+    pricing_id = fields.Many2one('service.pricing',string="Service Pricing")
+
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
-                                  related="company_id.currency_id", help="The payment's currency.")
+        related="company_id.currency_id",help="The payment's currency.")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",related="pricing_id.service_request_type")
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",related="pricing_id.service_request_config_id")
+
+    duration_id = fields.Many2one('employment.duration',string="Duration",domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
+    amount = fields.Monetary(string="Amount")
+    remarks = fields.Text(string="Remarks")

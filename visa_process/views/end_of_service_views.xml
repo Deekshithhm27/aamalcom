@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_eos_request_tree" model="ir.ui.view">
+        <field name="name">eos.request.tree</field>
+        <field name="model">eos.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="eos_request_leave_form" model="ir.ui.view">
+        <field name="name">eos.request.form</field>
+        <field name="model">eos.request</field>
+        <field name="arch" type="xml">
+            <form >
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" statusbar_status="state"/>
+                    <button name="action_submitted" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_to_payroll" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_hr_manager'),('upload_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','submitted_to_payroll')]}"
+                            groups="visa_process.group_service_request_payroll_manager"/>
+                    <button name="action_confirmed_by_payroll" string="Verified" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                    
+                    <button name="action_send_to_pm" string="Send to Pm" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_payroll')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_confirmed_by_pm" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_pm')]}" groups="visa_process.group_service_request_manager" 
+                    />
+                    <button name="action_send_to_hr_manager" string="Submit for Approval" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_pm')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_confirmed_by_hr_manager" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','submitted_to_hr_manager')]}"
+                            groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_confirmed_by_gm" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_hr_manager')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','approved_by_hr_manager')]}"
+                            groups="visa_process.group_service_request_general_manager"/>
+
+                    <button name="action_confirmation_pending_by_pm" string="Send for Review" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_gm')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_process_done" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="visa_process.group_service_request_manager"/>
+                    
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name" invisible="1"/>
+                        </h1>
+                    </div>
+                    <field name="is_hr_manager" invisible="1"/>
+                    <field name="client_id" invisible="1"/>
+                    <field name="user_id" invisible="1"/>
+
+                    <group>
+                        <group>
+                            <field name="client_parent_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="employee_id" attrs="{'readonly': [('state','!=','draft')]}" options="{'no_create': True, 'no_edit': True}"
+                                domain="[('client_parent_id', '!=', False), ('client_parent_id', '=', client_parent_id)]"/>
+                        
+                            <field name="eos_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                           
+                            
+                        </group>
+                        
+
+                    </group>
+                    <group>
+                             <field name="details_for_eos" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                             <field name="upload_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_hr_manager'),('is_hr_manager','=',False)],'invisible': [('state', '=', 'draft')]}"/>
+                        </group>
+                   
+                    
+                </sheet>
+                <!-- Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_eos_request" model="ir.actions.act_window">
+        <field name="res_model">eos.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

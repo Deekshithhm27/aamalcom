@@ -9,12 +9,12 @@
 		<header>
 			<field name="state" widget="statusbar" statusbar_visible="draft,submitted,done"/>
 			<button name="action_submit" string="Submit to Treasury" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-			<button name="action_upload_confirmation" string="Upload Confirmation" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
+			<button name="action_upload_confirmation" string="Upload Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted'),('confirmation_doc','=',False)]}"/>
 			<button name="action_update_treasury" 
                         string="Update by Treasury" 
                         type="object" 
                         class="oe_highlight" 
-                        attrs="{'invisible': [('state', '!=', 'passed_to_treasury')]}"/>
+                        attrs="{'invisible': ['|',('state', '!=', 'passed_to_treasury'),('total_amount', '=', 0)]}"/>
 		</header>
 	<sheet>
 		<div class="oe_title">
@@ -25,29 +25,19 @@
 		<group>
 			<group>
     <group>
-        <label for="service_request_ref" string="Service Request"/>
+        <label for="service_request_ref" string="Service Request ID"/>
         <div>
             <field name="service_request_ref" widget="reference" readonly="1" nolabel="1" class="oe_inline"/>
-            <button name="action_view_source_document" 
-                    string="Open" 
-                    type="object" 
-                    icon="fa-external-link" 
-                    class="oe_link"/>
         </div>
         <field name="employee_id" readonly="1"/>
+        <field name="service_type" readonly="1"/>
+        <field name="total_amount" attrs="{'readonly': [('state', '!=', 'passed_to_treasury')]}"/>
+        <field name="clinic_name" 
+        attrs="{'readonly': [('state', '!=', 'passed_to_treasury')],'invisible': [('service_type', '!=', 'iqama_issuance')]}"/>
+		<field name="currency_id" invisible="1"/>
     </group>
     </group>
-				<!-- <group>
-				<field name="exit_type" readonly="1"/>
-			</group> -->
-			<group>
-			<field name="total_amount" attrs="{'readonly': [('state', '!=', 'passed_to_treasury')]}"/>
-			<field name="clinic_name" attrs="{'readonly': [('state', '!=', 'passed_to_treasury')]}"/>
-			<field name="exit_type" readonly="1"/>
-			<field name="currency_id" invisible="1"/>
-		</group>
-
-			
+				
 
 	</group>
 	<notebook>
@@ -76,7 +66,6 @@
 			<field name="model">hr.service.request.treasury</field>
 			<field name="arch" type="xml">
 			<tree string="Treasury Details">
-			<field name="name"/>
 			<field name="service_request_ref"/>  <field name="employee_id"/>
 			<field name="total_amount"/>
 			<field name="state"/>

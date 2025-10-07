@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_termination_request_tree" model="ir.ui.view">
+        <field name="name">termination.request.tree</field>
+        <field name="model">termination.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="termination_request_leave_form" model="ir.ui.view">
+        <field name="name">termination.request.form</field>
+        <field name="model">termination.request</field>
+        <field name="arch" type="xml">
+            <form >
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" statusbar_status="state"/>
+                    <button name="action_submitted" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_client_spoc"/>
+                    <button name="%(action_termination_assign_employee_wizard)d" string="Assign Employee" type="action" class="btn-primary" attrs="{'invisible': [('state', '!=', 'submit')]}"
+                    groups="visa_process.group_service_request_manager"/>
+
+
+
+                    <button name="action_submit_to_pm" string="Send for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_hr'),('termination_article_short_version','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+
+                    <button name="action_approved_by_pm" string="Accepted" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_pm')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="%(visa_process.action_refuse_wizard)d"
+                            string="Refuse"
+                            type="action"
+                            class="btn-danger"
+                            attrs="{'invisible': [('state','!=','submitted_to_pm')]}"
+                            groups="visa_process.group_service_request_manager"/>
+                    <button name="%(action_termination_assign_employee_wizard)d" string="Assign Employee" type="action" class="btn-primary" attrs="{'invisible': [('state', '!=', 'approved_by_pm')]}"
+                    groups="visa_process.group_service_request_hr_employee"/>
+
+                    
+                   
+                   
+                    <button name="action_final_review_by_pm" string="Send for Review" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_gre'),('upload_termination_doc','=',False)]}" groups="visa_process.group_service_request_employee"/> 
+
+                    <button name="action_process_done" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="visa_process.group_service_request_manager"/>
+
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"  options="{'no_create': True}"/>
+                            <field name="termination_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                            
+                        </group>
+                        <group>
+                            <field name="user_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="is_project_manager" invisible="1"/>
+                            <field name="is_hr_employee" invisible="1"/>
+                        </group>
+                    </group>
+                        <group attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <group>
+                            <field name="reason_of_termination" attrs="{'readonly': ['|',('state', '!=', 'submit'),('is_project_manager','=',False)]}"/>
+                            <field name="load_proof_of_request_doc" attrs="{'readonly': ['|',('state', '!=', 'submit'),('is_project_manager','=',False)]}"/>
+                        </group>
+                        </group>
+                        <group attrs="{'invisible': [('state', 'in', ('draft','submit'))]}">
+                        <group >
+                        <field name="termination_article_short_version" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_hr'),('is_hr_employee','=',False)]}" />
+                        <field name="termination_normal_version" readonly="1"/>
+                </group>
+                <group >
+                        <field name="notice_period" readonly="1" />
+                        <field name="immediate_termination" readonly="1"/>
+                        <field name="grace_period" readonly="1"/>
+                </group>
+            </group>
+                        <group attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="upload_termination_doc" attrs="{'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                        </group>
+                    
+                   
+                <field name="refuse_reason" readonly="1"/>    
+                </sheet>
+                <!-- Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_termination_request" model="ir.actions.act_window">
+        <field name="res_model">termination.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

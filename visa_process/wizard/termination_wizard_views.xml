@@ -1,0 +1,26 @@
+<!-- leave_assign_employee_wizard_view.xml -->
+<odoo>
+    <record id="view_termination_assign_employee_wizard" model="ir.ui.view">
+        <field name="name">Assign Employee</field>
+        <field name="model">termination.assign.employee.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Employee">
+                <group>
+                    <field name="department_id" options="{'no_create': True,'no_open': True}"/>
+                    <field name="employee_id" options="{'no_create': True,'no_open': True}"/>
+                </group>
+                <footer>
+                    <button string="Apply" type="object" name="action_apply" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_termination_assign_employee_wizard" model="ir.actions.act_window">
+        <field name="name">Assign Employee</field>
+        <field name="res_model">termination.assign.employee.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

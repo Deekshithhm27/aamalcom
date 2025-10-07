@@ -15,4 +15,12 @@
             </form>
         </field>
     </record>
+    <record id="action_confirm_reject" model="ir.actions.act_window">
+        <field name="name">Reject Employee Change Request</field>
+        <field name="res_model">hr.employee.change.request.reject.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_hr_employee_change_request_reject_wizard_form"/>
+    </record>
+
 </odoo>

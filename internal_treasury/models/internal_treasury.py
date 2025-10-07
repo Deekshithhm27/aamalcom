@@ -6,7 +6,6 @@ class HrServiceRequestTreasury(models.Model):
     _name = 'hr.service.request.treasury'
     _order = 'id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _rec_name = 'name'
     _description = 'Treasury'
     
     name = fields.Char(
@@ -15,7 +14,8 @@ class HrServiceRequestTreasury(models.Model):
     )
     service_type = fields.Selection([
         ('iqama_issuance', 'Iqama Issuance - Medical Blood Test'),
-        ('exit_reentry', 'Exit Re-entry Issuance'), # Added for your use case
+        ('exit_reentry', 'Exit Re-entry Issuance'),
+        ('loan_request', 'Loan Request'),  # Added for your use case
     ], string="Service Request", help="Type of service request from the source document.")
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
@@ -31,10 +31,12 @@ class HrServiceRequestTreasury(models.Model):
         ondelete='cascade',
         tracking=True,
     )
+    
 
     employee_id = fields.Many2one('hr.employee', string="Employee")
     total_amount = fields.Monetary(string="Amount")
     exit_type = fields.Selection([('single', 'Single'), ('multiple', 'Multiple')], string="Exit Type", store=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -106,7 +108,7 @@ class HrServiceRequestTreasury(models.Model):
         if self.service_request_ref and self.service_request_ref._name == 'hr.medical.blood.test':
             self.service_request_ref.write({
                 'state': 'submit_for_approval',
-                'total_price': self.total_amount, # Pass back the updated amount
+                'total_amount': self.total_amount, # Pass back the updated amount
                 'clinic_name': self.clinic_name,  # Pass back the updated clinic name
             })
 

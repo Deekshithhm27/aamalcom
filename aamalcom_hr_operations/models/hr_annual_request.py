@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import timedelta
 
@@ -36,11 +36,33 @@ class AnnualRequestService(models.Model):
         ('refuse', 'Refuse'),
     ], string="Status", default="draft")
     
-    confirmed_ticket_id = fields.Many2one(
-        'hr.annual.request',
+    confirmed_ticket_id = fields.Binary(
         string="Confirmed Ticket",
-        domain=[('state', '=', 'approved')] # This domain filters tickets by their 'state'
+       
     )
+    start_destination = fields.Char(string="From")
+    end_destination = fields.Char(string="To")
+    start_destination_date= fields.Date(
+        string='From Date',
+        store=True,
+        tracking=True
+    )
+    end_destination_date = fields.Date(
+        string='To Date',
+        tracking=True
+    )
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
+        for rec in self:
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
+
     
     is_my_coach = fields.Boolean(
         string="Is My Coach",
@@ -51,6 +73,23 @@ class AnnualRequestService(models.Model):
         string="Is HR Employee?",
         compute="_compute_is_hr_employee"
     )
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    def action_reject(self):
+            for rec in self:
+                if rec.state == 'draft':
+                    raise UserError(_("requests in draft state cant be rejected."))
+            return {
+                'name': 'Reject Change Request',
+                'type': 'ir.actions.act_window',
+                'res_model': 'hr.employee.change.request.reject.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'active_ids': self.ids},
+            }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("AnnualRequestService Re-submitted ."))
 
     @api.depends()
     def _compute_is_hr_employee(self):
@@ -114,5 +153,7 @@ class AnnualRequestService(models.Model):
 
     def process_complete(self):
         for record in self:
+            if not record.confirmed_ticket_id:
+                raise ValidationError("Please upload Confirmed Tickets")
             record.state = 'done'
             record.message_post(body="Process completed")

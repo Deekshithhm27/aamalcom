@@ -7,8 +7,8 @@
             <form string="Select Employee">
                 
                 <group>
-                    <field name="department_id"/>
-                    <field name="employee_id"/>
+                    <field name="department_id" options="{'no_create': True,'no_open': True}"/>
+                    <field name="employee_id" options="{'no_create': True,'no_open': True}"/>
                 </group>
                 <footer>
                     <button string="Apply" type="object" name="action_apply" class="btn-primary"/>
@@ -19,7 +19,7 @@
     </record>
 
     <record id="action_assign_employee_medical_wizard" model="ir.actions.act_window">
-        <field name="name">Assign Employee for Medical Test</field>
+        <field name="name">Assign Employee</field>
         <field name="res_model">assign.employee.medical.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

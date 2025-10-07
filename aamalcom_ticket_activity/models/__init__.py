@@ -20,6 +20,14 @@ from . import hr_resignation
 from . import hr_business_trip
 from . import hr_ere_request
 from . import hr_end_of_service
+from . import hr_onboarding_process
+from . import end_of_service
+from . import hr_suspending
+from . import hr_warning
+from . import training_course
+from . import hr_end_of_contract
+from . import external_termination
+from . import loan_request
 
 
 

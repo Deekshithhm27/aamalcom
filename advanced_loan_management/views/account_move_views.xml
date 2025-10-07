@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Inherit the Account Move (Customer Invoice) form view -->
+    <record id="view_move_form_inherit_loan" model="ir.ui.view">
+        <field name="name">account.move.form.loan.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <!-- Restore Post button -->
+                <button name="action_post"
+                        string="Post"
+                        type="object"
+                        states="draft"
+                        class="btn-primary"/>
+                
+                <!-- Optional: Show Cancel button (if you want it in Posted state) -->
+                <button name="button_cancel"
+                        string="Cancel"
+                        type="object"
+                        states="posted"
+                        class="btn-secondary"/>
+                
+                <!-- Optional: Reset to Draft -->
+                <button name="button_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        states="cancel"
+                        class="btn-secondary"/>
+            </header>
+        </field>
+    </record>
+</odoo>

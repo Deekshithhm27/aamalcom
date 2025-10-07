@@ -15,6 +15,7 @@
         'data/ir_cron.xml',
         'reports/probation_report.xml',
         'wizard/employee_selection_hr_views.xml',
+        'wizard/hr_employee_reject_wizard_views.xml',
         'views/hr_medical_service_views.xml',
         'views/hr_employee_change_request_views.xml',
         'views/hr_employee_views.xml',
@@ -28,7 +29,7 @@
         'views/hr_resignation_views.xml',
         'views/hr_warning_views.xml',
         'views/hr_suspending_employee_views.xml',
-        'wizard/hr_employee_reject_wizard_views.xml',
+        'views/hr_end_of_contract_views.xml',
         'views/menu.xml'
     ],
     'installable': True,

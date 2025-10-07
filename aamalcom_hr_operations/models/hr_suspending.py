@@ -25,7 +25,7 @@ class HrSuspendingEmployee(models.Model):
 
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('submit_to_employee', 'Submitted'),
+        ('submit_to_employee', 'Done'),
     ], string="Status", default="draft")
 
     # Correct One2many field pointing to the document model and the correct inverse field
@@ -34,7 +34,7 @@ class HrSuspendingEmployee(models.Model):
         'suspending_id',
         string='Suspension Documents'
     )
-    reason_for_suspension = fields .Text(string="Review")
+    reason_for_suspension = fields .Text(string="Reason")
 
 
     #To auto populate details from MAster Record

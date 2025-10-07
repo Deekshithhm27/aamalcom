@@ -33,9 +33,9 @@
     <!-- Employee/Admin menu -->
     <menuitem id="menu_qiwa_documents"
               name="Iqama Card Generation"
-              parent="menu_documents_section"
+              parent="visa_process.menu_base_visa_process"
               action="action_qiwa_document"
-              groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator"
+              groups="visa_process.group_service_request_employee,visa_process.group_service_request_administrator,visa_process.group_service_request_manager"
               sequence="10"/>
 
     <!-- Manager menu -->

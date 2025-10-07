@@ -29,15 +29,19 @@ class HrBusinessTrip(models.Model):
         ('inside_saudi_business_trip', 'Inside'),
         ('outside_saudi_business_trip', 'Outside')
     ], string="Business Trip Status", store=True)
+    tickets_confirmed=fields.Boolean(string="Tickets")
+    accomadtion_confirmed=fields.Char(string="Accomadtion")
+    expense_confirmed=fields.Char(string="Expense")
 
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit_to_hr', 'Submitted'),
         ('submit_to_fm', 'Approved by HR'),
         ('submit_to_gm','Approved by FM'),
-        ('approve_businees_trip', 'Accepted'),
-        ('refuse_business_trip', 'Refuse'),
+        ('approve_businees_trip', 'Done'),
+        ('refuse', 'Refuse'),
     ], string="Status", default="draft")
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
 
     upload_business_trip_form = fields.Binary(string="Business Trip Form")
     
@@ -45,21 +49,34 @@ class HrBusinessTrip(models.Model):
         string="Is HR Manager?",
         compute="_compute_is_hr_manager"
     )
-    is_dept_head = fields.Boolean(
-        string="Is Department Head",
-        compute='_compute_is_dept_head',
-        store=False
+    
+    draft_business_trip_form = fields.Binary(string="Draft Business Trip Form",readonly=True,store=True)
+    draft_business_trip_form_filename = fields.Char(string="Draft Business Trip Form",readonly=True,store=True)
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        business_trip_form_record = self.env['business.trip.form'].search(
+            [('name', '=', 'Business Trip Form')], limit=1
+        )
+        if business_trip_form_record:
+            res['draft_business_trip_form'] = business_trip_form_record.business_trip_form
+            res['draft_business_trip_form_filename'] = "Business_Trip_Form.pdf"
+        return res
+
+    is_submit_visible = fields.Boolean(
+        compute="_compute_is_submit_visible",
+        string="Is Submit Visible"
     )
 
-    @api.depends()
-    def _compute_is_dept_head(self):
+    @api.depends('employee_id')
+    def _compute_is_submit_visible(self):
         for rec in self:
-            rec.is_dept_head = (
-                self.env.user.has_group('visa_process.group_service_request_payroll_manager')
-                or self.env.user.has_group('visa_process.group_service_request_insurance_manager')
-                or self.env.user.has_group('visa_process.group_service_request_hr_manager')
-                or self.env.user.has_group('visa_process.group_service_request_govt_manager')
-            )
+            rec.is_submit_visible = False
+            if rec.employee_id and rec.employee_id.user_id.id == self.env.uid:
+                rec.is_submit_visible = True
+
+
+
 
     @api.onchange('employee_id')
     def update_service_request_type_from_employee(self):
@@ -101,3 +118,21 @@ class HrBusinessTrip(models.Model):
         for record in self:
             record.state = 'approve_businees_trip'
             record.message_post(body=_("Business trip approved by GM. Trip accepted."))
+
+    
+    def action_reject(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_("requests in draft state cant be rejected."))
+        return {
+            'name': 'Reject Change Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee.change.request.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_ids': self.ids},
+        }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("Business trip Re-submitted to HR."))

@@ -6,6 +6,10 @@ class IqamaDocument(models.Model):
     _description = 'Qiwa Document'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
+    name = fields.Char(string='Request ID', required=True, copy=False, readonly=True, 
+        default=lambda self: self.env['ir.sequence'].next_by_code('qiwa.document'))
+
+
     # New default_get method to pre-fill client fields for specific user groups
     @api.model
     def default_get(self, fields_list):

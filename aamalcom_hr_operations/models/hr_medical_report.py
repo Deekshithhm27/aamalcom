@@ -10,7 +10,7 @@ class HRMedicalBloodTest(models.Model):
 
     service_type = fields.Selection([
         ('iqama_issuance', 'Iqama Issuance - Medical Blood Test'),
-    ], string="Service Request", default='iqama_issuance', required=True)
+    ], string="Service Request", default='iqama_issuance')
 
     name = fields.Char(string='Request ID',
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.medical.blood.test'))
@@ -30,6 +30,8 @@ class HRMedicalBloodTest(models.Model):
     medical_test_doc_ref = fields.Char(string="Ref No.*")
     upload_medical_test_doc_file_name = fields.Char(string="Medical Test Document")
     clinic_name = fields.Char(string="Clinic Name")
+    total_amount = fields.Monetary(string="Amount")
+
     
     currency_id = fields.Many2one(
         'res.currency',
@@ -98,6 +100,24 @@ class HRMedicalBloodTest(models.Model):
         string="Treasury Requests",
         compute="_compute_total_treasury_requests"
     )
+    reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    def action_reject(self):
+            for rec in self:
+                if rec.state == 'draft':
+                    raise UserError(_("requests in draft state cant be rejected."))
+            return {
+                'name': 'Reject Change Request',
+                'type': 'ir.actions.act_window',
+                'res_model': 'hr.employee.change.request.reject.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'active_ids': self.ids},
+            }
+    def action_resubmit(self):
+        for record in self:
+            record.state = 'draft'
+            record.message_post(body=_("AnnualRequestService Re-submitted ."))
+
     
     def _compute_total_treasury_requests(self):
         for rec in self:

@@ -14,6 +14,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
+        'data/sequence.xml',
         'views/menu.xml',
         'views/service_enquiry_views.xml'
     ],

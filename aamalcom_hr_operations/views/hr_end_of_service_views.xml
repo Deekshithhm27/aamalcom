@@ -14,28 +14,23 @@
         </field>
     </record>
     <!-- Form View -->
-    <record id="hr_eos_request_leave_form" model="ir.ui.view">
+    <record id="hr_eos_request_form" model="ir.ui.view">
         <field name="name">hr.eos.request.form</field>
         <field name="model">hr.eos.request</field>
         <field name="arch" type="xml">
             <form >
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,done"/>
-
-                   
                     <button name="action_submit_to_payroll" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'draft'),('upload_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
-                    <button name="action_confirmed_by_payroll" string="Confirmed" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
-                    
-                    <button name="action_send_to_hr_manager" string="Submit for Approval" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_payroll')]}"  groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_confirmed_by_payroll" string="Verified" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_confirmed_by_hr_manager" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_hr_manager')]}"  groups="visa_process.group_service_request_hr_manager"/>
                     <button name="action_confirmed_by_gm" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_hr_manager')]}" groups="visa_process.group_service_request_general_manager"/>
-                    <button name="action_send_to_employee" string="Send for Review" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_gm')]}" groups="visa_process.group_service_request_hr_employee"/>
-                    <button name="action_confirmed_by_employee"
-                    string="Confirm Details"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': ['|',('state', '!=', 'employee_review'),('upload_employee_signed_eos_doc','=',False)]}"/>
-                    <button name="action_process_done" string="Recieved" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'approved_by_employee'),('upload_signed_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_process_done" string="Recieved-Recorded" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'approved_by_employee'),('upload_signed_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submitted_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submitted_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'approved_by_hr_manager')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}"  groups="visa_process.group_service_request_hr_employee"/>
                    
                 </header>
                 <sheet>
@@ -48,18 +43,13 @@
                     </div>
 
                     <group>
-                        
-                        
                         <group>
-                            
                             <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create': True}"/>
                             <field name="eos_type" string="Service Request" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="iqama_no" readonly="1"/>
                             <field name="identification_id" readonly="1"/>
                             <field name="passport_no" readonly="1"/>
-                            <field name="sponsor_id" readonly="1"/>
-                           
-                            
+                            <field name="sponsor_id" readonly="1"/>    
                         </group>
                         <group>
                             <field name="user_id" invisible="1"/>
@@ -68,17 +58,13 @@
                             <field name="is_current_employee" invisible="1"/>
                             <field name="is_hr_employee" invisible="1"/>
                         </group>
-                        
-
                     </group>
                     <group>
-                             
-                             <field name="upload_eos_doc" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        </group>
-                        <group>
-                         <field name="upload_employee_signed_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'employee_review'),('is_current_employee', '!=', True)]}"/>
-                         <field name="upload_signed_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'approved_by_employee'),('is_hr_employee', '!=', True)]}"/>
-                         </group>
+                        <field name="upload_eos_doc" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </group>
+                    <group>
+                        <field name="upload_signed_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'approved_by_employee'),('is_hr_employee', '!=', True)]}"/>
+                    </group>
                    
                     
                 </sheet>
