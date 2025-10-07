@@ -12,7 +12,7 @@
     'category': 'Generic Modules/Accounting',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['base','visa_process','account','l10n_gcc_invoice','om_account_followup','om_recurring_payments','payment','om_account_budget','utm'],
+    'depends': ['base','visa_process','account','l10n_gcc_invoice','om_recurring_payments','payment','om_account_budget','utm'],
     'data': [
         'security/ir.model.access.csv',
     	'data/sequences.xml',
