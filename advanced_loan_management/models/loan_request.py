@@ -192,6 +192,9 @@ class LoanRequest(models.Model):
         compute='_compute_is_my_coach',
         store=False
     )
+    service_type = fields.Selection([
+        ('loan_request', 'Loan Request'),  # <-- Technical key is 'loan_request'
+    ], string='Service Type')
     @api.depends('employee_id')
     def _compute_is_my_coach(self):
         for rec in self:
@@ -241,10 +244,10 @@ class LoanRequest(models.Model):
             raise UserError(_("Kindly Update the Loan Amount"))
         
         # Optional: Compute repayments right before submitting (as per previous request).
-        # self.action_compute_repayment(reference_date=fields.Date.today())
+        self.action_compute_repayment(reference_date=fields.Date.today())
 
         # 2. STATE CHANGE: Change the state only if validation passes.
-        self.write({'state': "confirmed"})
+        self.write({'state': "waiting for approval"})
             
         # 3. MAIL LOGIC: Execute mail logic after successful state change.
         partner = self.partner_id
@@ -308,7 +311,7 @@ class LoanRequest(models.Model):
     def action_loan_approved_treasury(self):
         self.ensure_one()
         if not self.journal_id:
-            raise UserError(_("Kindly Update Journal ID"))
+            raise UserError(_("Kindly Update Journal"))
          
         
         # 1. Find the HR Employee record associated with the Partner
@@ -325,8 +328,9 @@ class LoanRequest(models.Model):
         treasury_vals = {
             'service_request_ref': f'loan.request,{self.id}', # LINK BACK TO CURRENT LOAN RECORD
             # We use the found employee's ID to populate the treasury record
-            'employee_id': employee.id, 
-            'total_amount': self.disbursal_amount, # Use disbursal_amount
+            'service_type': 'loan_request',
+            'employee_id': self.employee_id.id,
+            'total_amount': self.loan_amount, # Use disbursal_amount
             'state': 'submitted', 
         }
         

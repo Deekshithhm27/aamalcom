@@ -14,7 +14,8 @@ class HrServiceRequestTreasury(models.Model):
     )
     service_type = fields.Selection([
         ('iqama_issuance', 'Iqama Issuance - Medical Blood Test'),
-        ('exit_reentry', 'Exit Re-entry Issuance'), # Added for your use case
+        ('exit_reentry', 'Exit Re-entry Issuance'),
+        ('loan_request', 'Loan Request'),  # Added for your use case
     ], string="Service Request", help="Type of service request from the source document.")
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
