@@ -9,7 +9,7 @@
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
     'category': 'Accounting',
-    'depends': ['account', 'accounting_pdf_reports','aamalcom_accounting','aamalcom_insurance','visa_process'],
+    'depends': ['account','aamalcom_accounting','aamalcom_insurance','visa_process'],
     'data': [
         'reports/paperformat.xml',
         'reports/report_templates.xml',
