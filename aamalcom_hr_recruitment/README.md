@@ -19,12 +19,15 @@ Custom recruitment hiring request workflow enabling multilevel approval before r
 - Add this module to your Odoo addons.
 - Update app list and install 'Hiring Request Workflow'.
 - Assign users to appropriate groups:
-  - Hiring Request User
-  - Recruitment Officer
-  - Recruitment Administrator
+  - Hiring Request User - Line Manager
+  - Recruitment Officer - Hr Employee
+  - Recruitment Administrator - Hr Manager
   - General Manager (existing group: visa_process.group_service_request_general_manager)
 
 ## Usage
 - Requesters create and submit hiring requests.
 - Recruitment officers/admins/GM approve or reject requests with reasons.
 - On GM approval, the recruitment officer starts standard recruitment phases.
+
+## Linked Job
+This will create actual job position in hr.job and department will be tagged

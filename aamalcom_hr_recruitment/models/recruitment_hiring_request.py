@@ -17,7 +17,7 @@ class HiringRequest(models.Model):
 
     linked_hr_job_id = fields.Many2one('hr.job', string='Linked HR Job', readonly=True)
 
-    department_id = fields.Many2one('hr.department', string='Department', related='linked_hr_job_id.department_id', store=True, readonly=True)
+    department_id = fields.Many2one('hr.department', string='Department', store=True, readonly=True)
     number_of_positions = fields.Integer(string='Number of Positions', required=True)
     description = fields.Text(string='Description')
     requested_by = fields.Many2one('res.users', string='Requested By', default=lambda self: self.env.user, readonly=True)
@@ -123,6 +123,15 @@ class HiringRequest(models.Model):
                 rec.linked_hr_job_id = new_job
             rec.state = 'resumes_collecting'
             rec._notify_recruiter_resume_collection()
+    
+    @api.onchange('linked_hr_job_id')
+    def update_department_id(self):
+        for line in self:
+            if line.linked_hr_job_id.department_id and line.linked_hr_job_id:
+                line.department_id = line.linked_hr_job_id.department_id
+            if not line.linked_hr_job_id.department_id and line.department_id:
+                line.linked_hr_job_id.department_id = line.department_id
+
 
     def action_initiate_interview_process(self):
         HrApplicant = self.env['hr.applicant']
