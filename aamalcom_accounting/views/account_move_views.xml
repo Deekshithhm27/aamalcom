@@ -86,6 +86,9 @@
 						</strong>.You may continue.
 					</div>
 				 </xpath>
+				 <xpath expr="//page[@id='edi_documents']" position="attributes">
+				    <attribute name="attrs">{'invisible': True}</attribute>
+				</xpath>
 	        </field>
 	    </record>
 
