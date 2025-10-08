@@ -5,6 +5,7 @@ from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from odoo import models, fields, _
 from odoo.exceptions import UserError
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -116,7 +117,26 @@ class AccountMove(models.Model):
         :return: the correct mail template based on the current move type
         """
         return (
-            'account.email_template_edi_credit_note'
+            'aamalcom_accounting_reporting.email_template_edi_credit_note_custom'
             if all(move.move_type == 'out_refund' for move in self)
-            else 'aamalcom_accounting_reporting.action_report_tax_invoice'
+            else 'aamalcom_accounting_reporting.email_template_edi_invoice_custom'
         )
+
+    def action_send_and_print(self):
+        return {
+            'name': _('Send Invoice'),
+            'res_model': 'account.invoice.send',
+            'view_mode': 'form',
+            'context': {
+                'default_template_id': self.env.ref(self._get_mail_template()).id,
+                'mark_invoice_as_sent': True,
+                'active_model': 'account.move',
+                # Setting both active_id and active_ids is required, mimicking how direct call to
+                # ir.actions.act_window works
+                'active_id': self.ids[0],
+                'active_ids': self.ids,
+                'custom_layout': 'mail.mail_notification_paynow',
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }
