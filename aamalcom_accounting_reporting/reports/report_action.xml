@@ -42,8 +42,9 @@
         <field name="name">Journals Entries</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">accounting_pdf_reports.report_journal_entries</field>
-        <field name="report_file">accounting_pdf_reports.report_journal_entries</field>
+        <field name="report_name">aamalcom_accounting_reporting.report_journal_entries</field>
+        <field name="report_file">aamalcom_accounting_reporting.report_journal_entries</field>
+        <!-- <field name="paperformat_id" ref="aamalcom_accounting_reporting.paperformat_action_report_tax_invoice"/> -->
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
