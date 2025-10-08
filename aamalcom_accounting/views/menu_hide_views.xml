@@ -6,9 +6,6 @@
     <record id="account.product_product_menu_purchasable" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
-    <record id="om_account_followup.menu_finance_followup" model="ir.ui.menu">
-        <field name="active" eval="False"/>
-    </record>
     <record id="account.account_reports_management_menu" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
@@ -28,12 +25,6 @@
         <field name="active" eval="False"/>
     </record>
     <record id="payment.payment_transaction_menu" model="ir.ui.menu">
-        <field name="active" eval="False"/>
-    </record>
-    <record id="om_account_followup.om_account_followup_main_menu" model="ir.ui.menu">
-        <field name="active" eval="False"/>
-    </record>
-    <record id="om_account_budget.menu_budget_post_form" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
     <record id="account.menu_product_product_categories" model="ir.ui.menu">
