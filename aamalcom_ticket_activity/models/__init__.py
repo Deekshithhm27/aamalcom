@@ -28,7 +28,7 @@ from . import training_course
 from . import hr_end_of_contract
 from . import external_termination
 from . import loan_request
-from . import internal_treasury
+# from . import internal_treasury
 
 
 
