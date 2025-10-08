@@ -49,7 +49,7 @@ class HRMedicalBloodTest(models.Model):
     
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('submitted', 'Submitted'),
+        ('submitted', 'Document Upload Pending By Employee'),
         ('approved_by_dept_head', 'Waiting for HR Manager Approval'),
         ('passed_to_treasury', 'Passed to Treasury'),
         ('submit_to_fm', 'Waiting for FM Approval'),
@@ -101,6 +101,28 @@ class HRMedicalBloodTest(models.Model):
         compute="_compute_total_treasury_requests"
     )
     reject_reason = fields.Text('Reason for Rejection', readonly=True, copy=False)
+    is_current_employee = fields.Boolean(
+        string='Is Current Employee',
+        compute='_compute_is_current_employee',
+        store=False
+    )
+    employee_user_id = fields.Many2one(
+    'res.users',
+    string="Employee User",
+    related='employee_id.user_id',
+    store=True,
+    readonly=True   
+    )
+    
+    @api.depends('employee_user_id')
+    def _compute_is_current_employee(self):
+        """
+        Dynamically sets a boolean field to true if the current user
+        matches the employee on the record.
+        """
+        for rec in self:
+            rec.is_current_employee = (self.env.user == rec.employee_user_id)
+    
     def action_reject(self):
             for rec in self:
                 if rec.state == 'draft':

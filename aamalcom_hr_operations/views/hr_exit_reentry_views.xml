@@ -41,7 +41,7 @@
                         type="action"
                         class="btn-primary"
                         attrs="{'invisible': [('state', 'not in', ('approved','submit'))]}"
-                        groups="visa_process.group_service_request_hr_manager"/>
+                        groups="visa_process.group_service_request_hr_employee"/>
 
                     <button name="action_approval_fm" string="Approve" type="object" class="oe_highlight" 
                             attrs="{'invisible': [('state', '!=', 'submit_to_fm')]}" 
