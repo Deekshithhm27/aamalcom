@@ -13,7 +13,7 @@ class HrServiceRequestTreasury(models.Model):
         )
     
     def action_update_treasury(self):
-        result = super(HrServiceRequestTreasury, self).action_upload_confirmation()
+        result = super(HrServiceRequestTreasury, self).action_update_treasury()
         for line in self:
             activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
