@@ -2,11 +2,12 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import babel
-from datetime import date, datetime, time
+from datetime import date, datetime, time,timedelta
 from dateutil.relativedelta import relativedelta
 from pytz import timezone
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
+
 
 
 class HrPayslip(models.Model):
@@ -14,6 +15,25 @@ class HrPayslip(models.Model):
 
     sal_track_id = fields.Many2one('client.emp.salary.tracking',string="Tracking Id")
 
+    @api.constrains('employee_id', 'date_from', 'date_to')
+    def _check_duplicate_payslip(self):
+        for slip in self:
+            if not slip.employee_id or not slip.date_from or not slip.date_to:
+                continue
+
+            # Check for overlapping payslips for the same employee
+            domain = [
+                ('employee_id', '=', slip.employee_id.id),
+                ('id', '!=', slip.id),
+                ('state', '!=', 'cancel'),
+                ('date_from', '<=', slip.date_to),
+                ('date_to', '>=', slip.date_from),
+            ]
+            duplicates = self.search(domain)
+            if duplicates:
+                raise ValidationError(
+                    f"Duplicate payslip detected for employee '{slip.employee_id.name}' between {slip.date_from} and {slip.date_to}."
+                )
 
     @api.model
     def get_external_worked_day_lines(self, contracts, date_from, date_to):
