@@ -11,6 +11,17 @@ class ExitReentryService(models.Model):
             note=note,
             user_id=user_id
         )
+    def action_submit_ere(self):
+        result = super(ExitReentryService, self).action_approval_dept()
+        for line in self:
+            hr_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
+            for user in hr_manager_users:
+                self._schedule_ticket_activity(
+                    user_id=user.id,
+                    summary='Action Required on ExitReentryService Request',
+                    note='A ExitReentryService Request requires your action. Please review and take action.'
+                    )
+        return result
 
     def action_approval_dept(self):
         result = super(ExitReentryService, self).action_approval_dept()
@@ -126,8 +137,8 @@ class ExitReentryService(models.Model):
                     
             activity_ids.unlink()
             # Code snippet from your previous message, representing the flawed logic.
-            pm_manager_users = self.env.ref('visa_process.group_service_request_manager').users
-            for user in pm_manager_users:
+            hr_employee_users = self.env.ref('visa_process.group_service_request_hr_employee').users
+            for user in hr_employee_users:
                 self._schedule_ticket_activity(
                     user_id=user.id,
                     summary='Action Required on ExitReentryService Request',
