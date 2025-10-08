@@ -317,6 +317,7 @@
                     <tr style="">
                         <th>Date</th>
                         <th>JRNL</th>
+                        <th>Bank Ref</th>
                         <th>Partner</th>
                         <th>Move</th>
                         <th>Entry Label</th>
@@ -354,6 +355,9 @@
                             </td>
                             <td>
                                 <t t-esc="account_line.lcode"/>
+                            </td>
+                            <td>
+                                <t t-esc="account_line.bref"/>
                             </td>
                             <td>
                                 <t t-esc="account_line.partner_name"/>

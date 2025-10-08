@@ -322,7 +322,7 @@ class GeneralView(models.TransientModel):
                 WHERE += ' AND anltag.account_analytic_tag_id IN %s' % str(
                     tuple(data.get('analytic_tags').ids) + tuple([0]))
 
-            sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode, 0.0 AS amount_currency, '' AS lref, 'Initial Balance' AS lname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
+            sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate,'' AS lcode,'' AS bref, 0.0 AS amount_currency, '' AS lref, 'Initial Balance' AS lname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
                         '' AS move_name, '' AS mmove_id, '' AS currency_code,\
                         NULL AS currency_id,\
                         '' AS invoice_id, '' AS invoice_type, '' AS invoice_number,\
@@ -516,7 +516,7 @@ class GeneralView(models.TransientModel):
                 WHERE += ' AND anltag.account_analytic_tag_id IN %s' % str(
                     tuple(self.analytic_tag_ids.ids) + tuple([0]))
 
-            sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode, 0.0 AS amount_currency, '' AS lref, 'Initial Balance' AS lname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
+            sql = ("""SELECT 0 AS lid, l.account_id AS account_id, '' AS ldate, '' AS lcode,'' AS bref, 0.0 AS amount_currency, '' AS lref, 'Initial Balance' AS lname, COALESCE(SUM(l.debit),0.0) AS debit, COALESCE(SUM(l.credit),0.0) AS credit, COALESCE(SUM(l.debit),0) - COALESCE(SUM(l.credit), 0) as balance, '' AS lpartner_id,\
                         '' AS move_name, '' AS mmove_id, '' AS currency_code,\
                         NULL AS currency_id,\
                         '' AS invoice_id, '' AS invoice_type, '' AS invoice_number,\
@@ -576,7 +576,7 @@ class GeneralView(models.TransientModel):
                 tuple(self.analytic_tag_ids.ids) + tuple([0]))
 
         # Get move lines base on sql query and Calculate the total balance of move lines
-        sql = ('''SELECT l.id AS lid,m.id AS move_id, l.account_id AS account_id, l.date AS ldate, j.code AS lcode, l.currency_id, l.amount_currency, l.ref AS lref, l.name AS lname, COALESCE(SUM(l.debit),0) AS debit, COALESCE(SUM(l.credit),0) AS credit, COALESCE(SUM(l.balance),0) AS balance,\
+        sql = ('''SELECT l.id AS lid,m.id AS move_id, l.account_id AS account_id, l.date AS ldate,l.bank_ref as bref, j.code AS lcode, l.currency_id, l.amount_currency, l.ref AS lref, l.name AS lname, COALESCE(SUM(l.debit),0) AS debit, COALESCE(SUM(l.credit),0) AS credit, COALESCE(SUM(l.balance),0) AS balance,\
                     m.name AS move_name, c.symbol AS currency_code, p.name AS partner_name\
                     FROM account_move_line l\
                     JOIN account_move m ON (l.move_id=m.id)\
@@ -587,7 +587,7 @@ class GeneralView(models.TransientModel):
                     LEFT JOIN account_analytic_tag_account_move_line_rel anltag ON (anltag.account_move_line_id=l.id)
                     JOIN account_journal j ON (l.journal_id=j.id)\
                     JOIN account_account a ON (l.account_id = a.id) '''
-               + WHERE + new_final_filter + ''' GROUP BY l.id, m.id,  l.account_id, l.date, j.code, l.currency_id, l.amount_currency, l.ref, l.name, m.name, c.symbol, c.position, p.name ORDER BY l.date''')
+               + WHERE + new_final_filter + ''' GROUP BY l.id, m.id,  l.account_id, l.date,l.bank_ref, j.code, l.currency_id, l.amount_currency, l.ref, l.name, m.name, c.symbol, c.position, p.name ORDER BY l.date''')
 
         params = tuple(where_params)
         cr.execute(sql, params)
