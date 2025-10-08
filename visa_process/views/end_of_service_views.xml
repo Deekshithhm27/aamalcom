@@ -21,8 +21,8 @@
             <form >
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" statusbar_status="state"/>
-                    <button name="action_submitted" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_manager"/>
-                    <button name="action_submit_to_payroll" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_hr_manager'),('upload_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_submit_eos" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_to_payroll" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submitted_to_hr'),('upload_eos_doc','=',False)]}" groups="visa_process.group_service_request_hr_employee"/>
                     <button name="%(visa_process.action_refuse_wizard)d"
                             string="Refuse"
                             type="action"
@@ -83,7 +83,7 @@
                     </group>
                     <group>
                              <field name="details_for_eos" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                             <field name="upload_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_hr_manager'),('is_hr_manager','=',False)],'invisible': [('state', '=', 'draft')]}"/>
+                             <field name="upload_eos_doc" attrs="{'readonly': ['|',('state', '!=', 'submitted_to_hr'),('is_hr_manager','=',False)],'invisible': [('state', '=', 'draft')]}"/>
                         </group>
                    
                     

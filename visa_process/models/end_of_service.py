@@ -34,12 +34,13 @@ class EndOfService(models.Model):
     state = fields.Selection([
             ('draft', 'Draft'),
             ('submit', 'Submitted'),
+            ('submitted_to_hr', 'Submitted to HR'),
             ('reject', 'Rejected'),
             ('submitted_to_payroll', 'Submitted to Payroll'),
             ('approved_by_payroll', 'Approved By Payroll'),
             ('submitted_to_pm', 'Submitted to PM'),
             ('approved_by_pm', 'Approved By PM'),
-            ('submitted_to_hr_manager', 'Submitted to HR'),
+            ('submitted_to_hr_manager', 'Submitted to HR Manager'),
             ('approved_by_hr_manager', 'Waiting GM Approval'),
             ('submitted_to_gm', 'Submitted to GM'),
             ('approved_by_gm', 'Approved By GM'),
@@ -93,15 +94,27 @@ class EndOfService(models.Model):
             rec.is_hr_manager = self.env.user.has_group('visa_process.group_service_request_hr_employee')
 
 
-    def action_submitted(self):
-        for record in self:
-            if not self.employee_id:
-                raise ValidationError("Please select the employee first")
-            if not self.eos_type:
-                raise ValidationError("Please select the EOS type")
-            if not self.details_for_eos:
-                raise ValidationError("Please add Details of EOS")
-            record.state = 'submit'
+    def action_submit_eos(self):
+            """
+            Validates required fields and transitions the state from 'draft' to 'submitted_to_hr'.
+            """
+            for record in self:
+                # 1. Validation Checks
+                if not record.employee_id:
+                    raise ValidationError("Please select the employee first")
+                
+                # The original validation logic based on the full code snippet
+                if not record.eos_type:
+                    raise ValidationError("Please select the EOS type")
+                
+                if not record.details_for_eos:
+                    raise ValidationError("Please add Details of EOS")
+                
+                # 2. State Transition
+                record.state = 'submitted_to_hr'
+                
+                # 3. Optional: Add a message to the chatter
+                record.message_post(body="End of Service Request submitted and sent to HR for review.")
 
     def action_submit_to_payroll(self):
         for record in self:
