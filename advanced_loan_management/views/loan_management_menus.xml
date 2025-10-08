@@ -8,13 +8,13 @@
         <menuitem id="loan_management_request" name="Loan requests"
                   parent="loan_management_loan" action="loan_request_action"/>
         <menuitem id="loan_management_type" name="Loan types"
-                  parent="loan_management_loan" action="loan_type_action" groups="advanced_loan_management.loan_management_group_manager"/>
-        <menuitem id="loan_management_lines" name="Repayments"
-                  parent="loan_management_loan" action="repayment_line_action"  groups="visa_process.group_service_request_payroll_manager"/>
+                  parent="loan_management_loan" action="loan_type_action" groups="visa_process.group_service_request_hr_manager"/>
+       <!--  <menuitem id="loan_management_lines" name="Repayments"
+                  parent="loan_management_loan" action="repayment_line_action"  groups="visa_process.group_service_request_payroll_manager"/> -->
         <menuitem id="loan_management_certificates" name="Documents" sequence="15"
-                  parent="loan_management_menu_root"/>
-        <menuitem id="loan_management_proofs" name="Loan Proofs"
-                  parent="loan_management_certificates" action="loan_documents_action" groups="advanced_loan_management.loan_management_group_manager"/>
+                  parent="loan_management_menu_root" groups="visa_process.group_service_request_hr_manager"/>
+        <!-- <menuitem id="loan_management_proofs" name="Loan Proofs"
+                  parent="loan_management_certificates" action="loan_documents_action"/> -->
         <menuitem id="loan_management_conf" name="Configuration" sequence="20"
                   parent="loan_management_menu_root"/>
         <menuitem id="loan_management_settings" name="Settings"
