@@ -41,7 +41,7 @@
                         type="action"
                         class="btn-primary"
                         attrs="{'invisible': [('state', 'not in', ('approved','submit'))]}"
-                        groups="visa_process.group_service_request_hr_manager"/>
+                        groups="visa_process.group_service_request_hr_employee"/>
 
                     <button name="action_approval_fm" string="Approve" type="object" class="oe_highlight" 
                             attrs="{'invisible': [('state', '!=', 'submit_to_fm')]}" 
@@ -103,7 +103,7 @@
                         </group>
                         <group>
                             <field name="to_be_issued_date" string="Exit Date" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="total_amount_from_pricing" attrs="{'invisible': [('state', 'in',('draft','submit_to_dept_head'))]}" readonly="1"/> 
+                            <field name="total_amount_from_pricing" attrs="{'invisible': [('state', 'in',('draft','submit_to_dept_head'))]}" readonly="1" invisible="1"/> 
                         </group>
                     </group>
                     

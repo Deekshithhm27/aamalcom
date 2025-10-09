@@ -411,21 +411,21 @@ class LoanRequest(models.Model):
 
     def action_close_loan(self):
         """Closing the loan"""
-        demo = []
-        for check in self.repayment_lines_ids:
-            if check.state == 'unpaid':
-                demo.append(check)
-        if len(demo) >= 1:
-            message_id = self.env['message.popup'].create(
-                {'message': _("Pending Repayments")})
-            return {
-                'name': _('Repayment'),
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'res_model': 'message.popup',
-                'res_id': message_id.id,
-                'target': 'new'
-            }
+        # demo = []
+        # for check in self.repayment_lines_ids:
+        #     if check.state == 'unpaid':
+        #         demo.append(check)
+        # if len(demo) >= 1:
+        #     message_id = self.env['message.popup'].create(
+        #         {'message': _("Pending Repayments")})
+        #     return {
+        #         'name': _('Repayment'),
+        #         'type': 'ir.actions.act_window',
+        #         'view_mode': 'form',
+        #         'res_model': 'message.popup',
+        #         'res_id': message_id.id,
+        #         'target': 'new'
+        #     }
         self.write({'state': "closed"})
 
     def action_loan_rejected(self):

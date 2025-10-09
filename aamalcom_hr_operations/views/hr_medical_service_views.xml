@@ -44,7 +44,7 @@
                         type="action"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'approved')]}"
-                        groups="visa_process.group_service_request_manager"/>
+                        groups="visa_process.group_service_request_hr_employee"/>
                     <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight"  attrs="{'invisible': ['|', ('state', '!=', 'submitted_to_gre'),('upload_medical_test_doc', '=', False)]}" groups="visa_process.group_service_request_employee"/>
 
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_for_approval')]}" groups="visa_process.group_service_request_operations_manager"/>
@@ -86,15 +86,16 @@
                     
                     <field name="is_project_manager" invisible="1"/>
                     <field name="is_gov_employee" invisible="1"/>
+                    <field name="is_current_employee" invisible="1"/>
                     
                     <group>
                         <group>
                         <field name="upload_stamped_visa_doc" 
-                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}" 
+                               attrs="{'readonly': ['|',('is_current_employee', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}" 
                                filename="upload_stamped_visa_doc_file_name"/>
                         <field name="upload_stamped_visa_doc_file_name" invisible="1"/>
                         <field name="stamped_visa_doc_ref" 
-                               attrs="{'readonly': ['|',('is_project_manager', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}"/>
+                               attrs="{'readonly': ['|',('is_current_employee', '!=', True),('state', '!=', 'submitted')],'invisible': [('state', '=', 'draft')]}"/>
                            </group>
                     </group>
                     <group string="Payment Confirmation Document" 

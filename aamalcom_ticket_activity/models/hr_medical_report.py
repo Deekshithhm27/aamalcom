@@ -14,14 +14,14 @@ class HRMedicalBloodTest(models.Model):
     def action_submit_medical(self):
         result = super(HRMedicalBloodTest, self).action_submit_medical()
         for line in self:
-            pm_manager_users = self.env.ref('visa_process.group_service_request_manager').users
-            for user in pm_manager_users:
+            if line.employee_id and line.employee_id.user_id:
                 self._schedule_ticket_activity(
-                    user_id=user.id,
-                    summary='Action Required on Iqama Issuance-Medical Report',
-                    note='A Iqama Issuance-Medical Report requires your action. Please review and take action.'
-                    )
+                    user_id=line.employee_id.user_id.id,
+                    summary='Please review Medical Report and take action',
+                    note='Upload Documents .'
+                )
             return result
+
 
     def action_submit_to_treasury_hr(self):
         result = super(HRMedicalBloodTest, self).action_submit_to_treasury_hr()
@@ -117,14 +117,6 @@ class HRMedicalBloodTest(models.Model):
             ])
                     
             activity_ids.unlink()
-            # Code snippet from your previous message, representing the flawed logic.
-            pm_users = self.env.ref('visa_process.group_service_request_manager').users
-            for user in pm_users:
-                self._schedule_ticket_activity(
-                    user_id=user.id,
-                    summary='Action Required (Assign Employee) on MedicalBloodTest',
-                    note='A MedicalBloodTest (Assign Employee) requires your action. Please review and take action.'
-                    )
             return result
     
     def action_process_complete(self):

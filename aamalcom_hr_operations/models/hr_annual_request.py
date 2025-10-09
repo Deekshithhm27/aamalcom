@@ -4,7 +4,7 @@ from datetime import timedelta
 
 class AnnualRequestService(models.Model):
     _name = "hr.annual.request"
-    _description = "Annual Request"
+    _description = "Air Ticket"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Request ID',
