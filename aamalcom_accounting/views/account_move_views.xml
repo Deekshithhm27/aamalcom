@@ -40,7 +40,8 @@
 
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">
 	            	<!-- This action is used in Journal entry creation -->
-	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', ('state', '!=', 'draft'),('move_type', '!=', 'entry')]}"/>
+	            	<!-- <button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', ('state', '!=', 'draft'),('move_type', '!=', 'entry')]}"/> -->
+	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" invisible="1"/>
                 </xpath>
                 <xpath expr="//sheet/notebook/page[1]" position="after">
                 	<page name="invoice_particulars" string="Particulars" invisible="1">

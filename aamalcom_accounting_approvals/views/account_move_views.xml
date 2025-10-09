@@ -27,7 +27,7 @@
                 <!-- Incase of invoice created by operations flow -->
                 <button name="action_submit_for_approval" class="oe_highlight"
                         string="Submit" type="object"
-                        attrs="{'invisible': [('state', '!=','draft')]}"/>
+                        attrs="{'invisible': ['|',('state', '!=','draft'),('move_type','=','in_invoice')]}"/>
                 <!-- <button name="action_direct_post" string="Confirm" class="oe_highlight"
                         type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
                         attrs="{'invisible': ['|','|',('state','!=','draft'),('move_type', 'in', ('entry','in_invoice', 'out_refund')),('invoice_type','!=','direct')]}" 
@@ -47,7 +47,7 @@
                 <!-- Incase of invoice created by operations flow -->
                 <button name="action_post" string="Confirm" class="oe_highlight"
                         type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
-                        attrs="{'invisible': ['|', '|', '|',('state', '!=', 'approved'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True)]}"/>
+                        attrs="{'invisible': ['|', '|',('state', '!=', 'approved'),('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True)]}"/>
             </xpath>
 
             <!--            Approval flow vendor invoice (bill)-->
