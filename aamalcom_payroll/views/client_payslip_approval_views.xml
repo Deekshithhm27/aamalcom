@@ -3,7 +3,7 @@
 
     <!-- Action -->
     <record id="action_client_payslip_approval" model="ir.actions.act_window">
-        <field name="name">Approval Client Payslip</field>
+        <field name="name">Client Payroll Approval</field>
         <field name="res_model">client.payslip.approval</field>
         <field name="view_mode">tree,form</field>
     </record>
