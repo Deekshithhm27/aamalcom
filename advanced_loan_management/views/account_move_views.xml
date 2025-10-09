@@ -8,11 +8,11 @@
         <field name="arch" type="xml">
             <header position="inside">
                 <!-- Restore Post button -->
-                <button name="action_post"
+                <!-- <button name="action_post"
                         string="Post"
                         type="object"
                         states="draft"
-                        class="btn-primary"/>
+                        class="btn-primary"/> -->
                 
                 <!-- Optional: Show Cancel button (if you want it in Posted state) -->
                 <button name="button_cancel"
