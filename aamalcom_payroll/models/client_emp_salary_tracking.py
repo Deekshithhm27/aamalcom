@@ -42,7 +42,11 @@ class ClientEmployeeSalaryTracking(models.Model):
     gross_salary = fields.Float(string="Gross Salary",compute="compute_gross_salary",store=True)
     net_salary = fields.Float(string="Gross Salary",compute="compute_net_salary",store=True)
 
-    state = fields.Selection([('draft','Draft'),('done','Done')],default="draft")
+    state = fields.Selection([('draft', 'Draft'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('done', 'Approved Authorized Confirmed')],default="draft")
 
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))

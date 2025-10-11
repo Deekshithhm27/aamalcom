@@ -2,7 +2,7 @@
 <odoo>
 
     <menuitem id="menu_hr_client_payroll_base" name="Client Employee Payroll" sequence="99" groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_hr_employee">
-    	<menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking" sequence="1"/> 
+        <menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking" sequence="1"/> 
         <menuitem id="menu_hr_client_employee_inv" action="action_client_emp_salary_tracking_wizard" sequence="2"/> 
 
     </menuitem>
@@ -16,7 +16,7 @@
                   name="Payroll Approval"
                   parent="menu_hr_client_payroll_base"
                   sequence="3"
-                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_employee,visa_process.group_service_request_hr_manager"/>
+                  groups="visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee"/>
 
         
 
@@ -26,7 +26,7 @@
                   parent="menu_payslip_approval_root"
                   action="action_client_payslip_approval"
                   sequence="1"
-                  groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_employee"/>
+                  groups="visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee"/>
 
         
 
@@ -36,7 +36,7 @@
 
     
     <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Configuration" sequence="102" groups="hr.group_hr_manager">
-    	<menuitem id="menu_hr_client_salary_structure" action="action_hr_client_salary_rules" sequence="1" groups="base.group_no_one"/> 
+        <menuitem id="menu_hr_client_salary_structure" action="action_hr_client_salary_rules" sequence="1" groups="base.group_no_one"/> 
     </menuitem>
 
     <menuitem id="om_hr_payroll.menu_hr_payroll_root"

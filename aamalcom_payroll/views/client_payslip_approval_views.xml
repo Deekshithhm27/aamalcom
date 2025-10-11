@@ -1,90 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Action -->
     <record id="action_client_payslip_approval" model="ir.actions.act_window">
         <field name="name">Client Payroll Approval</field>
         <field name="res_model">client.payslip.approval</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <!-- Tree View -->
     <record id="view_client_payslip_approval_tree" model="ir.ui.view">
         <field name="name">client.payslip.approval.tree</field>
         <field name="model">client.payslip.approval</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="client_parent_id"/>
                 <field name="from_date"/>
                 <field name="to_date"/>
                 <field name="state"/>
-                <field name="create_date"/>    
-                <field name="processed_date"/>
             </tree>
         </field>
     </record>
 
-    <!-- Form View -->
     <record id="view_client_payslip_approval_form" model="ir.ui.view">
         <field name="name">client.payslip.approval.form</field>
         <field name="model">client.payslip.approval</field>
         <field name="arch" type="xml">
             <form string="Approval Client Payslip">
-                <!-- Statusbar -->
                 <header>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,done"/>
-                    <!-- Button appears only if document is uploaded and state is draft -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    
+                    <button name="action_generate_payroll_xsl" string="Generate Payroll" type="object"
+                    class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}"
+                    help="Generates the payroll file from client monthly salary tracking records for the selected period."/>
+                    
                     <button name="action_submit_to_payroll"
-                            string="Submit to Payroll"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('approval_payslip_document','=',False), ('state','!=','draft')]}" groups="visa_process.group_service_request_manager"/>
-                    <button name="action_submit_to_pm"
-                            string="Submit to PM"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_manager"/>
-                   <!--  <button name="action_submit_to_pm"
-                            string="Re-Submit to PM"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','refuse')]}" groups="visa_process.group_service_request_payroll_manager"/> -->
-                    <button name="action_reviewed_by_pm"
-                            string="Verified"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/>
-                    <button name="action_refused_by_pm"
-                            string="Refuse"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/>
-                    <button name="action_submit_to_payroll"
-                                                string="Re-submit"
-                                                type="object"
-                                                class="btn-primary"
-                                                attrs="{'invisible': [ ('state','not in',('refuse','submit_to_pm'))]}" 
-                                                groups="visa_process.group_service_request_payroll_manager"/>
+                    string="Submit to Review"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|','|', ('generated_payroll_document','=',False),('approval_payslip_document','=',False),('state','!=','draft')]}" 
+                    groups="visa_process.group_service_request_payroll_employee"/>
+                    
+                    <button name="action_submit_to_payroll_manager"
+                    string="Submit for approval"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                    
                     <button name="action_submit_to_payroll_employee"
-                            string="Submit to HR"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','verified_by_pm')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                    string="Approved" type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_reviewed_by_payroll_employee"
-                            string="Confirm Submission"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_hr_employee')]}" groups="visa_process.group_service_request_hr_employee"/>
-                    <button name="action_reviewed_by_hr_manager"
-                            string="Submit to Review"
-                            type="object"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    string="Confirm Submission" type="object" class="btn-primary"
+                    attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll_employee')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                    
                 </header>
                 <sheet>
-                    <group string="Period" col="2">
+                    <group col="2">
                         <group>
+                            <!-- <field name="client_id"/> -->
+                            <field name="client_parent_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="from_date"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="to_date"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
@@ -93,9 +68,16 @@
 
                     <group string="Approval Document" >
                         <group>
-                        <field name="approval_payslip_document" filename="approval_payslip_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        <field name="approval_document_date" readonly="1"/>
-                    </group>
+                            <field name="approval_payslip_document" filename="approval_payslip_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="approval_payslip_filename" invisible="1"/>
+                            
+                            <field name="generated_payroll_document" 
+                                filename="generated_payroll_filename" 
+                                readonly="1"/>
+                            <field name="generated_payroll_filename" invisible="1"/>
+
+                            <field name="approval_document_date" readonly="1"/>
+                        </group>
                     </group>
                     <notebook attrs="{'invisible': [('state', '=', 'draft')]}">
                             <page string="Documents">
@@ -118,7 +100,6 @@
                             </page>
                         </notebook>
                 </sheet>
-                <!-- Add the chatter widget here -->
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>

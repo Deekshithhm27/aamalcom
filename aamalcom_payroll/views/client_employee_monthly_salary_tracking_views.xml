@@ -5,9 +5,9 @@
         <field name="model">client.emp.salary.tracking</field>
         <field name="arch" type="xml">
             <form string="Client Employee Monthly Salary Tracking">
-            	<header>
-            		<field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
-            	</header>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <separator string="Client Employee Monthly Salary Trackings" groups="hr.group_hr_user"/>
@@ -89,6 +89,7 @@
                 <field name="client_emp_sequence"/>
                 <field name="gross_salary"/>
                 <field name="gosi_charges"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
