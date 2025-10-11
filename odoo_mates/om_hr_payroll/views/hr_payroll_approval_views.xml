@@ -4,7 +4,7 @@
         <field name="name">hr.payroll.approval.form</field>
         <field name="model">hr.payroll.approval</field>
         <field name="arch" type="xml">
-            <form string="Payslip Approval">
+            <form string="Payroll Approval">
             <header>
                 <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 <button name="action_generate_payslip" string="Generate Payslip" type="object" class="oe_highlight"
@@ -44,7 +44,7 @@
         <field name="name">hr.payroll.approval.tree</field>
         <field name="model">hr.payroll.approval</field>
         <field name="arch" type="xml">
-            <tree string="Payslip Approvals">
+            <tree string="Payroll Approvals">
                 <field name="name"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
@@ -55,7 +55,7 @@
 
     <!-- Action -->
     <record id="action_hr_payroll_approval" model="ir.actions.act_window">
-        <field name="name">Payslip Approvals</field>
+        <field name="name">Payroll Approval</field>
         <field name="res_model">hr.payroll.approval</field>
         <field name="view_mode">tree,form</field>
     </record>
