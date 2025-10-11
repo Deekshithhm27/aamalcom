@@ -150,9 +150,6 @@
                         <button string="Set to Draft" name="action_payslip_draft" type="object" states="cancel"/>
                         <button string="Compute Sheet" name="compute_sheet" type="object" states="draft"
                                 class="oe_highlight"/>
-                        <button name="action_submit_to_hr_employee" string="Submit to HR Employee" type="object" class="btn-primary" attrs="{'invisible': [('state','!=','submit_to_payroll')]} " groups="visa_process.group_service_request_payroll_manager"/>
-                        <button name="action_submit_to_hr_manager" string="Submit to HR Manager" type="object" class="btn-primary" attrs="{'invisible': [('state','!=','submit_to_hr_employee')]}" groups="visa_process.group_service_request_hr_employee"/> 
-                        <button name="action_reviewed_by_hr_manager" string="Process Complete" type="object" class="btn-primary" attrs="{'invisible': [('state','!=','submit_to_hr_manager')]}" groups="visa_process.group_service_request_hr_manager"/>
                         <button string="Cancel Payslip" name="action_payslip_cancel" type="object"
                                 states="draft,done,verify"/>
                         <button string="Send E-Mail" name="action_send_email" type="object"
