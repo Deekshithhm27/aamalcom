@@ -33,14 +33,12 @@ class HrPayslip(models.Model):
         states={'draft': [('readonly', False)]})
     # this is chaos: 4 states are defined, 3 are used ('verify' isn't) and 5 exist ('confirm' seems to have existed)
     state = fields.Selection([
-        ('draft', 'Draft'), ('submit_to_payroll', 'Submit to Payroll'),
-        ('submit_to_pm', 'Submit to PM'),
-        ('verified_by_pm', 'Verified By PM'),
-        ('submit_to_hr_employee', 'Submit to HR Employee'),
-        ('submit_to_hr_manager', 'Submit to HR Manager'),
-        ('verify', 'Waiting'),
-        ('done', 'Done'),
-        ('cancel', 'Rejected'),
+        ('draft', 'Draft'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('approved', 'Approved'),
+        ('done', 'Approved Authorized Confirmed'),('cancel','Cancel')
     ], string='Status', index=True, readonly=True, copy=False, default='draft',
         help="""* When the payslip is created the status is \'Draft\'
                 \n* If the payslip is under verification, the status is \'Waiting\'.
@@ -69,7 +67,8 @@ class HrPayslip(models.Model):
     payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batches', readonly=True,
         copy=False, states={'draft': [('readonly', False)]})
     payslip_count = fields.Integer(compute='_compute_payslip_count', string="Payslip Computation Details")
-    
+    processed_date = fields.Datetime(string="Processed Date", readonly=True, tracking=True)
+
     #The below 2 dates field are used to keep track of approval flow
     create_date = fields.Datetime(string="Create Date", readonly=True, default=lambda self: datetime.now())
     processed_date = fields.Datetime(string="Processed Date", readonly=True, tracking=True)
@@ -675,8 +674,11 @@ class HrPayslipRun(models.Model):
                                states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('done', 'Done'),
-        ('close', 'Close'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('approved', 'Approved'),
+        ('done', 'Approved Authorized Confirmed'),('close','Close')
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))
@@ -686,7 +688,11 @@ class HrPayslipRun(models.Model):
     credit_note = fields.Boolean(string='Credit Note', readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  help="If its checked, indicates that all payslips generated from here are refund payslips.")
-
+    disbursed_date = fields.Date(
+        string='Payroll Disbursed Date',
+        readonly=True, 
+        states={'approved': [('readonly', False)]}
+    )
     def draft_payslip_run(self):
         return self.write({'state': 'draft'})
 
@@ -696,6 +702,17 @@ class HrPayslipRun(models.Model):
     def done_payslip_run(self):
         for line in self.slip_ids:
             line.action_payslip_done()
+            approval_record = self.env['hr.payroll.approval'].search([
+                    ('date_from', '=', self.date_start),
+                    ('date_to', '=', self.date_end),
+                    # Only consider approval records that are in the 'approved' state
+                    ('state', '=', 'approved'),
+                ], limit=1)
+                
+            if approval_record:
+                # Call the correct method on the approval record to finalize its state
+                approval_record.action_payroll_approval_done()
+
         return self.write({'state': 'done'})
 
     def unlink(self):
@@ -703,3 +720,41 @@ class HrPayslipRun(models.Model):
             if rec.state == 'done':
                 raise ValidationError(_('You Cannot Delete Done Payslips Batches'))
         return super(HrPayslipRun, self).unlink()
+
+    # NEW METHOD: Send email notification to employees
+    def action_send_disbursement_notification(self):
+            self.ensure_one()
+            if not self.disbursed_date:
+                raise UserError(_("Please set the Payroll Disbursed Date before sending the notification."))
+            if not self.slip_ids:
+                raise UserError(_("No payslips found in this batch to notify employees."))
+
+            # Use the payslip run ID (self.id) as the resource, 
+            # which is correct since the template is defined on hr.payslip.run
+            template_id = self.env.ref('om_hr_payroll.email_template_disbursement_notification')
+            if not template_id:
+                raise UserError(_("Email template 'email_template_disbursement_notification' not found."))
+
+            # We will iterate over the payslips themselves to get the employee email
+            for payslip in self.slip_ids:
+                if not payslip.employee_id.work_email:
+                     continue
+                
+                # Send the email. The 'res_id' must be the ID of the model the template is defined on.
+                # Here, the template is on hr.payslip.run, so we pass self.id.
+                template_id.send_mail(self.id, force_send=True, email_values={
+                     'email_to': payslip.employee_id.work_email,
+                     'email_from': self.env.user.company_id.email or self.env.user.email,
+                     # Optionally, you can pass the Payslip ID for more specific context:
+                     'model': 'hr.payslip.run', # Explicitly define the model
+                }, raise_exception=True) # Adding raise_exception=True might give a clearer error next time
+
+            return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'message': _("Disbursement notification sent successfully."), 
+                        'type': 'success',
+                        'sticky': False,
+                    }
+                }

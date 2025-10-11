@@ -17,5 +17,5 @@ access_payslip_lines_contribution_register_hr_user,payslip.lines.contribution.re
 access_hr_contract_type_manager,hr.contract.type.manager,model_hr_contract_type,hr_contract.group_hr_contract_manager,1,1,1,1
 access_employee_excel_report_wizard,access_employee_excel_report_wizard,model_employee_excel_report_wizard,base.group_user,1,1,1,1
 
-access_hr_payroll_approval_wizard,hr.payroll.approval.wizard.access,model_hr_payroll_approval_wizard,base.group_user,1,1,0,1
-access_hr_payroll_approval_wizard_hr_employee,hr.payroll.approval.wizard.acess.hr.employee,model_hr_payroll_approval_wizard,visa_process.group_service_request_hr_employee,1,1,1,0
+access_hr_payroll_approval_employee,hr.payroll.approval employee,model_hr_payroll_approval,visa_process.group_service_request_payroll_employee,1,1,1,1
+access_hr_payroll_approval_manager,hr.payroll.approval manager,model_hr_payroll_approval,visa_process.group_service_request_payroll_manager,1,1,0,0
