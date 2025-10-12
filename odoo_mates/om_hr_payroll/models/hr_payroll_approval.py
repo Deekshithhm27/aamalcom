@@ -17,7 +17,6 @@ class HrPayrollApproval(models.Model):
 
     name = fields.Char(
         string="Payslip Reference",
-        required=True,
         copy=False,
         readonly=True,
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.payroll.approval')
@@ -155,34 +154,31 @@ class HrPayrollApproval(models.Model):
 
     # ---  METHOD: XLSX REPORT GENERATION (BATCH) ---
     def _generate_payslip_xlsx_data(self, payslips):
-            """Helper to create the consolidated XLSX report content with AamalCom format."""
+            """Helper to create the consolidated XLSX report content with AamalCom format, including the logo."""
             self.ensure_one()
             
             if not payslips:
                 return b'', 'Empty_Payslip_Batch.xlsx'
 
             output = io.BytesIO()
-            workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+            # Set options for the workbook (e.g., hiding gridlines often improves report look)
+            workbook = xlsxwriter.Workbook(output, {'in_memory': True, 'remove_timezone': True})
             sheet = workbook.add_worksheet('Payslip Batch Report')
 
             # === Formats ===
-            # Standard formats
             currency_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
             data_format = workbook.add_format({'border': 1, 'valign': 'vcenter'})
-            
-            # Header formats
+            # Center the text across the merged area
             title_format = workbook.add_format({'bold': True, 'font_size': 18, 'align': 'center', 'valign': 'vcenter'})
             subtitle_format = workbook.add_format({'bold': True, 'font_size': 12, 'align': 'center', 'valign': 'vcenter'})
             header_format = workbook.add_format({'bold': True, 'bg_color': '#D9D9D9', 'border': 1, 'align': 'center', 'valign': 'vcenter', 'text_wrap': True})
             
             # --- Context Data ---
-            # all payslips are for the same month, we use the first one for the title.
             first_payslip = payslips[0]
             period_str = first_payslip.date_from.strftime('%b - %Y').upper()
-            company_name = self.env.user.company_id.name or 'AamalCom'
+            company = self.env.user.company_id
+            company_name = company.name or 'AamalCom'
 
-            # === Report Headers (Row 1 and 2) ===
-            # We need to calculate the total number of columns for merging
             COLUMNS = [
                 'Sl.No', 'Employee Name', 'Id', 'Nationality', 'IBAN', 'BANK', 'Total Salary', 
                 'Days in months', 'Days Present', 'Overtime Hours', 'Basic Salary', 
@@ -190,105 +186,117 @@ class HrPayrollApproval(models.Model):
                 'OT amount', 'Additions', 'Deduction GOSI', 'Deductions', 'Day discounts', 
                 'Total Deductions', 'Net Salary', 'Mode of Payment', 'Company Name'
             ]
-            
             num_cols = len(COLUMNS)
+
+            # ----------------------------------------------------
+            # 1. LOGO INSERTION (The code that adds the image)
+            # ----------------------------------------------------
+            logo_data = company.logo
+            logo_rows = 5 # Reserve rows 0 to 4 for the logo and blank space
             
-            # Row 1: Main Header (Merged)
-            sheet.merge_range(0, 0, 0, num_cols - 1, f'{company_name} Company', title_format)
+            if logo_data:
+                try:
+                    # 1. Decode the logo data and wrap it in a BytesIO object
+                    logo_image_data = io.BytesIO(base64.b64decode(logo_data))
+                    
+                    # 2. Insert the logo into the top-left corner (A1)
+                    sheet.insert_image('A1', 'logo.png', {
+                        'image_data': logo_image_data, 
+                        'x_scale': 0.4, 
+                        'y_scale': 0.4, 
+                        'x_offset': 5,
+                        'y_offset': 5,
+                    })
+                except Exception as e:
+                    # If image insertion fails (e.g., corrupted data), log and proceed without logo
+                    self.env.cr.rollback() 
+                    logo_rows = 0 
+                    self.env.logger.error("Failed to insert company logo into XLSX: %s" % e)
             
-            # Row 2: Sub Header (Merged)
-            sheet.merge_range(1, 0, 1, num_cols - 1, f'STAFF PAYROLL FOR THE MONTH OF {period_str}', subtitle_format)
+            # Set row height for the logo area to ensure space
+            if logo_rows > 0:
+                sheet.set_row(0, 70) 
+
+            # ----------------------------------------------------
+            # 2. REPORT HEADERS (Adjusted Rows)
+            # ----------------------------------------------------
             
-            # Row 3: Column Headers
+            # Start header text immediately below the space reserved for the logo (e.g., Row 6)
+            HEADER_ROW = logo_rows 
+            SUBHEADER_ROW = logo_rows + 1
+            COLUMN_HEADER_ROW = logo_rows + 2
+            DATA_START_ROW = logo_rows + 3
+
+            # Merge the main header range across all columns
+            sheet.merge_range(HEADER_ROW, 0, HEADER_ROW, num_cols - 1, f'{company_name} Company', title_format)
+            
+            # Sub Header 
+            sheet.merge_range(SUBHEADER_ROW, 0, SUBHEADER_ROW, num_cols - 1, f'STAFF PAYROLL FOR THE MONTH OF {period_str}', subtitle_format)
+            
+            # Column Headers
             col_map = {col: idx for idx, col in enumerate(COLUMNS)}
             
             for col_idx, name in enumerate(COLUMNS):
-                sheet.write(2, col_idx, name, header_format)
+                sheet.write(COLUMN_HEADER_ROW, col_idx, name, header_format)
                 
-            # === Data Mapping for Payslip Lines ===
-            # Map requested column names to the corresponding Odoo Payslip Line code.
-            # Use an empty string if you can't map it directly to a code.
+            # === Data Mapping for Payslip Lines (Unchanged) ===
             LINE_CODE_MAP = {
                 'Basic Salary': 'BASIC',
                 'Housing Allowance': 'HRA',         
                 'Transport allowance': 'TRANSPORT', 
                 'Other Allowance': 'OTHER',       
                 'Gross Salary': 'GROSS',
-                'OT amount': 'OT',                 
+                'OT amount': 'OT',                  
                 'Additions': 'ADD',                 
                 'Deduction GOSI': 'GOSI',
-                'Deductions': 'DED',               
-                'Day discounts': 'DAYDISCOUNT',    
-                'Total Deductions': 'TOTALDEDUCTION', 
+                'Deductions': 'DED',                
+                'Day discounts': 'DAYDISCOUNT',     
+                'Total Deductions': 'TOTALDEDUCTION',
                 'Net Salary': 'NET',
             }
 
-            # === Data Rows ===
-            row_num = 3
+            # === Data Rows (Adjusted Start Row) ===
+            row_num = DATA_START_ROW
             for i, payslip in enumerate(payslips):
                 emp = payslip.employee_id
                 
-                # Helper to get the total for a salary rule code (from hr.payslip.line)
+                # Helper definitions
                 def get_payslip_line_amount(code):
                     line = payslip.line_ids.filtered(lambda l: l.code == code)
                     return line.total if line else 0.0
-
-                # Helper to get the number of days/hours from worked_days_line
                 def get_worked_days_value(line_type, field='number_of_days'):
-                    # Assuming 'WORK100' is the code for days present
                     line = payslip.worked_days_line_ids.filtered(lambda l: l.code == line_type)
                     if line:
                         return line[field]
                     return 0
-
-                # Helper to get the amount from input_line
                 def get_input_line_amount(code):
                     line = payslip.input_line_ids.filtered(lambda l: l.code == code)
                     return line.amount if line else 0.0
                     
                 
                 # --- FETCHING CORE DATA ---
-                
                 days_in_month = (payslip.date_to - payslip.date_from).days + 1
-                
                 days_present = get_worked_days_value('WORK100', 'number_of_days') 
+                overtime_hours = get_input_line_amount('OT_HOURS') / payslip.contract_id.wage if payslip.contract_id.wage else 0.0
 
-                overtime_hours = get_input_line_amount('OT_HOURS') / payslip.contract_id.wage # Placeholder logic, adjust as needed
-
-                
-                # Sl.No
+                # --- WRITING DATA TO ROW ---
                 sheet.write(row_num, col_map['Sl.No'], i + 1, data_format) 
-                
-                # Employee Name (Combined name is safer than surname/given name if they are not used)
                 sheet.write(row_num, col_map['Employee Name'], emp.name or '', data_format) 
-                
-                # Id (from hr.employee.client_emp_sequence)
                 sheet.write(row_num, col_map['Id'], emp.client_emp_sequence or '', data_format) 
-                
-                # Nationality (from hr.employee.country_id.name)
                 sheet.write(row_num, col_map['Nationality'], emp.country_id.name or '', data_format) 
-                
-                # IBAN and BANK (Requested to be blank)
                 sheet.write(row_num, col_map['IBAN'], '', data_format)
                 sheet.write(row_num, col_map['BANK'], '', data_format)
-                
-                # Total Salary (Using NET amount for Total Salary column as per common practice)
                 sheet.write(row_num, col_map['Total Salary'], get_payslip_line_amount('NET'), currency_format)
-                
-                # Days in months, Days Present, Overtime Hours
                 sheet.write(row_num, col_map['Days in months'], days_in_month, data_format)
                 sheet.write(row_num, col_map['Days Present'], days_present, data_format)
                 sheet.write(row_num, col_map['Overtime Hours'], overtime_hours, data_format)
 
-                # Salary Lines - Use the map to dynamically fetch amounts
                 for col_name, line_code in LINE_CODE_MAP.items():
                     if col_name in col_map:
                         amount = get_payslip_line_amount(line_code)
                         sheet.write(row_num, col_map[col_name], amount, currency_format)
-                # You may need a field on hr.employee or hr.contract to store this
+
                 sheet.write(row_num, col_map['Mode of Payment'], '', data_format) 
-                
-                # Company Name (AamalCom)
                 sheet.write(row_num, col_map['Company Name'], company_name, data_format) 
                 
                 row_num += 1
@@ -298,7 +306,6 @@ class HrPayrollApproval(models.Model):
             sheet.set_column(col_map['Id'], col_map['Nationality'], 15)
             sheet.set_column(col_map['IBAN'], col_map['IBAN'], 25)
             sheet.set_column(col_map['Total Salary'], col_map['Net Salary'], 15)
-
 
             workbook.close()
             output.seek(0)

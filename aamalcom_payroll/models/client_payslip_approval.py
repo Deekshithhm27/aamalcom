@@ -122,7 +122,7 @@ class ClientPayslipApproval(models.Model):
             # Define headers (data population logic removed for brevity, assuming it's correct)
             # ... (Excel generation logic) ...
             headers = [
-                "Sequence", "Employee", "Employee ID", "Client Parent", "Date From", "Date To",
+                "Sequence", "Employee", "Employee ID", "Client", "Date From", "Date To",
                 "Worked Days", "Basic Salary", "HRA", "Travel Allowance",
                 "Other Allowance", "Other Deductions", "Arrears", "Advances",
                 "Overtime", "Additions", "Gross Salary", "Gosi Charges"
@@ -189,6 +189,9 @@ class ClientPayslipApproval(models.Model):
         return True
 
     def action_submit_to_payroll_manager(self):
+        if not self.payslip_documents_ids:
+            raise UserError(_("Please upload at least one document in the 'Documents' session before submitting for approval."))
+                 
         # 1. Update the Approval Record state
         self.write({'state': 'submit_to_payroll_manager', 'processed_date': datetime.now()})
             
