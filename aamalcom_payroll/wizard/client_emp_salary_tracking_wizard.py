@@ -14,7 +14,7 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
             employee_domain = [
                 ('date_start', '>=', wizard.date_start),
                 ('date_end', '<=', wizard.date_end),
-                ('client_parent_id','=',wizard.client_parent_id.id),('is_invoiced','=',False),('state','=','draft')
+                ('client_parent_id','=',wizard.client_parent_id.id),('is_invoiced','=',False),('state','=','done')
             ]
             employee_records = self.env['client.emp.salary.tracking'].sudo().search(employee_domain)
             if not employee_records:
@@ -35,7 +35,7 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
             invoice = self.env['account.move'].sudo().create({
                 'partner_id': wizard.client_parent_id.id,
                 'move_type': 'out_invoice',  # or 'in_invoice' depending on your use case
-                'state':'draft',
+                'state':'done',
                 'journal_id':journal.id,
                 'client_payroll_inv':True,
                 'invoice_line_ids': [(0, 0, {

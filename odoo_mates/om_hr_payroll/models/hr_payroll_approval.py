@@ -34,7 +34,7 @@ class HrPayrollApproval(models.Model):
         ('submit_to_payroll_employee', 'Submitted to Payroll Employee'), # Unused in this flow, but kept for schema
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
         ('approved', 'Approved'),
-        ('done', 'Approved Authorized Confirmed'),
+        ('done', 'Payroll Disbursed'),
     ], string="Status", default='draft', tracking=True)
     upload_payroll_document = fields.Binary(string="Payroll Document")
     generated_payroll_document = fields.Binary(string="Generated Payroll Document", readonly=True)
