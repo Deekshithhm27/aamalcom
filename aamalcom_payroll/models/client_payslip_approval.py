@@ -48,22 +48,54 @@ class ClientPayslipApproval(models.Model):
         inverse_name='payslip_approval_id',
         string='Updated Documents'
     )
+    
     refusal_reason = fields.Text(string="Refusal Reason", tracking=True, readonly=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit_to_payroll', 'Submitted for Verification'),
         ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_pm', 'Submitted to PM'),
+        ('approved_by_pm', 'Verified By PM'),
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
-        ('done', 'Approved Authorized Confirmed'),
+        ('done', 'Completed'),
+        ('refuse', 'Refused'),
     ], string="Status", default='draft', tracking=True)
 
     is_payroll_manager = fields.Boolean(
         string="Is Payroll Manager?",
         compute="_compute_is_payroll_manager"
     )
+    disbursed_date = fields.Date(
+        string='Payroll Disbursed Date',
+        readonly=True, 
+        states={'submit_to_payroll_employee': [('readonly', False)]}
+    )
     
     approval_document_date = fields.Date(string="Approval Document Date", compute="_compute_approval_document_date", store=True)
+    creator_pm_id = fields.Many2one(
+            'res.users',
+            string="Creating Project Manager",
+            readonly=True,
+            tracking=True,
+            help="Stores the user who created this record, only if they are a Project Manager."
+        )
+    @api.model
+    def create(self, vals):
+        """
+        Overrides the create method to check if the record creator is a Project Manager 
+        and store their ID if so.
+        """
+        # Call the standard create method first
+        record = super(ClientPayslipApproval, self).create(vals)  
+        # Check if the creator (self.env.user at the time of creation) belongs to the PM group
+        # IMPORTANT: Use the correct external ID for the Project Manager group
+        pm_group_ext_id = 'visa_process.group_service_request_manager'
+
+        if self.env.user.has_group(pm_group_ext_id):
+            record.creator_pm_id = self.env.user.id
+                
+        return record
 
     @api.depends('approval_payslip_document')
     def _compute_approval_document_date(self):
@@ -181,11 +213,30 @@ class ClientPayslipApproval(models.Model):
     
     def action_submit_to_payroll(self):
         # This method can be used for re-submission if the state is not 'draft'
-        if not self.approval_payslip_document and not self.generated_payroll_document:
-            raise UserError(_("Please upload or generate the Approval Payroll Document before submission."))
         for rec in self:
                 rec.state = 'submit_to_payroll'
                 rec.processed_date = datetime.now()
+        return True
+
+    def action_submit_to_pm(self): 
+        if not self.generated_payroll_document:
+            raise UserError(_("Please generate payroll first before submitting for verification."))
+        if not self.payslip_documents_ids:
+            raise UserError(_("Please upload at least one document in the 'Documents' session before submitting for approval."))
+        # 1. Update the Approval Record state
+        self.write({'state': 'submit_to_pm', 'processed_date': datetime.now()})
+            
+        # 2. Update Salary Tracking Records state
+        self._get_related_salary_records().write({'state': 'submit_to_pm'}) # Assuming HR Manager is equivalent to Payroll Manager in salary tracking flow
+
+        return True
+    def action_verified_by_pm(self):         
+        # 1. Update the Approval Record state
+        self.write({'state': 'approved_by_pm', 'processed_date': datetime.now()})
+            
+        # 2. Update Salary Tracking Records state
+        self._get_related_salary_records().write({'state': 'approved_by_pm'}) # Assuming HR Manager is equivalent to Payroll Manager in salary tracking flow
+
         return True
 
     def action_submit_to_payroll_manager(self):
@@ -218,6 +269,59 @@ class ClientPayslipApproval(models.Model):
 
         return True
 
+        # This method is now a button to open the wizard, not change the state directly
+    def action_refused_by_pm(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'client.payslip.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_payslip_approval_id': self.id,
+                }
+            }
+    def action_re_submit(self):
+        # This method can be used for re-submission if the state is not 'draft'
+        for rec in self:
+                rec.state = 'submit_to_payroll'
+                rec.processed_date = datetime.now()
+        return True
+    
+    def action_send_disbursement_notification(self):
+        self.ensure_one()
+        recipient_user = self.creator_pm_id or self.create_uid
+        if not recipient_user:
+            raise UserError(_("Cannot send notification: No creator found for this record."))
+        recipient_partner = recipient_user.partner_id
+        if not recipient_partner or (not recipient_partner.email and not recipient_partner.work_email):
+            raise UserError(_("The intended recipient (%s) does not have a work email or standard email configured.") % (recipient_user.name,))
+        template = self.env.ref('aamalcom_payroll.email_template_payroll_disbursement_notification')
+        template.send_mail(self.id, force_send=True)
+        return True
+
 class ClientPayslipRefuseWizard(models.TransientModel):
     _name = 'client.payslip.refuse.wizard'
+    _description = 'Wizard to Refuse Payslip Approval'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    # The field to capture the reason from the user
+    reason = fields.Text(string="Reason for Refusal", required=True)
+        
+    # This field links the wizard to the main record
+    payslip_approval_id = fields.Many2one('client.payslip.approval', string="Payslip Approval")
+
+    # The action that will be called by the "Refuse" button in the wizard
+    def refuse_payslip(self):
+        self.ensure_one()
+        payslip = self.payslip_approval_id
             
+        # Update the state of the main record
+        payslip.state = 'refuse'
+            
+        # Store the reason on the main record
+        payslip.refusal_reason = self.reason
+            
+        # Post the refusal reason to the chatter
+        payslip.message_post(body="Payslip has been refused by PM with the following reason: <br/>%s" % self.reason)
+
+        return {'type': 'ir.actions.act_window_close'}

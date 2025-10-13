@@ -30,29 +30,55 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     
                     <button name="action_generate_payroll_xsl" string="Generate Payroll" type="object"
-                    class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}"
-                    help="Generates the payroll file from client monthly salary tracking records for the selected period."/>
+                    class="oe_highlight" attrs="{'invisible': [('state','!=','submit_to_payroll')]}"
+                    help="Generates the payroll file from client monthly salary tracking records for the selected period." groups="visa_process.group_service_request_payroll_employee"/>
                     
                     <button name="action_submit_to_payroll"
                     string="Submit to Review"
                     type="object"
                     class="btn-primary"
-                    attrs="{'invisible': ['|','|', ('generated_payroll_document','=',False),('approval_payslip_document','=',False),('state','!=','draft')]}" 
+                    attrs="{'invisible': ['|',('approval_payslip_document','=',False),('state','!=','draft')]}" 
+                    groups="visa_process.group_service_request_manager"/>
+                    <button name="action_submit_to_pm" string="Submit for Verification"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state','!=','submit_to_payroll')]}" 
+                    groups="visa_process.group_service_request_payroll_employee" /> 
+                    <button name="action_verified_by_pm" string="Verified"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state','!=','submit_to_pm')]}" 
+                    groups="visa_process.group_service_request_manager"/>
+                    <button name="action_refused_by_pm"
+                            string="Refuse"
+                            type="object"
+                            class="btn-danger"
+                            attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_pm')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_re_submit" string="Re-send for Verification"
+                    type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state','!=','refuse')]}" 
                     groups="visa_process.group_service_request_payroll_employee"/>
                     
                     <button name="action_submit_to_payroll_manager"
                     string="Submit for approval"
                     type="object"
                     class="btn-primary"
-                    attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                    attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','approved_by_pm')]}" groups="visa_process.group_service_request_payroll_employee"/>
                     
                     <button name="action_submit_to_payroll_employee"
                     string="Approved" type="object"
                     class="btn-primary"
                     attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
                     <button name="action_reviewed_by_payroll_employee"
-                    string="Confirm Submission" type="object" class="btn-primary"
+                    string="Disburse-Payroll" type="object" class="btn-primary"
                     attrs="{'invisible': ['|', ('payslip_documents_ids','=',False), ('state','!=','submit_to_payroll_employee')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                    <!-- <button name="action_send_disbursement_notification"
+                    string="Send a notification"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', ('disbursed_date', '=', False), ('state', 'not in', ['submit_to_payroll_employee', 'done'])]}"
+                    groups="visa_process.group_service_request_payroll_employee"/> -->
                     
                 </header>
                 <sheet>
@@ -62,7 +88,12 @@
                             <field name="client_parent_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="from_date"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         <field name="to_date"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="creator_pm_id" invisible="1"/>
                     </group>
+                    <!-- <group attrs="{'invisible': [('state', 'not in', ('done','submit_to_payroll_employee'))]}">
+
+                        <field name="disbursed_date"/>
+                    </group> -->
                     <field name="is_payroll_manager" invisible="1"/>
                     </group>
 
@@ -73,7 +104,7 @@
                             
                             <field name="generated_payroll_document" 
                                 filename="generated_payroll_filename" 
-                                readonly="1"/>
+                                readonly="1" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                             <field name="generated_payroll_filename" invisible="1"/>
 
                             <field name="approval_document_date" readonly="1"/>

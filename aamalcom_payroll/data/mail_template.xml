@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_payroll_disbursement_notification" model="mail.template">
+            <field name="name">Client Payroll: Disbursement Notification</field>
+            <field name="model_id" ref="aamalcom_payroll.model_client_payslip_approval"/>
+            <field name="subject">Payroll Disbursement Notification for Client ${object.client_parent_id.name}</field>
+            <field name="email_from">${(user.email_formatted or '')}</field>
+            <field name="email_to">${(object.creator_pm_id or object.create_uid).partner_id.work_email or (object.creator_pm_id or object.create_uid).partner_id.email}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Dear ${object.create_uid.name},</p>
+                    
+                    <p>This is a notification regarding the payroll for client <strong>${object.client_parent_id.name}</strong> (Reference: ${object.name}).</p>
+                    
+                    <p>The payroll for the period **${object.from_date}** to **${object.to_date}** is scheduled to be **disbursed** on:</p>
+                    
+                    <h3 style="color: #007bff; text-align: center;">${object.disbursed_date.strftime('%B %d, %Y')}</h3>
+                    
+                    <p>Please note this date for your records.</p>
+                    
+                    
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

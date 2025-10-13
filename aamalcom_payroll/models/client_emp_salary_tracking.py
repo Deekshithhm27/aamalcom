@@ -44,9 +44,11 @@ class ClientEmployeeSalaryTracking(models.Model):
 
     state = fields.Selection([('draft', 'Draft'),
         ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_pm', 'Submitted to PM'),
+        ('approved_by_pm', 'Verified By PM'),
         ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
-        ('done', 'Approved Authorized Confirmed')],default="draft")
+        ('done', 'Completed')],default="draft")
 
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))
