@@ -29,13 +29,13 @@
                                 <td style="border:1px solid #000; padding:4px; width: 20%;"><strong>Employee Name:</strong></td>
                                 <td style="border:1px solid #000; padding:4px; width: 30%;"><span t-field="o.employee_id.name"/></td>
                                 <td style="border:1px solid #000; padding:4px; width: 20%;"><strong>Emp No:</strong></td>
-                                <td style="border:1px solid #000; padding:4px; width: 30%;"><span t-esc="o.employee_id.identification_id or ''"/></td>
+                                <td style="border:1px solid #000; padding:4px; width: 30%;"><span t-esc="o.identification_no or ''"/></td>
                             </tr>
                             <tr>
                                 <td style="border:1px solid #000; padding:4px;"><strong>IQAMA:</strong></td>
-                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.employee_id.iqama_no or ''"/></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.iqama_no or ''"/></td>
                                 <td style="border:1px solid #000; padding:4px;"><strong>Date of Joining:</strong></td>
-                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.employee_id.doj or ''"/></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.employee_id.doj or ''"/></td> 
                             </tr>
                             <tr>
                                 <td style="border:1px solid #000; padding:4px;"><strong>Bank Name:</strong></td>
@@ -55,54 +55,67 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td style="border:1px solid #000; padding:4px;">BASIC</td>
-                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('BASIC', 0.0)"/>
-                                    </td>
-                                    <td style="border:1px solid #000;"></td>
-                                    <td style="border:1px solid #000;"></td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000; padding:4px;">HRA</td>
-                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('HRA', 0.0)"/>
-                                    </td>
-                                    <td style="border:1px solid #000;"></td>
-                                    <td style="border:1px solid #000;"></td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000; padding:4px;">TRANSPORT ALLOWANCE</td>
-                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('TRANS', 0.0)"/>
-                                    </td>
-                                    <td style="border:1px solid #000;"></td>
-                                    <td style="border:1px solid #000;"></td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000; padding:4px;">OTHER ALLOWANCE</td>
-                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('OTH_ALLOW', 0.0)"/>
-                                    </td>
-                                    <td style="border:1px solid #000;"></td>
-                                    <td style="border:1px solid #000;"></td>
-                                </tr>
+                                <t t-set="max_lines" t-value="max(len(o.payslip_lines_earning), len(o.payslip_lines_deduction))"/>
+                                
+                                <t t-foreach="range(max_lines)" t-as="i">
+                                    <t t-set="earning_line" t-value="o.payslip_lines_earning[i] if i &lt; len(o.payslip_lines_earning) else None"/>
+                                    <t t-set="deduction_line" t-value="o.payslip_lines_deduction[i] if i &lt; len(o.payslip_lines_deduction) else None"/>
+
+                                    <tr>
+                                        <td style="border:1px solid #000; padding:4px;">
+                                            <t t-if="earning_line">
+                                                <span t-field="earning_line.name"/>
+                                            </t>
+                                            <t t-else="">
+                                                &#160; 
+                                            </t>
+                                        </td>
+                                        <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                            <t t-if="earning_line">
+                                                <t t-esc="'%.2f' % earning_line.total"/>
+                                            </t>
+                                            <t t-else="">
+                                                &#160;
+                                            </t>
+                                        </td>
+
+                                        <td style="border:1px solid #000; padding:4px;">
+                                            <t t-if="deduction_line">
+                                                <span t-field="deduction_line.name"/>
+                                            </t>
+                                            <t t-else="">
+                                                &#160;
+                                            </t>
+                                        </td>
+                                        <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                            <t t-if="deduction_line">
+                                                <t t-esc="'%.2f' % abs(deduction_line.total)"/> 
+                                            </t>
+                                            <t t-else="">
+                                                &#160;
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                                <t t-set="gross" t-value="dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('GROSS', 0.0)"/>
+                                <t t-set="net" t-value="dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('NET', 0.0)"/>
+                                <t t-set="total_deductions" t-value="sum(l.total for l in o.payslip_lines_deduction)"/>
+
                                 <tr>
                                     <td style="border:1px solid #000; padding:4px;"><strong>GROSS EARNINGS</strong></td>
                                     <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <strong>
-                                            <t t-esc="'%.2f' % sum(o.line_ids.filtered(lambda l: l.category_id.code not in ('DED', 'NET')).mapped('total'))"/>
-                                        </strong>
+                                        <strong><t t-esc="'%.2f' % gross"/></strong>
                                     </td>
-                                    <td style="border:1px solid #000;"></td>
-                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000; padding:4px;"><strong>TOTAL DEDUCTIONS</strong></td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <strong><t t-esc="'%.2f' % abs(total_deductions)"/></strong>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #000; padding:4px;"><strong>NET SALARY</strong></td>
                                     <td style="border:1px solid #000; padding:4px; text-align:right;">
-                                        <strong>
-                                            <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('NET', 0.0)"/>
-                                        </strong>
+                                        <strong><t t-esc="'%.2f' % net"/></strong>
                                     </td>
                                     <td style="border:1px solid #000;"></td>
                                     <td style="border:1px solid #000;"></td>
@@ -110,7 +123,6 @@
                             </tbody>
                         </table>
 
-                        <p style="text-align:right; margin-top:20px;"><strong>Authorized Signature</strong></p>
                     </div>
                 </t>
             </t>
