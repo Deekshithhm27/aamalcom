@@ -679,6 +679,7 @@ class HrPayslipRun(models.Model):
         ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
         ('approved', 'Approved'),
+        ('notification_sent','Notification Sent'),
         ('done', 'Payroll Disbursed'),('close','Close')
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
     date_start = fields.Date(string='Date From', required=True, readonly=True,
@@ -690,10 +691,17 @@ class HrPayslipRun(models.Model):
                                  states={'draft': [('readonly', False)]},
                                  help="If its checked, indicates that all payslips generated from here are refund payslips.")
     disbursed_date = fields.Date(
-        string='Payroll Disbursed Date',
+        string='Payroll Disbursment Date',
         readonly=True, 
         states={'approved': [('readonly', False)]}
     )
+    notification_sent = fields.Boolean(
+            string="Notification Sent",
+            default=False,
+            readonly=True, # Should not be manually changed by the user
+            copy=False,
+            tracking=True
+        )
     def draft_payslip_run(self):
         return self.write({'state': 'draft'})
 
@@ -724,7 +732,7 @@ class HrPayslipRun(models.Model):
 
     # NEW METHOD: Send email notification to employees
     def action_send_disbursement_notification(self):
-            """Send notification email to employees about payroll disbursement date."""
+            """Send notification email to employees about payroll disbursement date and hide the button."""
             template_obj = self.env.ref('om_hr_payroll.email_template_notification_payroll_disbursement', raise_if_not_found=False)
             if not template_obj:
                 raise UserError(_("Email template 'mail.email_template_notification_payroll_disbursement' not found."))
@@ -743,6 +751,9 @@ class HrPayslipRun(models.Model):
                             month=batch.name,
                             disbursed_date=batch.disbursed_date
                         ).send_mail(batch.id, force_send=True)
-
-            self.message_post(body=_("Disbursement notification sent to all employees in this payroll batch."))
+                
+                # KEY ACTION: Set the flag to True to hide the button
+                batch.write({'state': 'notification_sent'})
+                batch.message_post(body=_("Disbursement notification sent to all employees in this payroll batch."))
+                
             return True

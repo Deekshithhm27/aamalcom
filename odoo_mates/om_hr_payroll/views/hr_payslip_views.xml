@@ -336,7 +336,7 @@
         <menuitem id="menu_department_tree"
                   action="action_view_hr_payslip_form"
                   parent="menu_hr_payroll_root"
-                  groups="om_hr_payroll.group_hr_payroll_user" sequence="10"/>
+                  groups="om_hr_payroll.group_hr_payroll_user" sequence="11"/>
 
         <record id="act_hr_employee_payslip_list" model="ir.actions.act_window">
             <field name="res_model">hr.payslip</field>
@@ -424,11 +424,13 @@
                         <button name="%(action_hr_payslip_by_employees)d" type="action" states="draft"
                                 string="Generate Payroll" class="oe_highlight"/>
                         <button string="Set to Draft" name="draft_payslip_run" type="object" states="close"/>
+
                         <button name="action_send_disbursement_notification" type="object" 
                         string="Notify Disbursement Date" class="oe_highlight"
                         states="approved" 
-                        attrs="{'invisible': [('disbursed_date', '=', False)]}" groups="visa_process.group_service_request_payroll_employee"/>
-                        <button string="Disbursed Payroll" name="done_payslip_run" type="object" states="approved"
+                        groups="visa_process.group_service_request_payroll_employee"/>
+                                            
+                        <button string="Disbursed Payroll" name="done_payslip_run" type="object" states="notification_sent"
                                 class="oe_highlight" groups="visa_process.group_service_request_payroll_employee"/>
                         <button name="close_payslip_run" type="object" string="Close" states="draft"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
@@ -447,6 +449,7 @@
                             </div>
                             <field name="credit_note"/>
                             <field name="disbursed_date"/>
+                            <field name="notification_sent" invisible="1"/>
                         </group>
                         <separator string="Payslips"/>
                         <field name="slip_ids"/>

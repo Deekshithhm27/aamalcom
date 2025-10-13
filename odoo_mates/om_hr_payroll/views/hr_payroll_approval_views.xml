@@ -7,7 +7,7 @@
             <form string="Payroll Approval">
             <header>
                 <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
-                <button name="action_generate_payslip" string="Generate Payslip" type="object" class="oe_highlight"
+                <button name="action_generate_payslip" string="Generate Payroll" type="object" class="oe_highlight"
                 attrs="{'invisible': [('generated_payroll_document', '!=', False)]}" groups="visa_process.group_service_request_payroll_employee"/>
                 <button name="action_submit_for_approval" type="object" string="Submit for Approval" class="oe_highlight" attrs="{'invisible': ['|',('upload_payroll_document','=',False),('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_employee"/>
                 <button name="action_submit_to_payroll_employee"
@@ -64,5 +64,5 @@
     <menuitem id="menu_hr_payroll_approval"
               name="Payroll Approval"
               parent="om_hr_payroll.menu_hr_payroll_root"
-              action="action_hr_payroll_approval" sequence="9"/>
+              action="action_hr_payroll_approval" sequence="15"/>
 </odoo>

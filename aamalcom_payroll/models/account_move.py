@@ -10,8 +10,15 @@ from odoo.exceptions import UserError, ValidationError
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
+
+
     client_payroll_inv = fields.Boolean(string='Client Payroll Invoice',default=False,help="This bool indicates that invoice created for client against employee data for salary")
     salary_line_ids = fields.One2many('account.move.salary.line','move_sal_id',string="Salary Lines")
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('done', 'Done'),
+        ('posted','Posted')
+    ], string="Status", default='draft', tracking=True)
 
     def action_post(self):
         result = super(AccountMove, self).action_post()

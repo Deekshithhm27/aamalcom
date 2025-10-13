@@ -36,7 +36,7 @@ class ClientPayslipApproval(models.Model):
     create_date = fields.Datetime(string="Create Date", readonly=True, default=lambda self: datetime.now())
     processed_date = fields.Datetime(string="Processed Date", readonly=True, tracking=True)
     
-    approval_payslip_document = fields.Binary(string="Approval Payroll Document")
+    approval_payslip_document = fields.Binary(string="External Payroll Document")
     approval_payslip_filename = fields.Char(string="Document Filename")
     
     # NEW FIELDS FOR THE GENERATED DOCUMENT (UPDATED)
@@ -67,7 +67,7 @@ class ClientPayslipApproval(models.Model):
         compute="_compute_is_payroll_manager"
     )
     disbursed_date = fields.Date(
-        string='Payroll Disbursed Date',
+        string='Payroll Disbursment Date',
         readonly=True, 
         states={'submit_to_payroll_employee': [('readonly', False)]}
     )
@@ -79,6 +79,13 @@ class ClientPayslipApproval(models.Model):
             readonly=True,
             tracking=True,
             help="Stores the user who created this record, only if they are a Project Manager."
+        )
+    notification_sent = fields.Boolean(
+            string="Notification Sent",
+            default=False,
+            readonly=True, # Should not be manually changed by the user
+            copy=False,
+            tracking=True
         )
     @api.model
     def create(self, vals):
@@ -297,6 +304,7 @@ class ClientPayslipApproval(models.Model):
             raise UserError(_("The intended recipient (%s) does not have a work email or standard email configured.") % (recipient_user.name,))
         template = self.env.ref('aamalcom_payroll.email_template_payroll_disbursement_notification')
         template.send_mail(self.id, force_send=True)
+        self.write({'notification_sent': True})
         return True
 
 class ClientPayslipRefuseWizard(models.TransientModel):
