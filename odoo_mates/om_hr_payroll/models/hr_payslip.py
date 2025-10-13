@@ -668,6 +668,7 @@ class HrPayslipInput(models.Model):
 class HrPayslipRun(models.Model):
     _name = 'hr.payslip.run'
     _description = 'Payslip Batches'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(required=True, readonly=True, states={'draft': [('readonly', False)]})
     slip_ids = fields.One2many('hr.payslip', 'payslip_run_id', string='Payslips', readonly=True,
@@ -723,38 +724,25 @@ class HrPayslipRun(models.Model):
 
     # NEW METHOD: Send email notification to employees
     def action_send_disbursement_notification(self):
-            self.ensure_one()
-            if not self.disbursed_date:
-                raise UserError(_("Please set the Payroll Disbursed Date before sending the notification."))
-            if not self.slip_ids:
-                raise UserError(_("No payslips found in this batch to notify employees."))
+            """Send notification email to employees about payroll disbursement date."""
+            template_obj = self.env.ref('om_hr_payroll.email_template_notification_payroll_disbursement', raise_if_not_found=False)
+            if not template_obj:
+                raise UserError(_("Email template 'mail.email_template_notification_payroll_disbursement' not found."))
 
-            # Use the payslip run ID (self.id) as the resource, 
-            # which is correct since the template is defined on hr.payslip.run
-            template_id = self.env.ref('om_hr_payroll.email_template_disbursement_notification')
-            if not template_id:
-                raise UserError(_("Email template 'email_template_disbursement_notification' not found."))
+            for batch in self:
+                if not batch.disbursed_date:
+                    raise UserError(_("Please set the Payroll Disbursed Date before sending notifications."))
 
-            # We will iterate over the payslips themselves to get the employee email
-            for payslip in self.slip_ids:
-                if not payslip.employee_id.work_email:
-                     continue
-                
-                # Send the email. The 'res_id' must be the ID of the model the template is defined on.
-                # Here, the template is on hr.payslip.run, so we pass self.id.
-                template_id.send_mail(self.id, force_send=True, email_values={
-                     'email_to': payslip.employee_id.work_email,
-                     'email_from': self.env.user.company_id.email or self.env.user.email,
-                     # Optionally, you can pass the Payslip ID for more specific context:
-                     'model': 'hr.payslip.run', # Explicitly define the model
-                }, raise_exception=True) # Adding raise_exception=True might give a clearer error next time
+                for payslip in batch.slip_ids:
+                    employee = payslip.employee_id
+                    if employee.work_email:
+                        # Send email to employee
+                        template_obj.with_context(
+                            email_to=employee.work_email,
+                            employee_name=employee.name,
+                            month=batch.name,
+                            disbursed_date=batch.disbursed_date
+                        ).send_mail(batch.id, force_send=True)
 
-            return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'message': _("Disbursement notification sent successfully."), 
-                        'type': 'success',
-                        'sticky': False,
-                    }
-                }
+            self.message_post(body=_("Disbursement notification sent to all employees in this payroll batch."))
+            return True

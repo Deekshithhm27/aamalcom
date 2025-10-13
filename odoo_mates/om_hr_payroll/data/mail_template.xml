@@ -24,7 +24,7 @@
             <field name="report_template" ref="om_hr_payroll.payslip_details_report"/>
             <field name="report_name">{{ (object.number or '').replace('/','_') }}</field>
         </record>
-        <record id="email_template_disbursement_notification" model="mail.template">
+        <record id="email_template_notification_payroll_disbursement" model="mail.template">
             <field name="name">Payslip Disbursement Notification</field>
             <field name="model_id" ref="om_hr_payroll.model_hr_payslip_run"/>  
             <field name="subject">Payslip Disbursement Date Notification</field>

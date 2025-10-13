@@ -241,12 +241,12 @@
                             <page string="Salary Computation">
                                 <field name="line_ids" colspan="4" nolabel="1">
                                     <tree string="Salary Structure" editable="bottom" decoration-info="total == 0">
-                                        <field name="name"/>
-                                        <field name="code"/>
-                                        <field name="category_id"/>
+                                        <field name="name" invisible="1"/>
+                                        <field name="code" invisible="1"/>
+                                        <field name="category_id" invisible="1"/>
                                         <field name="sequence" invisible="1"/>
-                                        <field name="quantity"/>
-                                        <field name="rate"/>
+                                        <field name="quantity" invisible="1"/>
+                                        <field name="rate" invisible="1"/>
                                         <field name="salary_rule_id"/>
                                         <field name="amount"/>
                                         <field name="total"/>
@@ -336,7 +336,7 @@
         <menuitem id="menu_department_tree"
                   action="action_view_hr_payslip_form"
                   parent="menu_hr_payroll_root"
-                  groups="om_hr_payroll.group_hr_payroll_user"/>
+                  groups="om_hr_payroll.group_hr_payroll_user" sequence="10"/>
 
         <record id="act_hr_employee_payslip_list" model="ir.actions.act_window">
             <field name="res_model">hr.payslip</field>
@@ -427,9 +427,9 @@
                         <button name="action_send_disbursement_notification" type="object" 
                         string="Notify Disbursement Date" class="oe_highlight"
                         states="approved" 
-                        attrs="{'invisible': [('disbursed_date', '=', False)]}"/>
+                        attrs="{'invisible': [('disbursed_date', '=', False)]}" groups="visa_process.group_service_request_payroll_employee"/>
                         <button string="Disbursed Payroll" name="done_payslip_run" type="object" states="approved"
-                                class="oe_highlight"/>
+                                class="oe_highlight" groups="visa_process.group_service_request_payroll_employee"/>
                         <button name="close_payslip_run" type="object" string="Close" states="draft"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
@@ -464,7 +464,7 @@
 
         <menuitem id="menu_hr_payslip_run"
                   action="action_hr_payslip_run_tree"
-                  parent="menu_hr_payroll_root"/>
+                  parent="menu_hr_payroll_root" sequence="8"/>
 
         <!--  Shortcuts -->
 

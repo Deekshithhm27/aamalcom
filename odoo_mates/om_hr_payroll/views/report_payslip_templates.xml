@@ -1,212 +1,119 @@
-<!-- <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="report_payslip">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Pay Slip</h2>
-                        <p t-field="o.name"/>
+                    <div class="page" style="font-family: Arial; font-size: 13px;">
 
-                        <table class="table table-sm table-bordered">
-                            <tr>
-                                <td><strong>Name</strong></td>
-                                <td><span t-field="o.employee_id"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Address</strong></td>
-                                <td colspan="3">
-                                    <div t-field="o.employee_id.address_home_id"
-                                         t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Email</strong></td>
-                                <td><span t-field="o.employee_id.work_email"/></td>
-                                <td><strong>Identification No</strong></td>
-                                <td><span t-field="o.identification_no"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Iqama No</strong></td>
-                                <td><span t-field="o.employee_id.iqama_no"/></td>
-                                <td><strong>IBAN</strong></td>
-                                <td><span t-field="o.bank_iban"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Sponsorship Number</strong></td>
-                                <td><span t-field="o.employee_id.sponsor_id.sponsor_no"/></td>
-                                <td><strong>Reference</strong></td>
-                                <td><span t-field="o.number"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Bank Name</strong></td>
-                                <td><span t-field="o.bank_name"/></td>
-                                <td><strong>Date From</strong></td>
-                                <td><span t-field="o.date_from"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Date To</strong></td>
-                                <td><span t-field="o.date_to"/></td>
-                                <td><strong>Month</strong></td>
-                                <td><span t-field="o.month"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Working Days</strong></td>
-                                <td><span t-field="o.working_days"/></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table> -->
+                        <div style="text-align:center; margin-bottom:10px;">
+                            <t t-if="o.company_id.logo">
+                                <img t-att-src="image_data_uri(o.company_id.logo)" alt="Company Logo" style="height:70px;"/>
+                            </t>
+                            <t t-else="">
+                                <h3 style="margin:5px 0;" t-field="o.company_id.name"/>
+                            </t>
+                            
+                            <p style="margin:0;">Al Washm Street, Al Murabba, Riyadh 12631, Saudi Arabia</p>
+                            <h4 style="margin-top:8px; text-decoration: underline;">SALARY SLIP</h4>
+                        </div>
 
-                        <!-- Second table with vertical lines + outer border -->
-                <!--         <table class="payslip-lines-table" style="border-collapse: collapse; width: 100%; border: 1px solid #000;">
+                        <table style="width:100%; border-collapse: collapse; border:1px solid #000; margin-bottom: 5px;">
+                            <tr>
+                                <td style="border:1px solid #000; padding:4px; width: 25%;"><strong>Month:</strong></td>
+                                <td style="border:1px solid #000; padding:4px; width: 75%;"><span t-esc="o.month or ''"/></td>
+                            </tr>
+                        </table>
+
+                        <table style="width:100%; border-collapse: collapse; border:1px solid #000; margin-bottom: 5px;">
+                            <tr>
+                                <td style="border:1px solid #000; padding:4px; width: 20%;"><strong>Employee Name:</strong></td>
+                                <td style="border:1px solid #000; padding:4px; width: 30%;"><span t-field="o.employee_id.name"/></td>
+                                <td style="border:1px solid #000; padding:4px; width: 20%;"><strong>Emp No:</strong></td>
+                                <td style="border:1px solid #000; padding:4px; width: 30%;"><span t-esc="o.employee_id.identification_id or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #000; padding:4px;"><strong>IQAMA:</strong></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.employee_id.iqama_no or ''"/></td>
+                                <td style="border:1px solid #000; padding:4px;"><strong>Date of Joining:</strong></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.employee_id.doj or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #000; padding:4px;"><strong>Bank Name:</strong></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.bank_name or ''"/></td>
+                                <td style="border:1px solid #000; padding:4px;"><strong>Bank A/c No:</strong></td>
+                                <td style="border:1px solid #000; padding:4px;"><span t-esc="o.bank_iban or ''"/></td>
+                            </tr>
+                        </table>
+
+                        <table style="width:100%; border-collapse:collapse; border:1px solid #000; margin-top:10px;">
                             <thead>
-                                <tr>                                 
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Name</th> 
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Amount</th>
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Name</th> 
-                                    <th style="padding: 6px 12px;">Amount</th>    
+                                <tr style="background:#f0f0f0;">
+                                    <th style="border:1px solid #000; padding:4px; width: 25%;">EARNINGS</th>
+                                    <th style="border:1px solid #000; padding:4px; width: 25%;">AMOUNT (SAR)</th>
+                                    <th style="border:1px solid #000; padding:4px; width: 25%;">DEDUCTIONS</th>
+                                    <th style="border:1px solid #000; padding:4px; width: 25%;">AMOUNT (SAR)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
-                                    <td style="border-right: 1px solid #000; padding: 6px 12px;"><span t-field="line.code"/></td>
-                                    <td style="border-right: 1px solid #000; padding: 6px 12px;"><span t-field="line.name"/></td>
-                                    <td style="border-right: 1px solid #000; padding: 6px 12px;"><span t-field="line.quantity"/></td>
-                                    <td style="padding: 6px 12px;">
-                                        <span t-esc="line.amount"
-                                              t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <p class="text-right">
-                            <strong>Authorized signature</strong>
-                        </p>
-                    </div>
-                </t>
-            </t>
-        </t>
-    </template>
-
-</odoo> -->
-<odoo>
-    <template id="report_payslip">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Pay Slip</h2>
-                        <p t-field="o.name"/>
-
-                        <!-- Employee Details Table -->
-                        <table class="table table-sm table-bordered">
-                            <tr>
-                                <td><strong>Name</strong></td>
-                                <td colspan="3"><span t-field="o.employee_id"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Address</strong></td>
-                                <td colspan="3">
-                                    <div t-field="o.employee_id.address_home_id"
-                                         t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Email</strong></td>
-                                <td><span t-field="o.employee_id.work_email"/></td>
-                                <td><strong>Identification No</strong></td>
-                                <td><span t-field="o.identification_no"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Iqama No</strong></td>
-                                <td><span t-field="o.employee_id.iqama_no"/></td>
-                                <td><strong>IBAN</strong></td>
-                                <td><span t-field="o.bank_iban"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Sponsorship Number</strong></td>
-                                <td><span t-field="o.employee_id.sponsor_id.sponsor_no"/></td>
-                                <td><strong>Reference</strong></td>
-                                <td><span t-field="o.number"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Bank Name</strong></td>
-                                <td><span t-field="o.bank_name"/></td>
-                                <td><strong>Date From</strong></td>
-                                <td><span t-field="o.date_from"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Date To</strong></td>
-                                <td><span t-field="o.date_to"/></td>
-                                <td><strong>Month</strong></td>
-                                <td><span t-field="o.month"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Working Days</strong></td>
-                                <td><span t-field="o.working_days"/></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table>
-
-                        <!-- Earnings vs Deductions Table -->
-                        <table style="border-collapse: collapse; width: 100%; border: 1px solid #000;">
-                            <thead>
                                 <tr>
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Earnings</th>
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Amount</th>
-                                    <th style="border-right: 1px solid #000; padding: 6px 12px;">Deductions</th>
-                                    <th style="padding: 6px 12px;">Amount</th>
+                                    <td style="border:1px solid #000; padding:4px;">BASIC</td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('BASIC', 0.0)"/>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="earnings" t-value="o.line_ids.filtered(lambda l: l.category_id.name != 'Deduction')"/>
-                                <t t-set="deductions" t-value="o.line_ids.filtered(lambda l: l.category_id.name == 'Deduction')"/>
-
-                                <t t-foreach="range(max(len(earnings), len(deductions)))" t-as="i">
-                                    <tr t-attf-style="#{ 'border-top: 1px solid black;' if i == 0 else '' }">
-                                        <!-- Earnings Name -->
-                                        <td style="border-right: 1px solid #000; padding: 4px;">
-                                            <t t-if="i &lt; len(earnings)">
-                                                <span t-esc="earnings[i].name"/>
-                                            </t>
-                                        </td>
-                                        <!-- Earnings Amount -->
-                                        <td style="border-right: 1px solid #000; text-align: right; padding: 4px;">
-                                            <t t-if="i &lt; len(earnings)">
-                                                <span t-esc="earnings[i].total" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/>
-                                            </t>
-                                        </td>
-                                        <!-- Deductions Name -->
-                                        <td style="border-right: 1px solid #000; padding: 4px;">
-                                            <t t-if="i &lt; len(deductions)">
-                                                <span t-esc="deductions[i].name"/>
-                                            </t>
-                                        </td>
-                                        <!-- Deductions Amount -->
-                                        <td style="text-align: right; padding: 4px;">
-                                            <t t-if="i &lt; len(deductions)">
-                                                <span t-esc="deductions[i].total" t-options='{"widget": "monetary", "display_currency": o.company_id.currency_id}'/>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                </t>
+                                <tr>
+                                    <td style="border:1px solid #000; padding:4px;">HRA</td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('HRA', 0.0)"/>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #000; padding:4px;">TRANSPORT ALLOWANCE</td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('TRANS', 0.0)"/>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #000; padding:4px;">OTHER ALLOWANCE</td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('OTH_ALLOW', 0.0)"/>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #000; padding:4px;"><strong>GROSS EARNINGS</strong></td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <strong>
+                                            <t t-esc="'%.2f' % sum(o.line_ids.filtered(lambda l: l.category_id.code not in ('DED', 'NET')).mapped('total'))"/>
+                                        </strong>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #000; padding:4px;"><strong>NET SALARY</strong></td>
+                                    <td style="border:1px solid #000; padding:4px; text-align:right;">
+                                        <strong>
+                                            <t t-esc="'%.2f' % dict(o.line_ids.mapped(lambda l: (l.code, l.total))).get('NET', 0.0)"/>
+                                        </strong>
+                                    </td>
+                                    <td style="border:1px solid #000;"></td>
+                                    <td style="border:1px solid #000;"></td>
+                                </tr>
                             </tbody>
                         </table>
 
-                        <p class="text-right" style="margin-top: 20px;">
-                            <strong>Authorized signature</strong>
-                        </p>
+                        <p style="text-align:right; margin-top:20px;"><strong>Authorized Signature</strong></p>
                     </div>
                 </t>
             </t>
         </t>
     </template>
 </odoo>
-
-
-
-

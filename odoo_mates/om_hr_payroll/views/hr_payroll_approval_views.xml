@@ -61,12 +61,8 @@
     </record>
 
     <!-- Menu -->
-    <menuitem id="menu_hr_payroll_approval_root"
-              name="Payroll Approvals"
-              parent="om_hr_payroll.menu_hr_payroll_root"/>
-
     <menuitem id="menu_hr_payroll_approval"
               name="Payroll Approval"
-              parent="menu_hr_payroll_approval_root"
-              action="action_hr_payroll_approval"/>
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_hr_payroll_approval" sequence="9"/>
 </odoo>
