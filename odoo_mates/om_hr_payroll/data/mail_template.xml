@@ -21,7 +21,7 @@
                     <br/>
                 </div>
             </field>
-            <field name="report_template" ref="om_hr_payroll.payslip_details_report"/>
+            <field name="report_template" ref="om_hr_payroll.action_report_payslip"/>
             <field name="report_name">{{ (object.number or '').replace('/','_') }}</field>
         </record>
         <record id="email_template_notification_payroll_disbursement" model="mail.template">

@@ -152,55 +152,7 @@ class HrPayslip(models.Model):
             'views': [(tree_view_ref and tree_view_ref.id or False, 'tree'), (form_view_ref and form_view_ref.id or False, 'form')],
             'context': {}
         }
-    payslip_lines_earning = fields.One2many(
-        'hr.payslip.line', 'slip_id', 
-        compute='_compute_payslip_lines_by_category',
-        string='Earning Lines',
-        store=False  # No need to store these
-    )
-    payslip_lines_deduction = fields.One2many(
-        'hr.payslip.line', 'slip_id', 
-        compute='_compute_payslip_lines_by_category',
-        string='Deduction Lines',
-        store=False
-    )
-
-    @api.depends('line_ids')
-    def _compute_payslip_lines_by_category(self):
-        """
-        Groups the payslip lines into Earnings and Deductions for easier reporting.
-        We generally consider anything not a Deduction or NET as an Earning for reporting purposes.
-        The common category codes for calculation: BASIC, ALW, GROSS, NET, DED.
-        """
-        for slip in self:
-            earning_lines = self.env['hr.payslip.line']
-            deduction_lines = self.env['hr.payslip.line']
-            
-            # Mapping for better categorization (you might need to adjust codes based on your rules)
-            earning_category_codes = ['BASIC', 'ALW', 'GROSS'] # Add other earning codes as needed
-            deduction_category_codes = ['DED']
-
-            # Get all lines that appear on payslip (appears_on_payslip=True) and are not NET or GROSS subtotals.
-            # This is a general approach; you may need to refine the filter based on your structure's rules.
-            display_lines = slip.line_ids.filtered(lambda l: l.appears_on_payslip and l.code not in ('GROSS', 'NET', 'BASIC'))
-
-            # Let's iterate through all display lines and sort them
-            for line in display_lines:
-                category_code = line.category_id.code
-                
-                # Simple approach: If category is a deduction
-                if category_code == 'DED':
-                    deduction_lines |= line
-                # Otherwise (assuming it's a component of gross pay/earning)
-                else:
-                    earning_lines |= line
-            
-            # Explicitly fetch BASIC line as it's often a separate row
-            basic_line = slip.line_ids.filtered(lambda l: l.code == 'BASIC' and l.appears_on_payslip)
-
-            # Prepend the BASIC line to earnings if it exists
-            slip.payslip_lines_earning = basic_line + earning_lines
-            slip.payslip_lines_deduction = deduction_lines
+    
 
     def action_send_email(self):
         self.ensure_one()
@@ -744,13 +696,6 @@ class HrPayslipRun(models.Model):
         readonly=True, 
         states={'approved': [('readonly', False)]}
     )
-    notification_sent = fields.Boolean(
-            string="Notification Sent",
-            default=False,
-            readonly=True, # Should not be manually changed by the user
-            copy=False,
-            tracking=True
-        )
     def draft_payslip_run(self):
         return self.write({'state': 'draft'})
 
@@ -778,6 +723,26 @@ class HrPayslipRun(models.Model):
             if rec.state == 'done':
                 raise ValidationError(_('You Cannot Delete Done Payslips Batches'))
         return super(HrPayslipRun, self).unlink()
+
+    @api.constrains('date_start', 'date_end')
+    def _check_current_month_period(self):
+        """Constraint to ensure the period is close to the current date,
+        e.g., within the current month/year, to prevent future payroll runs.
+        """
+        today = date.today()
+        current_month_start = today.replace(day=1)
+            
+        for run in self:
+            #  Restrict strictly to the current month
+            if run.date_start.year > today.year or (run.date_start.year == today.year and run.date_start.month > today.month):
+                raise ValidationError(_("You cannot create a payroll batch for a future month."))
+                     
+            if run.date_end.year > today.year or (run.date_end.year == today.year and run.date_end.month > today.month):
+                raise ValidationError(_("The payroll period cannot end in a future month."))
+                    
+            # to ensure the date_start is before date_end
+            if run.date_start and run.date_end and run.date_start > run.date_end:
+                raise ValidationError(_("The start date must be before the end date."))
 
     # NEW METHOD: Send email notification to employees
     def action_send_disbursement_notification(self):
