@@ -10,7 +10,7 @@
                     <field name="reason" placeholder="Please enter the reason for refusal..."/>
                     <field name="payslip_approval_id" invisible="1"/>
                 </group>
-                <footer groups="visa_process.group_service_request_manager">
+                <footer >
                     <button string="Refuse" 
                             name="refuse_payslip" 
                             type="object" 

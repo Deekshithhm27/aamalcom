@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_client_payslip_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        
+                        <h2 style="text-align: center; margin-bottom: 20px;">Client Employee Payslip</h2>
+
+                        <table class="table table-sm" style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr style="background-color: #f0f0f0;">
+                                <td style="border: 2px solid #000; padding: 6px; width: 25%;"><strong>Employee Name</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px; width: 25%;"><span t-field="o.employee_id.name"/></td>
+                                <td style="border: 2px solid #000; padding: 6px; width: 25%;"><strong>Employee ID</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px; width: 25%;"><span t-field="o.client_emp_sequence"/></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 2px solid #000; padding: 6px;"><strong>Reference No</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><span t-field="o.name"/></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><strong>Work Days</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><span t-field="o.worked_days"/></td>
+                            </tr>
+                            <tr style="background-color: #f0f0f0;">
+                                <td style="border: 2px solid #000; padding: 6px;"><strong>Period From</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><span t-field="o.date_start" t-options='{"widget": "date"}'/></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><strong>Period To</strong></td>
+                                <td style="border: 2px solid #000; padding: 6px;"><span t-field="o.date_end" t-options='{"widget": "date"}'/></td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-sm" style="width: 100%; border: 2px solid #000; border-collapse: collapse;">
+                            <thead style="background-color: #dcdcdc;">
+                                <tr>
+                                    <th style="border: 2px solid #000; padding: 8px; text-align: center;" colspan="2">EARNINGS</th>
+                                    <th style="border: 2px solid #000; padding: 8px; text-align: center;" colspan="2">DEDUCTIONS &amp; CHARGES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 2px solid #000; padding: 6px; width: 25%;">Basic Salary</td>
+                                    <td style="border: 2px solid #000; padding: 6px; width: 25%; text-align: right;">
+                                        <span t-field="o.wage" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px; width: 25%;">Other Deductions</td>
+                                    <td style="border: 2px solid #000; padding: 6px; width: 25%; text-align: right;">
+                                        <span t-field="o.other_deductions" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #f0f0f0;">
+                                    <td style="border: 2px solid #000; padding: 6px;">HRA</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.hra" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;">Gosi Charges</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.gosi_charges" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid #000; padding: 6px;">Transportation Allowance</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.travel_allowance" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                                <tr style="background-color: #f0f0f0;">
+                                    <td style="border: 2px solid #000; padding: 6px;">Other Allowance</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.other_allowance" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid #000; padding: 6px;">Arrears</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.arrears" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                                <tr style="background-color: #f0f0f0;">
+                                    <td style="border: 2px solid #000; padding: 6px;">Advances (Reimbursed)</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.advances" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid #000; padding: 6px;">Overtime</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.overtime" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                                <tr style="background-color: #f0f0f0;">
+                                    <td style="border: 2px solid #000; padding: 6px;">Additions</td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;">
+                                        <span t-field="o.additions" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td style="border: 2px solid #000; padding: 6px;"></td>
+                                    <td style="border: 2px solid #000; padding: 6px; text-align: right;"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot style="font-weight: bold; background-color: #dcdcdc;">
+                                <tr>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px;">GROSS SALARY (Earnings Total)</td>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px; text-align: right;">
+                                        <span t-field="o.gross_salary" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px;">TOTAL DEDUCTIONS &amp; CHARGES</td>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px; text-align: right;">
+                                        <t t-set="total_deductions" t-value="o.other_deductions + o.gosi_charges"/>
+                                        <span t-esc="total_deductions" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px;">NET SALARY PAYABLE</td>
+                                    <td colspan="2" style="border: 2px solid #000; padding: 8px; text-align: right; background-color: #cceeff;">
+                                        <t t-set="net_payable" t-value="o.gross_salary - total_deductions"/>
+                                        <span t-esc="net_payable" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                        <div style="margin-top: 50px; text-align: center;">
+                            <div style="display: inline-block; width: 45%; text-align: left;">
+                                <p style="border-top: 1px solid #000; padding-top: 5px;">Employee Signature</p>
+                            </div>
+                            <div style="display: inline-block; width: 45%; text-align: right;">
+                                <p style="border-top: 1px solid #000; padding-top: 5px;">Authorised Signature</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

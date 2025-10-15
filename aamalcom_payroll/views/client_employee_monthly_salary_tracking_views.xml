@@ -20,6 +20,8 @@
                     <group groups="hr.group_hr_user">
                         <group>
                             <field name="employee_id"/>
+                            <field name="service_request_type" widget="selection" nolabel="1" options="{'horizontal': true}" invisible="1"/>
+                            <field name="service_request_type" invisible="1"/>
                             <field name="client_emp_sequence"/>
                             <label for="date_start" string="Period"/>
                             <div>
