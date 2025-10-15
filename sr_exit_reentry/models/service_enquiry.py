@@ -109,8 +109,8 @@ class ServiceEnquiry(models.Model):
                                 'amount':p_line.amount,
                                 'remarks':p_line.remarks
                             })
-                else:
-                    raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
+                # else:
+                #     raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
         return result
 
     @api.onchange('employee_id',)
@@ -143,6 +143,11 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         result = super(ServiceEnquiry, self).action_submit()
         for record in self:
+            if record.service_request  in ('exit_reentry_issuance', 'exit_reentry_issuance_ext'):
+                if record.self_pay or record.employee_pay:
+                    if not record.upload_payment_doc:
+                        raise ValidationError(_('Kindly upload payment document.'))
+
             if record.service_request in ('exit_reentry_issuance_ext','exit_reentry_issuance'):
                 if not (record.aamalcom_pay or record.self_pay or record.employee_pay):
                     raise ValidationError('Please select who needs to pay fees.')
