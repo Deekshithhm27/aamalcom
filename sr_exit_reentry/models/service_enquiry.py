@@ -109,8 +109,8 @@ class ServiceEnquiry(models.Model):
                                 'amount':p_line.amount,
                                 'remarks':p_line.remarks
                             })
-                # else:
-                #     raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
+                else:
+                    raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
         return result
 
     @api.onchange('employee_id',)
