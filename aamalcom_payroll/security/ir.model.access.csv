@@ -77,3 +77,5 @@ access_client_payslip_refuse_wizard,Payslip Refuse Wizard Access,model_client_pa
 access_client_payslip_refuse_wizard_payroll,Payslip Refuse Wizard Access payroll,model_client_payslip_refuse_wizard,visa_process.group_service_request_payroll_manager,1,1,1,0
 access_client_payslip_refuse_wizard_finance,Payslip Refuse Wizard Access finance,model_client_payslip_refuse_wizard,visa_process.group_service_request_finance_manager,1,1,1,0
 
+
+

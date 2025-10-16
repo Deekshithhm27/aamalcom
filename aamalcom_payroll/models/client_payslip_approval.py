@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from datetime import datetime, date
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 import io
 import base64
 import calendar
@@ -331,6 +331,25 @@ class ClientPayslipApproval(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'reload',
             }
+    @api.constrains('from_date', 'to_date')
+    def _check_current_month_period(self):
+        """Constraint to ensure the period is close to the current date,
+        e.g., within the current month/year, to prevent future payroll runs.
+        """
+        today = date.today()
+        current_month_start = today.replace(day=1)
+            
+        for run in self:
+            #  Restrict strictly to the current month
+            if run.from_date.year > today.year or (run.from_date.year == today.year and run.from_date.month > today.month):
+                raise ValidationError(_("You cannot create a payroll batch for a future month."))
+                     
+            if run.to_date.year > today.year or (run.to_date.year == today.year and run.to_date.month > today.month):
+                raise ValidationError(_("The payroll period cannot end in a future month."))
+                    
+            # to ensure the date_start is before date_end
+            if run.from_date and run.to_date and run.from_date > run.to_date:
+                raise ValidationError(_("The start date must be before the end date."))
     
     def action_submit_to_payroll(self):
         for rec in self:

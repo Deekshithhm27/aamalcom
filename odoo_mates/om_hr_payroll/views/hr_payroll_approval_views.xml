@@ -12,6 +12,16 @@
                 <button name="action_submit_for_approval" type="object" string="Submit for Approval" class="oe_highlight" attrs="{'invisible': ['|',('upload_payroll_document','=',False),('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_employee"/>
                 <button name="action_submit_to_payroll_employee"
                 string="Approved" type="object" class="btn-primary" attrs="{'invisible': [('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                <button name="action_refused_by_payroll_manager"
+                string="Refuse"
+                type="object"
+                class="btn-danger"
+                attrs="{'invisible': [('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                <button name="action_re_submit" string="Re-send for Verification"
+                type="object"
+                class="btn-primary"
+                attrs="{'invisible': [('state','!=','refuse')]}" 
+                groups="visa_process.group_service_request_payroll_employee"/>
                 </header>
                 <sheet>
                     <field name="name" invisible="1"/>

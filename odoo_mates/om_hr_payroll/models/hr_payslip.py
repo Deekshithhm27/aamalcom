@@ -38,7 +38,7 @@ class HrPayslip(models.Model):
         ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
         ('approved', 'Approved'),
-        ('done', 'Payroll Disbursed'),('cancel','Cancel')
+        ('done', 'Payroll Disbursed'),('cancel','Cancel'),('refuse', 'Refused'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft',
         help="""* When the payslip is created the status is \'Draft\'
                 \n* If the payslip is under verification, the status is \'Waiting\'.
@@ -681,7 +681,7 @@ class HrPayslipRun(models.Model):
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
         ('approved', 'Approved'),
         ('notification_sent','Notification Sent'),
-        ('done', 'Payroll Disbursed'),('close','Close')
+        ('done', 'Payroll Disbursed'),('close','Close'),('refuse', 'Refused'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))

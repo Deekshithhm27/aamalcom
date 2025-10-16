@@ -35,11 +35,13 @@ class HrPayrollApproval(models.Model):
         ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
         ('approved', 'Approved'),
         ('done', 'Payroll Disbursed'),
+        ('refuse', 'Refused'),
     ], string="Status", default='draft', tracking=True)
     upload_payroll_document = fields.Binary(string="Payroll Document")
     generated_payroll_document = fields.Binary(string="Generated Payroll Document", readonly=True)
     generated_payroll_filename = fields.Char(string="Generated Filename", readonly=True)
     processed_date = fields.Datetime(string="Processed Date", readonly=True, copy=False)
+    refusal_reason = fields.Text(string="Refusal Reason", readonly=True, tracking=True)
 
     
 
@@ -127,8 +129,6 @@ class HrPayrollApproval(models.Model):
     def action_submit_for_approval(self):
         """Updates state to 'submit_to_payroll_manager' for payslips and runs."""
         payslips = self._get_payslips_in_range(states=['submit_to_payroll']) 
-        if not payslips:
-            raise UserError(_("No Payslips found in 'Submitted for Verification' state for this period. Cannot submit for manager approval."))
         # 1. Update Payslip State
         payslips.write({'state': 'submit_to_payroll_manager', 'processed_date': datetime.now()}) 
         # 2. SYNCHRONIZE: Update all associated Payslip Runs
@@ -319,3 +319,44 @@ class HrPayrollApproval(models.Model):
         payslips.write({'state': 'done'})
         self._synchronize_payslip_run(payslips, 'done')
         return self.write({'state': 'done'})
+        
+    def action_refused_by_payroll_manager(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'payroll.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_payslip_approval_id': self.id,
+                }
+            }
+        
+    def action_re_submit(self):
+        for rec in self:
+            rec.state = 'submit_to_payroll'
+            rec.processed_date = datetime.now()
+        return True
+        
+        
+
+class PayrollRefuseWizard(models.TransientModel):
+
+    _name = 'payroll.refuse.wizard'
+    _description = 'Wizard to Refuse Payroll Approval'
+
+    reason = fields.Text(string="Reason for Refusal", required=True)
+    payslip_approval_id = fields.Many2one('hr.payroll.approval', string="Payslip Approval")
+
+    def refuse_payslip(self):
+        self.ensure_one()
+        payslip = self.payslip_approval_id
+        payslip.write({
+            'state': 'refuse',
+            'refusal_reason': self.reason,
+        })
+        payslip.message_post(
+            body=_("Payslip has been refused by PM with the following reason:<br/>%s") % self.reason
+        )
+        return {'type': 'ir.actions.act_window_close'}
+
+    
