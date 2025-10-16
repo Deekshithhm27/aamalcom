@@ -21,7 +21,7 @@
                   parent="menu_hr_client_payroll_base"
                   action="action_client_payslip_approval"
                   sequence="1"
-                  groups="visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_manager,,visa_process.group_service_request_finance_manager"/>
+                  groups="visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_manager,visa_process.group_service_request_finance_manager"/>
 
         
 
