@@ -36,7 +36,7 @@ class HrOnboardingProcess(models.Model):
 
     status = fields.Selection(
         [('draft', 'Draft'),('issued', 'Issued'),
-         ('not_issued', 'NA'),('pending', 'Pending'),],
+         ('not_issued', 'Not issued'),('pending', 'Pending'),],
         string="Status",
         default='draft'
     )
@@ -117,7 +117,8 @@ class HrOnboardingProcessLine(models.Model):
     )
     status = fields.Selection(
         [('issued', 'Issued'),
-         ('not_issued', 'Not Issued')],
+         ('not_issued', 'NA'),
+         ('pending', 'Pending')],
         string="Status",
         default='not_issued'
     )
