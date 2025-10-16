@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="base_menu_employees" name="My Profile" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee" sequence="1">
+    <menuitem id="base_menu_employees" name="My Profile" groups="visa_process.group_service_request_administrator,visa_process.group_service_request_finance_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_hr_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_it_employee" sequence="1">
         <menuitem id="menu_hr_employee_self" name="Profile" action="action_self_employee" sequence="1"/>
     </menuitem>
 
