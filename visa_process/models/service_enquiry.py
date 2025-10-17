@@ -589,14 +589,7 @@ class ServiceEnquiry(models.Model):
                 record.message_post(body=f"1st Govt Employee:{self.first_govt_employee_id.user_id.name} have uploaded documents,PM Needs to Review and assign 2nd GRE")
                 record.submit_clicked = True
 
-    ##groupby method for client spoc 
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        """Restrict records for client SPOC group."""
-        if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
-            args = args + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
-        return super(ServiceEnquiry, self).search(args, offset=offset, limit=limit, order=order, count=count)
-
+    
         
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -708,7 +701,7 @@ class ServiceEnquiry(models.Model):
             if 'upload_sponsorship_doc' in vals:
                 vals['upload_sponsorship_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_SponsorshipDoc.pdf"
             return super(ServiceEnquiry, self).create(vals)
-
+    
     def write(self, vals):
         for record in self:
             employee_name = record.employee_id.name if record.employee_id else 'UnknownEmployee'

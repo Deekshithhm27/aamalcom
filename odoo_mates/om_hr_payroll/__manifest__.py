@@ -33,7 +33,6 @@
             'views/hr_employee_views.xml',
             'views/hr_payroll_report.xml',
             'views/hr_payroll_approval_views.xml',
-            'views/reporting_menu.xml',
             'wizard/hr_payroll_contribution_register_report_views.xml',
             'views/res_config_settings_views.xml',
             'views/report_contribution_register_templates.xml',

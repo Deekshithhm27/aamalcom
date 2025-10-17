@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_hr_client_payroll_base" name="Client Employee Payroll" sequence="99" groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_hr_employee">
+    <menuitem id="menu_hr_client_payroll_base" name="Client Employee Payroll" sequence="99" groups="visa_process.group_service_request_manager,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_finance_manager">
         <menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking" sequence="1"/> 
         <menuitem id="menu_hr_client_employee_inv" action="action_client_emp_salary_tracking_wizard" sequence="9"/> 
 

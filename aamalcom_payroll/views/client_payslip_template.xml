@@ -6,7 +6,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         
-                        <h2 style="text-align: center; margin-bottom: 20px;">Client Employee Payslip</h2>
+                        <h2 style="text-align: center; margin-bottom: 20px;">Employee Payslip</h2>
 
                         <table class="table table-sm" style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 20px;">
                             <tr style="background-color: #f0f0f0;">
@@ -129,15 +129,14 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        
-                        <div style="margin-top: 50px; text-align: center;">
-                            <div style="display: inline-block; width: 45%; text-align: left;">
-                                <p style="border-top: 1px solid #000; padding-top: 5px;">Employee Signature</p>
-                            </div>
-                            <div style="display: inline-block; width: 45%; text-align: right;">
-                                <p style="border-top: 1px solid #000; padding-top: 5px;">Authorised Signature</p>
-                            </div>
+                        <!-- Footer Section (Company Seal) -->
+                        <div style="margin-top: 50px; text-align: right;">
+                            <img t-if="o.company_id.seal"
+                                 t-att-src="'data:image/png;base64,%s' % o.company_id.seal"
+                                 style="max-height: 100px; opacity: 0.9;"/>
                         </div>
+                        
+                        
 
                     </div>
                 </t>

@@ -6,7 +6,7 @@ class HrSuspendingEmployee(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Employee Suspensation'
 
-    name = fields.Char(string='Request ID', required=True, 
+    name = fields.Char(string='Request ID', 
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.suspending'))
     employee_id = fields.Many2one(
         'hr.employee',

@@ -179,7 +179,7 @@ class ServiceEnquiry(models.Model):
                 if line.upload_resignation_qiwa_letter and not line.resignation_qiwa_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for QIWA Termination Request")
                 line.state='submit_to_pm'
-                line.dynamic_action_status = "PM needs to review"
+                line.dynamic_action_status = "Documents upload Pending by PM"
                 line.action_user_id=line.approver_id.user_id.id
     
     def action_to_another_establishment_local(self):
@@ -189,7 +189,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Clerance Document")
            
                 line.state='submit_to_pm'
-                line.dynamic_action_status = "PM needs to review"
+                line.dynamic_action_status = "Documents upload Pending by PM"
                 line.action_user_id=line.approver_id.user_id.id
                 activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
@@ -376,7 +376,7 @@ class ServiceEnquiry(models.Model):
                     if line.upload_resignation_qiwa_letter and not line.resignation_qiwa_doc_ref:
                         raise ValidationError("Kindly Update Reference Number for QIWA Resignation Document")
                     line.state='submit_to_pm'
-                    line.dynamic_action_status = "PM needs to review"
+                    line.dynamic_action_status = "Documents upload Pending by PM"
                     line.action_user_id=line.approver_id.user_id.id
                     line.write({'processed_date': fields.Datetime.now()})
                     activity_id = self.env['mail.activity'].search([
@@ -459,7 +459,7 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Resignation Letter")
 
                 line.state='submit_to_pm'
-                line.dynamic_action_status = "PM needs to review"
+                line.dynamic_action_status = "Documents upload Pending by PM"
                 line.action_user_id=line.approver_id.user_id.id
                 activity_id = self.env['mail.activity'].search([
                     ('res_id', '=', self.id),
@@ -544,8 +544,8 @@ class ServiceEnquiry(models.Model):
                 ])
                 activity_ids.unlink()
                 # Schedule a new activity for the responsible users
-                operations_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
-                for user in operations_manager_users:
+                hr_manager_users = self.env.ref('visa_process.group_service_request_hr_manager').users
+                for user in hr_manager_users:
                     self._schedule_ticket_activity(
                         user_id=user.id,
                         summary='Action Required on Ticket',

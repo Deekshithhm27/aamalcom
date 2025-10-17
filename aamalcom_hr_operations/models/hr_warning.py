@@ -16,7 +16,7 @@ class HrWarningLetter(models.Model):
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     
-    name = fields.Char(string='Request ID', required=True, 
+    name = fields.Char(string='Request ID', 
         default=lambda self: self.env['ir.sequence'].next_by_code('hr.warning'))
     iqama_no = fields.Char(string="Iqama No", compute="_compute_employee_details", store=True, readonly=True)
     identification_id = fields.Char(string='Border No.', compute="_compute_employee_details", store=True, readonly=True)

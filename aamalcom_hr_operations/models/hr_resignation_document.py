@@ -5,8 +5,8 @@ class HrResignationDocument(models.Model):
     _name = 'hr.resignation.document'
     _description = 'Resignation Documents'
 
-    name = fields.Char(string='Document Name', required=True)
-    file_data = fields.Binary(string='File', required=True)
+    name = fields.Char(string='Document Name')
+    file_data = fields.Binary(string='File')
     file_name = fields.Char(string='File Name')
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
