@@ -348,10 +348,10 @@
                             
                             <thead>
                                 <tr>
-                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Invoice for Governmental Charges</td>
+                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Invoice for : <span t-field="o.description"/></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Customer No. </td>
+                                    <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Customer Name : <span t-field="o.partner_id.name"/> </td>
                                 </tr>
                                 <tr>
                                     <td class="text-center" colspan="5" style="font-weight: bold;background-color:#DCDCDC;">Date : <span t-field="o.invoice_date"/></td>

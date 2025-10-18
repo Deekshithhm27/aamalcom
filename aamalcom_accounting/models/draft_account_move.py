@@ -30,7 +30,7 @@ class DraftAccountMove(models.Model):
 
     state = fields.Selection(selection=[
             ('draft', 'Draft'),
-            ('posted', 'Posted'),
+            ('posted', 'Invoice generated'),
             ('cancel', 'Cancelled'),
         ], string='Status', required=True, readonly=False, copy=False, tracking=True,
         default='draft')

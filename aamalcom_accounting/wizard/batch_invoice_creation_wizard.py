@@ -8,6 +8,7 @@ class CreateAccountMoveWizard(models.TransientModel):
     client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
     date_from = fields.Date(string='Date From')
     date_to = fields.Date(string='Date To')
+    description = fields.Text(string="Description",required=True)
 
     def create_account_move(self):
         draft_account_moves = self.env['draft.account.move'].search([
@@ -48,7 +49,8 @@ class CreateAccountMoveWizard(models.TransientModel):
                 'invoice_type':'operation',
                 'invoice_line_ids': consolidated_lines,
                 'move_particulars_ids':particulars,
-                'state':'draft'
+                'state':'draft',
+                'description':self.description
             })
 
         for particular in new_account_move.move_particulars_ids:
