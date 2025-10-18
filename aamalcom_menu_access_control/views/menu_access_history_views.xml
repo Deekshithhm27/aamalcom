@@ -5,13 +5,13 @@
         <field name="model">menu.access.history</field>
         <field name="arch" type="xml">
             <tree string="Menu Access History">
-            	<field name="name"/>
-                <field name="changed_on"/>
-                <field name="menu_id"/>
-                <field name="level_id"/>
-                <field name="changed_by"/>
-                <field name="old_group_ids"/>
-                <field name="new_group_ids"/>
+            	<field name="name" readonly="1"/>
+                <field name="changed_on" readonly="1"/>
+                <field name="menu_id" readonly="1"/>
+                <field name="level_id" readonly="1"/>
+                <field name="changed_by" readonly="1"/>
+                <field name="old_group_ids" readonly="1"/>
+                <field name="new_group_ids" readonly="1"/>
             </tree>
         </field>
     </record>
