@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+	    <!-- Email template: Notify HR managers about new request -->
+	    <record id="email_template_hr_employee_change_request_new" model="mail.template">
+	        <field name="name">New Employee Change Request Notification (HR)</field>
+	        <field name="email_from">${object.requested_by.partner_id.email or 'noreply@company.com'}</field>
+	        <field name="model_id" ref="aamalcom_hr_operations.model_hr_employee_change_request"/>
+	        <field name="subject">New Employee Change Request: ${object.name}</field>
+	        <field name="email_to">${','.join(user.email for user in env.ref('visa_process.group_service_request_hr_manager').users if user.email)}</field>
+	        <field name="body_html"><![CDATA[
+	            <p>Hello HR Manager,</p>
+	            <p>A new employee change request has been submitted by ${object.requested_by.name}.</p>
+	            <ul>
+	                <li><b>Employee:</b> ${object.employee_id.name}</li>
+	                <li><b>Change Type:</b> ${object.change_type == 'marital' and 'Marital Status' or object.change_type == 'mobile' and 'Mobile Number' or 'Email Address'}</li>
+	                <li><b>New Value:</b> ${object.new_value}</li>
+	                <li><b>Reason:</b> ${object.reason or '-'}</li>
+	            </ul>
+	            <p>Please review and approve/reject it in the system.</p>
+	        ]]></field>
+	    </record>
+
+	    <!-- Email template: Notify Employee about approval/rejection -->
+	    <record id="email_template_hr_employee_change_request_status" model="mail.template">
+	        <field name="name">Employee Change Request Status Update</field>
+	        <field name="email_from">${object.approved_by.partner_id.email or 'noreply@company.com'}</field>
+	        <field name="model_id" ref="aamalcom_hr_operations.model_hr_employee_change_request"/>
+	        <field name="subject">Your Employee Change Request has been ${object.state}</field>
+	        <field name="email_to">${object.requested_by.partner_id.email or ''}</field>
+	        <field name="body_html"><![CDATA[
+	            <p>Dear ${object.requested_by.name},</p>
+	            <p>Your employee change request for <b>${
+	                object.change_type == 'marital' and 'Marital Status' or object.change_type == 'mobile' and 'Mobile Number' or 'Email Address'
+	            }</b> has been <b>${object.state.capitalize()}</b>.</p>
+	            <p><b>Details:</b></p>
+	            <ul>
+	                <li>Employee: ${object.employee_id.name}</li>
+	                <li>New Value: ${object.new_value}</li>
+	                <li>Reason: ${object.reason or '-'}</li>
+	            </ul>
+	            <p>Thank you.</p>
+	        ]]></field>
+	    </record>
+
+	    <!-- Probation mail templates start -->
+	    <!-- Probation Ending Soon to Manager (with cc HR Managers) -->
+	    <record id="email_template_probation_warning" model="mail.template">
+	        <field name="name">Probation Ending Soon Notification to Manager</field>
+	        <field name="model_id" ref="hr.model_hr_employee"/>
+	        <field name="email_from">${(user.email_formatted or '')|safe}</field>
+	        <field name="email_to">${object.parent_id.work_email or object.parent_id.user_id.partner_id.email or ''}</field>
+	        <field name="email_cc">${','.join([u.partner_id.email for u in env.ref('visa_process.group_service_request_hr_manager').users if u.partner_id.email])}</field>
+	        <field name="subject">Probation period ending soon for ${object.name}</field>
+	        <field name="body_html">
+	            <![CDATA[
+	            <p>Dear ${object.parent_id.name},</p>
+	            <p>This is to inform you that the probation period of your employee <strong>${object.name}</strong> is ending on <strong>${object.probation_end_date}</strong>.</p>
+	            <p>Please create a probation extension request in the system if needed.</p>
+	            <p>Best Regards,<br/>HR System</p>
+	            ]]>
+	        </field>
+	    </record>
+
+	    <!-- Probation Extension Letter to Employee -->
+	    <record id="email_template_probation_extension_letter" model="mail.template">
+	        <field name="name">Probation Extension Letter To Employee</field>
+	        <field name="model_id" ref="model_hr_probation_extend_request"/>
+	        <field name="email_from">${(user.email_formatted or '')|safe}</field>
+	        <field name="email_to">${object.employee_id.work_email or object.employee_id.work_email or ''}</field>
+	        <field name="subject">Probation Extension Letter for ${object.employee_id.name}</field>
+	        <field name="body_html">
+	            <![CDATA[
+				    <html>
+				        <body>
+				            <p>Dear ${object.employee_id.name},</p>
+
+				            <p>Please find attached your probation extension letter for your perusal.</p>
+
+				            <p>
+				                Probation extended to: <strong>${object.probation_end_date.strftime('%Y-%m-%d') if object.probation_end_date else 'N/A'}</strong>
+				            </p>
+
+				            <p>Kindly confirm your acceptance of the probation extension in the system.</p>
+
+				            <p>Thank you,<br/>HR Department</p>
+				        </body>
+				    </html>
+				    ]]>
+	        </field>
+	    </record>
+
+	    <!-- Mail.activity types -->
+	    <record id="mail_activity_type_probation_manager_notify" model="mail.activity.type">
+	        <field name="name">Probation Period Ending Notification</field>
+	        <field name="category">default</field>
+	        <field name="res_model">hr.employee</field>
+	        <field name="summary">Probation period ending soon</field>
+	        <field name="icon">
+	        <![CDATA[<i class="fa fa-hourglass-half"></i>]]>
+	        </field>
+	    </record>
+
+	    <record id="mail_activity_type_probation_hr_review" model="mail.activity.type">
+	        <field name="name">Probation Extension HR Review</field>
+	        <field name="category">default</field>
+	        <field name="res_model">hr.probation.extend.request</field> 
+	        <field name="summary">Please review probation extension requests</field>
+	        <field name="icon">
+	        <![CDATA[<i class="fa fa-check-circle"></i>]]>
+	        </field>
+	    </record>
+	    <!-- Probation mail templates end -->
+	</data>
+</odoo>

@@ -1,0 +1,26 @@
+<odoo>
+    <menuitem id="menu_finance_access_root"
+              name="Menu Access Control"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_finance_access_levels"
+              name="Access Levels"
+              parent="menu_finance_access_root"
+              action="finance_access_level_action"
+              groups="base.group_system"/>
+
+    
+
+    <menuitem id="menu_finance_access_wizard"
+              name="Apply Access"
+              parent="menu_finance_access_root"
+              action="action_finance_access_wizard"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_access_history_root"
+              name="Menu Access History"
+              parent="base.menu_administration"
+              action="action_menu_access_history"
+              groups="base.group_system"
+              sequence="10"/>
+</odoo>

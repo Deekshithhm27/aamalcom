@@ -5,6 +5,7 @@ from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from odoo import models, fields, _
 from odoo.exceptions import UserError
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -109,3 +110,46 @@ class AccountMove(models.Model):
         if self.invoice_type == 'insurance':
             self.action_save_merged_insurance_pdf()
         return super(AccountMove, self).action_post()
+
+    def action_invoice_print(self):
+        """ Print the invoice and mark it as sent, so that we can see more
+            easily the next step of the workflow
+        """
+        if any(not move.is_invoice(include_receipts=True) for move in self):
+            raise UserError(_("Only invoices could be printed."))
+
+        self.filtered(lambda inv: not inv.is_move_sent).write({'is_move_sent': True})
+        if self.user_has_groups('account.group_account_invoice'):
+            return self.env.ref('aamalcom_accounting_reporting.action_report_tax_invoice').report_action(self)
+        else:
+            return self.env.ref('account.account_invoices_without_payment').report_action(self)
+
+
+    def _get_mail_template(self):
+        """
+        :return: the correct mail template based on the current move type
+        """
+        return (
+            'aamalcom_accounting_reporting.email_template_edi_credit_note_custom'
+            if all(move.move_type == 'out_refund' for move in self)
+            else 'aamalcom_accounting_reporting.email_template_edi_invoice_custom'
+        )
+
+    def action_send_and_print(self):
+        return {
+            'name': _('Send Invoice'),
+            'res_model': 'account.invoice.send',
+            'view_mode': 'form',
+            'context': {
+                'default_template_id': self.env.ref(self._get_mail_template()).id,
+                'mark_invoice_as_sent': True,
+                'active_model': 'account.move',
+                # Setting both active_id and active_ids is required, mimicking how direct call to
+                # ir.actions.act_window works
+                'active_id': self.ids[0],
+                'active_ids': self.ids,
+                'custom_layout': 'mail.mail_notification_paynow',
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
+        }

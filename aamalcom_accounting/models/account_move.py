@@ -43,6 +43,7 @@ class AccountMove(models.Model):
     # fields for alert : customer already has a same-amount invoice in the same month
     latest_existing_invoice_id = fields.Boolean(string='Has Duplicate Invoice', copy=False)
     latest_existing_invoice_name = fields.Char(string='Latest Duplicate Invoice', readonly=True, copy=False)
+    description = fields.Text(string="Description")
 
     @api.model
     def create(self, vals):
@@ -94,4 +95,5 @@ class AccountMoveLine(models.Model):
 
     employee_id = fields.Many2one('hr.employee',string="Employee",store=True)
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Enquiry Id")
+    bank_ref = fields.Char(string="Bank Reference")
 

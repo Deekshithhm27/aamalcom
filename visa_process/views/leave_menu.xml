@@ -1,0 +1,13 @@
+<odoo>
+    <record id="action_visa_leave" model="ir.actions.act_window">
+        <field name="name">Leaves</field>
+        <field name="res_model">visa.leave</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_visa_leave"
+              name="Leaves"
+              parent="menu_base_visa_process"
+              action="action_visa_leave"
+              sequence="11" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee"/>
+</odoo>

@@ -4,3 +4,4 @@ from . import transfer_report
 from . import new_ev_report
 from . import qiwa_report
 from . import final_clearance
+from . import final_exit_report

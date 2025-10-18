@@ -13,7 +13,7 @@ This module provides a centralized platform to manage and configure new service 
     'category': 'Tools',
     'author': 'Aamalcom',
     'website': 'http://www.aamalcom.com',
-    'depends': ['base','visa_process','account','l10n_gcc_invoice','om_account_followup','om_recurring_payments','payment','om_account_budget','utm'],
+    'depends': ['base','visa_process','account','l10n_gcc_invoice','om_recurring_payments','payment','om_account_budget','utm'],
     'data': [
         'views/service_enquiry_views.xml',  
     ],

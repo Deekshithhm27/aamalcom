@@ -1,0 +1,21 @@
+{
+    'name': "Hiring Request Workflow",
+    'summary': "Manage multi-level hiring requests integrated with recruitment",
+    'version': '1.0.0',
+    'category': 'Human Resources',
+    'author': 'Lucidspire',
+    'depends': ['hr', 'mail', 'visa_process', 'hr_recruitment'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/ir_sequence.xml',
+        'data/mail_templates.xml',
+        'views/hr_applicant_views.xml',
+        'views/recruitment_hiring_request_views.xml',
+        'views/hiring_request_resume_views.xml',
+        'wizard/hiring_request_reject_wizard_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

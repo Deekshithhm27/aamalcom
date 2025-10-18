@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_end_of_contract_view_tree" model="ir.ui.view">
+        <field name="name">hr.end.of.contract.view.tree</field>
+        <field name="model">hr.end.of.contract</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="hr_end_of_contract_view_form" model="ir.ui.view">
+        <field name="name">hr.end.of.contract.view.form</field>
+        <field name="model">hr.end.of.contract</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft"/>
+                    <button name="action_submit_by_dept_head"
+                    string="Submit" type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('can_submit_end_of_contract','=',False)]}"/>
+
+                    <button name="action_submit_end_of_contract" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_approve_by_dept_head" string="Approve"  type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
+                    <button name="%(action_assign_employee_medical_wizard)d"
+                        string="Assign Employee"
+                        type="action"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}"
+                        groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_process_complete_end_of_contract" string="Process Done"  type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted_to_gre')]}" groups="visa_process.group_service_request_employee"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'refuse')]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_hr')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_hr')]}" groups="visa_process.group_service_request_hr_employee"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        
+                        <group>
+                            <field name="employee_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                            <field name="department_id" invisible="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                        </group>
+                        <group>
+                        <field name="user_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="is_my_coach" invisible="1"/>
+                        <field name="can_submit_end_of_contract" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="contract_end_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="final_exit" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="notice_period" attrs="{'invisible': [('state', 'not in', ('submitted_to_gre','done'))],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                        <field name="upload_notice_period_doc"  attrs="{'invisible': [('state', 'not in', ('submitted_to_gre','done'))],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                        <field name="upload_final_exit_doc"  attrs="{'invisible': ['|',('state', 'not in', ('submitted_to_gre','done')),('final_exit','=',False)],'readonly': [('state', '!=', 'submitted_to_gre')]}"/>
+                    </group>
+                    </group>
+                </sheet>
+                <!-- Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_end_of_contract" model="ir.actions.act_window">
+        <field name="name">End Of Contract</field>
+        <field name="res_model">hr.end.of.contract</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

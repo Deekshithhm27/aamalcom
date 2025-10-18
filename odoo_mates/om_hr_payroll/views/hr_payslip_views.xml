@@ -76,9 +76,16 @@
                       decoration-muted="state == 'cancel'" string="Payslips">
                     <field name="number"/>
                     <field name="employee_id"/>
-                    <field name="name"/>
                     <field name="date_from"/>
                     <field name="date_to"/>
+                    <field name="month"/> <!-- Added -->
+                    <field name="working_days"/>
+                    <field name="create_date"/>
+                    <field name="processed_date"/> <!-- Added -->
+                    <!-- <field name="iqama_number"/> 
+                    <field name="iban"/> 
+                    <field name="sponsorship_number"/>  -->
+                    <field name="name"/>
                     <field name="state"/>
                     <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                     <field name="payslip_run_id" invisible="1"/>
@@ -139,7 +146,7 @@
                     <header>
                         <button string="Confirm" name="action_payslip_done" type="object" states="draft"
                                 class="oe_highlight"/>
-                        <button string="Refund" name="refund_sheet" states="confirm,done" type='object'/>
+                        <!-- <button string="Refund" name="refund_sheet" states="confirm,done" type='object'/> -->
                         <button string="Set to Draft" name="action_payslip_draft" type="object" states="cancel"/>
                         <button string="Compute Sheet" name="compute_sheet" type="object" states="draft"
                                 class="oe_highlight"/>
@@ -165,6 +172,14 @@
                                 <field name="employee_id" placeholder="Employee"/>
                             </h1>
                         </div>
+                        <!-- Added custom group for new fields -->
+                        <group col="4" string="Additional Info">
+                            <field name="month" readonly="1"/>
+                            <field name="working_days" readonly="1"/>
+                            <!-- <field name="iqama_number" readonly="1"/>
+                            <field name="iban" readonly="1"/>
+                            <field name="sponsorship_number" readonly="1"/> -->
+                       </group>
                         <group col="4">
                             <label for="date_from" string="Period"/>
                             <div>
@@ -226,12 +241,12 @@
                             <page string="Salary Computation">
                                 <field name="line_ids" colspan="4" nolabel="1">
                                     <tree string="Salary Structure" editable="bottom" decoration-info="total == 0">
-                                        <field name="name"/>
-                                        <field name="code"/>
-                                        <field name="category_id"/>
+                                        <field name="name" invisible="1"/>
+                                        <field name="code" invisible="1"/>
+                                        <field name="category_id" invisible="1"/>
                                         <field name="sequence" invisible="1"/>
-                                        <field name="quantity"/>
-                                        <field name="rate"/>
+                                        <field name="quantity" invisible="1"/>
+                                        <field name="rate" invisible="1"/>
                                         <field name="salary_rule_id"/>
                                         <field name="amount"/>
                                         <field name="total"/>
@@ -312,7 +327,7 @@
         </record>
 
         <record id="action_view_hr_payslip_form" model="ir.actions.act_window">
-            <field name="name">Employee Payslips</field>
+            <field name="name">Employee Payroll</field>
             <field name="res_model">hr.payslip</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="search_view_id" ref="view_hr_payslip_filter"/>
@@ -321,7 +336,7 @@
         <menuitem id="menu_department_tree"
                   action="action_view_hr_payslip_form"
                   parent="menu_hr_payroll_root"
-                  groups="om_hr_payroll.group_hr_payroll_user"/>
+                  groups="om_hr_payroll.group_hr_payroll_user" sequence="11"/>
 
         <record id="act_hr_employee_payslip_list" model="ir.actions.act_window">
             <field name="res_model">hr.payslip</field>
@@ -329,6 +344,7 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'search_default_employee_id': [active_id], 'default_employee_id': active_id}</field>
         </record>
+        
 
         <!-- payslip runs -->
 
@@ -402,15 +418,22 @@
             <field name="name">hr.payslip.run.form</field>
             <field name="model">hr.payslip.run</field>
             <field name="arch" type="xml">
-                <form string="Payslips Batches">
+                <form string="Payroll Batches">
                     <header>
+
                         <button name="%(action_hr_payslip_by_employees)d" type="action" states="draft"
-                                string="Generate Payslips" class="oe_highlight"/>
+                                string="Generate Payroll" class="oe_highlight"/>
                         <button string="Set to Draft" name="draft_payslip_run" type="object" states="close"/>
-                        <button string="Mark As Done" name="done_payslip_run" type="object" states="draft"
-                                class="oe_highlight"/>
+
+                        <button name="action_send_disbursement_notification" type="object" 
+                        string="Notify Disbursement Date" class="oe_highlight"
+                        states="approved" 
+                        groups="visa_process.group_service_request_payroll_employee"/>
+                                            
+                        <button string="Disbursed Payroll" name="done_payslip_run" type="object" states="notification_sent"
+                                class="oe_highlight" groups="visa_process.group_service_request_payroll_employee"/>
                         <button name="close_payslip_run" type="object" string="Close" states="draft"/>
-                        <field name="state" widget="statusbar"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
                     <sheet>
                         <label for="name" class="oe_edit_only"/>
@@ -425,6 +448,7 @@
                                 <field name="date_end" class="oe_inline"/>
                             </div>
                             <field name="credit_note"/>
+                            <field name="disbursed_date"/>
                         </group>
                         <separator string="Payslips"/>
                         <field name="slip_ids"/>
@@ -434,7 +458,7 @@
         </record>
 
         <record id="action_hr_payslip_run_tree" model="ir.actions.act_window">
-            <field name="name">Payslips Batches</field>
+            <field name="name">Payroll Batches</field>
             <field name="res_model">hr.payslip.run</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="search_view_id" ref="hr_payslip_run_filter"/>
@@ -442,7 +466,7 @@
 
         <menuitem id="menu_hr_payslip_run"
                   action="action_hr_payslip_run_tree"
-                  parent="menu_hr_payroll_root"/>
+                  parent="menu_hr_payroll_root" sequence="8"/>
 
         <!--  Shortcuts -->
 

@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_finance_access_wizard_form" model="ir.ui.view">
+        <field name="name">finance.access.wizard.form</field>
+        <field name="model">finance.access.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Apply Finance Access">
+                <group>
+                    <field name="level_id"/>
+                    <field name="menu_ids" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button string="Apply" type="object" name="action_apply_access" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window
+        id="action_finance_access_wizard"
+        name="Apply Finance Access"
+        res_model="finance.access.wizard"
+        view_mode="form"
+        target="new"/>
+</odoo>

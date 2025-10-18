@@ -85,7 +85,8 @@ class AccountMove(models.Model):
                 raise UserError(_('You need to add a line before posting.'))
             line.state = 'approval_needed'
             # sent mail to Operational Manager for approving
-            self.send_email_notification()
+            if line.move_type == 'in_invoice' or line.move_type == 'out_invoice':
+                self.send_email_notification()
 
     def action_manager_approval(self):
         for line in self:
@@ -93,7 +94,8 @@ class AccountMove(models.Model):
                 line.state = 'approved'
                 line.final_approver_id = self.env.user.id
                 # sent mail to Finance Manager for
-                self.send_email_notification()
+                if line.move_type != 'entry':
+                    self.send_email_notification()
             if line.move_type == 'in_invoice':
                 line.state = 'waiting_fin_approval'
                 # sent mail to Finance Manager for approving
@@ -105,7 +107,8 @@ class AccountMove(models.Model):
             line.state = 'manager_approval'
             line.first_approver_id = self.env.user.id
             # sent mail to General Manager for approving
-            self.send_email_notification()
+            if line.move_type != 'entry':
+                self.send_email_notification()
 
     def action_finance_approved(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]

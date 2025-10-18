@@ -115,6 +115,22 @@
                     </div>
                 </page>
             </xpath>
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                
+                <page name="public" string="Job Description">
+                    <div class="row">
+                        <div class="col-lg-7 d-flex">
+                            <group>
+                    
+                            <field name="can_edit_job_description" invisible="1"/>
+                    
+                            <field name="job_description"
+                           attrs="{'readonly': [('can_edit_job_description','=',False)]}"/>
+                </group>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
             <xpath expr="//page[@name='public']/div[1]/div[1]/group[@name='managers']" position="after">
                 <group name="employment_details" string="Employment Details">
                     <group>
@@ -124,6 +140,7 @@
                         <field name="arrival_date"/>
                         <field name="employment_duration"/>
                         <field name="probation_term"/>
+                        <field name="probation_end_date"/>
                     </group>
                     <group>
                         <field name="notice_period"/>

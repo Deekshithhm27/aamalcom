@@ -23,6 +23,8 @@ class ServiceEnquiry(models.Model):
     upload_ajeer_permit_doc=fields.Binary(string="Ajeer Permit Document")
     ajeer_permit_doc_ref=fields.Char(string="Ref No.*")
     upload_ajeer_permit_doc_file_name=fields.Char(string="Ajeer Permit Document")
+    upload_invoice_payment_doc = fields.Binary(string="Invoice")
+    invoice_payment_ref_no = fields.Char(string="Ref No.*")
 
 
     @api.onchange('ajeer_permit_type')
@@ -49,6 +51,22 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Please select at least one: Either Secondment Ajeer Permit or Ajeer Contracting Permit.")
                 if not line.employment_duration:
                     raise ValidationError('Please select Duration.')
+    def action_require_payment_confirmation(self):
+        super(ServiceEnquiry, self).action_require_payment_confirmation()
+        for record in self:
+            if record.service_request == 'ajeer_permit':
+                # if record.upload_screenshot_of_saddad and not record.saddad_number:
+                #     raise ValidationError("Kindly Update Saddad Number")
+                
+                record.write({'processed_date': fields.Datetime.now()})
+                
+    def action_submit_payment_confirmation(self):
+        super(ServiceEnquiry, self).action_submit_payment_confirmation()
+        for record in self:
+            if record.service_request == 'ajeer_permit':
+                record.dynamic_action_status=f"Document upload pending by first govt employee"
+                record.action_user_id=record.first_govt_employee_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
 
     @api.model
     def create(self, vals):
@@ -77,8 +95,8 @@ class ServiceEnquiry(models.Model):
     def action_ajeer_permit_submit_for_approval(self):
         for record in self:
             if record.service_request == 'ajeer_permit':
-                if record.upload_screenshot_of_saddad and not record.saddad_number:
-                    raise ValidationError("Kindly Update Saddad Number")
+                # if record.upload_screenshot_of_saddad and not record.saddad_number:
+                #     raise ValidationError("Kindly Update Saddad Number")
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
                 users = group.users
@@ -118,7 +136,9 @@ class ServiceEnquiry(models.Model):
         for record in self:
             if record.service_request == 'ajeer_permit':
                 if record.upload_ajeer_permit_doc and not record.ajeer_permit_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Ajeer Permit Doc")
+                    raise ValidationError("Kindly Update Reference Number for Ajeer Permit Document")
+                if record.upload_invoice_payment_doc and not record.invoice_payment_ref_no:
+                    raise ValidationError("Kindly Update Reference Number for Invoice Payment  Document")
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
                 record.action_user_id= False

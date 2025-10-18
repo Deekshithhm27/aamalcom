@@ -5,18 +5,59 @@ class CreateAccountMoveWizard(models.TransientModel):
     _name = 'batch.invoice.creation.wizard'
     _description = 'Create Account Move Wizard'
 
-    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]")
-    date_from = fields.Date(string='Date From')
-    date_to = fields.Date(string='Date To')
+    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True),('parent_id','=',False)]",required=True)
+    date_from = fields.Date(string='Date From',required=True)
+    date_to = fields.Date(string='Date To',required=True)
+    description = fields.Text(string="Description",required=True)
+
+    draft_invoice_ids = fields.Many2many(
+        'draft.account.move', string="Draft Invoices"
+    )
+
+    @api.model
+    def _get_default_draft_domain(self):
+        # default empty domain at first (to avoid showing all)
+        return [('id', '=', 0)]
+
+    @api.onchange('client_parent_id', 'date_from', 'date_to')
+    def _onchange_filter_draft_invoices(self):
+        domain = [('state', '=', 'draft')]
+        if self.client_parent_id:
+            domain.append(('client_parent_id', '=', self.client_parent_id.id))
+        if self.date_from:
+            domain.append(('date', '>=', self.date_from))
+        if self.date_to:
+            domain.append(('date', '<=', self.date_to))
+
+        return {'domain': {'draft_invoice_ids': domain}}
+
+    @api.onchange('client_parent_id', 'date_from', 'date_to')
+    def _onchange_load_draft_invoices(self):
+        """Auto-load draft invoices for the given date range and client."""
+        if self.client_parent_id and self.date_from and self.date_to:
+            draft_invoices = self.env['draft.account.move'].search([
+                ('client_parent_id', '=', self.client_parent_id.id),
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to),
+                ('state', '=', 'draft')
+            ])
+            self.draft_invoice_ids = [(6, 0, draft_invoices.ids)]
+        else:
+            self.draft_invoice_ids = [(5, 0, 0)]
 
     def create_account_move(self):
-        draft_account_moves = self.env['draft.account.move'].search([
-            ('client_parent_id', '=', self.client_parent_id.id),
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to),('state','=','draft')
-        ])
-        if not draft_account_moves:
-            raise UserError(_('No records found.'))
+
+        # draft_account_moves = self.env['draft.account.move'].search([
+        #     ('client_parent_id', '=', self.client_parent_id.id),
+        #     ('date', '>=', self.date_from),
+        #     ('date', '<=', self.date_to),('state','=','draft')
+        # ])
+        # if not draft_account_moves:
+        #     raise UserError(_('No records found.'))
+        if not self.draft_invoice_ids:
+            raise UserError(_('Please select at least one draft invoice.'))
+
+        draft_account_moves = self.draft_invoice_ids
 
         # Grouping of multiple lines inside an invoice
         consolidated_lines = []
@@ -48,7 +89,8 @@ class CreateAccountMoveWizard(models.TransientModel):
                 'invoice_type':'operation',
                 'invoice_line_ids': consolidated_lines,
                 'move_particulars_ids':particulars,
-                'state':'draft'
+                'state':'draft',
+                'description':self.description
             })
 
         for particular in new_account_move.move_particulars_ids:
@@ -77,7 +119,7 @@ class CreateAccountMoveWizard(models.TransientModel):
                 'res_model': 'invoice.created.wizard',
                 'view_mode': 'form',
                 'target': 'new',
-                'context': {'default_message': _('Invoice is created successfully.')}
+                'context': {'default_message': _('Invoice generated successfully.')}
             }
 
 
@@ -93,5 +135,3 @@ class InvoiceCreatedWizard(models.TransientModel):
 
     def close_wizard(self):
         return {'type': 'ir.actions.act_window_close'}
-
-# Track invoice againt service request or payroll or direct----------

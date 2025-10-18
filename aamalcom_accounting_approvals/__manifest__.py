@@ -11,7 +11,7 @@
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
     'category': 'Accounting',
-    'depends': ['account', 'aamalcom_accounting','visa_process'],
+    'depends': ['account', 'aamalcom_accounting','visa_process','base_accounting_kit'],
     'data': [
         'data/sequences.xml',
         'security/security.xml',

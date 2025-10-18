@@ -14,27 +14,33 @@
     'license': 'OPL-1',
     'depends': ['base','visa_process','hr','om_hr_payroll','mail','account','contacts','hr_holidays','aamalcom_accounting'],
     'data': [
-    	'data/sequences.xml',
-    	'data/client_salary_rules.xml',
-    	'data/hr_payroll_data.xml',
-    	'security/ir.model.access.csv',
+        'data/sequences.xml',
+        'data/client_salary_rules.xml',
+        'data/hr_payroll_data.xml',
+        'data/mail_template.xml',
+        'security/ir.model.access.csv',
         'security/security.xml',
+        'reports/client_payslip_report.xml',
         'views/gosi_charges_views.xml',
         'views/hr_contract_views.xml',
-    	'views/salary_structure_views.xml',
-    	'views/employment_visa_views.xml',
+        'views/salary_structure_views.xml',
+        'views/employment_visa_views.xml',
         'views/temporary_work_visa_views.xml',
-    	'views/local_transfer_views.xml',
-    	'views/hr_salary_rule_views.xml',
-    	'views/hr_employee_views.xml',
-    	'views/client_employee_monthly_salary_tracking_views.xml',
+        'views/local_transfer_views.xml',
+        'views/hr_salary_rule_views.xml',
+        'views/hr_employee_views.xml',
+        'views/client_employee_monthly_salary_tracking_views.xml',
+        'views/client_payslip_template.xml',
+        'views/client_payslip_approval_views.xml',
+        'views/client_payslip_refuse_wizard.xml',
         'views/hr_payslip_views.xml',
-    	'views/hr_payslip_employees_views.xml',
+        'views/hr_payslip_employees_views.xml',
         'views/account_move_views.xml',
         'wizard/client_emp_salary_tracking_wizard.xml',
-    	'views/menu_views.xml'
+        'views/menu_views.xml'
 
-    	
+
+        
 
     ],
     'demo': [

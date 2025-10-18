@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_report_partner_ledger_view_inherit" model="ir.ui.view">
+        <field name="name">account.report.partner.ledger.inherit</field>
+        <field name="model">account.report.partner.ledger</field>
+        <field name="inherit_id" ref="accounting_pdf_reports.account_report_partner_ledger_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//footer/button[@name='check_report']" position="before">
+                <button name="check_report" string="Print XLSX" type="object" class="btn-primary" context="{'xlsx_report': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <report
+        id="action_report_partner_ledger_xlsx"
+        model="account.report.partner.ledger"
+        string="Partner Ledger (XLSX)"
+        report_type="xlsx"
+        name="accounting_pdf_reports.report_partnerledger_xlsx"
+        file="accounting_pdf_reports.report_partnerledger_xlsx"
+        menu="True"
+    />
+
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_annual_request_view_tree" model="ir.ui.view">
+        <field name="name">hr.annual.request.view.tree</field>
+        <field name="model">hr.annual.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="hr_annual_request_view_form" model="ir.ui.view">
+        <field name="name">hr.annual.trip.view.form</field>
+        <field name="model">hr.annual.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft"/>
+                    <button name="action_submit_to_hr" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <!-- Updated the attrs to use the new is_my_coach field. -->
+                    <button name="action_approved_by_dept_head" string="Approve"  type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
+                    <button name="action_approved_by_hr" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_approved_by_gm" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="process_complete" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="visa_process.group_service_request_hr_employee"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'approved_by_dept_head')]}" groups="visa_process.group_service_request_hr_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|',('state', '!=', 'submit_to_dept_head'),('is_my_coach','=',False)]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'submit_to_gm')]}" groups="visa_process.group_service_request_general_manager"/>
+                    <button name="action_resubmit" string="Re-Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|',('state', '!=', 'refuse'),('is_submit_visible','=',False)]}" />
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        
+                        <group>
+                            <field name="employee_id" />
+                            <field name="department_id" invisible="1"/>
+                            <field name="iqama_no" readonly="1"/>
+                            <field name="identification_id" readonly="1"/>
+                            <field name="passport_no" readonly="1"/>
+                            <field name="sponsor_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <!-- Added the new computed field here and made it invisible. -->
+                        <field name="is_my_coach" invisible="1"/>
+                        <field name="is_hr_employee" invisible="1"/>
+                        <field name="is_submit_visible" invisible="1"/>
+                    </group>
+                    </group>
+                    <group>
+                        <field name="start_destination" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="start_destination_date" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="end_destination" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="end_destination_date" attrs="{'readonly': [('state','!=','draft')]}"/>
+                    </group>
+                    <group>
+                            <field name="annual_request_description" attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="confirmed_ticket_id" attrs="{'invisible': [('state', 'not in', ('done','approved_by_dept_head','submit_to_dept_head','submit_to_gm','approved'))],'readonly': ['|',('is_hr_employee', '!=', True),('state','!=','approved')]}" options="{'no_create': True}"/>
+                        </group>
+                </sheet>
+                <!-- Add chatter for logs -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_annual_request_request" model="ir.actions.act_window">
+        <field name="name">Air Ticket</field>
+        <field name="res_model">hr.annual.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

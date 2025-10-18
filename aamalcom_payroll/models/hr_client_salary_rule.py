@@ -33,7 +33,7 @@ class SalaryLines(models.Model):
     sequence = fields.Integer(string="Sequence",related="name.sequence",store=True)
 
     emp_visa_id = fields.Many2one('employment.visa',string="Employment Visa Id")
-    twv_visa_id = fields.Many2one('temporary.wor.visa',string="Temporary Work Visa Id")
+    twv_visa_id = fields.Many2one('temporary.work.visa',string="Temporary Work Visa Id")
     ev_enq_visa_id = fields.Many2one('service.enquiry',string="EV Service Enquiry")
     local_transfer_id = fields.Many2one('local.transfer',string="Local Transfer Id")
     

@@ -6,7 +6,7 @@
 	        <field name="inherit_id" ref="account.view_move_form"/>
 	        <field name="arch" type="xml">
 	            <xpath expr="//field[@name='payment_reference']" position="after">
-	                <field name="draft_invoice_sequence" readonly="1" attrs="{'invisible': [('move_type', '=','entry')]}"/>
+	                <field name="draft_invoice_sequence" readonly="1" invisible="1"/>
 	                <field name="amount_total_in_words" invisible="1"/>
 	                <field name="invoice_type" invisible="1"/>
 
@@ -35,11 +35,13 @@
 	        	<xpath expr="//field[@name='line_ids']//field[@name='name']" position="after">
 	        		<field name="employee_id" invisible="1"/>
 	        		<field name="service_enquiry_id" attrs="{'column_invisible': [('parent.invoice_type', '!=','operation')]}" invisible="1"/>
+	        		<field name="bank_ref" optional="show"/>
 	        	</xpath>
 
 	            <xpath expr="//button[@name='action_post'][1]" position="replace">
 	            	<!-- This action is used in Journal entry creation -->
-	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('auto_post', '=', True), ('move_type', '!=', 'entry')]}"/>
+	            	<!-- <button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" attrs="{'invisible': ['|', ('state', '!=', 'draft'),('move_type', '!=', 'entry')]}"/> -->
+	            	<button name="action_post" string="Confirm" class="oe_highlight" type="object" groups="account.group_account_invoice" data-hotkey="v" invisible="1"/>
                 </xpath>
                 <xpath expr="//sheet/notebook/page[1]" position="after">
                 	<page name="invoice_particulars" string="Particulars" invisible="1">
@@ -85,6 +87,9 @@
 						</strong>.You may continue.
 					</div>
 				 </xpath>
+				 <xpath expr="//page[@id='edi_documents']" position="attributes">
+				    <attribute name="attrs">{'invisible': True}</attribute>
+				</xpath>
 	        </field>
 	    </record>
 

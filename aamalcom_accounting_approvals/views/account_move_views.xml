@@ -27,10 +27,14 @@
                 <!-- Incase of invoice created by operations flow -->
                 <button name="action_submit_for_approval" class="oe_highlight"
                         string="Submit" type="object"
-                        attrs="{'invisible': ['|',('state', '!=','draft'),('invoice_type','=','direct')]}"/>
-                <button name="action_direct_post" string="Confirm" class="oe_highlight"
+                        attrs="{'invisible': ['|',('state', '!=','draft'),('move_type','=','in_invoice')]}"/>
+                <!-- <button name="action_direct_post" string="Confirm" class="oe_highlight"
                         type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
-                        attrs="{'invisible': ['|','|','|','|',('state','!=','draft'),('move_type', '=', 'entry'),('move_type', '=', 'in_invoice'),('move_type', '=', 'out_refund'),('invoice_type','!=','direct')]}"/>
+                        attrs="{'invisible': ['|','|',('state','!=','draft'),('move_type', 'in', ('entry','in_invoice', 'out_refund')),('invoice_type','!=','direct')]}" 
+                        /> -->
+                <button name="action_direct_post" string="Confirm" class="oe_highlight"
+                        type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v" invisible="1"
+                        />
                 <button name="action_first_approval" class="oe_highlight"
                         string="Approve" type="object" groups="aamalcom_accounting_approvals.group_first_approver"
                         attrs="{'invisible': ['|',('state', '!=','approval_needed'),('move_type', '=', 'in_invoice')]}"/>
@@ -43,7 +47,7 @@
                 <!-- Incase of invoice created by operations flow -->
                 <button name="action_post" string="Confirm" class="oe_highlight"
                         type="object" groups="visa_process.group_service_request_finance_manager" data-hotkey="v"
-                        attrs="{'invisible': ['|', '|', '|', '|',('state', '!=', 'approved'), ('auto_post', '=', True), ('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True),('invoice_type','=','direct')]}"/>
+                        attrs="{'invisible': ['|', '|',('state', '!=', 'approved'),('move_type', '=', 'entry'), ('display_inactive_currency_warning','=',True)]}"/>
             </xpath>
 
             <!--            Approval flow vendor invoice (bill)-->

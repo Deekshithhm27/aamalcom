@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<record id="action_hr_recruitment_applicant" model="ir.actions.act_window">
+	    <field name="name">Applications</field>
+	    <field name="res_model">hr.applicant</field>
+	    <field name="view_mode">kanban,tree,form</field>
+	    <field name="context">{}</field>
+	</record>
+
+	<record id="view_hr_applicant_form_custom" model="ir.ui.view">
+	    <field name="name">hr.applicant.form.custom</field>
+	    <field name="model">hr.applicant</field>
+	    <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+	    <field name="arch" type="xml">
+	    	<!-- displaying create employee option only when in contract signed -->
+	        <xpath expr="//button[@name='create_employee_from_applicant']" position="replace">
+	            <button string="Create Employee" name="create_employee_from_applicant" type="object" data-hotkey="v" class="oe_highlight o_create_employee" attrs="{'invisible': ['|', ('emp_id', '!=', False), '|', ('active', '=', False), ('stage_id', '!=', 4)]}"/>
+	        </xpath>
+	        <xpath expr="//field[@name='job_id']" position="after">
+	        	<field name="doj"/>
+	        </xpath>
+	    </field>
+	</record>
+
+</odoo>

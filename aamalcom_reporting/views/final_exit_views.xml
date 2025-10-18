@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_final_exit_issuance_report_wizard_form" model="ir.ui.view">
+        <field name="name">final.exit.issuance.report.wizard.form</field>
+        <field name="model">final.exit.issuance.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Final Exit Issuance Report">
+                <group>
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="service_request_type_fixed" readonly="1" force_save="1"/>
+                        <field name="is_inside_ksa"/>
+                        <field name="is_outside_ksa"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="print_final_exit_issuance_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_final_exit_issuance_report_wizard" model="ir.actions.act_window">
+        <field name="name">Service Request - Final Exit Issuance Report</field>
+        <field name="res_model">final.exit.issuance.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_final_exit_issuance_report_wizard"
+              name="Service Request-Final Exit Issuance Report"
+              parent="menu_reporting_root"
+              action="action_final_exit_issuance_report_wizard"
+              sequence="8" /> </odoo>

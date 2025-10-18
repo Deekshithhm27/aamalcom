@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_final_exit_issuance_report_pdf" model="ir.actions.report">
+        <field name="name">Final Exit Issuance Report</field>
+        <field name="model">final.exit.issuance.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aamalcom_reporting.final_exit_issuance_report_template</field>
+        <field name="report_file">aamalcom_reporting.final_exit_issuance_report_template</field>
+        <field name="print_report_name">
+            'Final Exit Issuance Report - %s - %s' % (
+                'Inside KSA' if object.is_inside_ksa else ('Outside KSA' if object.is_outside_ksa else ''),
+                object.to_date.strftime('%Y%m%d') if object.to_date else ''
+            )
+        </field>
+        <field name="binding_model_id" ref="model_final_exit_issuance_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

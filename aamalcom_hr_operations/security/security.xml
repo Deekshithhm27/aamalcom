@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Parent group -->
+	<record id="module_category_hr_operations" model="ir.module.category">
+	    <field name="name">Hr Operations</field>
+	    <field name="parent_id" ref="base.module_category_human_resources"/>
+	    <field name="sequence">50</field>
+	    <!-- This makes it a dropdown instead of checkboxes -->
+	</record>
+
+	<!-- Internal Employee -->
+	<record id="group_hr_employee_internal" model="res.groups">
+	    <field name="name">Internal Employee</field>
+	    <field name="category_id" ref="module_category_hr_operations"/>
+	    <field name="comment">Internal employees who can create change requests</field>
+	</record>
+
+	<!-- External Employee -->
+	<record id="group_hr_employee_external" model="res.groups">
+	    <field name="name">External Employee</field>
+	    <field name="category_id" ref="module_category_hr_operations"/>
+	    <field name="comment">External employees with restricted access</field>
+	</record>
+
+</odoo>

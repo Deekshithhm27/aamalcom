@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="rule_qiwa_document_manager_view_done" model="ir.rule">
+            <field name="name">Manager: View only completed Iqama documents</field>
+            <field name="model_id" ref="model_qiwa_document"/>
+            <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+            <field name="domain_force">[('state', '=', 'done')]</field>
+        </record>
+    </data>
+</odoo>

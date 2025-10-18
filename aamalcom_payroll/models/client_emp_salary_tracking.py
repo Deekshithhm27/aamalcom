@@ -41,8 +41,15 @@ class ClientEmployeeSalaryTracking(models.Model):
 
     gross_salary = fields.Float(string="Gross Salary",compute="compute_gross_salary",store=True)
     net_salary = fields.Float(string="Gross Salary",compute="compute_net_salary",store=True)
-
-    state = fields.Selection([('draft','Draft'),('done','Done')],default="draft")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
+    state = fields.Selection([('draft', 'Draft'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_pm', 'Submitted to PM'),
+        ('submit_to_fm','Submitted to FM'),
+        ('approved_by_pm', 'Verified By PM'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('done', 'Completed')],default="draft")
 
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))
@@ -56,6 +63,12 @@ class ClientEmployeeSalaryTracking(models.Model):
 
     invoice_id = fields.Many2one('account.move',string="Invoice Ref")
     is_invoiced = fields.Boolean(string="Is invoiced",default=False)
+
+    @api.onchange('employee_id')
+    def update_service_request_type_from_employee(self):
+        for line in self:
+            if line.employee_id:
+                line.service_request_type = line.employee_id.service_request_type
 
     @api.depends('wage','hra','travel_allowance','other_allowance','other_deductions','arrears','advances','overtime','additions')
     def compute_gross_salary(self):
@@ -83,8 +96,8 @@ class ClientEmployeeSalaryTracking(models.Model):
                 line.hra = line.contract_id.hra
                 line.travel_allowance = line.contract_id.travel_allowance
                 line.other_allowance = line.contract_id.other_allowance
-            else:
-                raise ValidationError(("No Contract defined for %s")%(line.employee_id.name))
+            # else:
+            #     raise ValidationError(("No Contract defined for %s")%(line.employee_id.name))
 
 
    
@@ -170,4 +183,10 @@ class ClientEmployeeSalaryTracking(models.Model):
                 contract_id.update({
                     'advances':vals['advances']
                     })
+    def action_generate_payslip_report(self):
+        """
+        Generates the payslip PDF report for the current record.
+        """
+        self.ensure_one()
+        return self.env.ref('aamalcom_payroll.action_report_client_payslip').report_action(self)
                 

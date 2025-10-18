@@ -34,9 +34,11 @@ class HrPayslip(models.Model):
     # this is chaos: 4 states are defined, 3 are used ('verify' isn't) and 5 exist ('confirm' seems to have existed)
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('verify', 'Waiting'),
-        ('done', 'Done'),
-        ('cancel', 'Rejected'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('approved', 'Approved'),
+        ('done', 'Payroll Disbursed'),('cancel','Cancel'),('refuse', 'Refused'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft',
         help="""* When the payslip is created the status is \'Draft\'
                 \n* If the payslip is under verification, the status is \'Waiting\'.
@@ -65,6 +67,46 @@ class HrPayslip(models.Model):
     payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batches', readonly=True,
         copy=False, states={'draft': [('readonly', False)]})
     payslip_count = fields.Integer(compute='_compute_payslip_count', string="Payslip Computation Details")
+    processed_date = fields.Datetime(string="Processed Date", readonly=True, tracking=True)
+
+    #The below 2 dates field are used to keep track of approval flow
+    create_date = fields.Datetime(string="Create Date", readonly=True, default=lambda self: datetime.now())
+    processed_date = fields.Datetime(string="Processed Date", readonly=True, tracking=True)
+    # >>> New Fields Start Here <<<
+    month = fields.Char(string="Month", compute="_compute_month", store=True)
+    working_days = fields.Float(string="Working Days", compute="_compute_working_days", store=True)
+
+    iqama_no = fields.Char(string="Iqama No", related="employee_id.iqama_no", store=True, readonly=True)
+    # iban = fields.Char(string="IBAN", related="employee_id.iban", store=True, readonly=True)
+    sponsorship_number = fields.Char(string="Sponsorship Number", related="employee_id.sponsor_id.sponsor_no", store=True, readonly=True)
+     # Bank details from employee's bank account
+    bank_name = fields.Char(string="Bank Name", compute='_compute_employee_bank_details', store=True)
+    bank_iban = fields.Char(string="IBAN", compute='_compute_employee_bank_details', store=True)
+    identification_no = fields.Char(string="Identification No", compute='_compute_employee_bank_details', store=True)
+
+    @api.depends('employee_id')
+    def _compute_employee_bank_details(self):
+        for slip in self:
+            if slip.employee_id:
+                slip.bank_name = slip.employee_id.bank_account_id.bank_id.name or ''
+                slip.bank_iban = slip.employee_id.bank_account_id.acc_number or ''
+                slip.identification_no = slip.employee_id.identification_id or ''
+            else:
+                slip.bank_name = ''
+                slip.bank_iban = ''
+                slip.identification_no = ''
+
+
+    @api.depends('date_from')
+    def _compute_month(self):
+        for rec in self:
+            rec.month = rec.date_from.strftime('%B %Y') if rec.date_from else ''
+
+    @api.depends('worked_days_line_ids.number_of_days')
+    def _compute_working_days(self):
+        for rec in self:
+            rec.working_days = sum(rec.worked_days_line_ids.mapped('number_of_days'))
+    # >>> New Fields End Here <<<
 
     def _compute_details_by_salary_rule_category(self):
         for payslip in self:
@@ -110,6 +152,7 @@ class HrPayslip(models.Model):
             'views': [(tree_view_ref and tree_view_ref.id or False, 'tree'), (form_view_ref and form_view_ref.id or False, 'form')],
             'context': {}
         }
+    
 
     def action_send_email(self):
         self.ensure_one()
@@ -518,6 +561,46 @@ class HrPayslip(models.Model):
             return line[0].total
         else:
             return 0.0
+    #These methods are used for approval of internal employee payslips
+    @api.depends()
+    def _compute_is_payroll_manager(self):
+        """
+        Check if the current user belongs to the payroll manager group.
+        """
+        for rec in self:
+            rec.is_payroll_manager = self.env.user.has_group('visa_process.group_service_request_payroll_manager')
+
+
+    employee_status = fields.Selection([('saudi_employee', 'Saudi Employee'),('non_saudi_employee', 'Non Saudi Employee')], string="Employee Status", store=True)
+
+    def action_submit_to_payroll(self):
+        for rec in self:
+            rec.state = 'submit_to_payroll'
+            rec.message_post(body="Payslip approval submitted to Payroll.")
+            rec.processed_date = datetime.now()
+        return True
+
+    def action_submit_to_hr_employee(self):
+        for rec in self:
+            rec.state = 'submit_to_hr_employee'
+            rec.message_post(body="Payslip submitted for Payroll Employee review.")
+            rec.processed_date = datetime.now()
+        return True
+
+    def action_submit_to_hr_manager(self):
+        for rec in self:
+            rec.state = 'submit_to_hr_manager'
+            rec.message_post(body="Payslip submitted for Payroll Employee review.")
+            rec.processed_date = datetime.now()
+        return True
+
+    def action_reviewed_by_hr_manager(self):
+        for rec in self:
+            rec.state = 'done'
+            rec.message_post(body="Payslip process complete. The document is finalized.")
+            rec.processed_date = datetime.now()
+        return True
+    ##End of Approval payslip methods
 
 
 class HrPayslipLine(models.Model):
@@ -586,14 +669,19 @@ class HrPayslipInput(models.Model):
 class HrPayslipRun(models.Model):
     _name = 'hr.payslip.run'
     _description = 'Payslip Batches'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(required=True, readonly=True, states={'draft': [('readonly', False)]})
     slip_ids = fields.One2many('hr.payslip', 'payslip_run_id', string='Payslips', readonly=True,
                                states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('done', 'Done'),
-        ('close', 'Close'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'),
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('approved', 'Approved'),
+        ('notification_sent','Notification Sent'),
+        ('done', 'Payroll Disbursed'),('close','Close'),('refuse', 'Refused'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
     date_start = fields.Date(string='Date From', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, default=lambda self: fields.Date.to_string(date.today().replace(day=1)))
@@ -603,7 +691,11 @@ class HrPayslipRun(models.Model):
     credit_note = fields.Boolean(string='Credit Note', readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  help="If its checked, indicates that all payslips generated from here are refund payslips.")
-
+    disbursed_date = fields.Date(
+        string='Payroll Disbursment Date',
+        readonly=True, 
+        states={'approved': [('readonly', False)]}
+    )
     def draft_payslip_run(self):
         return self.write({'state': 'draft'})
 
@@ -613,6 +705,17 @@ class HrPayslipRun(models.Model):
     def done_payslip_run(self):
         for line in self.slip_ids:
             line.action_payslip_done()
+            approval_record = self.env['hr.payroll.approval'].search([
+                    ('date_from', '=', self.date_start),
+                    ('date_to', '=', self.date_end),
+                    # Only consider approval records that are in the 'approved' state
+                    ('state', '=', 'approved'),
+                ], limit=1)
+                
+            if approval_record:
+                # Call the correct method on the approval record to finalize its state
+                approval_record.action_payroll_approval_done()
+
         return self.write({'state': 'done'})
 
     def unlink(self):
@@ -620,3 +723,51 @@ class HrPayslipRun(models.Model):
             if rec.state == 'done':
                 raise ValidationError(_('You Cannot Delete Done Payslips Batches'))
         return super(HrPayslipRun, self).unlink()
+
+    @api.constrains('date_start', 'date_end')
+    def _check_current_month_period(self):
+        """Constraint to ensure the period is close to the current date,
+        e.g., within the current month/year, to prevent future payroll runs.
+        """
+        today = date.today()
+        current_month_start = today.replace(day=1)
+            
+        for run in self:
+            #  Restrict strictly to the current month
+            if run.date_start.year > today.year or (run.date_start.year == today.year and run.date_start.month > today.month):
+                raise ValidationError(_("You cannot create a payroll batch for a future month."))
+                     
+            if run.date_end.year > today.year or (run.date_end.year == today.year and run.date_end.month > today.month):
+                raise ValidationError(_("The payroll period cannot end in a future month."))
+                    
+            # to ensure the date_start is before date_end
+            if run.date_start and run.date_end and run.date_start > run.date_end:
+                raise ValidationError(_("The start date must be before the end date."))
+
+    # NEW METHOD: Send email notification to employees
+    def action_send_disbursement_notification(self):
+            """Send notification email to employees about payroll disbursement date and hide the button."""
+            template_obj = self.env.ref('om_hr_payroll.email_template_notification_payroll_disbursement', raise_if_not_found=False)
+            if not template_obj:
+                raise UserError(_("Email template 'mail.email_template_notification_payroll_disbursement' not found."))
+
+            for batch in self:
+                if not batch.disbursed_date:
+                    raise UserError(_("Please set the Payroll Disbursed Date before sending notifications."))
+
+                for payslip in batch.slip_ids:
+                    employee = payslip.employee_id
+                    if employee.work_email:
+                        # Send email to employee
+                        template_obj.with_context(
+                            email_to=employee.work_email,
+                            employee_name=employee.name,
+                            month=batch.name,
+                            disbursed_date=batch.disbursed_date
+                        ).send_mail(batch.id, force_send=True)
+                
+                # KEY ACTION: Set the flag to True to hide the button
+                batch.write({'state': 'notification_sent'})
+                batch.message_post(body=_("Disbursement notification sent to all employees in this payroll batch."))
+                
+            return True

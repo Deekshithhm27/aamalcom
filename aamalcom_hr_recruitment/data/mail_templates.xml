@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Notify Recruitment Officer on new request -->
+    <record id="email_template_new_hiring_request" model="mail.template">
+        <field name="name">New Hiring Request Notification</field>
+        <field name="email_from">${(user.email or 'noreply@company.com')|safe}</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="subject">New Hiring Request - ${object.name}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello Recruitment Officer,</p>
+            <p>A new hiring request <b>${object.name}</b> has been submitted by ${object.requested_by.name}.</p>
+            <ul>
+                <li>Job Position: ${object.job_id.name}</li>
+                <li>Number of Positions: ${object.number_of_positions}</li>
+                <li>Description: ${object.description or '-'}</li>
+            </ul>
+            <p>Please review and approve or reject the request.</p>
+        ]]></field>
+    </record>
+
+    <!-- Notify Recruitment Admin on recruiter approval -->
+    <record id="email_template_recruiter_approval" model="mail.template">
+        <field name="name">Recruitment Officer Approved Hiring Request</field>
+        <field name="email_from">${(user.email or 'noreply@company.com')|safe}</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="subject">Recruitment Officer Approved Request - ${object.name}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello Recruitment Administrator,</p>
+            <p>Hiring request <b>${object.name}</b> has been approved by Recruitment Officer.</p>
+            <p>Please review and approve or reject.</p>
+        ]]></field>
+    </record>
+
+    <!-- Notify General Manager on admin approval -->
+    <record id="email_template_admin_approval" model="mail.template">
+        <field name="name">Recruitment Admin Approved Hiring Request</field>
+        <field name="email_from">${(user.email or 'noreply@company.com')|safe}</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="subject">Recruitment Admin Approved Request - ${object.name}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello General Manager,</p>
+            <p>Hiring request <b>${object.name}</b> has been approved by Recruitment Administrator.</p>
+            <p>Please review and approve or reject to continue recruitment.</p>
+        ]]></field>
+    </record>
+
+    <!-- Notify recruiter on GM approval -->
+    <record id="email_template_gm_approval" model="mail.template">
+        <field name="name">General Manager Approved Hiring Request</field>
+        <field name="email_from">${(user.email or 'noreply@company.com')|safe}</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="subject">General Manager Approved Request - ${object.name}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello Recruitment Officer,</p>
+            <p>Hiring request <b>${object.name}</b> has been approved by General Manager.</p>
+            <p>You may now start collecting resumes and proceed with recruitment.</p>
+        ]]></field>
+    </record>
+
+    <!-- Notify requester on rejection -->
+    <record id="email_template_reject_notification" model="mail.template">
+        <field name="name">Hiring Request Rejected</field>
+        <field name="email_from">${(user.email or 'noreply@company.com')|safe}</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="subject">Hiring Request Rejected - ${object.name}</field>
+        <field name="body_html"><![CDATA[
+            <p>Dear ${object.requested_by.name},</p>
+            <p>Your hiring request <b>${object.name}</b> has been rejected.</p>
+            <p><b>Reason:</b> ${object.reject_reason or 'No reason provided'}</p>
+            <p>Please contact recruitment for further details.</p>
+        ]]></field>
+    </record>
+</odoo>

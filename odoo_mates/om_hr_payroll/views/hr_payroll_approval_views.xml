@@ -1,0 +1,78 @@
+<odoo>
+    <!-- Form View -->
+    <record id="view_hr_payroll_approval_form" model="ir.ui.view">
+        <field name="name">hr.payroll.approval.form</field>
+        <field name="model">hr.payroll.approval</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Approval">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                <button name="action_generate_payslip" string="Generate Payroll" type="object" class="oe_highlight"
+                attrs="{'invisible': [('generated_payroll_document', '!=', False)]}" groups="visa_process.group_service_request_payroll_employee"/>
+                <button name="action_submit_for_approval" type="object" string="Submit for Approval" class="oe_highlight" attrs="{'invisible': ['|',('upload_payroll_document','=',False),('state','!=','submit_to_payroll')]}" groups="visa_process.group_service_request_payroll_employee"/>
+                <button name="action_submit_to_payroll_employee"
+                string="Approved" type="object" class="btn-primary" attrs="{'invisible': [('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                <button name="action_refused_by_payroll_manager"
+                string="Refuse"
+                type="object"
+                class="btn-danger"
+                attrs="{'invisible': [('state','!=','submit_to_payroll_manager')]}" groups="visa_process.group_service_request_payroll_manager"/>
+                <button name="action_re_submit" string="Re-send for Verification"
+                type="object"
+                class="btn-primary"
+                attrs="{'invisible': [('state','!=','refuse')]}" 
+                groups="visa_process.group_service_request_payroll_employee"/>
+                </header>
+                <sheet>
+                    <field name="name" invisible="1"/>
+                    <group>
+                        <field name="date_from" attrs="{'readonly': [('state','!=','draft')]}"/>
+                        <field name="date_to" attrs="{'readonly': [('state','!=','draft')]}"/>
+                    </group>
+                    <group string="Approval Document" >
+                        <group>
+                            <field name="generated_payroll_document" 
+                                filename="generated_payroll_filename" 
+                                widget="binary" 
+                                readonly="1"/>
+                            <field name="generated_payroll_filename" invisible="1"/>
+                            <field name="upload_payroll_document" attrs="{'readonly': [('state','!=','submit_to_payroll')]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_hr_payroll_approval_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.approval.tree</field>
+        <field name="model">hr.payroll.approval</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Approvals">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_payroll_approval" model="ir.actions.act_window">
+        <field name="name">Payroll Approval</field>
+        <field name="res_model">hr.payroll.approval</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_hr_payroll_approval"
+              name="Payroll Approval"
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_hr_payroll_approval" sequence="15"/>
+</odoo>

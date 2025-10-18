@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Groups -->
+    <record id="module_category_hr_recruitment_process" model="ir.module.category">
+	    <field name="name">Recruitment Process</field>
+	    <field name="sequence">51</field>
+	    <!-- This makes it a dropdown instead of checkboxes -->
+	</record>
+    <record id="group_hiring_request_user" model="res.groups">
+        <field name="name">Hiring Request User</field>
+        <field name="category_id" ref="aamalcom_hr_recruitment.module_category_hr_recruitment_process"/>
+        <field name="comment">Users who can create hiring requests.</field>
+    </record>
+
+
+    <!-- Record Rules -->
+
+     <record id="hiring_request_rule_my_requests" model="ir.rule">
+        <field name="name">Hiring Request: Own Requests Only</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="domain_force">[('requested_by', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('aamalcom_hr_recruitment.group_hiring_request_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <!-- Recruitment Officer: requests in 'submitted', 'recruiter_approved', 'resumes_collecting', 'interviews' -->
+    <record id="hiring_request_rule_recruitment_officer" model="ir.rule">
+        <field name="name">Hiring Request: Recruitment Officer Access</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="domain_force">[('state', 'not in', ['draft','cancel'])]</field>
+        <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <!-- Recruitment Administrator: requests in 'admin_approved' -->
+    <record id="hiring_request_rule_recruitment_admin" model="ir.rule">
+        <field name="name">Hiring Request: Recruitment Admin Access</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="domain_force">[('state', 'not in', ['draft','cancel'])]</field>
+        <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <!-- General Manager: requests in 'gm_approved' -->
+    <record id="hiring_request_rule_general_manager" model="ir.rule">
+        <field name="name">Hiring Request: General Manager Access</field>
+        <field name="model_id" ref="model_recruitment_hiring_request"/>
+        <field name="domain_force">[('state', 'in',['admin_approved','gm_approved','gm_rejected'])]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_general_manager'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+</odoo>

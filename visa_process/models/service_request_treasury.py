@@ -15,6 +15,8 @@ class ServiceRequestTreasury(models.Model):
     _rec_name = 'name'
     _description = "Reference Documents"
 
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa'),('twv_request','Temporary Work Visa')],string="Service Request Type",tracking=True,copy=False)
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]",copy=False)
     name = fields.Char(string="Sequence",tracking=True)
     active = fields.Boolean('Active', default=True)
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
@@ -29,6 +31,10 @@ class ServiceRequestTreasury(models.Model):
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
     issue_date = fields.Date(string='Issue Date')
+    #filed used for hr_card service request
+    hr_card_amount=fields.Integer(string="HR Card Amount")
+    jawazat_card_amount=fields.Integer(string="Jawazat Amount")
+
 
     state = fields.Selection([('draft','Draft'),('updated_by_treasury','Waiting for Approval'),('passed_to_treasury','Passed to Treasury'),('submitted','Submitted to Treasury'),('done','Done')],string="Status",default='draft',tracking=True)
 
@@ -58,7 +64,7 @@ class ServiceRequestTreasury(models.Model):
             if not line.issue_date:
                 raise ValidationError("Kindly update issue date before upload confirmation")
             # Upload documents for specific services
-            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card','prof_change_qiwa']:
+            if line.service_request_id.service_request in ['new_ev', 'transfer_req', 'hr_card','prof_change_qiwa','iqama_renewal']:
                 line.service_request_id.write({
                     'upload_payment_doc': line.confirmation_doc,
                     'payment_doc_ref': line.confirmation_doc_ref
@@ -67,8 +73,8 @@ class ServiceRequestTreasury(models.Model):
             # Set dynamic_action_status based on conditions
             if line.service_request_id.service_request == 'hr_card':
                 if line.service_request_id.state == 'approved':
-                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by first govt employee."
-                    line.service_request_id.action_user_id = line.service_request_id.first_govt_employee_id.user_id.id
+                    line.service_request_id.dynamic_action_status = "Approved by Finance Manager.Document upload is pending by second govt employee."
+                    line.service_request_id.action_user_id = line.service_request_id.second_govt_employee_id.user_id.id
                     line.service_request_id.write({'processed_date': fields.Datetime.now()})
 
             elif line.service_request_id.service_request == 'transfer_req':
@@ -90,10 +96,3 @@ class ServiceRequestTreasury(models.Model):
                 line.service_request_id.dynamic_action_status = "Service request approved by Finance Team. First govt employee need to be assigned by PM"
                 line.service_request_id.action_user_id = line.service_request_id.approver_id.user_id.id
                 line.service_request_id.write({'processed_date': fields.Datetime.now()})
-
-
-
-
-
-
-

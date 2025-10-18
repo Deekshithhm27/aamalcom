@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class HrPayslipEmployees(models.TransientModel):
     _inherit = 'hr.payslip.employees'
 
-    custom_employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Employee Type",required=True)
+    custom_employee_type = fields.Selection([('internal','Internal')],default='internal',string="Employee Type",required=True)
     client_parent_id = fields.Many2one('res.partner',string="Client",domain=[('is_company','=',True)])
     external_employee_ids = fields.Many2many('hr.employee', 'ext_hr_employee_group_rel', 'ext_payslip_id', 'ext_employee_id', 'Employees',domain="[('custom_employee_type', '=', 'external'),('client_parent_id','=',client_parent_id)]")
     employee_ids = fields.Many2many('hr.employee', 'hr_employee_group_rel', 'payslip_id', 'employee_id', 'Employees',domain="[('custom_employee_type', '=', 'internal')]")

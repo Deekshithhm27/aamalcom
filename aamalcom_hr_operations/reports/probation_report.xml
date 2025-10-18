@@ -1,0 +1,36 @@
+<odoo>
+    <!-- Report Action -->
+
+
+    <!-- Report Template (use a different ID than the report) -->
+    <template id="report_probation_extension_letter">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <h2>Probation Extension Letter</h2>
+                    <p>Dear <t t-esc="doc.employee_id.name"/>,</p>
+                    <p>
+                        This letter is to inform you that your probation period originally ending on
+                        <t t-esc="doc.current_probation_end_date or 'N/A'"/> is being extended.
+                    </p>
+                    <p><strong>Extension Duration:</strong> <t t-esc="doc.extend_term"/></p>
+                    <p>
+                        Please acknowledge your acceptance of this probation extension by confirming in the system.
+                    </p>
+                    <br/>
+                    <p>Best Regards,<br/>HR Department</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <report
+        id="action_report_probation_extension_letter"
+        string="Probation Extension Letter"
+        model="hr.probation.extend.request"
+        report_type="qweb-pdf"
+        name="aamalcom_hr_operations.report_probation_extension_letter"
+        file="aamalcom_hr_operations.report_probation_extension_letter"
+        attachment_use="False"
+    />
+</odoo>

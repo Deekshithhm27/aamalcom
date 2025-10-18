@@ -1,0 +1,50 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_menu_access_history_tree" model="ir.ui.view">
+        <field name="name">menu.access.history.tree</field>
+        <field name="model">menu.access.history</field>
+        <field name="arch" type="xml">
+            <tree string="Menu Access History">
+            	<field name="name" readonly="1"/>
+                <field name="changed_on" readonly="1"/>
+                <field name="menu_id" readonly="1"/>
+                <field name="level_id" readonly="1"/>
+                <field name="changed_by" readonly="1"/>
+                <field name="old_group_ids" readonly="1"/>
+                <field name="new_group_ids" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_menu_access_history_form" model="ir.ui.view">
+        <field name="name">menu.access.history.form</field>
+        <field name="model">menu.access.history</field>
+        <field name="arch" type="xml">
+            <form string="Menu Access History">
+                <sheet>
+                    <group>
+                        <field name="menu_id"/>
+                        <field name="level_id"/>
+                        <field name="changed_by"/>
+                        <field name="changed_on"/>
+                        <field name="old_group_ids" widget="many2many_tags"/>
+                        <field name="new_group_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_menu_access_history" model="ir.actions.act_window">
+        <field name="name">Menu Access History</field>
+        <field name="res_model">menu.access.history</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                This log shows all menu access changes for finance levels.
+            </p>
+        </field>
+    </record>
+</odoo>
