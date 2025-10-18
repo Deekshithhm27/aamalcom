@@ -82,8 +82,9 @@
             <tree string="Invoices" create="0" edit="0">
                 <field name="name"/>
                 <field name="employee_id"/>
-                <field name="client_id"/>
+                <field name="client_parent_id"/>
                 <field name="service_enquiry_id"/>
+                <field name="service_request"/>
                 <field name="date"/>
                 <field name="state"/>
             </tree>

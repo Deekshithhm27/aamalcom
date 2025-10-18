@@ -38,6 +38,7 @@ class DraftAccountMove(models.Model):
     client_id = fields.Many2one('res.partner',string="Client Spoc")
     client_parent_id = fields.Many2one('res.partner',string="Client")
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Ticket Ref")
+    service_request = fields.Selection(string="Service reqeust",related='service_enquiry_id.service_request')
     employee_id = fields.Many2one('hr.employee',string="Employee")
 
 
