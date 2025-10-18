@@ -143,6 +143,11 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         result = super(ServiceEnquiry, self).action_submit()
         for record in self:
+            if record.service_request  in ('exit_reentry_issuance', 'exit_reentry_issuance_ext'):
+                if record.self_pay or record.employee_pay:
+                    if not record.upload_payment_doc:
+                        raise ValidationError(_('Kindly upload payment document.'))
+
             if record.service_request in ('exit_reentry_issuance_ext','exit_reentry_issuance'):
                 if not (record.aamalcom_pay or record.self_pay or record.employee_pay):
                     raise ValidationError('Please select who needs to pay fees.')

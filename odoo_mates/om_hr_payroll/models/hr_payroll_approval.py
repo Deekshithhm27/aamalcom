@@ -1,0 +1,362 @@
+from odoo import fields, models, api, _
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError, ValidationError
+import base64
+import io
+try:
+    import xlsxwriter
+except ImportError:
+    xlsxwriter = None
+
+
+class HrPayrollApproval(models.Model):
+    _name = 'hr.payroll.approval'
+    _description = 'Payslip Approval'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string="Payslip Reference",
+        copy=False,
+        readonly=True,
+        default=lambda self: self.env['ir.sequence'].next_by_code('hr.payroll.approval')
+    )
+    employee_id = fields.Many2one('hr.employee', string='Employee')  
+    date_from = fields.Date(string='Date From', required=True, readonly=True,
+                             states={'draft': [('readonly', False)]}, 
+                             default=lambda self: fields.Date.to_string(date.today().replace(day=1)))
+    date_to = fields.Date(string='Date To', required=True, readonly=True,
+                           states={'draft': [('readonly', False)]},
+                           default=lambda self: fields.Date.to_string((datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()))
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('submit_to_payroll', 'Submitted for Verification'),
+        ('submit_to_payroll_employee', 'Submitted to Payroll Employee'), # Unused in this flow, but kept for schema
+        ('submit_to_payroll_manager', 'Submitted to Payroll Manager'),
+        ('approved', 'Approved'),
+        ('done', 'Payroll Disbursed'),
+        ('refuse', 'Refused'),
+    ], string="Status", default='draft', tracking=True)
+    upload_payroll_document = fields.Binary(string="Payroll Document")
+    generated_payroll_document = fields.Binary(string="Generated Payroll Document", readonly=True)
+    generated_payroll_filename = fields.Char(string="Generated Filename", readonly=True)
+    processed_date = fields.Datetime(string="Processed Date", readonly=True, copy=False)
+    refusal_reason = fields.Text(string="Refusal Reason", readonly=True, tracking=True)
+
+    
+
+    def _get_payslips_in_range(self, states=None):
+        """ to find hr.payslip records in the date range, optionally filtering by state."""
+        # Domain strictly enforces the date range of the approval record
+        domain = [
+            ('date_from', '=', self.date_from),
+            ('date_to', '=', self.date_to),
+        ]
+        if states:
+             domain.append(('state', 'in', states))
+        return self.env['hr.payslip'].search(domain)
+        
+    def _synchronize_payslip_run(self, payslips, target_state):
+        """
+        Updates the state of hr.payslip.run batches directly.
+        It only changes the state if the new state is further along than the current one.
+        """
+        runs = payslips.mapped('payslip_run_id').exists()
+        
+        if not runs:
+            return
+        # Define state order for comparison (ensure this matches hr.payslip.run states)
+        STATE_ORDER = {
+            'draft': 0,
+            'submit_to_payroll': 1, 
+            'submit_to_payroll_employee': 2,
+            'submit_to_payroll_manager': 3,
+            'approved': 4,
+            'done': 5,
+        }
+        target_order = STATE_ORDER.get(target_state, 0)
+        # Filter runs: only update if the run's current state is less advanced than the target state
+        runs_to_update = self.env['hr.payslip.run']
+        for run in runs:
+            current_order = STATE_ORDER.get(run.state, 0)
+            if target_order > current_order:
+                runs_to_update += run
+        # 2. Update the state of the filtered runs
+        if runs_to_update:
+            runs_to_update.write({'state': target_state})
+
+
+    # --- BUTTON ACTIONS ---
+
+    def action_generate_payslip(self):
+        """Generates XLSX report and moves payslips/runs to 'submit_to_payroll' (First step)."""
+        self.ensure_one()
+        if not xlsxwriter:
+            raise UserError(_("The 'xlsxwriter' library is required to generate the report. Please install it."))
+        if not self.date_from or not self.date_to:
+            raise UserError(_("Please ensure From Date and To Date are set."))
+        # Find ALL target hr.payslip records in any state for reporting (Validation done inside)
+        payslip_records = self._get_payslips_in_range()
+        if not payslip_records:
+            raise UserError(_("Validation Error: No Payslip records found in the period **%s to %s**. Cannot generate the report.") % (
+                self.date_from, self.date_to))
+        # 1. Generate the consolidated XLSX report
+        report_data, filename = self._generate_payslip_xlsx_data(payslip_records)
+        # 2. Attach the report
+        self.write({
+            'generated_payroll_document': base64.b64encode(report_data),
+            'generated_payroll_filename': filename,
+            # Update approval record state to indicate generation is done and ready for verification
+            'state': 'submit_to_payroll', 
+            'processed_date': datetime.now() # FIX 1: Use correct datetime.now()
+        })
+        # 3. Update the state of ALL found hr.payslip records and their runs
+        # We only move the payslips/runs if they are still in draft
+        draft_payslips = self._get_payslips_in_range(states=['draft'])
+        draft_payslips.write({'state': 'submit_to_payroll', 'processed_date': datetime.now()})
+        self._synchronize_payslip_run(draft_payslips, 'submit_to_payroll')
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': _('Consolidated Payslip Batch report generated and attached. **%s** payslip(s) status updated to "Submitted for Verification".') % len(draft_payslips),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+    
+    # Button to move from DRAFT/SUBMIT_TO_PAYROLL to SUBMITTED TO PAYROLL MANAGER
+    def action_submit_for_approval(self):
+        """Updates state to 'submit_to_payroll_manager' for payslips and runs."""
+        payslips = self._get_payslips_in_range(states=['submit_to_payroll']) 
+        # 1. Update Payslip State
+        payslips.write({'state': 'submit_to_payroll_manager', 'processed_date': datetime.now()}) 
+        # 2. SYNCHRONIZE: Update all associated Payslip Runs
+        self._synchronize_payslip_run(payslips, 'submit_to_payroll_manager')
+        # 3. Update Approval Record State
+        self.write({'state': 'submit_to_payroll_manager', 'processed_date': datetime.now()}) 
+        return True
+
+
+    # Button for the Manager to APPROVE
+    def action_submit_to_payroll_employee(self):
+        """Updates state from 'submit_to_payroll_manager' to 'approved' for payslips and runs."""
+        payslips = self._get_payslips_in_range(states=['submit_to_payroll_manager'])
+        if not payslips:
+            raise UserError(_("No Payslips found in 'Submitted to Payroll Manager' state for this period. Cannot Approve."))
+        # 1. Update Payslip State to 'approved'
+        payslips.write({'state': 'approved', 'processed_date': datetime.now()}) 
+        # 2. SYNCHRONIZE: Update all associated Payslip Runs
+        self._synchronize_payslip_run(payslips, 'approved')
+        # 3. Update Approval Record State
+        self.write({'state': 'approved', 'processed_date': datetime.now()}) 
+        return True
+
+    # ---  METHOD: XLSX REPORT GENERATION (BATCH) ---
+    def _generate_payslip_xlsx_data(self, payslips):
+            """Helper to create the consolidated XLSX report content with AamalCom format, including the logo."""
+            self.ensure_one()
+            
+            if not payslips:
+                return b'', 'Empty_Payslip_Batch.xlsx'
+
+            output = io.BytesIO()
+            # Set options for the workbook (e.g., hiding gridlines often improves report look)
+            workbook = xlsxwriter.Workbook(output, {'in_memory': True, 'remove_timezone': True})
+            sheet = workbook.add_worksheet('Payslip Batch Report')
+
+            # === Formats ===
+            currency_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
+            data_format = workbook.add_format({'border': 1, 'valign': 'vcenter'})
+            # Center the text across the merged area
+            title_format = workbook.add_format({'bold': True, 'font_size': 18, 'align': 'center', 'valign': 'vcenter'})
+            subtitle_format = workbook.add_format({'bold': True, 'font_size': 12, 'align': 'center', 'valign': 'vcenter'})
+            header_format = workbook.add_format({'bold': True, 'bg_color': '#D9D9D9', 'border': 1, 'align': 'center', 'valign': 'vcenter', 'text_wrap': True})
+            
+            # --- Context Data ---
+            first_payslip = payslips[0]
+            period_str = first_payslip.date_from.strftime('%b - %Y').upper()
+            company = self.env.user.company_id
+            company_name = company.name or 'AamalCom'
+
+            COLUMNS = [
+                'Sl.No', 'Employee Name', 'Id', 'Nationality', 'IBAN', 'BANK', 'Total Salary', 
+                'Days in months', 'Days Present', 'Overtime Hours', 'Basic Salary', 
+                'Housing Allowance', 'Transport allowance', 'Other Allowance', 'Gross Salary', 
+                'OT amount', 'Additions', 'Deduction GOSI', 'Deductions', 'Day discounts', 
+                'Total Deductions', 'Net Salary', 'Mode of Payment', 'Company Name'
+            ]
+            num_cols = len(COLUMNS)
+
+            # ----------------------------------------------------
+            # 1. LOGO INSERTION (The code that adds the image)
+            # ----------------------------------------------------
+            logo_data = company.logo
+            logo_rows = 5 # Reserve rows 0 to 4 for the logo and blank space
+            
+            if logo_data:
+                try:
+                    # 1. Decode the logo data and wrap it in a BytesIO object
+                    logo_image_data = io.BytesIO(base64.b64decode(logo_data))
+                    
+                    # 2. Insert the logo into the top-left corner (A1)
+                    sheet.insert_image('A1', 'logo.png', {
+                        'image_data': logo_image_data, 
+                        'x_scale': 0.4, 
+                        'y_scale': 0.4, 
+                        'x_offset': 5,
+                        'y_offset': 5,
+                    })
+                except Exception as e:
+                    # If image insertion fails (e.g., corrupted data), log and proceed without logo
+                    self.env.cr.rollback() 
+                    logo_rows = 0 
+                    self.env.logger.error("Failed to insert company logo into XLSX: %s" % e)
+            
+            # Set row height for the logo area to ensure space
+            if logo_rows > 0:
+                sheet.set_row(0, 70) 
+
+            # ----------------------------------------------------
+            # 2. REPORT HEADERS (Adjusted Rows)
+            # ----------------------------------------------------
+            
+            # Start header text immediately below the space reserved for the logo (e.g., Row 6)
+            HEADER_ROW = logo_rows 
+            SUBHEADER_ROW = logo_rows + 1
+            COLUMN_HEADER_ROW = logo_rows + 2
+            DATA_START_ROW = logo_rows + 3
+
+            # Merge the main header range across all columns
+            sheet.merge_range(HEADER_ROW, 0, HEADER_ROW, num_cols - 1, f'{company_name} Company', title_format)
+            
+            # Sub Header 
+            sheet.merge_range(SUBHEADER_ROW, 0, SUBHEADER_ROW, num_cols - 1, f'STAFF PAYROLL FOR THE MONTH OF {period_str}', subtitle_format)
+            
+            # Column Headers
+            col_map = {col: idx for idx, col in enumerate(COLUMNS)}
+            
+            for col_idx, name in enumerate(COLUMNS):
+                sheet.write(COLUMN_HEADER_ROW, col_idx, name, header_format)
+                
+            # === Data Mapping for Payslip Lines (Unchanged) ===
+            LINE_CODE_MAP = {
+                'Basic Salary': 'BASIC',
+                'Housing Allowance': 'HRA',         
+                'Transport allowance': 'TRANSPORT', 
+                'Other Allowance': 'OTHER',       
+                'Gross Salary': 'GROSS',
+                'OT amount': 'OT',                  
+                'Additions': 'ADD',                 
+                'Deduction GOSI': 'GOSI',
+                'Deductions': 'DED',                
+                'Day discounts': 'DAYDISCOUNT',     
+                'Total Deductions': 'TOTALDEDUCTION',
+                'Net Salary': 'NET',
+            }
+
+            # === Data Rows (Adjusted Start Row) ===
+            row_num = DATA_START_ROW
+            for i, payslip in enumerate(payslips):
+                emp = payslip.employee_id
+                
+                # Helper definitions
+                def get_payslip_line_amount(code):
+                    line = payslip.line_ids.filtered(lambda l: l.code == code)
+                    return line.total if line else 0.0
+                def get_worked_days_value(line_type, field='number_of_days'):
+                    line = payslip.worked_days_line_ids.filtered(lambda l: l.code == line_type)
+                    if line:
+                        return line[field]
+                    return 0
+                def get_input_line_amount(code):
+                    line = payslip.input_line_ids.filtered(lambda l: l.code == code)
+                    return line.amount if line else 0.0
+                    
+                
+                # --- FETCHING CORE DATA ---
+                days_in_month = (payslip.date_to - payslip.date_from).days + 1
+                days_present = get_worked_days_value('WORK100', 'number_of_days') 
+                overtime_hours = get_input_line_amount('OT_HOURS') / payslip.contract_id.wage if payslip.contract_id.wage else 0.0
+
+                # --- WRITING DATA TO ROW ---
+                sheet.write(row_num, col_map['Sl.No'], i + 1, data_format) 
+                sheet.write(row_num, col_map['Employee Name'], emp.name or '', data_format) 
+                sheet.write(row_num, col_map['Id'], emp.client_emp_sequence or '', data_format) 
+                sheet.write(row_num, col_map['Nationality'], emp.country_id.name or '', data_format) 
+                sheet.write(row_num, col_map['IBAN'], '', data_format)
+                sheet.write(row_num, col_map['BANK'], '', data_format)
+                sheet.write(row_num, col_map['Total Salary'], get_payslip_line_amount('NET'), currency_format)
+                sheet.write(row_num, col_map['Days in months'], days_in_month, data_format)
+                sheet.write(row_num, col_map['Days Present'], days_present, data_format)
+                sheet.write(row_num, col_map['Overtime Hours'], overtime_hours, data_format)
+
+                for col_name, line_code in LINE_CODE_MAP.items():
+                    if col_name in col_map:
+                        amount = get_payslip_line_amount(line_code)
+                        sheet.write(row_num, col_map[col_name], amount, currency_format)
+
+                sheet.write(row_num, col_map['Mode of Payment'], '', data_format) 
+                sheet.write(row_num, col_map['Company Name'], company_name, data_format) 
+                
+                row_num += 1
+
+            # Auto-set column widths for readability
+            sheet.set_column(col_map['Employee Name'], col_map['Employee Name'], 30)
+            sheet.set_column(col_map['Id'], col_map['Nationality'], 15)
+            sheet.set_column(col_map['IBAN'], col_map['IBAN'], 25)
+            sheet.set_column(col_map['Total Salary'], col_map['Net Salary'], 15)
+
+            workbook.close()
+            output.seek(0)
+            
+            filename = f"AamalCom_STAFF_PAYROLL_{first_payslip.date_from.strftime('%Y%m')}.xlsx"
+            return output.read(), filename
+    
+    def action_payroll_approval_done(self):
+        # NOTE: This should typically move from 'approved' to 'done'.
+        payslips = self._get_payslips_in_range(states=['approved'])
+        payslips.write({'state': 'done'})
+        self._synchronize_payslip_run(payslips, 'done')
+        return self.write({'state': 'done'})
+        
+    def action_refused_by_payroll_manager(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'payroll.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_payslip_approval_id': self.id,
+                }
+            }
+        
+    def action_re_submit(self):
+        for rec in self:
+            rec.state = 'submit_to_payroll'
+            rec.processed_date = datetime.now()
+        return True
+        
+        
+
+class PayrollRefuseWizard(models.TransientModel):
+
+    _name = 'payroll.refuse.wizard'
+    _description = 'Wizard to Refuse Payroll Approval'
+
+    reason = fields.Text(string="Reason for Refusal", required=True)
+    payslip_approval_id = fields.Many2one('hr.payroll.approval', string="Payslip Approval")
+
+    def refuse_payslip(self):
+        self.ensure_one()
+        payslip = self.payslip_approval_id
+        payslip.write({
+            'state': 'refuse',
+            'refusal_reason': self.reason,
+        })
+        payslip.message_post(
+            body=_("Payslip has been refused by PM with the following reason:<br/>%s") % self.reason
+        )
+        return {'type': 'ir.actions.act_window_close'}
+
+    

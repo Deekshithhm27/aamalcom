@@ -21,8 +21,26 @@
                     <br/>
                 </div>
             </field>
-            <field name="report_template" ref="om_hr_payroll.payslip_details_report"/>
+            <field name="report_template" ref="om_hr_payroll.action_report_payslip"/>
             <field name="report_name">{{ (object.number or '').replace('/','_') }}</field>
+        </record>
+        <record id="email_template_notification_payroll_disbursement" model="mail.template">
+            <field name="name">Payslip Disbursement Notification</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_run"/>  
+            <field name="subject">Payslip Disbursement Date Notification</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear Employee,<br/><br/> 
+                        This is a notification regarding your payroll for the period **${object.date_start.strftime('%B %Y')}**.<br/><br/>
+                        Your payslip amount will be disbursed on **${object.disbursed_date}**.<br/><br/>
+                        Please contact the Payroll Department for further clarification if required.<br/><br/>
+                        Thank you,<br/>
+                        Payroll Team
+                    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
     </data>

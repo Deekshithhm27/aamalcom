@@ -160,5 +160,50 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
     </record>
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_ere_all_access" model="ir.rule">
+        <field name="name">HR ERE - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_exit_reentry"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_general_manager'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_ere_employee_own" model="ir.rule">
+        <field name="name">HR ERE - Own Records Only</field>
+        <field name="model_id" ref="model_hr_exit_reentry"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+    
+    <!-- Rule 1: Managers & specific groups can see ALL records -->
+    <record id="rule_hr_medical_all_access" model="ir.rule">
+        <field name="name">HR Medical report - Full Access Groups</field>
+        <field name="model_id" ref="model_hr_medical_blood_test"/>
+        <field name="groups" eval="[
+            (4, ref('visa_process.group_service_request_hr_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_general_manager')),
+            (4, ref('visa_process.group_service_request_employee')),
+            (4, ref('visa_process.group_service_request_hr_employee'))
+        ]"/>
+        <!-- Always true = see all -->
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Rule 2: Everyone else sees only their own records -->
+    <record id="rule_hr_medical_employee_own" model="ir.rule">
+        <field name="name">HR meidcal - Own Records Only</field>
+        <field name="model_id" ref="model_hr_medical_blood_test"/>
+        <!-- Apply this to all internal users -->
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
 
 </odoo>

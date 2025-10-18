@@ -6,6 +6,7 @@ access_hr_salary_rule_category,hr.salary.rule.category,model_hr_salary_rule_cate
 access_hr_payslip,hr.payslip,model_hr_payslip,om_hr_payroll.group_hr_payroll_user,1,1,1,1
 access_hr_payslip_line,hr.payslip.line,model_hr_payslip_line,om_hr_payroll.group_hr_payroll_user,1,1,1,1
 access_hr_payslip_input_user,hr.payslip.input.user,model_hr_payslip_input,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_hr_payslip_line_pe,hr.payslip.line,model_hr_payslip_line,visa_process.group_service_request_payroll_employee,1,1,1,1
 access_hr_payslip_worked_days_officer,hr.payslip.worked_days.officer,model_hr_payslip_worked_days,om_hr_payroll.group_hr_payroll_user,1,1,1,1
 access_hr_payslip_run,hr.payslip.run,model_hr_payslip_run,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
 access_hr_rule_input_officer,hr.rule.input.office,model_hr_rule_input,om_hr_payroll.group_hr_payroll_user,1,1,1,1
@@ -15,7 +16,9 @@ access_hr_contract_advantage_template_hr_user,hr.contract.advantage.template.hr.
 access_hr_payslip_employees_hr_user,hr.payslip.employees.hr.user,model_hr_payslip_employees,hr.group_hr_user,1,1,1,1
 access_payslip_lines_contribution_register_hr_user,payslip.lines.contribution.register.hr.user,model_payslip_lines_contribution_register,hr.group_hr_user,1,1,1,1
 access_hr_contract_type_manager,hr.contract.type.manager,model_hr_contract_type,hr_contract.group_hr_contract_manager,1,1,1,1
-access_employee_excel_report_wizard,access_employee_excel_report_wizard,model_employee_excel_report_wizard,base.group_user,1,1,1,1
 
-access_hr_payroll_approval_wizard,hr.payroll.approval.wizard.access,model_hr_payroll_approval_wizard,base.group_user,1,1,0,1
-access_hr_payroll_approval_wizard_hr_employee,hr.payroll.approval.wizard.acess.hr.employee,model_hr_payroll_approval_wizard,visa_process.group_service_request_hr_employee,1,1,1,0
+
+access_hr_payroll_approval_employee,hr.payroll.approval employee,model_hr_payroll_approval,visa_process.group_service_request_payroll_employee,1,1,1,1
+access_hr_payroll_approval_manager,hr.payroll.approval manager,model_hr_payroll_approval,visa_process.group_service_request_payroll_manager,1,1,0,0
+
+access_payroll_refuse_wizard_manager,access_payroll_refuse_wizard_manager,model_payroll_refuse_wizard,visa_process.group_service_request_payroll_manager,1,1,1,0

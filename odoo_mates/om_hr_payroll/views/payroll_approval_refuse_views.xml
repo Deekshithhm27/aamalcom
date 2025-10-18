@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Wizard Form View -->
-    <record id="view_client_payslip_refuse_wizard_form" model="ir.ui.view">
-        <field name="name">client.payslip.refuse.wizard.form</field>
-        <field name="model">client.payslip.refuse.wizard</field>
+    <record id="view_payroll_refuse_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.refuse.wizard.form</field>
+        <field name="model">payroll.refuse.wizard</field>
         <field name="arch" type="xml">
             <form string="Refuse Reason">
                 <group>
@@ -24,9 +24,9 @@
     </record>
 
     <!-- Action to open the wizard (optional but good practice) -->
-    <record id="action_client_payslip_refuse_wizard" model="ir.actions.act_window">
-        <field name="name">Refuse Payslip</field>
-        <field name="res_model">client.payslip.refuse.wizard</field>
+    <record id="action_payroll_refuse_wizard" model="ir.actions.act_window">
+        <field name="name">Refuse Payroll</field>
+        <field name="res_model">payroll.refuse.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
