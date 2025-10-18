@@ -13,7 +13,7 @@
     'category': 'Generic Modules/Human Resources',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['base','mail','hr','product','contacts','web','contacts','resource','hr_contract','calendar'],
+    'depends': ['base','mail','hr','product','contacts','web','resource','hr_contract','calendar'],
     
     'data': [
     'security/security.xml',
