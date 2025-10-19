@@ -97,27 +97,23 @@
                 <group string="Payment Confirmation Documents"
                        attrs="{'invisible': ['|',('service_request','not in',('exit_reentry_issuance','exit_reentry_issuance_ext')),('self_pay','!=',True)],'readonly': [('state','!=','draft')]}">
                     <group>
-                        <field name="upload_payment_doc"
-                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)]}"
+                        <field name="upload_payment_doc" 
+                               attrs="{'readonly': ['|',('is_client_spoc','!=',True),('state', '!=','draft')]}"
                                force_save="1" filename="upload_payment_doc_file_name"/>
                         <field name="upload_payment_doc_file_name" invisible="1"/>
                         <field name="is_client_spoc" invisible="1"/>
-                        <field name="payment_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
-                               force_save="1"/>
+                        <field name="payment_doc_ref" attrs="{'readonly': ['|',('is_client_spoc','!=',True),('state', '!=','draft')]}"
+                        force_save="1"/>
                     </group>
                 </group>
                 <group string="Payment Confirmation Documents"
                        attrs="{'invisible': ['|',('service_request','not in',('exit_reentry_issuance','exit_reentry_issuance_ext')),('employee_pay','!=',True)]}">
                     <group>
-                        <field name="upload_payment_doc" 
-                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)]}"
+                        <field name="upload_payment_doc" attrs="{'readonly': ['|',('is_client_spoc','!=',True),('state', '!=','draft')]}"
                                force_save="1" filename="upload_payment_doc_file_name"/>
-                        <field name="upload_payment_doc_file_name" invisible="1"/>
+                        <field name="upload_payment_doc_file_name" invisible="1" force_save="1"/>
                         <field name="is_client_spoc" invisible="1"/>
-                        <field name="payment_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
-                               force_save="1"/>
+                        <field name="payment_doc_ref" attrs="{'readonly': ['|',('is_client_spoc','!=',True),('state', '!=','draft')]}"/>
                     </group>
                 </group>
             </xpath>
@@ -127,12 +123,12 @@
                        attrs="{'invisible': ['|',('state', 'in', ( 'draft','submitted')),('service_request','!=','exit_reentry_issuance_ext')]}">
                     <group>
                         <field name="upload_payment_doc"
-                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)]}"
                                force_save="1" filename="upload_payment_doc_file_name"/>
-                        <field name="upload_payment_doc_file_name" invisible="1"/>
+                        <field name="upload_payment_doc_file_name" invisible="1" force_save="1"/>
                         <field name="is_client_spoc" invisible="1"/>
                         <field name="payment_doc_ref"
-                               attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','draft'),('is_client_spoc','!=',True)],'invisible':[('aamalcom_pay','=',True)]}"
                                force_save="1"/>
                     </group>
                 </group>

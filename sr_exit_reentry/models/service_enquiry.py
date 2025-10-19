@@ -32,8 +32,8 @@ class ServiceEnquiry(models.Model):
     ere_extension_doc = fields.Binary()
     ere_extension_doc_file_name = fields.Char()
     ere_extension_doc_ref = fields.Char()
-    is_client_spoc = fields.Boolean(compute='_compute_is_client_spoc', store=False)
 
+    
     
     @api.onchange('exit_type')
     def _onchange_exit_type(self):
