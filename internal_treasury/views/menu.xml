@@ -4,7 +4,7 @@
         
             <menuitem id="menu_internal_treasury"
           name="Internal Employee-Treasury"
-          parent="visa_process.menu_base_visa_process"
+          parent="visa_process.menu_base_treasury"
           action="action_hr_service_request_treasury" sequence="25" groups="visa_process.group_service_request_finance_manager"/>
 
                 
