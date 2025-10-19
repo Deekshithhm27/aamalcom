@@ -183,7 +183,7 @@ class ServiceEnquiry(models.Model):
     sponsorship_doc_ref = fields.Char(string="Ref No.*")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True,store=True)
     upload_payment_doc_file_name = fields.Char(string="Payment Confirmation Document",tracking=True,store=True)
-    payment_doc_ref = fields.Char(string="Ref No.*")
+    payment_doc_ref = fields.Char(string="Ref No.*",store=True)
     residance_doc = fields.Binary(string="Residance Permit Document")
     residance_doc_file_name = fields.Char(string="Residance Permit Document")
     residance_doc_ref = fields.Char(string="Ref No.*")

@@ -20,7 +20,7 @@ class AccountMove(models.Model):
     # Fields - Vendor Invoice Approval Flow
     fin_approver_id = fields.Many2one('hr.employee', string="Approved Finance Manager", copy=False)
     total_treasury_requests = fields.Integer(string="Request Details", compute="_compute_total_treasury_requests")
-    upload_payment_doc = fields.Binary(string="Payment Confirmation Document", tracking=True)
+    upload_payment_doc = fields.Binary(string="Payment Confirmation Document", tracking=True,store=True)
     is_confirmation_doc_uploaded = fields.Boolean(string="Is Confirmation Document Uploaded", default=False)
 
     def _get_record_url(self):
