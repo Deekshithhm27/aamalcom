@@ -77,7 +77,7 @@
                     
                     <group attrs="{'invisible': ['|','|','|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False),('state','in',('draft','submitted')),('aamalcom_pay','!=', True)]}">
                         <field name="upload_ajeer_permit_doc" 
-                               attrs="{'readonly': ['|',('state', 'not in',('payment_done','approved')),('is_service_request_client_spoc','=',True)]}"
+                               attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}"
                                filename="upload_ajeer_permit_doc_file_name" force_save="1"/>
                         <field name="upload_ajeer_permit_doc_file_name" invisible="1"/>
                         <field name="ajeer_permit_doc_ref"
@@ -88,7 +88,7 @@
             <xpath expr="//notebook[@id='notebook_four']/page[@id='page_four']" position="inside">
                 <group attrs="{'invisible': ['|', '|', '|','|',('state', 'in', ('draft', 'submitted')),('service_request', 'not in', ('ajeer_permit')),('self_pay','!=', True),('upload_screenshot_of_saddad', '=', False),('upload_payment_doc', '=', False)]}">
                     <group attrs="{'invisible': ['|','|','|',('service_request', '!=', 'ajeer_permit'),('first_govt_employee_id','=',False),('state','in',('draft','submitted')),('self_pay','!=', True)]}">
-                        <field name="upload_ajeer_permit_doc" attrs="{'readonly': ['|',('state', 'not in',('payment_done','approved')),('is_service_request_client_spoc','=',True)]}" filename="upload_ajeer_permit_doc_file_name"/>
+                        <field name="upload_ajeer_permit_doc"  attrs="{'readonly': ['|',('state', '!=','approved'),('is_service_request_client_spoc','=',True)]}" filename="upload_ajeer_permit_doc_file_name"/>
                         <field name="upload_ajeer_permit_doc_file_name" invisible="1"/>
                         <field name="ajeer_permit_doc_ref"
                                attrs="{'readonly': ['|',('state', '!=','payment_done'),('is_service_request_client_spoc','=',True)]}"/>    
