@@ -6,6 +6,7 @@
     'depends': ['base', 'account', 'hr','visa_process','aamalcom_accounting'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
         'data/sequence.xml',
         'data/hdf_form_data.xml',
         'reports/report_action.xml',
