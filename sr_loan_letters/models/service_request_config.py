@@ -7,7 +7,7 @@ class ServiceEnquiry(models.Model):
     selection_add=[
         ('bank_loan','Bank Loan Letter'),
         ('vehicle_lease','Letter for Vehicle Lease'),
-        ('apartment_lease','Service Letter'),
+        ('apartment_lease','Letter for Apartment Lease'),
         ('istiqdam_letter','Istiqdam Letter'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
