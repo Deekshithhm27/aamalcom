@@ -591,12 +591,12 @@ class ServiceEnquiry(models.Model):
 
     
         
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        """Restrict groupby aggregation for client SPOC group."""
-        if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
-            domain = domain + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
-        return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+    # @api.model
+    # def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+    #     """Restrict groupby aggregation for client SPOC group."""
+    #     if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
+    #         domain = domain + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
+    #     return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
      
           
 
