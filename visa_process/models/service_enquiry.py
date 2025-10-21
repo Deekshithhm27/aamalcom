@@ -61,7 +61,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
-        ('coc_mofa_document','COC Document Upload'),
+        ('coc_mofa_document','COC Document Uploaded'),
         ('confirmation_pending','Confirmation Pending'),
         ('inside_or_outside_ksa','Inside/Outside KSA Confirmation Pending'),
         ('passed_to_treasury','Passed to Treasury'),

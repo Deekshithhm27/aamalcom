@@ -242,6 +242,21 @@ class ServiceEnquiry(models.Model):
             rec.show_mofa_section = any(
                 'MOFA' in name for name in rec.letter_print_type_id.mapped('name')
             )
+    
+    show_only_if_mofa_section = fields.Boolean( 
+    string='Show only if MOFA Section', 
+    compute='_compute_show_only_mofa_section', 
+    store=False 
+    ) 
+
+    @api.depends('letter_print_type_id') 
+    def _compute_show_only_mofa_section(self): 
+        for rec in self: 
+            rec.show_only_if_mofa_section = ( 
+            rec.letter_print_type_id and 
+            len(rec.letter_print_type_id) == 1 and 
+            rec.letter_print_type_id[0].name == 'MOFA (Stamp)' 
+            )
 
     show_enjaz_section = fields.Boolean( 
     string='Show Enjaz Section', 
@@ -284,14 +299,9 @@ class ServiceEnquiry(models.Model):
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
                   'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec',
-                  'upload_enjaz_doc','upload_coc_stamp_doc')
+                  )
     def loan_letter_document_uploaded(self):
         for record in self:
-            
-            if record.show_coc_stamp_section and record.upload_coc_stamp_doc and record.dependent_document_ids:
-                record.doc_uploaded = True
-            if record.show_enjaz_section and record.upload_enjaz_doc and record.dependent_document_ids:
-                record.doc_uploaded = True
             if record.service_request == 'bank_loan' and record.upload_bank_loan_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             elif record.service_request == 'vehicle_lease' and record.upload_vehicle_lease_doc:
@@ -479,10 +489,11 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
                 if not line.letter_print_type_id:
                     raise ValidationError('Please select atleast on Letter Print Type')
-                if line.self_pay and not line.upload_payment_doc_letters:
-                    raise ValidationError('Please upload payment confirmation document.')
-                if line.employee_pay and not line.upload_payment_doc_letters:
-                    raise ValidationError('Please upload payment confirmation document.')
+                if not line.show_letter_head_section:
+                    if line.self_pay and not line.upload_payment_doc_letters:
+                        raise ValidationError('Please upload payment confirmation document.')
+                    if line.employee_pay and not line.upload_payment_doc_letters:
+                        raise ValidationError('Please upload payment confirmation document.')
 
     def action_submit_payment_confirmation(self):
         super(ServiceEnquiry, self).action_submit_payment_confirmation()
@@ -610,9 +621,6 @@ class ServiceEnquiry(models.Model):
                 # validation for Enjaz section
                 if record.show_enjaz_section and (not record.upload_enjaz_doc or not record.enjaz_doc_ref):
                     raise ValidationError("Kindly Update Reference Number and Upload Document for Enjaz")
-                 # validation for coc stamp section
-                if record.show_coc_stamp_section and (not record.upload_coc_stamp_doc or not record.coc_stamp_doc_ref):
-                    raise ValidationError("Kindly Update Reference Number and Upload Document for COC(stamp)")
                  # validation for letetr head
                 if record.show_letter_head_section and (not record.upload_completed_doc or not record.completed_doc_ref):
                     raise ValidationError("Kindly Update Reference Number and Upload Document for Completed")
@@ -774,7 +782,24 @@ class ServiceEnquiry(models.Model):
                 record.action_user_id=False  
                 record.write({'processed_date': fields.Datetime.now()})     
        
-    
+    def action_process_complete_enjaz(self):
+        for record in self:
+            if record.service_request in ['bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 
+                                         'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
+                                         'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 
+                                         'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
+                                         'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
+               
+                if not record.enjaz_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Completed Document")   
+                if not record.dependent_document_ids:
+                    raise ValidationError("Please upload at least one Fee Receipt Document before marking as completed.")
+
+                record.state='done'
+                record.dynamic_action_status='Process Completed'
+                record.action_user_id=False  
+                record.write({'processed_date': fields.Datetime.now()})     
+       
      
 
     def action_process_complete(self):

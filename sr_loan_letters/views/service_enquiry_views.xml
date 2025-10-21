@@ -13,8 +13,11 @@
                 
                 <button name="action_process_complete_letter_head" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', 'not in', ('submitted','payment_done')),  ('upload_completed_doc', '=', False),('show_mofa_section', '=', True),('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}" groups="visa_process.group_service_request_employee"/>
 
+                <button name="action_process_complete_enjaz" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|',('state', '!=', 'submitted'), ('upload_enjaz_doc', '=', False),('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}" groups="visa_process.group_service_request_employee"/>
 
-                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|', ('state', '!=', 'coc_mofa_document'), ('upload_mofa_doc', '=', False), ('upload_saddad_doc', '=', False),('upload_transcation_doc', '=', False), ('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}" groups="visa_process.group_service_request_employee"/>
+
+
+                <button name="action_process_complete" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', '|','|', ('state', 'not in', ('coc_mofa_document','submitted')), ('upload_mofa_doc', '=', False), ('upload_saddad_doc', '=', False),('upload_transcation_doc', '=', False), ('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}" groups="visa_process.group_service_request_employee"/>
 
                 
 
@@ -24,6 +27,7 @@
                     <group name="lt_billing_letters" attrs="{'invisible': [('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}">
                         <field name="show_coc_online_section" invisible="1"/>
                         <field name="show_mofa_section" invisible="1"/>
+                        <field name="show_only_if_mofa_section" invisible="1"/>
                         <field name="show_coc_stamp_section" invisible="1"/>
                         <field name="show_enjaz_section" invisible="1"/>
                         <field name="show_letter_head_section" invisible="1"/>
@@ -299,7 +303,7 @@
 
 
                 <group string="Payment Confirmation Documents"
-                       attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('self_pay','!=',True)]}">
+                       attrs="{'invisible': ['|','|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('self_pay','!=',True),('show_letter_head_section', '=', True)]}">
                     <group>
                         <field name="upload_payment_doc_letters"
                                attrs="{'readonly': [('state', '!=','draft')]}"
@@ -312,7 +316,7 @@
                     </group>
                 </group>
                 <group string="Payment Confirmation Documents"
-                       attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('employee_pay','!=',True)]}">
+                       attrs="{'invisible': ['|','|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('employee_pay','!=',True),('show_letter_head_section', '=', True)]}">
                     <group>
                         <field name="upload_payment_doc_letters"
                                attrs="{'readonly': [('state', '!=','draft')]}"
@@ -331,14 +335,14 @@
                                 
                                ]}">
                     <page string="Documents" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('first_govt_employee_id', '=', False)]}">
-                        <group attrs="{'invisible': [('service_request', '!=', 'bank_loan')]}" string="Bank Loan">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'bank_loan'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Bank Loan">
                                 <group>
                                     <field name="upload_bank_loan_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_bank_loan_doc_file_name"/>
                                      <field name="upload_bank_loan_doc_file_name"  invisible="1"/>
                                     <field name="bank_loan_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
                                 </group>
                         </group>
-                        <group attrs="{'invisible': [('service_request', '!=', 'vehicle_lease')]}" string="Vehicle Lease">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'vehicle_lease'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Vehicle Lease">
                                 <group>
                                     <field name="upload_vehicle_lease_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_vehicle_lease_doc_file_name"/>
                                      <field name="upload_vehicle_lease_doc_file_name"  invisible="1"/>
@@ -346,7 +350,7 @@
                                 </group>
                             </group>
                         <!-- Apartment Lease Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'apartment_lease')]}" string="Apartment Lease Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'apartment_lease'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Apartment Lease Letter">
                             <group>
                                 <field name="upload_apartment_lease_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_apartment_lease_doc_file_name"/>
                                 <field name="upload_apartment_lease_doc_file_name" invisible="1"/>
@@ -356,7 +360,7 @@
                         </group>
 
                         <!-- Bank Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'bank_letter')]}" string="Bank Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'bank_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Bank Letter">
                             <group>
                                 <field name="upload_bank_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_bank_letter_doc_file_name"/>
                                 <field name="upload_bank_letter_doc_file_name" invisible="1"/>
@@ -366,7 +370,7 @@
                         </group>
 
                         <!-- Car Loan Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'car_loan')]}" string="Car Loan Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'car_loan'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Car Loan Letter">
                             <group>
                                 <field name="upload_car_loan_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_car_loan_doc_file_name"/>
                                 <field name="upload_car_loan_doc_file_name" invisible="1"/>
@@ -376,7 +380,7 @@
                         </group>
 
                         <!-- Rental Agreement Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'rental_agreement')]}" string="Rental Agreement Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'rental_agreement'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Rental Agreement Letter">
                             <group>
                                 <field name="upload_rental_agreement_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_rental_agreement_doc_file_name"/>
                                 <field name="upload_rental_agreement_doc_file_name" invisible="1"/>
@@ -386,7 +390,7 @@
                         </group>
 
                         <!-- Exception Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'exception_letter')]}" string="Exception Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'exception_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Exception Letter">
                             <group>
                                 <field name="upload_exception_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_exception_letter_doc_file_name"/>
                                 <field name="upload_exception_letter_doc_file_name" invisible="1"/>
@@ -396,7 +400,7 @@
                         </group>
 
                         <!-- Attestation Waiver Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'attestation_waiver_letter')]}" string="Attestation Waiver Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'attestation_waiver_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Attestation Waiver Letter">
                             <group>
                                 <field name="upload_attestation_waiver_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_attestation_waiver_letter_doc_file_name"/>
                                 <field name="upload_attestation_waiver_letter_doc_file_name" invisible="1"/>
@@ -406,7 +410,7 @@
                         </group>
 
                         <!-- Embassy Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'embassy_letter')]}" string="Embassy Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'embassy_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Embassy Letter">
                             <group>
                                 <field name="upload_embassy_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_embassy_letter_doc_file_name"/>
                                 <field name="upload_embassy_letter_doc_file_name" invisible="1"/>
@@ -416,7 +420,7 @@
                         </group>
 
                         <!-- Istiqdam Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_letter')]}" string="Istiqdam Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'istiqdam_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Istiqdam Letter">
                             <group>
                                 <field name="upload_istiqdam_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_istiqdam_letter_doc_file_name"/>
                                 <field name="upload_istiqdam_letter_doc_file_name" invisible="1"/>
@@ -426,7 +430,7 @@
                         </group>
 
                         <!-- SCE Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'sce_letter')]}" string="SCE Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'sce_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="SCE Letter">
                             <group>
                                 <field name="upload_sce_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_sce_letter_doc_file_name"/>
                                 <field name="upload_sce_letter_doc_file_name" invisible="1"/>
@@ -435,7 +439,7 @@
                             
                         </group>
                         <!-- Employment Contract-->
-                        <group attrs="{'invisible': [('service_request', '!=', 'employment_contract')]}" string="Employment Contract">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'employment_contract'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Employment Contract">
                                 <group>
                                     <field name="upload_employment_contract_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_employment_contract_doc_file_name"/>
                                      <field name="upload_employment_contract_doc_file_name"  invisible="1"/>
@@ -443,7 +447,7 @@
                                 </group>
                             </group>
                             <!--Salary Certificate Start-->
-                            <group attrs="{'invisible': [('service_request', '!=', 'salary_certificate')]}" string="Salary Certificate">
+                            <group attrs="{'invisible': ['|','|',('service_request', '!=', 'salary_certificate'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Salary Certificate">
                                 <group>
                                     <field name="upload_salary_certificate_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"  filename="upload_salary_certificate_doc_file_name"/>
                                      <field name="upload_salary_certificate_doc_file_name"  invisible="1"/>
@@ -454,7 +458,7 @@
                             
 
                         <!-- Bilingual Salary Certificate Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'bilingual_salary_certificate')]}" string="Bilingual Salary Certificate">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'bilingual_salary_certificate'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Bilingual Salary Certificate">
                             <group>
                                 <field name="upload_bilingual_salary_certificate_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_bilingual_salary_certificate_doc_file_name"/>
                                 <field name="upload_bilingual_salary_certificate_doc_file_name" invisible="1"/>
@@ -464,7 +468,7 @@
                         </group>
 
                         <!-- Contract Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'contract_letter')]}" string="Contract Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'contract_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Contract Letter">
                             <group>
                                 <field name="upload_contract_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_contract_letter_doc_file_name"/>
                                 <field name="upload_contract_letter_doc_file_name" invisible="1"/>
@@ -474,7 +478,7 @@
                         </group>
 
                         <!-- Bank Account Opening Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'bank_account_opening_letter')]}" string="Bank Account Opening Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'bank_account_opening_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Bank Account Opening Letter">
                             <group>
                                 <field name="upload_bank_account_opening_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_bank_account_opening_letter_doc_file_name"/>
                                 <field name="upload_bank_account_opening_letter_doc_file_name" invisible="1"/>
@@ -484,7 +488,7 @@
                         </group>
 
                         <!-- Bank Limit Upgrading Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'bank_limit_upgrading_letter')]}" string="Bank Limit Upgrading Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'bank_limit_upgrading_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Bank Limit Upgrading Letter">
                             <group>
                                 <field name="upload_bank_limit_upgrading_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_bank_limit_upgrading_letter_doc_file_name"/>
                                 <field name="upload_bank_limit_upgrading_letter_doc_file_name" invisible="1"/>
@@ -494,7 +498,7 @@
                         </group>
 
                         <!-- Cultural Letter Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'cultural_letter')]}" string="Cultural Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'cultural_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Cultural Letter">
                             <group>
                                 <field name="upload_cultural_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_cultural_letter_doc_file_name"/>
                                 <field name="upload_cultural_letter_doc_file_name" invisible="1"/>
@@ -504,7 +508,7 @@
                         </group>
 
                         <!-- Employee Secondment Document Section -->
-                        <group attrs="{'invisible': [('service_request', '!=', 'emp_secondment_or_cub_contra_ltr')]}" string="Employee Secondment Letter">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'emp_secondment_or_cub_contra_ltr'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Employee Secondment Letter">
                             <group>
                                 <field name="upload_emp_secondment_or_cub_contra_ltr_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_emp_secondment_or_cub_contra_ltr_doc_file_name"/>
                                 <field name="upload_emp_secondment_or_cub_contra_ltr_doc_file_name" invisible="1"/>
@@ -513,7 +517,7 @@
                             
                         </group>
                         <!--Employment Secondment Document Section end-->
-                        <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam form (family visa letter)">
+                        <group attrs="{'invisible': ['|','|',('service_request', '!=', 'istiqdam_form'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Istiqdam form (family visa letter)">
                                 <group>
                                     <field name="upload_istiqdam_form_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_istiqdam_form_doc_file_name"/>
                                      <field name="upload_istiqdam_form_doc_file_name"  invisible="1"/>
@@ -521,7 +525,7 @@
                                 </group>
                                 <!--Istiqdam Form-->
                             </group>
-                <group attrs="{'invisible': [('service_request', '!=', 'istiqdam_form')]}" string="Istiqdam Letter">
+                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'istiqdam_form'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Istiqdam Letter">
                                 <group>
                                     <field name="upload_istiqdam_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_istiqdam_form_doc_file_name"/>
                                      <field name="upload_istiqdam_letter_doc_file_name"  invisible="1"/>
@@ -529,7 +533,7 @@
                                 </group>
                             </group>
                             <!--Family visa-->
-                            <group attrs="{'invisible': [('service_request', '!=', 'family_visa_letter')]}" string="Family Visa Letter">
+                            <group attrs="{'invisible': ['|','|',('service_request', '!=', 'family_visa_letter'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="Family Visa Letter">
                                 <group>
                                     <field name="upload_family_visa_letter_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_family_visa_letter_doc_file_name"/>
                                      <field name="upload_family_visa_letter_doc_file_name"  invisible="1"/>
@@ -538,7 +542,7 @@
                             </group>  
                             <!--Family Resident stop-->
                             <!--SEc Letter start-->
-                            <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">
+                            <group attrs="{'invisible': ['|','|',('service_request', '!=', 'sec'),('show_enjaz_section','=',True),('show_only_if_mofa_section','=',True)]}" string="SEC Letter">
                                 <group>
                                     <field name="upload_sec_doc" attrs="{'readonly': [('state', '!=','submitted')]}" filename="upload_sec_doc_file_name"/>
                                      <field name="upload_sec_doc_file_name"  invisible="1"/>
@@ -546,10 +550,8 @@
                                 </group>
                                 
                             </group>
-                                                        <!--SEc Letter start-->
-
-                             <group  
-                       attrs="{'invisible': ['|',('service_request', '!=', 'family_resident'),('first_govt_employee_id','=',False)]}">
+                    <group  
+                       attrs="{'invisible': ['|','|',('service_request', '!=', 'family_resident'),('first_govt_employee_id','=',False),('show_only_if_mofa_section','=',True)]}">
                  
                     <group>
                         <field name="upload_attested_application_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_attested_application_file_name"/>
@@ -557,10 +559,18 @@
                         <field name="attested_application_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>   
                     </group>   
                     </group>
+                    <group attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('show_enjaz_section', '=', False)]}">
+                        <group>
+                            <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
+                            <field name="upload_enjaz_doc_file_name"  invisible="1"/>
+                            <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>   
+                        </group> 
+
+                    </group>
 
                         <group attrs="{'invisible': [('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec'))]}">
                             <sheet>
-                                <group attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)], 'invisible': [('show_letter_head_section', '=', True)]}">
+                                <group attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)], 'invisible': ['|',('show_letter_head_section', '=', True),('show_only_if_mofa_section','=',True)]}">
                                 <field name="dependent_document_ids" string="Fee Receipt Documents" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}">
                                     <tree editable="bottom"  >
                                         <field name="person_name" string="Document Name"/>
@@ -571,14 +581,7 @@
                             </group>
                         </sheet>
                         </group>
-                        <group attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('show_enjaz_section', '=', False)]}">
-                            <group>
-                                <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
-                                <field name="upload_enjaz_doc_file_name"  invisible="1"/>
-                                <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>   
-                            </group> 
-
-                        </group>
+                        
                         <group attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('show_letter_head_section', '=', False)]}">
                             <group>
                                 <field name="upload_completed_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_completed_doc_file_name"/>
@@ -587,14 +590,7 @@
                             </group> 
 
                         </group>
-                        <group attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('show_coc_stamp_section', '=', False)]}">
-                            <group>
-                                <field name="upload_coc_stamp_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_coc_stamp_doc_file_name"/>
-                                <field name="upload_completed_doc_file_name"  invisible="1"/>
-                                <field name="coc_stamp_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>   
-                            </group> 
-
-                        </group>
+                        
                             
                             <group attrs="{'invisible': ['|', '|',
                             ('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),
@@ -604,22 +600,48 @@
 
                             <group>
 
-                                    <field name="upload_saddad_doc" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}" filename="upload_saddad_doc_file_name"/>
+                                    <field name="upload_saddad_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}" filename="upload_saddad_doc_file_name"/>
                                      <field name="upload_saddad_doc_file_name"  invisible="1"/>
-                                    <field name="saddad_doc_ref"  attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}"/>
-                                    <field name="saddad_number" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}"/>
+                                    <field name="saddad_doc_ref"  attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}"/>
+                                    <field name="saddad_number" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}"/>
                                 </group>
                             <group>
-                                    <field name="upload_transcation_doc" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}" filename="upload_transcation_doc_file_name"/>
+                                    <field name="upload_transcation_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}" filename="upload_transcation_doc_file_name"/>
                                      <field name="upload_transcation_doc_file_name"  invisible="1"/>
-                                    <field name="transcation_ref" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}"/>
+                                    <field name="transcation_ref" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}"/>
                                 </group>
                                 <group>
-                                    <field name="upload_mofa_doc" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}" filename="upload_mofa_doc_file_name"/>
+                                    <field name="upload_mofa_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}" filename="upload_mofa_doc_file_name"/>
                                      <field name="upload_mofa_doc_file_name"  invisible="1"/>
-                                    <field name="mofa_doc_ref" attrs="{'readonly': ['|',('state', '!=','coc_mofa_document'),('is_assigned_govt_employee','=',False)]}"/>
+                                    <field name="mofa_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_assigned_govt_employee','=',False)]}"/>
                                 </group>
                             </group>
+
+                            <!--Only if mofa is choosen-->
+                                <group attrs="{'invisible': ['|', '|',
+                                ('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),
+                                ('state', 'not in', ('submitted', 'done')),
+                                ('show_only_if_mofa_section', '=', False)
+                            ]}">
+
+                                <group>
+
+                                        <field name="upload_saddad_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}" filename="upload_saddad_doc_file_name"/>
+                                         <field name="upload_saddad_doc_file_name"  invisible="1"/>
+                                        <field name="saddad_doc_ref"  attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}"/>
+                                        <field name="saddad_number" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}"/>
+                                    </group>
+                                <group>
+                                        <field name="upload_transcation_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}" filename="upload_transcation_doc_file_name"/>
+                                         <field name="upload_transcation_doc_file_name"  invisible="1"/>
+                                        <field name="transcation_ref" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}"/>
+                                    </group>
+                                    <group>
+                                        <field name="upload_mofa_doc" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}" filename="upload_mofa_doc_file_name"/>
+                                         <field name="upload_mofa_doc_file_name"  invisible="1"/>
+                                        <field name="mofa_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('coc_mofa_document','submitted')),('is_gov_employee', '!=', True)]}"/>
+                                    </group>
+                                </group>
                         
                     </page>
                 </notebook>
