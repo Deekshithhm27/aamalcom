@@ -29,7 +29,7 @@ class SalaryLines(models.Model):
     _inherit = ['mail.thread']
     _rec_name = 'name'
 
-    name = fields.Many2one('hr.client.salary.rule',string="Structure Type")
+    name = fields.Many2one('hr.client.salary.rule',string="Structure Type",required=True)
     sequence = fields.Integer(string="Sequence",related="name.sequence",store=True)
 
     emp_visa_id = fields.Many2one('employment.visa',string="Employment Visa Id")
