@@ -5,7 +5,7 @@ class ServiceEnquiry(models.Model):
 
     service_request = fields.Selection(
         selection_add=[
-            ('visa_cancellation', 'Visa Cancellation')
+            ('visa_cancellation', 'Work Visa Cancellation')
         ],
         string="Service Requests",
         store=True,

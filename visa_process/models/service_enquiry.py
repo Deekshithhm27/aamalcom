@@ -61,7 +61,7 @@ class ServiceEnquiry(models.Model):
         ('waiting_gm_approval','Waiting GM Approval'),
         ('waiting_fin_approval','Waiting FM Approval'),
         ('submitted_to_treasury','Submitted to Treasury'),
-        ('coc_mofa_document','COC Document Upload'),
+        ('coc_mofa_document','COC Document Uploaded'),
         ('confirmation_pending','Confirmation Pending'),
         ('inside_or_outside_ksa','Inside/Outside KSA Confirmation Pending'),
         ('passed_to_treasury','Passed to Treasury'),
@@ -591,12 +591,12 @@ class ServiceEnquiry(models.Model):
 
     
         
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        """Restrict groupby aggregation for client SPOC group."""
-        if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
-            domain = domain + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
-        return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+    # @api.model
+    # def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+    #     """Restrict groupby aggregation for client SPOC group."""
+    #     if self.env.user.has_group('visa_process.group_service_request_client_spoc'):
+    #         domain = domain + [('state', 'in', ['draft','payment_initiation','waiting_client_approval'])]
+    #     return super(ServiceEnquiry, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
      
           
 

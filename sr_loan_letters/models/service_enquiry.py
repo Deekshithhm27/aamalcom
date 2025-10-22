@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class ServiceEnquiry(models.Model):
@@ -8,7 +8,7 @@ class ServiceEnquiry(models.Model):
     selection_add=[
         ('bank_loan','Bank Loan Letter'),
         ('vehicle_lease','Letter for Vehicle Lease'),
-        ('apartment_lease','Service Letter'),
+        ('apartment_lease','Letter for Apartment Lease'),
         ('istiqdam_letter','Istiqdam Letter'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
@@ -242,6 +242,21 @@ class ServiceEnquiry(models.Model):
             rec.show_mofa_section = any(
                 'MOFA' in name for name in rec.letter_print_type_id.mapped('name')
             )
+    
+    show_only_if_mofa_section = fields.Boolean( 
+    string='Show only if MOFA Section', 
+    compute='_compute_show_only_mofa_section', 
+    store=False 
+    ) 
+
+    @api.depends('letter_print_type_id') 
+    def _compute_show_only_mofa_section(self): 
+        for rec in self: 
+            rec.show_only_if_mofa_section = ( 
+            rec.letter_print_type_id and 
+            len(rec.letter_print_type_id) == 1 and 
+            rec.letter_print_type_id[0].name == 'MOFA (Stamp)' 
+            )
 
     show_enjaz_section = fields.Boolean( 
     string='Show Enjaz Section', 
@@ -284,14 +299,9 @@ class ServiceEnquiry(models.Model):
                   'upload_bilingual_salary_certificate_doc', 'upload_contract_letter_doc',
                   'upload_bank_account_opening_letter_doc', 'upload_bank_limit_upgrading_letter_doc',
                   'upload_cultural_letter_doc', 'upload_emp_secondment_or_cub_contra_ltr_doc','upload_employment_contract_doc','salary_certificate','upload_istiqdam_form_doc','upload_attested_application_doc','sec',
-                  'upload_enjaz_doc','upload_coc_stamp_doc')
+                  )
     def loan_letter_document_uploaded(self):
         for record in self:
-            
-            if record.show_coc_stamp_section and record.upload_coc_stamp_doc and record.dependent_document_ids:
-                record.doc_uploaded = True
-            if record.show_enjaz_section and record.upload_enjaz_doc and record.dependent_document_ids:
-                record.doc_uploaded = True
             if record.service_request == 'bank_loan' and record.upload_bank_loan_doc and record.dependent_document_ids:
                 record.doc_uploaded = True
             elif record.service_request == 'vehicle_lease' and record.upload_vehicle_lease_doc:
@@ -479,10 +489,11 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError('Please select at least one billing detail when Fees to be paid by Aamalcom is selected.')
                 if not line.letter_print_type_id:
                     raise ValidationError('Please select atleast on Letter Print Type')
-                if line.self_pay and not line.upload_payment_doc_letters:
-                    raise ValidationError('Please upload payment confirmation document.')
-                if line.employee_pay and not line.upload_payment_doc_letters:
-                    raise ValidationError('Please upload payment confirmation document.')
+                if not line.show_letter_head_section:
+                    if line.self_pay and not line.upload_payment_doc_letters:
+                        raise ValidationError('Please upload payment confirmation document.')
+                    if line.employee_pay and not line.upload_payment_doc_letters:
+                        raise ValidationError('Please upload payment confirmation document.')
 
     def action_submit_payment_confirmation(self):
         super(ServiceEnquiry, self).action_submit_payment_confirmation()
@@ -610,9 +621,6 @@ class ServiceEnquiry(models.Model):
                 # validation for Enjaz section
                 if record.show_enjaz_section and (not record.upload_enjaz_doc or not record.enjaz_doc_ref):
                     raise ValidationError("Kindly Update Reference Number and Upload Document for Enjaz")
-                 # validation for coc stamp section
-                if record.show_coc_stamp_section and (not record.upload_coc_stamp_doc or not record.coc_stamp_doc_ref):
-                    raise ValidationError("Kindly Update Reference Number and Upload Document for COC(stamp)")
                  # validation for letetr head
                 if record.show_letter_head_section and (not record.upload_completed_doc or not record.completed_doc_ref):
                     raise ValidationError("Kindly Update Reference Number and Upload Document for Completed")
@@ -691,6 +699,46 @@ class ServiceEnquiry(models.Model):
                 record.write({'processed_date': fields.Datetime.now()})  
 
     def action_process_complete_letter_head(self):
+            required_docs = {
+                'vehicle_lease': ('upload_vehicle_lease_doc', 'vehicle_lease_ref'),
+                'bank_loan': ('upload_bank_loan_doc', 'bank_loan_doc_ref'),
+                'apartment_lease': ('upload_apartment_lease_doc', 'apartment_lease_ref'),
+                'bank_letter': ('upload_bank_letter_doc', 'bank_letter_ref'),
+                'car_loan': ('upload_car_loan_doc', 'car_loan_doc_ref'),
+                'rental_agreement': ('upload_rental_agreement_doc', 'rental_agreement_doc_ref'),
+                'exception_letter': ('upload_exception_letter_doc', 'exception_letter_doc_ref'),
+                'attestation_waiver_letter': ('upload_attestation_waiver_letter_doc', 'attestation_waiver_letter_doc_ref'),
+                'embassy_letter': ('upload_embassy_letter_doc', 'embassy_letter_doc_ref'),
+                'istiqdam_letter': ('upload_istiqdam_letter_doc', 'istiqdam_letter_doc_ref'),
+                'sce_letter': ('upload_sce_letter_doc', 'sce_letter_doc_ref'),
+                'bilingual_salary_certificate': ('upload_bilingual_salary_certificate_doc', 'bilingual_salary_certificate_doc_ref'),
+                'contract_letter': ('upload_contract_letter_doc', 'contract_letter_doc_ref'),
+                'bank_account_opening_letter': ('upload_bank_account_opening_letter_doc', 'bank_account_opening_letter_doc_ref'),
+                'bank_limit_upgrading_letter': ('upload_bank_limit_upgrading_letter_doc', 'bank_limit_upgrading_letter_doc_ref'),
+                'cultural_letter': ('upload_cultural_letter_doc', 'cultural_letter_doc_ref'),
+                'emp_secondment_or_cub_contra_ltr': ('upload_emp_secondment_or_cub_contra_ltr_doc', 'emp_secondment_ltr_doc_ref'),
+                'employment_contract': ('upload_employment_contract_doc', 'employment_contract_doc_ref'),
+                'salary_certificate': ('upload_salary_certificate_doc', 'salary_certificate_ref'),
+                'istiqdam_form': ('upload_istiqdam_form_doc', 'istiqdam_form_doc_ref'),
+                'family_visa_letter': ('upload_family_visa_letter_doc', 'family_visa_letter_doc_ref'),
+                'family_resident': ('upload_attested_application_doc', 'attested_application_doc_ref'),
+            }
+
+            for record in self:
+                if record.service_request in required_docs:
+                    upload_field, ref_field = required_docs[record.service_request]
+                    if not getattr(record, upload_field) or not getattr(record, ref_field):
+                        raise ValidationError(
+                            _("Kindly update both the document and reference number for %s.") 
+                            % record.service_request.replace('_', ' ').title()
+                        )
+
+                record.state = 'done'
+                record.dynamic_action_status = 'Process Completed'
+                record.action_user_id = False
+                record.processed_date = fields.Datetime.now()
+       
+    def action_process_complete_enjaz(self):
         for record in self:
             if record.service_request in ['bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 
                                          'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 
@@ -698,83 +746,16 @@ class ServiceEnquiry(models.Model):
                                          'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter',
                                          'cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec']:
                
-                if not record.completed_doc_ref:
-                    raise ValidationError("Kindly Update Reference Number for Completed Document")
-                if record.service_request == 'vehicle_lease':
-                    if not record.upload_vehicle_lease_doc or not record.vehicle_lease_ref:
-                        raise ValidationError("Kindly Update Vehicle lease Document & Reference Number for Vehicle lease letter")
-                if record.service_request == 'bank_loan':
-                    if not record.upload_bank_loan_doc or not record.bank_loan_doc_ref:
-                        raise ValidationError("Kindly Update Bank Loan DOc & Reference Number for Bank Loan letter")
-                if record.service_request == 'apartment_lease':
-                    if not record.upload_apartment_lease_doc or not record.apartment_lease_ref:
-                        raise ValidationError("Kindly Update Appartment LEase DOC & Reference Number for Apartment lease letter")
-                if record.service_request == 'bank_letter':
-                    if not record.upload_bank_letter_doc or not record.bank_letter_ref:
-                        raise ValidationError("Kindly Update Bank Letter Document & Reference Number for Bank letter")
-                if record.service_request == 'car_loan':
-                    if not record.upload_car_loan_doc or not record.car_loan_doc_ref:
-                        raise ValidationError("Kindly Update CAr Loan Letter &  Reference Number for Car loan letter")
-                if record.service_request == 'rental_agreement':
-                    if not record.upload_rental_agreement_doc or not record.rental_agreement_doc_ref:
-                        raise ValidationError("Kindly Update Rental Agreement Document &  Reference Number for Rental agreement letter")
-                if record.service_request == 'exception_letter':
-                    if not record.upload_exception_letter_doc or not record.exception_letter_doc_ref:
-                        raise ValidationError("Kindly Update Exception Letter & Reference Number for Exception letter")
-                if record.service_request == 'attestation_waiver_letter':
-                    if not record.upload_attestation_waiver_letter_doc or not record.attestation_waiver_letter_doc_ref:
-                        raise ValidationError("Kindly Update Attestation Waiver Letter & Reference Number for Attestation Waiver letter")
-                if record.service_request == 'embassy_letter':
-                    if not record.upload_embassy_letter_doc or not record.embassy_letter_doc_ref:
-                        raise ValidationError("Kindly Update  Embassy Letter & Reference Number for Embassy letter")
-                if record.service_request == 'istiqdam_letter':
-                    if not record.upload_istiqdam_letter_doc or not record.istiqdam_letter_doc_ref:
-                        raise ValidationError("Kindly Update Istiqdam Letter and Reference Number for Istiqdam Letter")
-                if record.service_request == 'sce_letter':
-                    if not record.upload_sce_letter_doc or not record.sce_letter_doc_ref:
-                        raise ValidationError("Kindly Update SEC Letter &  Reference Number for SCE Letter")
-                if record.service_request == 'bilingual_salary_certificate':
-                    if not record.upload_bilingual_salary_certificate_doc or not record.bilingual_salary_certificate_doc_ref:
-                        raise ValidationError("Kindly Update Salary Certificate & Reference Number for Bilingual Salary Certificate")
-                if record.service_request == 'contract_letter':
-                    if not record.upload_contract_letter_doc or not record.contract_letter_doc_ref:
-                        raise ValidationError("Kindly Update Contract letter &  Reference Number for Contract letter")
-                if record.service_request == 'bank_account_opening_letter':
-                    if not record.upload_bank_account_opening_letter_doc or not record.bank_account_opening_letter_doc_ref:
-                        raise ValidationError("Kindly Update Bank Account Opening Letter and Reference Number for Bank account Opening Letter")
-                if record.service_request == 'bank_limit_upgrading_letter':
-                    if not record.upload_bank_limit_upgrading_letter_doc or not record.bank_limit_upgrading_letter_doc_ref:
-                        raise ValidationError("Kindly Update Bank Limit Upgrading Letter &  Reference Number for Bank limit upgrading letter")
-                if record.service_request == 'cultural_letter':
-                    if not record.upload_cultural_letter_doc or not record.cultural_letter_doc_ref:
-                        raise ValidationError("Kindly Update Cultural Letter & Reference Number for Cultural Letter/Bonafide Letter")
-                if record.service_request == 'emp_secondment_or_cub_contra_ltr':
-                    if not record.upload_emp_secondment_or_cub_contra_ltr_doc or not record.emp_secondment_ltr_doc_ref:
-                        raise ValidationError("Kindly Update Employemnet secondment Letter &  Reference Number for Employee secondment / Subcontract letter")
-                if record.service_request == 'employment_contract':
-                    if not record.upload_employment_contract_doc or not record.employment_contract_doc_ref:
-                        raise ValidationError("Kindly Update Employment Contract & Reference Number for Employee Contract letter")
-                if record.service_request == 'salary_certificate':
-                    if not record.upload_salary_certificate_doc or not record.salary_certificate_ref:
-                        raise ValidationError("Kindly Update Slaary Certificate Reference Number for Salary Certificate letter")
-                if record.service_request == 'istiqdam_form':
-                    if not  record.upload_istiqdam_letter_doc or not record.istiqdam_letter_doc_ref:
-                        raise ValidationError("Kindly Update Istiqdam Letter & Reference Number for Istiqdam Letter")
-                    if not record.upload_istiqdam_form_doc or not record.istiqdam_form_doc_ref:
-                        raise ValidationError("Kindly Update Istiqdam Form & Reference Number for Istiqdam Document")
-                if record.service_request == 'family_visa_letter':
-                    if not record.upload_family_visa_letter_doc or not record.family_visa_letter_doc_ref:
-                        raise ValidationError("Kindly Update Family Visa Letter & Reference Number for Family visa letter") 
-                if record.service_request == 'family_resident':
-                    if not record.upload_attested_application_doc or not record.attested_application_doc_ref:
-                        raise ValidationError("Kindly Update  Attested Application & Reference Number for Attested Visa Application")
-                     
+                if not record.enjaz_doc_ref:
+                    raise ValidationError("Kindly Update Reference Number for Completed Document")   
+                if not record.dependent_document_ids:
+                    raise ValidationError("Please upload at least one Fee Receipt Document before marking as completed.")
+
                 record.state='done'
                 record.dynamic_action_status='Process Completed'
                 record.action_user_id=False  
                 record.write({'processed_date': fields.Datetime.now()})     
        
-    
      
 
     def action_process_complete(self):
