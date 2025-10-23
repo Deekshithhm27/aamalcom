@@ -21,7 +21,7 @@
                               ('state', 'not in', ('payment_done', 'approved')), 
                               ('upload_family_visit_visa_doc', '=', False), 
                               ('service_request', 'not in', ('family_visit_visa',)), 
-                              ('employee_pay_string', '!=', True)
+                              ('aamalcom_pay', '=', True)
                              ]}"
         groups="visa_process.group_service_request_employee"/>
 
