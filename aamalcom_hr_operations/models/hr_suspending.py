@@ -45,7 +45,7 @@ class HrSuspendingEmployee(models.Model):
                 rec.iqama_no = rec.employee_id.iqama_no
                 rec.identification_id = rec.employee_id.identification_id
                 rec.passport_no = rec.employee_id.passport_id
-      
+                rec.sponsor_id = rec.employee_id.sponsor_id
     def action_submit_to_employee(self):
         for record in self:
             record.state = 'submit_to_employee'

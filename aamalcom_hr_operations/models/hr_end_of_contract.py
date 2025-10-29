@@ -120,7 +120,7 @@ class EndofContract(models.Model):
                 rec.identification_id = rec.employee_id.identification_id
                 rec.passport_no = rec.employee_id.passport_id
                 rec.department_id = rec.employee_id.department_id.id
-    
+                rec.sponsor_id = rec.employee_id.sponsor_id
     
     def action_submit_by_dept_head(self):
         self.state = 'approved_by_dept_head'

@@ -84,7 +84,7 @@ class EndOfService(models.Model):
                 rec.iqama_no = rec.employee_id.iqama_no
                 rec.identification_id = rec.employee_id.identification_id
                 rec.passport_no = rec.employee_id.passport_id
-       
+                rec.sponsor_id = rec.employee_id.sponsor_id
     @api.depends()
     def _compute_is_hr_manager(self):
         """
