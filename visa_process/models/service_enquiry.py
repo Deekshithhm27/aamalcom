@@ -809,15 +809,20 @@ class ServiceEnquiry(models.Model):
             # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
             if line.service_request == 'new_ev':
-                if line.state == 'payment_done':
-                    if not line.assigned_govt_emp_one:
-                        level = 'level1'
-                    elif not line.assigned_govt_emp_two:
-                        level = 'level2'
-                if line.state == 'approved' and line.assign_govt_emp_two == False:
-                    level = 'level1'
-                if line.state == 'approved' and line.assign_govt_emp_two != False:
-                    level = 'level2'
+                if line.self_pay:
+                    if line.state == 'payment_done':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif not line.assigned_govt_emp_two:
+                            level = 'level2'
+                                
+                    # Logic for Aamalcom-Pay Case (State is 'approved' after Finance approval)
+                else: # self_pay == False
+                    if line.state == 'approved':
+                        if not line.assigned_govt_emp_one:
+                            level = 'level1'
+                        elif not line.assigned_govt_emp_two:
+                            level = 'level2'
             if line.service_request == 'hr_card':
                     if line.state == 'submitted':
                         level = 'level1'
