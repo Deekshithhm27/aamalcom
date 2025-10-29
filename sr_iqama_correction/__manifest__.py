@@ -13,7 +13,7 @@ This module provides a centralized platform to manage and configure new service 
     'category': 'Tools',
     'author': 'Aamalcom',
     'website': 'http://www.aamalcom.com',
-    'depends': ['base','visa_process','sr_exit_reentry','account','aamalcom_accounting'],
+    'depends': ['base','visa_process','aamalcom_service_request'],
     'data': [
         'views/service_enquiry_views.xml',  
     ],

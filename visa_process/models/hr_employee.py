@@ -42,7 +42,7 @@ class HrEmployee(models.Model):
     client_parent_id = fields.Many2one('res.partner',string="Client",related="client_id.partner_id.parent_id",store=True)
     company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_project_manager",store=True)
 
-
+    iqama_copy = fields.Binary(string="Iqama")
     passport_copy = fields.Binary(string="Passport")
     degree_certificate = fields.Binary(string="Degree")
     qiwa_contract_doc = fields.Binary(string="Qiwa Contract")
