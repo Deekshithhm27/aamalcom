@@ -809,21 +809,16 @@ class ServiceEnquiry(models.Model):
             # department_ids = [(6, 0, self.current_department_ids.ids)]
             department_ids = []
             if line.service_request == 'new_ev':
-                if line.self_pay:
-                    if line.state == 'payment_done':
-                        if not line.assigned_govt_emp_one:
-                            level = 'level1'
-                        elif not line.assigned_govt_emp_two:
-                            level = 'level2'
-                                
-                    # Logic for Aamalcom-Pay Case (State is 'approved' after Finance approval)
-                else: # self_pay == False
-                    if line.state == 'approved':
-                        if not line.assigned_govt_emp_one:
-                            level = 'level1'
-                        elif not line.assigned_govt_emp_two:
-                            level = 'level2'
-            if line.service_request == 'hr_card':
+                if line.state == 'payment_done':
+                    if not line.assigned_govt_emp_one:
+                        level = 'level1'
+                    elif not line.assigned_govt_emp_two:
+                        level = 'level2'
+                if line.state == 'approved' and line.assign_govt_emp_two == False:
+                    level = 'level1'
+                if line.state == 'approved' and line.assign_govt_emp_two != False:
+                    level = 'level2'
+            elif line.service_request == 'hr_card':
                     if line.state == 'submitted':
                         level = 'level1'
                     if line.state == 'doc_uploaded_by_first_govt_employee':
@@ -1530,10 +1525,10 @@ class ServiceEnquiry(models.Model):
                             line.sponsor_id = line.employee_id.sponsor_id
             
                 if line.state in ('approved'):
-                    if not line.residance_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    if not line.muqeem_print_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    if not line.enjaz_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Enzaj Document")
+                    if not line.e_wakala_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for E-Wakala Document")
             if line.service_request =='hr_card':
                 if not line.muqeem_print_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
