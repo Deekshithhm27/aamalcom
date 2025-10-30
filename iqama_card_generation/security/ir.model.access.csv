@@ -1,5 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_qiwa_document_user,access.qiwa.document.user,model_qiwa_document,base.group_user,1,1,1,0
-access_qiwa_document_employee,access.qiwa.document.employee,model_qiwa_document,visa_process.group_service_request_employee,1,0,0,0
+
+access_qiwa_document_employee,access.qiwa.document.employee,model_qiwa_document,visa_process.group_service_request_employee,1,1,1,0
+access_qiwa_document_employee,access.qiwa.document.employee,model_qiwa_document,visa_process.group_service_request_manager,1,0,0,0
 access_qiwa_document_admin,access.qiwa.document.admin,model_qiwa_document,visa_process.group_service_request_administrator,1,1,1,1
+
 

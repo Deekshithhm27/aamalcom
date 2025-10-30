@@ -818,7 +818,7 @@ class ServiceEnquiry(models.Model):
                     level = 'level1'
                 if line.state == 'approved' and line.assign_govt_emp_two != False:
                     level = 'level2'
-            if line.service_request == 'hr_card':
+            elif line.service_request == 'hr_card':
                     if line.state == 'submitted':
                         level = 'level1'
                     if line.state == 'doc_uploaded_by_first_govt_employee':
@@ -1525,10 +1525,10 @@ class ServiceEnquiry(models.Model):
                             line.sponsor_id = line.employee_id.sponsor_id
             
                 if line.state in ('approved'):
-                    if not line.residance_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Residance Permit Document")
-                    if not line.muqeem_print_doc_ref:
-                        raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")
+                    if not line.enjaz_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for Enzaj Document")
+                    if not line.e_wakala_doc_ref:
+                        raise ValidationError("Kindly Update Reference Number for E-Wakala Document")
             if line.service_request =='hr_card':
                 if not line.muqeem_print_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Muqeem Print Document")

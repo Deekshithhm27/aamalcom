@@ -5,7 +5,7 @@ class ServiceEnquiry(models.Model):
 
     service_request = fields.Selection(
         selection_add=[
-            ('iqama_correction', 'Iqama Correction')
+            ('iqama_correction', 'Correction of Personal Information - (Iqama/Muqeem)')
         ],
         string="Service Requests",
         store=True,

@@ -160,8 +160,10 @@ class TerminationService(models.Model):
         for rec in self:
             if rec.employee_id:
                 rec.iqama_no = rec.employee_id.iqama_no
+                rec.sponsor_id = rec.employee_id.sponsor_id.id
                 rec.identification_id = rec.employee_id.identification_id
                 rec.passport_no = rec.employee_id.passport_id
+                rec.sponsor_id = rec.employee_id.sponsor_id
     
     is_project_manager = fields.Boolean(
         compute='_compute_is_project_manager',
