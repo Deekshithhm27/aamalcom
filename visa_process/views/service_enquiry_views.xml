@@ -16,7 +16,7 @@
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|',('state','not in',('waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved','payment_done')),'|',('assigned_govt_emp_one','=',False),'|',('assigned_govt_emp_two','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
-                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state','!=','submitted'),('assigned_govt_emp_one','=',False),('service_request','in',('iqama_card_req','iqama_correction'))]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="open_reassign_employee_wizard" string="Re-Assign Employee" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state','!=','submitted'),('assigned_govt_emp_one','=',False),('service_request','in',('iqama_card_req'))]}" groups="visa_process.group_service_request_manager"/>
 
                     <button name="open_reassign_employee_wizard" string="Re-Assign Employee"
                     type="object" class="btn-primary" attrs="{'invisible': ['|','|',

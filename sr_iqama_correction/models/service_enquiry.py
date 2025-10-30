@@ -12,13 +12,13 @@ class ServiceEnquiry(models.Model):
         store=True,
         copy=False,ondelete={'iqama_correction': 'cascade'}
     )
-    state = fields.Selection(selection_add=[('spl_jawazat', 'Waiting from SPL Jawazat for Delivery'),('waiting_jawazat_approval', 'Waiting Jawazat Approval')], ondelete={'spl_jawazat': 'cascade','waiting_jawazat_approval':'cascade'})
+    state = fields.Selection(selection_add=[('spl_jawazat', 'Waiting from SPL Jawazat for Delivery'),('waiting_jawazat_approval', 'Waiting Jawazat Approval'),('doc_by_gre', 'Document upload Pending by government employee')], ondelete={'spl_jawazat': 'cascade','waiting_jawazat_approval':'cascade'})
     iqama_name_correction_type = fields.Selection([('name_correction', 'Name Correction'),
-        ('martial_status', 'Martial Status'),
+        ('martial_status', 'Marital Status'),
         ('birth_country', 'Birth Country'),
         ('change_photo', 'Change Photo')], string="Request Type", store=True)
-    name_correction_status = fields.Selection([('online_name_correction', 'Online Name Correction'),
-        ('offline_name_correction', 'Offline Name Correction')], string="Name Correction Status", store=True)
+    name_correction_status = fields.Selection([('online_name_correction', 'Online'),
+        ('offline_name_correction', 'Offline')], string="Name Correction Status", store=True)
     iqama_document = fields.Binary(string="Iqama Copy",compute='_compute_employee_documents', store=False, attachment=False,readonly=True)
     passport_document = fields.Binary(string="Passport Copy",compute='_compute_employee_documents', store=False, attachment=False,readonly=True)
     # fields for file names
@@ -32,14 +32,17 @@ class ServiceEnquiry(models.Model):
     mofa_ksa = fields.Boolean(string="MOFA KSA")
     upload_embassy_document = fields.Binary(string="Embassy Document")
     upload_mofa_ksa_document = fields.Binary(string="MOFA KSA Document")
-    upload_saudi_consultant_document = fields.Binary(string="Saudi Consulate")
-    upload_mofa_home_document = fields.Binary(string="MOFA Home Country")
+    upload_saudi_consultant_document = fields.Binary(string="Marriage Certificate(Saudi Consulate)")
+    upload_mofa_home_document = fields.Binary(string="Marriage Certificate(MOFA Home Country)")
     upload_scanned_iqama_document = fields.Binary(string="Iqama Document")
     upload_scanned_iqama_file_name = fields.Char(string="Iqama Document")
     scanned_iqama_document_ref = fields.Char(string="Ref No.*")
     upload_noc_doc = fields.Binary(string="Upload NOC Document")
     upload_noc_doc_file_name = fields.Char(string="NOC Document")
     noc_doc_ref = fields.Char(string="Ref No.*")
+    upload_coc_doc = fields.Binary(string="Upload COC Document")
+    upload_coc_doc_file_name = fields.Char(string="NOC Document")
+    coc_doc_ref = fields.Char(string="Ref No.*")
     upload_muqeem_document = fields.Binary(string="Muqeem Document")
     upload_muqeem_document_file_name = fields.Char(string="Muqeem Document")
     muqeem_document_ref = fields.Char(string="Ref No.*")
@@ -52,13 +55,29 @@ class ServiceEnquiry(models.Model):
         compute='_compute_iqama_final_muqeem_cost',
     )
 
+    @api.onchange('is_reprint', 'is_no_print')
+    def _onchange_print_options(self):
+        for record in self:
+            if record.is_reprint:
+                record.is_no_print = False
+            elif record.is_no_print:
+                record.is_reprint = False
+
+    @api.onchange('inside_ksa', 'outside_ksa')
+    def _onchange_ksa_options(self):
+        for record in self:
+            if record.inside_ksa:
+                record.outside_ksa = False
+            elif record.outside_ksa:
+                record.inside_ksa = False
+
 
     @api.onchange('iqama_final_muqeem_cost')
     def _update_iqama_muqeem_pricing_line(self):
         for line in self:
             if line.iqama_final_muqeem_cost:
                 line.service_enquiry_pricing_ids += self.env['service.enquiry.pricing.line'].create({
-                        'name': 'Muqeem Fee',
+                        'name': 'Muqeem Fee(Iqama)',
                         'amount':line.iqama_final_muqeem_cost,
                         'service_enquiry_id': line.id
                         })
@@ -105,6 +124,28 @@ class ServiceEnquiry(models.Model):
             if 'upload_noc_doc' in vals:
                 vals['upload_noc_doc_file_name'] = f"{employee_name}_{iqama_no}_{service_request_name}_NOCDoc.pdf"
         return super(ServiceEnquiry, self).write(vals)
+
+    @api.onchange('iqama_name_correction_type')
+    def _onchange_iqama_name_correction_type(self):
+        """
+        Automatically selects 'COC (Online)' type when 'Change Photo' is chosen
+        """
+        if self.service_request == 'iqama_correction' and self.iqama_name_correction_type == 'change_photo':
+            coc_online_record = self.env['letter.print.type'].search([('name', '=', 'COC (Online)')], limit=1)
+            if coc_online_record:
+                self.letter_print_type_id = [(6, 0, [coc_online_record.id])]
+            else:
+                self.letter_print_type_id = False
+        
+    
+    def action_submit_payment_confirmation(self):
+        super(ServiceEnquiry, self).action_submit_payment_confirmation()
+        for record in self:
+            if record.service_request == 'iqama_correction':
+                record.dynamic_action_status = "PM needs to close the ticket."
+                record.action_user_id=record.approver_id.user_id.id
+                record.write({'processed_date': fields.Datetime.now()})
+
     
     def action_submit(self):
         super(ServiceEnquiry, self).action_submit()
@@ -150,7 +191,7 @@ class ServiceEnquiry(models.Model):
                     # NOTE: Assuming 'letter_print_type_id' field exists and is used for COC selection
                     selected_types = record.letter_print_type_id.mapped('name')
                     valid_types = {'COC (Online)', 'COC (Stamp)'}
-                    forbidden_types = {'MOFA (Stamp)', 'Letter-Head'} # Add other non-COC types here
+                    forbidden_types = {'MOFA (Stamp)', 'Letter-Head','COC (Stamp)'} # Add other non-COC types here
                     # 1. Check if ANY forbidden type is selected
                     if set(selected_types) & forbidden_types:
                         raise ValidationError(
@@ -159,10 +200,10 @@ class ServiceEnquiry(models.Model):
                     # 2. Check if AT LEAST ONE valid type is selected
                     if not (set(selected_types) & valid_types):
                         raise ValidationError(
-                                'When the Request Type is "Change Photo", you must select either "COC (Online)" or "COC (Stamp)" to proceed.'
+                                'When the Request Type is "Change Photo", you must select either "COC (Online)" to proceed.'
                                         )
                 # === END: Validation for Change Photo COC types ===
-                record.dynamic_action_status = "PM needs to review and send for approval."
+                record.dynamic_action_status = "PM needs to assign employee."
                 record.action_user_id=record.approver_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
 
@@ -170,6 +211,10 @@ class ServiceEnquiry(models.Model):
     def action_iqama_correction_submit_for_approval(self):
         for record in self:
             if record.service_request == 'iqama_correction':
+                if not record.scanned_iqama_document_ref:
+                    raise ValidationError("Kindly update refernce number for Iqama Document")
+                if not record.iqama_muqeem_points:
+                    raise ValidationError("Kindly update  Muqeem Points")
                 record.state = 'waiting_op_approval'
                 group = self.env.ref('visa_process.group_service_request_operations_manager')
                 users = group.users
@@ -227,8 +272,10 @@ class ServiceEnquiry(models.Model):
                 # NOTE: The check for muqeem_document_ref is always applied here regardless of type
                 if not record.muqeem_document_ref:
                     raise ValidationError("Kindly update refernce number for Muqeem Document")
+                if not record.muqeem_points:
+                    raise ValidationError("Kindly update  Muqeem Points")
                 record.state='submit_to_pm'
-                record.dynamic_action_status = "PM needs to review,forward to assigned government employee."
+                record.dynamic_action_status = "PM needs to select either Re-print No Print"
                 record.action_user_id=record.approver_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
 
@@ -247,8 +294,13 @@ class ServiceEnquiry(models.Model):
                         raise ValidationError("For 'Change Photo' requests, the 'Upload Fee Receipt Document' is required to proceed.")        
                     if not record.fee_receipt_doc_ref:
                         raise ValidationError("For 'Change Photo' requests, kindly update the 'Ref No.*' for the fee receipt Document.")
+                    if not record.upload_coc_doc:
+                        raise ValidationError("For 'Change Photo' requests, the 'Upload COC Document' is required to proceed.")         
+                    if not record.coc_doc_ref:
+                        raise ValidationError("For 'Change Photo' requests, kindly update the 'Ref No.*' for the COC Document.")
+
                 record.state='waiting_jawazat_approval'
-                record.dynamic_action_status = "Waiting for Jawazat approval. Once received, the documents will be uploaded. Pending with the government employee."
+                record.dynamic_action_status = "Waiting for Jawazat approval"
                 record.action_user_id=record.first_govt_employee_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
 
@@ -257,7 +309,7 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'iqama_correction':
                 if not (record.is_reprint or record.is_no_print):
                     raise ValidationError("Kindly select either Re-print or No Print.")
-                record.state='submit_for_review'
+                record.state='doc_by_gre'
                 record.dynamic_action_status = "Documents upload Pending by government employee."
                 record.action_user_id=record.first_govt_employee_id.user_id.id
                 record.write({'processed_date': fields.Datetime.now()})
@@ -279,11 +331,8 @@ class ServiceEnquiry(models.Model):
     def action_reviewed_by_gre_iqama_correction(self):
         for record in self:
             if record.service_request == 'iqama_correction':
-                if not record.scanned_iqama_document_ref:
-                    raise ValidationError("Kindly update refernce number for Iqama Document")
-                record.state='doc_uploaded_by_first_govt_employee'
-                record.dynamic_action_status = "PM needs to review"
-                record.action_user_id=record.approver_id.user_id.id
+                record.state='done'
+                record.dynamic_action_status = "Process Completed"
                 record.write({'processed_date': fields.Datetime.now()})
 
 

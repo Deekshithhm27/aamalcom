@@ -4,20 +4,12 @@
         <field name="model">service.enquiry</field>
         <field name="inherit_id" ref="visa_process.service_enquiry_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@id='open_assign_employee_wizard_one']" position="attributes">
-                <attribute name="attrs">
-                {'invisible': ['|', '|','|','|', ('state','!=','submitted'),
-                ('assign_govt_emp_one','=',False),
-                ('assigned_govt_emp_one','=',True),
-                ('service_request','in',('iqama_card_req','new_ev','medical_blood_test','salary_advance','exit_reentry_issuance_ext','dependents_ere')),'&amp;',('service_request','=','iqama_correction'),('billable_to_aamalcom','=',True)]}
-                </attribute>
-            </xpath>
             
             <xpath expr="//widget[@name='web_ribbon']" position="attributes">
                 <attribute name="attrs">
                     {'invisible': ['|', '|',
-                    ('state', '=', 'submitted'),
-                    '&amp;', ('service_request', '=', 'iqama_correction'), ('billable_to_aamalcom', '=', True),
+                    ('state', 'in', ('submit_to_pm','approved','done')),
+                    ('service_request', '=', 'iqama_correction'),
                     '&amp;', ('assign_govt_emp_one', '=', False), ('assigned_govt_emp_one', '=', True)
                         ]
                     }
@@ -27,14 +19,14 @@
 
             <xpath expr="//header" position="inside">
                 <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('service_request', '!=', 'iqama_correction')]}" groups="visa_process.group_service_request_client_spoc"/>
-                <button name="action_iqama_correction_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|',('state', '!=', 'submitted'),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('billable_to_aamalcom','=',False)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_iqama_correction_submit_for_approval" string="Submit for Approval" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|',('state', '!=', 'doc_by_gre'),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('upload_scanned_iqama_document', '=', False)]}" groups="visa_process.group_service_request_employee"/>
                 <button name="action_pm_review" string="Documents uploaded-Send to PM" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('service_request', '!=', 'iqama_correction'),('upload_muqeem_document', '=', False)]}" groups="visa_process.group_service_request_employee"/>
                 <button name="action_waiting_jawazat_approval" string="Await Jawazat Approval" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state', '!=', 'submitted'), ('service_request', '!=', 'iqama_correction'),('name_correction_status','=','online_name_correction')]}" groups="visa_process.group_service_request_employee"/>
-                <button name="action_reviewed_by_pm_iqama_correction" string="Reviewed-Send for Documents Upload" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state', '!=', 'submit_to_pm'), ('service_request', '!=', 'iqama_correction'),('is_reprint','!=',True)]}" groups="visa_process.group_service_request_manager"/>
-                <button name="action_reviewed_by_gre_iqama_correction" string="Documents Uploaded" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|','|',('state', '!=', 'submit_for_review'), ('service_request', '!=', 'iqama_correction'),('aamalcom_pay','=',False),('billable_to_aamalcom','=',False),('upload_scanned_iqama_document', '=', False)]}" groups="visa_process.group_service_request_employee"/>
-                <button name="action_reviewed_by_gre_send_to_client" string="Documents Uploaded" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|',('state', '!=', 'submit_for_review'), ('service_request', '!=', 'iqama_correction'),('billable_to_aamalcom','=',True),('upload_scanned_iqama_document', '=', False)]}" groups="visa_process.group_service_request_employee"/>
-                <button name="action_process_complete_iqama_if_reprint" string="Acknowledged-Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|', '|',('state', '!=', 'doc_uploaded_by_first_govt_employee'),('is_reprint','!=',True),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('billable_to_aamalcom','=',False)]}" groups="visa_process.group_service_request_manager"/>
-                <button name="action_process_complete_iqama" string="Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', '!=', 'payment_done'),('service_request', '!=', 'iqama_correction'),('is_reprint','!=',True),('upload_payment_doc','=',False)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_reviewed_by_pm_iqama_correction" string="Reprint-Submit" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('state', '!=', 'submit_to_pm'), ('service_request', '!=', 'iqama_correction'),('is_reprint','!=',True)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_reviewed_by_gre_iqama_correction" string="Acknowledged-Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|', ('state', '!=', 'approved'),('is_reprint','!=',True),('service_request','!=','iqama_correction'),('billable_to_client','=',False)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_reviewed_by_gre_send_to_client" string="Documents Uploaded" type="object" class="btn-primary" attrs="{'invisible': ['|','|','|',('state', '!=', 'doc_by_gre'), ('service_request', '!=', 'iqama_correction'),('aamalcom_pay','=',True),('upload_scanned_iqama_document', '=', False)]}" groups="visa_process.group_service_request_employee"/>
+                <button name="action_process_complete_iqama_if_reprint" string="Acknowledged-Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|', '|',('state', '!=', 'approved'),('is_reprint','!=',True),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('billable_to_aamalcom','=',False)]}" groups="visa_process.group_service_request_manager"/>
+                <button name="action_process_complete_iqama" string="Acknowledged-Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|','|',('state', '!=', 'payment_done'),('service_request', '!=', 'iqama_correction'),('is_reprint','!=',True),('upload_payment_doc','=',False)]}" groups="visa_process.group_service_request_manager"/>
                 <button name="action_submit_payment_confirmation" string="Submit Payment Confirmation" type="object" class="oe_highlight" attrs="{'invisible': ['|','|',('state','!=','payment_initiation'),('service_request', '!=', 'iqama_correction'),('upload_payment_doc','=',False)]}" groups="visa_process.group_service_request_client_spoc"/>
                 <button name="action_process_complete_iqama_if_no_reprint" string="Acknowledged-Process Complete" type="object" class="oe_highlight" attrs="{'invisible': ['|','|', ('state', 'not in', ('approved','submit_to_pm')),('service_request', '!=', 'iqama_correction'),('is_no_print','!=',True)]}" groups="visa_process.group_service_request_manager"/>
             </xpath> 
@@ -96,51 +88,80 @@
                         </tree>
                     </field>
                 </group>
-                <group  attrs="{'invisible': ['|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status','birth_country'))]}">
+                <group string="KSA Status" attrs="{'invisible': ['|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status','birth_country'))]}">
                         <group> 
                             <field name="inside_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
                             <field name="outside_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status','birth_country')),('inside_ksa','!=',True)]}"> 
-                            <field name="embassy"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('inside_ksa','!=',True)]}"> 
+                            <group>
+                            <field name="embassy"   attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_embassy_document" string="Marriage Certificate(Embassy Attached)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            </group>
+                            <group>
                             <field name="mofa_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="upload_embassy_document"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="upload_mofa_ksa_document"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_mofa_ksa_document" string="Marriage Certificate(MOFA KSA Document)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
-                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status','birth_country')),('outside_ksa','!=',True)]}"> 
-                        <field name="upload_saudi_consultant_document"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        <field name="upload_mofa_home_document"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
-                <group attrs="{'invisible': ['|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft', 'submitted','waiting_op_approval','waiting_gm_approval','waiting_fin_approval','approved'))]}">
-                    <group>
-                    <field name="is_reprint" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager', '!=', True)]}"/>
-                    <field name="is_no_print" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager', '!=', True)]}"/>
-                </group>
-                </group>
+                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('inside_ksa','!=',True)]}"> 
+                            <group>
+                            <field name="embassy"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_embassy_document" string="Birth Certificate(Embassy Attached)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="mofa_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+
+                            
+                            <field name="upload_mofa_ksa_document" string="Birth Certificate(MOFA KSA Document)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('outside_ksa','!=',True)]}"> 
+                        <field name="upload_saudi_consultant_document" string="Marriage Certificate(Saudi Consulate)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="upload_mofa_home_document" string="Marriage Certificate(MOFA Home Country)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('outside_ksa','!=',True)]}"> 
+                        <field name="upload_saudi_consultant_document" string="Birth Certificate(Saudi Consulate)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="upload_mofa_home_document" string="Birth Certificate(MOFA Home Country)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+
+                
             </xpath>
             <xpath expr="//notebook[@id='notebook_four']" position="after">
-                <group string="Iqama Name Correction status" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('iqama_name_correction_type','!=','name_correction'), ('state', 'in', ('draft','waiting_op_approval','waiting_gm_approval','waiting_fin_approval'))]}">
+                <group string="Iqama Name Correction status" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('iqama_name_correction_type','!=','name_correction'), ('state', 'in', ('draft'))]}">
                     <group>
                     <field name="name_correction_status" attrs="{'readonly': ['|',('state', 'not in', ('approved','submitted')),('is_service_request_client_spoc','=',True)]}"/>
                 </group>
                 </group>
-            
-                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|','|',('state', 'in', ('draft', 'submitted')),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('billable_to_aamalcom','=',False)]}">
+                <group string="Print Options" attrs="{'invisible': ['|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft', 'submitted','waiting_jawazat_approval'))]}">
                     <group>
-                    <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name" force_save="1"/>
-                    <field name="upload_payment_doc_file_name"  invisible="1"/>
-                    <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/> 
-                    </group>   
+                    <field name="is_reprint" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager', '!=', True)]}"/>
                 </group>
+                <group>
+                    <field name="is_no_print" attrs="{'readonly': ['|',('state', '!=', 'submit_to_pm'),('is_project_manager', '!=', True)]}"/>
+                </group>
+                </group>
+            
                 
-                <group string="NOC Documents" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('iqama_name_correction_type','!=','change_photo'), ('state', 'in', ('draft','waiting_op_approval','waiting_gm_approval','waiting_fin_approval'))]}">
+                
+                <group string="NOC Documents" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('iqama_name_correction_type','!=','change_photo'), ('state', 'in', ('draft','waiting_op_approval','waiting_gm_approval','waiting_fin_approval',))]}">
                     <group>
                     <field name="upload_noc_doc" 
                     attrs="{'readonly': ['|', ('state', 'not in', ('approved','submitted')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_noc_doc_file_name"/>
                     <field name="upload_noc_doc_file_name" invisible="1"/>
                     <field name="noc_doc_ref" 
                     attrs="{'readonly': ['|', ('state', 'not in', ('approved','submitted')), ('is_service_request_client_spoc', '=', True)]}"/>
+                </group>
+                <group>
+                    <field name="upload_coc_doc" 
+                    attrs="{'readonly': ['|', ('state', 'not in', ('approved','submitted')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_coc_doc_file_name"/>
+                    <field name="upload_coc_doc_file_name" invisible="1"/>
+                    <field name="coc_doc_ref" 
+                    attrs="{'readonly': ['|', ('state', 'not in', ('approved','submitted')), ('is_service_request_client_spoc', '=', True)]}"/>
+                </group>
+                <group>
                    
                         <field name="fee_receipt_doc" attrs="{'readonly': ['|', ('state', 'not in', ('approved','submitted')), ('is_service_request_client_spoc', '=', True)]}" filename="fee_receipt_doc_file_name"/>
                         <field name="fee_receipt_doc_file_name"  invisible="1"/>
@@ -148,9 +169,7 @@
                    
                 </group>
                 </group>
-
-              
-                <group  attrs="{'invisible': ['|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft','waiting_op_approval','waiting_gm_approval','waiting_fin_approval'))]}">
+                <group  attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft')),('name_correction_status','!=','online_name_correction')]}">
                     <group string="Muqeem Documents">
                     <field name="upload_muqeem_document" 
                     attrs="{'readonly': ['|', ('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_muqeem_document_file_name"/>
@@ -161,23 +180,44 @@
                     attrs="{'readonly': ['|',('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('is_service_request_client_spoc', '=', True)]}" force_save="1"/>
                     <field name="final_muqeem_cost" readonly="1"/>
                 </group>
+            </group>
+
+              
+                <group  attrs="{'invisible': ['|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft','submitted'))]}">
+                    <group string="Muqeem Documents" attrs="{'invisible': [('name_correction_status','=','online_name_correction')]}">
+                    <field name="upload_muqeem_document" 
+                    attrs="{'readonly': ['|', ('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_muqeem_document_file_name"/>
+                    <field name="upload_muqeem_document_file_name" invisible="1"/>
+                    <field name="muqeem_document_ref" 
+                    attrs="{'readonly': ['|', ('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('is_service_request_client_spoc', '=', True)]}"/>
+                    <field name="muqeem_points" 
+                    attrs="{'readonly': ['|',('state', 'not in', ('approved','waiting_jawazat_approval','submitted')), ('is_service_request_client_spoc', '=', True)]}" force_save="1"/>
+                    <field name="final_muqeem_cost" readonly="1"/>
+                </group>
                 
-                    <group string="Iqama Documents">
+                    <group string="Iqama Documents" attrs="{'invisible': ['|','|','|',('service_request', '!=', 'iqama_correction'),('first_govt_employee_id','=',False),('state', 'in', ('draft','submitted','waiting_jawazat_approval','submit_to_pm')),('is_no_print','=',True)]}">
                     <field name="upload_scanned_iqama_document" 
-                    attrs="{'readonly': ['|', ('state', 'not in', ('submit_for_review')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_scanned_iqama_file_name"/>
+                    attrs="{'readonly': ['|', ('state', 'not in', ('doc_by_gre')), ('is_service_request_client_spoc', '=', True)]}"  filename="upload_scanned_iqama_file_name"/>
                     <field name="upload_scanned_iqama_file_name" invisible="1"/>
                     <field name="scanned_iqama_document_ref" 
-                    attrs="{'readonly': ['|', ('state', 'not in', ('submit_for_review')), ('is_service_request_client_spoc', '=', True)]}"/>
+                    attrs="{'readonly': ['|', ('state', 'not in', ('doc_by_gre')), ('is_service_request_client_spoc', '=', True)]}"/>
                     <field name="iqama_muqeem_points" 
-                    attrs="{'readonly': ['|', ('state', 'not in', ('submit_for_review')), ('is_service_request_client_spoc', '=', True)]}" force_save="1"/>
+                    attrs="{'readonly': ['|', ('state', 'not in', ('doc_by_gre')), ('is_service_request_client_spoc', '=', True)]}" force_save="1"/>
                     <field name="iqama_final_muqeem_cost" readonly="1"/>
                 </group>
                 </group>
-                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|',('state', 'not in', ('done', 'payment_initiation','payment_done')),('service_request','!=','iqama_correction')]}">
+                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|','|',('state', 'in', ('draft', 'submitted','submit_to_pm','doc_by_gre','waiting_gm_approval','waiting_op_approval','waiting_fin_approval','waiting_jawazat_approval')),('service_request','!=','iqama_correction'),('aamalcom_pay','=',False),('is_no_print','=',True)]}">
                     <group>
                     <field name="upload_payment_doc" attrs="{'readonly': [('state', '!=','payment_initiation')]}" filename="upload_payment_doc_file_name" force_save="1"/>
                     <field name="upload_payment_doc_file_name"  invisible="1"/>
                     <field name="payment_doc_ref" attrs="{'readonly': [('state', '!=','payment_initiation')]}"/> 
+                    </group>   
+                </group>
+                <group string="Payment Confirmation Documents" attrs="{'invisible': ['|','|',('state', 'not in', ('done', 'payment_initiation','payment_done')),('service_request','!=','iqama_correction'),('is_no_print','=',True)]}">
+                    <group>
+                    <field name="upload_payment_doc" attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc', '=', True)]}" filename="upload_payment_doc_file_name" force_save="1"/>
+                    <field name="upload_payment_doc_file_name"  invisible="1"/>
+                    <field name="payment_doc_ref" attrs="{'readonly': ['|',('state', '!=','payment_initiation'),('is_client_spoc', '=', True)]}"/> 
                     </group>   
                 </group>
             
