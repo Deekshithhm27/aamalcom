@@ -167,7 +167,7 @@ class ServiceEnquiry(models.Model):
                 if record.iqama_name_correction_type in ('martial_status', 'birth_country'):
                     # 1. Check if at least one location (Inside/Outside KSA) is selected
                     if not (record.inside_ksa or record.outside_ksa):
-                        raise ValidationError("Kindly select whether the employee is 'Inside KSA' or 'Outside KSA'.")
+                        raise ValidationError("Kindly select  'Inside KSA' or 'Outside KSA'.")
                     # 2. Validation for Inside KSA:
                     if record.inside_ksa:
                         # If inside KSA is selected, EITHER Embassy OR MOFA KSA must be true.
@@ -190,12 +190,12 @@ class ServiceEnquiry(models.Model):
                 if record.iqama_name_correction_type == 'change_photo':
                     # NOTE: Assuming 'letter_print_type_id' field exists and is used for COC selection
                     selected_types = record.letter_print_type_id.mapped('name')
-                    valid_types = {'COC (Online)', 'COC (Stamp)'}
+                    valid_types = {'COC (Online)'}
                     forbidden_types = {'MOFA (Stamp)', 'Letter-Head','COC (Stamp)'} # Add other non-COC types here
                     # 1. Check if ANY forbidden type is selected
                     if set(selected_types) & forbidden_types:
                         raise ValidationError(
-                            'When the Request Type is "Change Photo", you can only select "COC (Online)" or "COC (Stamp)". Other types are not permitted.'
+                            'When the Request Type is "Change Photo", you can only select "COC (Online)". Other types are not permitted.'
                             )                
                     # 2. Check if AT LEAST ONE valid type is selected
                     if not (set(selected_types) & valid_types):
