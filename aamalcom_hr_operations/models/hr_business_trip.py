@@ -85,7 +85,7 @@ class HrBusinessTrip(models.Model):
                 line.iqama_no = line.employee_id.iqama_no
                 line.identification_id = line.employee_id.identification_id
                 line.passport_no = line.employee_id.passport_id
-
+                line.sponsor_id = line.employee_id.sponsor_id
     @api.depends()
     def _compute_is_hr_manager(self):
         for rec in self:
