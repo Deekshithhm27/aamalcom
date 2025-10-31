@@ -293,7 +293,7 @@
         <field name="res_model">hr.employee</field>
         <field name="view_mode">kanban,tree,form,activity</field>
         <field name="domain">[('user_id','=',uid)]</field>
-        <field name="context">{'chat_icon': True}</field>
+        <field name="context">{'chat_icon': True,'edit':False,'create':False}</field>
         <field name="view_id" eval="aamalcom_hr_kanban_view_employees"/>
         <field name="search_view_id" ref="hr.view_employee_filter"/>
         <field name="help" type="html">

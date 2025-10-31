@@ -1597,17 +1597,6 @@ class ServiceEnquiry(models.Model):
              self.env.ref('aamalcom_ticket_activity.mail_activity_type_ticket_action').id),
         ])
         activity_ids.unlink()
-        client_manager_user = self.env.user.company_spoc_id.user_id  
-        # Check if a user was actually found before attempting to loop
-        if client_manager_user:
-            for user in client_manager_user:
-                self._schedule_ticket_activity(
-                user_id=user.id, # Must use the ID of the current user in the loop
-                summary='Action Required on Ticket',
-                note='Do review and take action (Payment Documents to be uploaded) on this ticket.'
-                )
-
-        
         return result
 
     def action_process_complete_iqama_if_reprint(self):
