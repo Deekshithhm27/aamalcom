@@ -18,7 +18,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="employee_ids" widget="many2many_tags"/>
+                        <field name="employee_ids" widget="many2many_tags" options="{'no_create': True, 'no_edit': True}"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
