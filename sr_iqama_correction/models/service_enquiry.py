@@ -24,12 +24,13 @@ class ServiceEnquiry(models.Model):
     # fields for file names
     iqama_document_file_name = fields.Char(string="Iqama File Name")
     passport_document_file_name = fields.Char(string="Passport File Name")
-    is_reprint = fields.Boolean(string="Re-Print")
-    is_no_print = fields.Boolean(string="No Print")
-    inside_ksa = fields.Boolean(string="Inside KSA")
-    outside_ksa = fields.Boolean(string="Outside KSA")
-    embassy = fields.Boolean(string="Embassy")
-    mofa_ksa = fields.Boolean(string="MOFA KSA")
+    is_reprint = fields.Boolean(string="Re-Print(Iqama)")
+    is_no_print = fields.Boolean(string="No Print(Iqama)")
+    location_status = fields.Selection([('inside_ksa', 'Inside KSA'),
+        ('outside_ksa', 'Outside KSA')], string="KSA Status", store=True)
+   
+    embassy = fields.Boolean(string="Embassy Attestation")
+    mofa_ksa = fields.Boolean(string="MOFA Attestation(KSA)")
     upload_embassy_document = fields.Binary(string="Embassy Document")
     upload_mofa_ksa_document = fields.Binary(string="MOFA KSA Document")
     upload_saudi_consultant_document = fields.Binary(string="Marriage Certificate(Saudi Consulate)")
@@ -63,13 +64,7 @@ class ServiceEnquiry(models.Model):
             elif record.is_no_print:
                 record.is_reprint = False
 
-    @api.onchange('inside_ksa', 'outside_ksa')
-    def _onchange_ksa_options(self):
-        for record in self:
-            if record.inside_ksa:
-                record.outside_ksa = False
-            elif record.outside_ksa:
-                record.inside_ksa = False
+    
 
 
     @api.onchange('iqama_final_muqeem_cost')
@@ -166,10 +161,10 @@ class ServiceEnquiry(models.Model):
                 # === START: Validation for Martial Status / Birth Country (based on XML) ===
                 if record.iqama_name_correction_type in ('martial_status', 'birth_country'):
                     # 1. Check if at least one location (Inside/Outside KSA) is selected
-                    if not (record.inside_ksa or record.outside_ksa):
+                    if not record.location_status:
                         raise ValidationError("Kindly select  'Inside KSA' or 'Outside KSA'.")
                     # 2. Validation for Inside KSA:
-                    if record.inside_ksa:
+                    if record.location_status == 'inside_ksa':
                         # If inside KSA is selected, EITHER Embassy OR MOFA KSA must be true.
                         if not record.embassy or not record.mofa_ksa:
                             raise ValidationError("Since 'Inside KSA' is selected, you must choose  'Embassy' and 'MOFA KSA'.")  
@@ -178,7 +173,7 @@ class ServiceEnquiry(models.Model):
                         if record.mofa_ksa and not record.upload_mofa_ksa_document:
                             raise ValidationError("The 'MOFA KSA' option requires the 'Upload MOFA KSA Document'.")
                     # 3. Validation for Outside KSA:
-                    if record.outside_ksa:
+                    if record.location_status == 'outside_ksa':
                         # If outside KSA is selected, both documents are mandatory
                         if not record.upload_saudi_consultant_document:
                             raise ValidationError("Since 'Outside KSA' is selected, the 'Upload Saudi Consultant Document' is mandatory.")
@@ -331,15 +326,7 @@ class ServiceEnquiry(models.Model):
     def action_reviewed_by_gre_iqama_correction(self):
         for record in self:
             if record.service_request == 'iqama_correction':
-                record.state='done'
-                record.dynamic_action_status = "Process Completed"
-                record.write({'processed_date': fields.Datetime.now()})
-
-
-    def action_process_complete_iqama_if_reprint(self):
-            for record in self:
-                if record.service_request == 'iqama_correction':
-                    if record.service_enquiry_pricing_ids:
+                if record.service_enquiry_pricing_ids:
                         invoice_line_ids = []
                         for line in record.service_enquiry_pricing_ids:
                             invoice_line_ids.append((0, 0, {
@@ -360,6 +347,15 @@ class ServiceEnquiry(models.Model):
 
                         self.env['draft.account.move'].create(move_vals)
 
+                record.state='done'
+                record.dynamic_action_status = "Process Completed"
+                record.write({'processed_date': fields.Datetime.now()})
+
+
+    def action_process_complete_iqama_if_reprint(self):
+            for record in self:
+                if record.service_request == 'iqama_correction':
+                    
                     record.state = 'done'  
                     record.dynamic_action_status = "Process Completed"
                     record.write({'processed_date': fields.Datetime.now()})
