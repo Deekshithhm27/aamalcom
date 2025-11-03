@@ -128,8 +128,12 @@
                         </group>
                     </group>
                     <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('location_status','!=','outside_ksa')]}"> 
+                        <group>
                         <field name="upload_saudi_consultant_document" string="Marriage Certificate(Saudi Consulate Attested)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                    <group>
                         <field name="upload_mofa_home_document" string="Marriage Certificate(MOFA Home Country Attested)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
                     </group>
                     <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('location_status','!=','outside_ksa')]}"> 
                         <field name="upload_saudi_consultant_document" string="Birth Certificate(Saudi Consulate Attested)" attrs="{'readonly': [('state', '!=','draft')]}"/>
