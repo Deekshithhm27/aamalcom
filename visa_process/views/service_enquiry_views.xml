@@ -230,7 +230,7 @@
                                 <field name="service_request_config_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="service_request_type" invisible="1" force_save="1"/>
                                 <field name="is_project_manager" invisible="1"/>
-                                <field name="priority" widget="priority" attrs="{'readonly': [('is_project_manager', '!=', True)], 'invisible': [('state', '=','draft')]}"/>
+                                <field name="priority" widget="priority" attrs="{'readonly': ['|',('is_client_spoc', '!=', True),('state', '!=','draft')]}"/>
                                 <field name="iqama_no" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="identification_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="passport_no" attrs="{'readonly': [('state', '!=','draft')]}" string="Passport No"/>
