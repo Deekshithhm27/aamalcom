@@ -683,9 +683,9 @@
             
                                 </group>
                                 <group attrs="{'invisible': ['|',('state', 'in',( 'draft','submitted','payment_initiation','waiting_op_approval','waiting_gm_approval','waiting_fin_approval')),'|',('service_request', 'not in', ('new_ev')),('second_govt_employee_id','=',False)]}">
-                                    <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
+                                    <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name" force_save="1"/>
                                      <field name="upload_enjaz_doc_file_name"  invisible="1"/>
-                                    <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>
 
                                     <field name="e_wakala_doc" attrs="{'readonly': ['|',('state', 'not in', ('approved','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="e_wakala_doc_file_name"/>
                                      <field name="e_wakala_doc_file_name"  invisible="1"/>

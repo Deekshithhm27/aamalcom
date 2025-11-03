@@ -561,9 +561,9 @@
                     </group>
                     <group attrs="{'invisible': ['|',('service_request', 'not in', ('bank_loan', 'vehicle_lease', 'apartment_lease', 'bank_letter', 'car_loan', 'rental_agreement', 'exception_letter', 'attestation_waiver_letter', 'embassy_letter', 'istiqdam_letter', 'sce_letter', 'bilingual_salary_certificate', 'contract_letter', 'bank_account_opening_letter', 'bank_limit_upgrading_letter','cultural_letter', 'emp_secondment_or_cub_contra_ltr','employment_contract','salary_certificate','istiqdam_form','family_visa_letter','family_resident','sec')),('show_enjaz_section', '=', False)]}">
                         <group>
-                            <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name"/>
+                            <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" filename="upload_enjaz_doc_file_name" force_save="1"/>
                             <field name="upload_enjaz_doc_file_name"  invisible="1"/>
-                            <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}"/>   
+                            <field name="enjaz_doc_ref" attrs="{'readonly': ['|',('state', 'not in',('submitted','payment_done')),('is_service_request_client_spoc','=',True)]}" force_save="1"/>   
                         </group> 
 
                     </group>
