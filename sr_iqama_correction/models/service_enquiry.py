@@ -358,6 +358,8 @@ class ServiceEnquiry(models.Model):
                     
                     record.state = 'done'  
                     record.dynamic_action_status = "Process Completed"
+                    record.action_user_id= False
+
                     record.write({'processed_date': fields.Datetime.now()})
 
     def action_process_complete_iqama_if_no_reprint(self):
@@ -365,6 +367,7 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'iqama_correction':
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
+                record.action_user_id= False
                 record.write({'processed_date': fields.Datetime.now()})
 
     def action_process_complete_iqama(self):
@@ -372,4 +375,5 @@ class ServiceEnquiry(models.Model):
             if record.service_request == 'iqama_correction':
                 record.state = 'done'  
                 record.dynamic_action_status = "Process Completed"
+                record.action_user_id= False
                 record.write({'processed_date': fields.Datetime.now()})
