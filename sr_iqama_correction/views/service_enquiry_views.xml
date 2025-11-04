@@ -82,49 +82,62 @@
                 <group attrs="{'invisible': [('service_request','!=','iqama_correction')]}" >
                     <field name="dependent_document_ids" string="Other Documents" attrs="{'readonly': [('state', '!=','draft')]}">
                         <tree editable="bottom">
-                            <field name="dependent_passport_id"/>
-                            <field name="dependent_border_id"/>
-                            <field name="visa_page"/>
+                            <field name="person_name" string="Document Name"/>
+                            <field name="dependent_border_id" string="Document"/>
+                            <field name="visa_page" invisible="1"/>
                         </tree>
                     </field>
                 </group>
                 <group string="KSA Status" attrs="{'invisible': ['|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status','birth_country'))]}">
                         <group> 
-                            <field name="inside_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <field name="outside_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="location_status"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
-                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('inside_ksa','!=',True)]}"> 
+                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('location_status','!=','inside_ksa')]}"> 
                             <group>
                             <field name="embassy"   attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="upload_embassy_document" string="Marriage Certificate(Embassy Attached)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_embassy_document" string="Marriage Certificate(Embassy Attested)" attrs="{
+           'readonly': ['|', ('state', '!=', 'draft'), ('embassy', '!=', True)],
+           'invisible': [('embassy', '!=', True)]
+       }"/>
                             </group>
                             <group>
                             <field name="mofa_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="upload_mofa_ksa_document" string="Marriage Certificate(MOFA KSA Document)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_mofa_ksa_document" string="Marriage Certificate(MOFA Attested)"  attrs="{
+           'readonly': ['|', ('state', '!=', 'draft'), ('embassy', '!=', True)],
+           'invisible': [('mofa_ksa', '!=', True)]
+       }"/>
                         </group>
                     </group>
-                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('inside_ksa','!=',True)]}"> 
+                        <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('location_status','!=','inside_ksa')]}"> 
                             <group>
                             <field name="embassy"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                            <field name="upload_embassy_document" string="Birth Certificate(Embassy Attached)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_embassy_document" string="Birth Certificate(Embassy Attested)" attrs="{
+           'readonly': ['|', ('state', '!=', 'draft'), ('embassy', '!=', True)],
+           'invisible': [('embassy', '!=', True)]
+       }"/>
                         </group>
                         <group>
                             <field name="mofa_ksa"  attrs="{'readonly': [('state', '!=','draft')]}"/>
 
                             
-                            <field name="upload_mofa_ksa_document" string="Birth Certificate(MOFA KSA Document)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="upload_mofa_ksa_document" string="Birth Certificate(MOFA Attested)"  attrs="{
+           'readonly': ['|', ('state', '!=', 'draft'), ('embassy', '!=', True)],
+           'invisible': [('embassy', '!=', True)]
+       }"/>
                         </group>
                     </group>
-                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('outside_ksa','!=',True)]}"> 
-                        <field name="upload_saudi_consultant_document" string="Marriage Certificate(Saudi Consulate)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        <field name="upload_mofa_home_document" string="Marriage Certificate(MOFA Home Country)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('martial_status')),('location_status','!=','outside_ksa')]}"> 
+                        <group>
+                        <field name="upload_saudi_consultant_document" string="Marriage Certificate(Saudi Consulate Attested)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
-                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('outside_ksa','!=',True)]}"> 
-                        <field name="upload_saudi_consultant_document" string="Birth Certificate(Saudi Consulate)" attrs="{'readonly': [('state', '!=','draft')]}"/>
-                        <field name="upload_mofa_home_document" string="Birth Certificate(MOFA Home Country)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    <group>
+                        <field name="upload_mofa_home_document" string="Marriage Certificate(MOFA Home Country Attested)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                    </group>
+                    </group>
+                    <group attrs="{'invisible': ['|','|',('service_request', 'not in', ('iqama_correction')),('iqama_name_correction_type','not in',('birth_country')),('location_status','!=','outside_ksa')]}"> 
+                        <field name="upload_saudi_consultant_document" string="Birth Certificate(Saudi Consulate Attested)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                        <field name="upload_mofa_home_document" string="Birth Certificate(MOFA Home Country Attested)"  attrs="{'readonly': [('state', '!=','draft')]}"/>
                     </group>
 
                 

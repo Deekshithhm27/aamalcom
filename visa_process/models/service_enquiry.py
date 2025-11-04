@@ -983,6 +983,8 @@ class ServiceEnquiry(models.Model):
 
     def action_submit(self):
         for line in self:
+            if not line.priority:
+                    raise ValidationError('Please set Priority for this service request before Submission')
             if line.service_request == 'prof_change_qiwa':
                 if not line.profession_change:
                     raise ValidationError('Please add Profession change to')
