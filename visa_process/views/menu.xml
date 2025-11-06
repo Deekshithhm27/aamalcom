@@ -16,7 +16,7 @@
     </menuitem> -->
 
 
-    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_hr_employee,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee,visa_process.group_service_request_administrator">
+    <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_payroll_employee,visa_process.group_service_request_hr_employee,visa_process.group_service_request_payroll_manager,visa_process.group_service_request_insurance_manager,visa_process.group_service_request_insurance_employee,visa_process.group_service_request_govt_manager,visa_process.group_service_request_administrator">
         <!-- This menu is visible for clients only -->
         
 
@@ -51,6 +51,8 @@
             <menuitem id="menu_service_enquiry_hr_employee" name="Tickets for Approval" sequence="9" action="action_service_enquiry_hr_employee_approval" groups="visa_process.group_service_request_payroll_manager,visa_process.group_service_request_hr_manager"/>
             <menuitem id="menu_service_enquiry_govt_employee" name="COC/MOFA Tickets" sequence="10" action="action_service_enquiry_govt_employee_approval" groups="visa_process.group_service_request_employee"/>
             <menuitem id="menu_service_enquiry_operations_manager" name="Service Tickets" sequence="11" action="action_service_enquiry_operations_manager" groups="visa_process.group_service_request_operations_manager"/>
+            
+            <menuitem id="menu_service_enquiry_govt_manager" name="Service Tickets" sequence="12" action="action_service_enquiry_govt_manager" groups="visa_process.group_service_request_govt_manager"/>
 
             
         </menuitem>

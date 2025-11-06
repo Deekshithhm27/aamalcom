@@ -10,7 +10,7 @@
     'category': 'Services',
     'author': 'Lucidspire',
     'website': 'http://www.lucidspire.com',
-    'depends': ['base', 'mail', 'visa_process','aamalcom_accounting',],
+    'depends': ['base', 'mail', 'visa_process','aamalcom_accounting','aamalcom_service_request'],
     'data': [
         'views/service_enquiry_views.xml',
     ],

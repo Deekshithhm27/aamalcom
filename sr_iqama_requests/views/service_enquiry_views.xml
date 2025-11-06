@@ -12,7 +12,7 @@
                         groups="visa_process.group_service_request_client_spoc"/>
                 <button name="action_payment_confirmation_uploaded" string="Confirmation Uploaded" type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('state','!=','submitted'),'|',('service_request', '!=', 'iqama_print'),'|',('fee_receipt_doc', '=',False),'|',('confirmation_doc', '=',False),('service_enquiry_pricing_ids', '=', []),]}"
+                        attrs="{'invisible': ['|','|','|',('state','!=','submitted'),('service_request', '!=', 'iqama_print'),('fee_receipt_doc', '=',False),('confirmation_doc', '=',False)]}"
                         groups="visa_process.group_service_request_employee"/>
                 <button name="action_iqama_uploaded" string="Iqama Uploaded" type="object"
                         class="oe_highlight"
@@ -77,6 +77,9 @@
                         <field name="fee_receipt_doc_file_name" invisible="1"/>
                         <field name="fee_receipt_doc_ref"
                                attrs="{'readonly': ['|',('state', '!=','submitted'),('is_gov_employee', '!=',True)]}"/>
+                        <field name="muqeem_points" 
+                                       attrs="{'readonly': ['|', ('state', 'not in', ('submitted', 'approved')), ('is_service_request_client_spoc', '=', True)]}" />
+                        <field name="final_muqeem_cost" readonly="1"/>
                     </group>
                     <group>
                         <field name="confirmation_doc" string="Confirmation Document"
@@ -100,7 +103,7 @@
                     </group>
                 </group>
             </xpath>
-            <xpath expr="//group[field[@name='letter_cost']]" position="after">
+            <!-- <xpath expr="//group[field[@name='letter_cost']]" position="after">
                 <notebook groups="visa_process.group_service_request_employee"
                           attrs="{'invisible': [('service_request', '!=', 'iqama_print')]}">
                     <page string="Service Pricing">
@@ -119,7 +122,7 @@
                         </field>
                     </page>
                 </notebook>
-            </xpath>
+            </xpath> -->
         </field>
     </record>
 

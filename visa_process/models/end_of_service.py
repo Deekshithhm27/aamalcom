@@ -34,7 +34,7 @@ class EndOfService(models.Model):
     state = fields.Selection([
             ('draft', 'Draft'),
             ('submit', 'Submitted'),
-            ('submitted_to_hr', 'Submitted to HR'),
+            ('submitted_to_hr', 'Submitted to HR Employee'),
             ('reject', 'Rejected'),
             ('submitted_to_payroll', 'Submitted to Payroll'),
             ('approved_by_payroll', 'Approved By Payroll'),

@@ -844,7 +844,7 @@
         <field name="name">Service Enquiry</field>
         <field name="model">service.enquiry</field>
         <field name="arch" type="xml">
-            <tree string="Service Enquiry" default_order="processed_date desc, initiated_date desc">
+            <tree string="Service Enquiry">
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="is_marked" widget="boolean_toggle" nolabel="1" optional="show"/>
@@ -1027,6 +1027,13 @@
         </field>
     </record>
     <record id="action_service_enquiry_operations_manager" model="ir.actions.act_window">
+        <field name="name">Service Enquiry</field>
+        <field name="res_model">service.enquiry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="visa_enquiry_search_filter"/>
+        <field name="context">{'group_by': 'state'}</field>
+    </record>
+    <record id="action_service_enquiry_govt_manager" model="ir.actions.act_window">
         <field name="name">Service Enquiry</field>
         <field name="res_model">service.enquiry</field>
         <field name="view_mode">tree,form</field>
