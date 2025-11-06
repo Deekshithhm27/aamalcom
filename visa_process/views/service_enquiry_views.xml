@@ -844,7 +844,7 @@
         <field name="name">Service Enquiry</field>
         <field name="model">service.enquiry</field>
         <field name="arch" type="xml">
-            <tree string="Service Enquiry">
+            <tree string="Service Enquiry" default_order="processed_date desc, initiated_date desc">
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="is_marked" widget="boolean_toggle" nolabel="1" optional="show"/>
