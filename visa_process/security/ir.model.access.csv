@@ -156,5 +156,7 @@ access_termination_request_employee,access.termination.request.employee,model_te
 access_termination_assign_employee_wizard_manager,termination.assign.employee.wizard.manager,model_termination_assign_employee_wizard,visa_process.group_service_request_manager,1,1,1,1
 access_termination_assign_employee_wizard_hr,termination.assign.employee.wizard.hr,model_termination_assign_employee_wizard,visa_process.group_service_request_hr_employee,1,1,1,1
 
+access_service_enquiry_govt_manager,access_service_enquiry_govt_manager,model_service_enquiry,visa_process.group_service_request_govt_manager,1,1,0,0
+
 
 
