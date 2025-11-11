@@ -63,6 +63,9 @@ class ServiceEnquiry(models.Model):
                     raise ValidationError("Kindly Update Reference Number for Fee Receipt Document")
                 if line.confirmation_doc and not line.confirmation_doc_ref:
                     raise ValidationError("Kindly Update Reference Number for Confirmation Document")
+                if not line.muqeem_points:
+                    raise ValidationError("Kindly Update Muqeem Points")
+
 
                 line.dynamic_action_status = 'Confirmation documents uploaded, Upload of Iqama scanned copy is pending.'
                 line.action_user_id = line.first_govt_employee_id.user_id.id
