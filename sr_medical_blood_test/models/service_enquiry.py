@@ -111,6 +111,32 @@ class ServiceEnquiry(models.Model):
                     },
                 })
         return result
+    def open_reassign_employee_wizard(self):
+        """ super method to add a new condition for `exit_reentry_issuance_ext` service request. """
+        result = super(ServiceEnquiry, self).open_reassign_employee_wizard()
+        for record in self:
+            if record.service_request == 'medical_blood_test' and record.state == 'approved':
+                # level = 'level1'
+                department_ids = []
+                req_lines = record.service_request_config_id.service_department_lines
+                sorted_lines = sorted(req_lines, key=lambda line: line.sequence)
+                for lines in sorted_lines:
+                    # if level == 'level1':
+                    department_ids.append((4, lines.department_id.id))
+
+                result.update({
+                    'name': 'Select Employee',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'employee.selection.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_department_ids': department_ids,
+                        'default_assign_type': 'assign',
+                        'default_levels': 'level1',
+                    },
+                })
+        return result
 
     def action_finance_submit_to_treasury(self):
         current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
