@@ -53,6 +53,7 @@
             <menuitem id="menu_service_enquiry_operations_manager" name="Service Tickets" sequence="11" action="action_service_enquiry_operations_manager" groups="visa_process.group_service_request_operations_manager"/>
             
             <menuitem id="menu_service_enquiry_govt_manager" name="Service Tickets" sequence="12" action="action_service_enquiry_govt_manager" groups="visa_process.group_service_request_govt_manager"/>
+             <menuitem id="menu_service_enquiry_gm" name="Service Tickets" sequence="13" action="action_service_enquiry_gm" groups="visa_process.group_service_request_general_manager"/>
 
             
         </menuitem>

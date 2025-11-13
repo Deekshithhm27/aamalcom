@@ -1040,6 +1040,13 @@
         <field name="search_view_id" ref="visa_enquiry_search_filter"/>
         <field name="context">{'group_by': 'state'}</field>
     </record>
+    <record id="action_service_enquiry_gm" model="ir.actions.act_window">
+        <field name="name">Service Enquiry</field>
+        <field name="res_model">service.enquiry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="visa_enquiry_search_filter"/>
+        <field name="context">{'group_by': 'state'}</field>
+    </record>
     <record id="action_service_enquiry_gm_approval" model="ir.actions.act_window">
         <field name="name">Tickets for Approval</field>
         <field name="res_model">service.enquiry</field>
